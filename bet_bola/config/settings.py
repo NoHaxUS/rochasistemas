@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -77,9 +78,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'evento',
+        'NAME': 'bet_bola',
         'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'PASSWORD': '123',
         'HOST': 'localhost',
         'PORT': '5432',
     }
