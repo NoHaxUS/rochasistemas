@@ -37,6 +37,7 @@ virtualenv-clone = "==0.2.6"
 virtualenvwrapper = "==4.7.2"
 wrapt = "==1.10.11"
 gunicorn = "*"
+dj-database-url = "*"
 
 
 [dev-packages]
