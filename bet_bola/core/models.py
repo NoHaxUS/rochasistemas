@@ -29,7 +29,7 @@ class BetTicket(models.Model):
 	creation_date = models.DateTimeField(null=True)
 	payment = models.OneToOneField('Payment')
 	reward = models.ForeignKey('Reward')
-	#bet_value = SEARCH FOR A TYPE MONEY APP
+	value = models.DecimalField(max_digits=4, decimal_places=2)
 	bet_ticket_status = models.CharField(max_length=45, choices=BET_TICKET_STATUS)
 
 class Game(models.Model):
@@ -41,13 +41,13 @@ class Game(models.Model):
 
 class Reward(models.Model):
 	who_rewarded = models.ForeignKey('user.Seller')
-	#value = SEARCH FOR A TYPE MONEY APP
+	value = models.DecimalField(max_digits=4, decimal_places=2)
 	reward_date = models.DateTimeField(null=True)
 
 
 class Cotation(models.Model):
 	name = models.CharField(max_length=25)
-	#value = SEARCH FOR A TYPE MONEY APP
+	value = models.DecimalField(max_digits=4, decimal_places=2)
 	bet = models.ForeignKey('Bet',related_name='cotations')
 	game = models.ForeignKey('Game',related_name='cotations')
 	status = models.CharField(max_length=25, choices=COTATION_STATUS)
