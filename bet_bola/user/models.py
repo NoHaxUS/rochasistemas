@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 class Generic_User(User):
 	mobile_phone = models.CharField(max_length=25)
-	#birthday = 
+	birthday = models.DateTimeField(null=True)
 
 class Seller(Generic_User):
 	cpf = models.CharField(max_length=10)

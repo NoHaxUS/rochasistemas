@@ -26,7 +26,7 @@ class Bet(models.Model):
 class BetTicket(models.Model):	
 	seller = models.ForeignKey('user.Seller', related_name='bet_tickets_validated_by_me')
 	punter = models.ForeignKey('user.Punter', related_name='my_bet_tickets')
-	#creation_date = models.DateTimeField()
+	creation_date = models.DateTimeField(null=True)
 	payment = models.OneToOneField('Payment')
 	reward = models.ForeignKey('Reward')
 	#bet_value = SEARCH FOR A TYPE MONEY APP
@@ -34,7 +34,7 @@ class BetTicket(models.Model):
 
 class Game(models.Model):
 	name = models.CharField(max_length=45)	
-	#start_game_date = models.DateTimeField()
+	start_game_date = models.DateTimeField(null=True)
 	championship = models.CharField(max_length=25)
 	visible = models.BooleanField(default=False)
 
@@ -42,7 +42,7 @@ class Game(models.Model):
 class Reward(models.Model):
 	who_rewarded = models.ForeignKey('user.Seller')
 	#value = SEARCH FOR A TYPE MONEY APP
-	#reward_date = models.DateTimeField(null=True)
+	reward_date = models.DateTimeField(null=True)
 
 
 class Cotation(models.Model):
@@ -56,4 +56,4 @@ class Cotation(models.Model):
 class Payment(models.Model):
 	status = models.CharField(max_length=25, choices=PAYMENT_STATUS)
 	who_set_payment = models.ForeignKey('user.Seller')
-	#payment_date = models.DateTimeField(null=True)
+	payment_date = models.DateTimeField(null=True)
