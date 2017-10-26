@@ -18,9 +18,13 @@ PAYMENT_STATUS = (
 		('NOT_PAID', 'not_paid'),
 	)
 		
-class Bet(models.Model):	
-	#user = models.ForeignKey('') it's gonna be a property
+class Bet(models.Model):		
 	game = models.ForeignKey('Game',related_name='my_bets')
+	bet_ticket = models.ForeignKey('BetTicket',related_name='my_bets')
+
+	@property
+	def user(self):
+		return self.bet_ticket.punter.first_name
 
 
 class BetTicket(models.Model):	
