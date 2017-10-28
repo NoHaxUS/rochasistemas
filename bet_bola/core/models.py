@@ -30,7 +30,7 @@ class Bet(models.Model):
 class BetTicket(models.Model):
 	seller = models.ForeignKey('user.Seller', related_name='bet_tickets_validated_by_me')
 	punter = models.ForeignKey('user.Punter', related_name='my_bet_tickets')
-	creation_date = models.DateTimeField(auto_now_add=True)
+	creation_date = models.DateTimeField(null=True)
 	payment = models.OneToOneField('Payment')
 	reward = models.ForeignKey('Reward')
 	value = models.DecimalField(max_digits=4, decimal_places=2)
