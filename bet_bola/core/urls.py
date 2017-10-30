@@ -15,8 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from .views import Home
+from . import views
 
 urlpatterns = [
-    url(r'', Home.as_view(), name='bet_ticket')
+    url(r'^$', views.Home.as_view(), name='home'),
+    url(r'^bet_ticket/$', views.BetTicketCreate.as_view(), name='bet_ticket')
 ]
