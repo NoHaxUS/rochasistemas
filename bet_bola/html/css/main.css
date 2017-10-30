@@ -1,0 +1,25 @@
+nav .brand-logo{
+    padding: 0 15px;
+}
+.row{
+    margin-bottom: 0;
+}
+.row .col{
+    padding: 0;
+}
+.championship-header{
+    font-size: 2rem;
+}
+.championship-list li a{
+    font-size: 1.5rem;
+    display: inline-block;
+    width: 100%;
+    color: #000;
+}
+
+.championship-list li{
+    padding: 5px 0px 0px 0px;
+}
+.championship-list li:hover{
+    background-color: white;
+}
