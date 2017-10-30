@@ -44,6 +44,11 @@
     </nav>
 
     <main>
+        <div class="col s12 center-align">
+                <div class="subnav blue">
+                    <span class="right">HORA</span>
+                </div>
+        </div>
         <div class="row ">
             <div class="col s12 center-align hide-on-large-only">
                 <ul class="collapsible" data-collapsible="accordion">
@@ -70,13 +75,11 @@
                             <span>Lorem ipsum dolor sit amet.</span>
                         </div>
                     </li>
-
                 </ul>
-
-            </div>
-        </div>
+            </div><!-- Mobile menus -->
+        </div><!-- row -->
         <div class="row">
-            <div class="col s3 hide-on-med-and-down blue lighten-3">
+            <div class="col s2 hide-on-med-and-down blue lighten-3">
                 <!-- Championship List Menu-->
                 <div class="championship-header red white-text center-align">
                     Campeonatos
@@ -91,11 +94,62 @@
                 </ul>
 
             </div>
-            <div class="col s6">
+            <div class="col s12 l8">
                 <!-- Bets collection-->
+                <div class="games-table-container">
+                    <table class="responsive-table bordered highlight games-table">
+                        <thead>
+                          <tr>
+                              <th>Jogo</th>
+                              <th>Casa</th>
+                              <th>Empate</th>
+                              <th>Visitante</th>
+                          </tr>
+                        </thead>
+                
+                        <tbody>
+                          <tr>
+                            <td>Flamento x Vasco</td>
+                            <td>2.3</td>
+                            <td>2.4</td>
+                            <td>2.6</td>
+                          </tr>
+                          <tr>
+                            <td>Corintias x Botafogo</td>
+                            <td>1.4</td>
+                            <td>3.4</td>
+                            <td>3.3</td>
+                          </tr>
+                          <tr>
+                            <td>Chapecoense x Canadense de lá Menode</td>
+                            <td>3.4</td>
+                            <td>4.4</td>
+                            <td>$0.87</td>
+                          </tr>
+                          <tr>
+                            <td>Carro x Manga</td>
+                            <td>3.2</td>
+                            <td>4.2</td>
+                            <td>0.87</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                </div>
+                
             </div>
-            <div class="col s3">
+            <div class="col s2 hide-on-med-and-down">
                 <!-- Ticket bets -->
+                <div class="championship-header red white-text center-align">
+                    Ticket
+                </div>
+                <ul class="championship-list">
+                    <li class="center-align">
+                        <a href="#" class="">Série A</a>
+                    </li>
+                    <li class="center-align">
+                        <a href="#" class="">Série B</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </main>

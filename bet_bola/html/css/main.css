@@ -1,12 +1,16 @@
-nav .brand-logo{
-    padding: 0 15px;
-}
+/* Resets */
 .row{
     margin-bottom: 0;
 }
 .row .col{
     padding: 0;
 }
+/* end Resets */
+
+nav .brand-logo{
+    padding: 0 15px;
+}
+/* championship */
 .championship-header{
     font-size: 2rem;
 }
@@ -16,10 +20,19 @@ nav .brand-logo{
     width: 100%;
     color: #000;
 }
-
 .championship-list li{
     padding: 5px 0px 0px 0px;
 }
 .championship-list li:hover{
     background-color: white;
+}
+/* end championship */
+
+/* suvnav */
+.subnav{
+    height: 20px;
+}
+
+.games-table-container{
+    padding: 2px 12px 0px 12px;
 }
