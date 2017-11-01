@@ -18,16 +18,16 @@ PAYMENT_STATUS = (
 		('NOT_PAID', 'not_paid'),
 	)
 		
-class Bet(models.Model):		
-	game = models.ForeignKey('Game',related_name='my_bets')
+class Bet(models.Model):
 	bet_ticket = models.ForeignKey('BetTicket',related_name='my_bets')
+	cotation = models.ForeignKey('Cotation',related_name='my_bets')
 
 	@property
 	def user(self):
 		return self.bet_ticket.punter.first_name
 
 
-class BetTicket(models.Model):	
+class BetTicket(models.Model):
 	seller = models.ForeignKey('user.Seller', related_name='bet_tickets_validated_by_me')
 	punter = models.ForeignKey('user.Punter', related_name='my_bet_tickets')
 	creation_date = models.DateTimeField(null=True)

@@ -6,6 +6,9 @@ class Generic_User(User):
 	mobile_phone = models.CharField(max_length=25)
 	birthday = models.DateTimeField(null=True)
 
+	class Meta:
+		abstract = True
+
 class Seller(Generic_User):
 	cpf = models.CharField(max_length=10)
 	adress = models.CharField(max_length=75)

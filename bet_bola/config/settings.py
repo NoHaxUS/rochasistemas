@@ -26,7 +26,7 @@ SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['bola-api.herokuapp.com']
+ALLOWED_HOSTS = ['bola-api.herokuapp.com','localhost']
 
 
 # Application definition
