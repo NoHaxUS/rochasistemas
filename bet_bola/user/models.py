@@ -9,9 +9,11 @@ class Generic_User(User):
 	class Meta:
 		abstract=True
 
+
 class Seller(Generic_User):
 	cpf = models.CharField(max_length=10)
 	address = models.CharField(max_length=75)
+
 
 class Punter(Generic_User):
 	pass

@@ -36,6 +36,7 @@ class BetTicket(models.Model):
 	value = models.DecimalField(max_digits=4, decimal_places=2)
 	bet_ticket_status = models.CharField(max_length=45, choices=BET_TICKET_STATUS)
 
+
 class Game(models.Model):
 	name = models.CharField(max_length=45)	
 	start_game_date = models.DateTimeField(null=True)
