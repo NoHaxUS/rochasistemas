@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
                 ('mobile_phone', models.CharField(max_length=25)),
                 ('birthday', models.DateTimeField(null=True)),
                 ('cpf', models.CharField(max_length=10)),
-                ('adress', models.CharField(max_length=75)),
+                ('address', models.CharField(max_length=75)),
             ],
             options={
                 'abstract': False,

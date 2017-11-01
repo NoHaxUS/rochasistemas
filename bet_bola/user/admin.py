@@ -3,7 +3,6 @@ from .models import Punter, Seller
 # Register your models here.
 
 
-
 @admin.register(Punter,Seller)
 class PunterAdmin(admin.ModelAdmin):
 	title = ('Punter','Seller')
