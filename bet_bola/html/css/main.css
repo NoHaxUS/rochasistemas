@@ -1,6 +1,6 @@
 /* Resets */
 body{
-    background-color: #F5F5F5;
+    background-color: #d3dcbec9;
 }
 .row{
     margin-bottom: 0;
@@ -27,12 +27,43 @@ body{
 nav .brand-logo{
     padding: 0 15px;
 }
+
+.ticket-header{
+    font-size: 1.6rem;
+}
+
+/* ticket */
+
+.ticket-list li a{
+    font-size: 1.4rem;
+    display: inline-block;
+    width: 100%;
+    color: #0c143a;
+}
+.ticket-list li{
+    padding: 5px 0px 0px 0px;
+}
+
+.ticket-list li:hover{
+    background-color: #d3dcbec9;
+}
+
+.bet{
+    font-weight: bold;
+}
+.bet-delete{
+    width: 86px;
+   margin: auto;
+   font-weight: bold;
+}
+/* end ticket */
+
 /* championship */
 .championship-header{
-    font-size: 2rem;
+    font-size: 1.6rem;
 }
 .championship-list li a{
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     display: inline-block;
     width: 100%;
     color: #0c143a;
@@ -41,7 +72,7 @@ nav .brand-logo{
     padding: 5px 0px 0px 0px;
 }
 .championship-list li:hover{
-    background-color: #90caf9;
+    background-color: #d3dcbec9;
 }
 /* end championship */
 
@@ -50,15 +81,27 @@ nav .brand-logo{
     height: 22px;
 }
 .main-section{
-    margin-top: 20px;
+    margin-top: 10px;
 }
 .games-table-container{
     padding: 2px 12px 0px 12px;
 }
-/*
-nav ul li{
-    background-color: #663399;
-    border-radius: 30px;
-    height: 45px;
+
+.time{
+    margin-right: 10px;
+    font-weight: bold;
 }
-*/
+.games-table td{
+    padding: 10px 5px
+}
+.cotation{
+    height: 30px;
+    width: 30px;
+    display: inline-block;
+    background-color:#b1c1a4;
+    line-height: 2;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #0e0909;
+    font-weight: bold;
+}
