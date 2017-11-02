@@ -1,4 +1,7 @@
 /* Resets */
+body{
+    background-color: #F5F5F5;
+}
 .row{
     margin-bottom: 0;
 }
@@ -7,6 +10,20 @@
 }
 /* end Resets */
 
+/* color definitions*/
+.green-ge{
+    background-color: #3b9c00 !important;
+}
+.green-bb{
+    background-color: #377517 !important;
+}
+.yellow-bet{
+    background-color: #f7f00e !important;
+}
+.blue-c{
+    background-color: #657ade !important;
+}
+/* end color definitions*/
 nav .brand-logo{
     padding: 0 15px;
 }
@@ -18,21 +35,30 @@ nav .brand-logo{
     font-size: 1.5rem;
     display: inline-block;
     width: 100%;
-    color: #000;
+    color: #0c143a;
 }
 .championship-list li{
     padding: 5px 0px 0px 0px;
 }
 .championship-list li:hover{
-    background-color: white;
+    background-color: #90caf9;
 }
 /* end championship */
 
 /* suvnav */
 .subnav{
-    height: 20px;
+    height: 22px;
 }
-
+.main-section{
+    margin-top: 20px;
+}
 .games-table-container{
     padding: 2px 12px 0px 12px;
 }
+/*
+nav ul li{
+    background-color: #663399;
+    border-radius: 30px;
+    height: 45px;
+}
+*/
