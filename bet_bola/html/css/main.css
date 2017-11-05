@@ -128,3 +128,8 @@ nav .brand-logo{
 .side-nav{
     background-color: #39B54A;
 }
+.collapsible-header{
+    background-color: #39B54A;
+    color: #ffffff;
+    font-size: 1.4rem;
+}
