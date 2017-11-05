@@ -133,3 +133,17 @@ nav .brand-logo{
     color: #ffffff;
     font-size: 1.4rem;
 }
+.bet-ticket-value-text{
+    font-size: 1.3rem;
+    font-style: italic;
+}
+.bet-ticket-input{
+    margin-top: -10px;
+    padding: 0 25px 0 25px !important;
+}
+
+.bet-ticket-value-text-m{
+    font-size: 1.3rem;
+    font-style: italic;
+    margin-top: 15px;
+}
