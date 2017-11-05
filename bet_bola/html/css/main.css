@@ -10,6 +10,9 @@ body{
 }
 /* end Resets */
 
+.round{
+    border-radius: 20px;
+}
 /* color definitions*/
 .green-ge{
     background-color: #3b9c00 !important;
@@ -45,16 +48,17 @@ nav .brand-logo{
 }
 
 .ticket-list li:hover{
-    background-color: #d3dcbec9;
+    //background-color: #d3dcbec9;
 }
 
 .bet{
     font-weight: bold;
 }
 .bet-delete{
-    width: 86px;
+   width: 86px;
    margin: auto;
    font-weight: bold;
+   cursor: pointer;
 }
 /* end ticket */
 
@@ -72,7 +76,7 @@ nav .brand-logo{
     padding: 5px 0px 0px 0px;
 }
 .championship-list li:hover{
-    background-color: #d3dcbec9;
+    //background-color: #d3dcbec9;
 }
 /* end championship */
 
@@ -94,14 +98,33 @@ nav .brand-logo{
 .games-table td{
     padding: 10px 5px
 }
-.cotation{
+.cotation:hover{
     height: 30px;
     width: 30px;
     display: inline-block;
-    background-color:#b1c1a4;
+    background-color:#2ecbe4;
     line-height: 2;
-    border-radius: 5px;
+    border-radius: 20px;
     cursor: pointer;
     color: #0e0909;
     font-weight: bold;
+}
+
+.bet-award{
+    font-size: 1.5rem;
+}
+.cotation-sum{
+    font-weight: bold;
+}
+.award-value-text{
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+.btn-bet-submit{
+    margin-top: 10px;
+    margin-bottom: 12px;
+}
+
+.side-nav{
+    background-color: #39B54A;
 }

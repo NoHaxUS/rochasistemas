@@ -20,22 +20,34 @@
                 <i class="material-icons">menu</i>
             </a>
             <ul class="right hide-on-med-and-down">
+
                 <li>
-                    <a href="login.html" class="waves-effect waves-light btn white grey-text text-darken-4">
+                    <a href="login.html" class="waves-effect waves-light btn white grey-text text-darken-4 round">
                         <i class="material-icons left">input</i> Login</a>
                 </li>
                 <li>
-                    <a href="cadastro.html" class="waves-effect waves-light btn white grey-text text-darken-4">
+                    <a href="cadastro.html" class="waves-effect waves-light btn white grey-text text-darken-4 round">
                         <i class="material-icons left">add_circle_outline</i> Cadastre-se</a>
+                </li>
+                <li>
+                    <a href="consultar.html" class="waves-effect waves-light btn white grey-text text-darken-4 round">
+                        <i class="material-icons left">golf_course</i>Consultar Bilhete</a>
                 </li>
 
             </ul>
             <ul class="side-nav" id="mobile-menu">
+
                 <li>
-                    <a href="login.html">Login</a>
+                    <a href="login.html" class="waves-effect waves-light btn white grey-text text-darken-4 round">
+                        <i class="material-icons left">input</i> Login</a>
                 </li>
                 <li>
-                    <a href="cadastro.html">Cadastre-se</a>
+                    <a href="cadastro.html" class="waves-effect waves-light btn white grey-text text-darken-4 round">
+                        <i class="material-icons left">add_circle_outline</i> Cadastre-se</a>
+                </li>
+                <li>
+                    <a href="consultar.html" class="waves-effect waves-light btn white grey-text text-darken-4 round">
+                        <i class="material-icons left">golf_course</i>Consultar Bilhete</a>
                 </li>
 
             </ul>
@@ -82,13 +94,15 @@
         <!-- row -->
         <div class="row main-section">
             <div class="col s2 hide-on-med-and-down white hoverable">
+
                 <!-- Championship List Menu-->
                 <div class="championship-header blue-c white-text center-align">
                     Campeonatos
                 </div>
                 <ul class="championship-list">
-                    <li class="center-align">
-                        <a href="#" class="">Série A</a>
+                    <li class="center-align valign-wrapper">
+                        <!-- <i class="material-icons">chevron_right</i> -->
+                        <a href="#">Série A</a>
                     </li>
                     <li class="center-align">
                         <a href="#" class="">Série B</a>
@@ -102,7 +116,7 @@
                     <table class="bordered highlight white centered games-table">
                         <thead>
                             <tr>
-                                <th>Jogo</th>
+                                <th>Jogo (Casa x Visitante)</th>
                                 <th>Casa</th>
                                 <th>Empate</th>
                                 <th>Visitante</th>
@@ -169,10 +183,10 @@
                             <br> 10/12/13 13:44
                             <br> Casa -> 2.5
                         </div>
-                        <div class="bet-delete valign-wrapper">
-
-                            Remover
-                            <i class="small material-icons black-text">delete</i>
+                        <div class="bet-delete">
+                            <span class="valign-wrapper red-text">Remover
+                                <i class="small material-icons red-text">delete</i>
+                            </span>
                         </div>
                     </li>
                     <div class="divider"></div>
@@ -183,11 +197,46 @@
                             <br> Casa -> 2.7
                         </div>
                         <div class="bet-delete valign-wrapper">
-                            Remover
-                            <i class="small material-icons black-text">delete</i>
+                            <span class="valign-wrapper red-text">Remover
+                                <i class="small material-icons red-text">delete</i>
+                            </span>
                         </div>
                     </li>
+                    <div class="divider"></div>
+
                 </ul>
+
+                <div class="make-bet">
+
+                    <form class="col s12" action="teste.php">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <label for="bet-ticket-value">Valor da Aposta</label>
+                                <input placeholder="" id="bet-ticket-value" type="number" class="validate center-align">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s12 center-align cotation-sum">
+                                Cota:
+                                <span class="cota-value">2.3</span>
+                            </div>
+                            <div class="col s12 center-align award-value-text">
+                                Ganho:
+                                <span class="award-value"> R$ 300 </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s12 center-align">
+                                <button class="btn waves-effect waves-light btn-bet-submit" type="submit">Apostar
+                                    <i class="material-icons right">check</i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+
+                </div>
+
             </div>
         </div>
     </main>
