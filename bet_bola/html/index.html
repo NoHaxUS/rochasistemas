@@ -82,163 +82,225 @@
                     </li>
                     <li>
                         <div class="collapsible-header">
-                            <i class="material-icons">event_note</i>Ticket</div>
+                            <i class="material-icons">event_note</i>Ticket
+                        </div>
                         <div class="collapsible-body white">
-                            <span>Lorem ipsum dolor sit amet.</span>
-                        </div>
+
+                            <ul class="ticket-list">
+                                <li class="center-align bet">
+                                    <div class="bet">
+                                        Flamengo x Vasco
+                                        <br> 10/12/13 13:44
+                                        <br> Casa -> 2.5
+                                    </div>
+                                    <div class="bet-delete">
+                                        <span class="valign-wrapper red-text">Remover
+                                            <i class="small material-icons red-text">delete</i>
+                                        </span>
+                                    </div>
+                                </li>
+                                <div class="divider"></div>
+                                <li class="center-align">
+                                    <div class="bet">
+                                        Curitiba x Vasco
+                                        <br> 10/12/13 13:44
+                                        <br> Casa -> 2.7
+                                    </div>
+                                    <div class="bet-delete valign-wrapper">
+                                        <span class="valign-wrapper red-text">Remover
+                                            <i class="small material-icons red-text">delete</i>
+                                        </span>
+                                    </div>
+                                </li>
+                                <div class="divider"></div>
+
+                            </ul>
+
+                            <div class="make-bet">
+                                <div class="row">
+                                    <form class="col s12" action="teste.php">
+                                        <div class="row">
+                                            <div class="input-field col s12">
+                                                <label for="bet-ticket-value">Valor da Aposta</label>
+                                                <input placeholder="" id="bet-ticket-value" type="number" class="validate center-align">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col s12 center-align cotation-sum">
+                                                Cota:
+                                                <span class="cota-value">2.3</span>
+                                            </div>
+                                            <div class="col s12 center-align award-value-text">
+                                                Ganho:
+                                                <span class="award-value"> R$ 300 </span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col s12 center-align">
+                                                <button class="btn waves-effect waves-light btn-bet-submit" type="submit">Apostar
+                                                    <i class="material-icons right">check</i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div><!-- Collapse Body -->
                     </li>
                 </ul>
+
+                <!-- Mobile menus -->
             </div>
-            <!-- Mobile menus -->
-        </div>
-        <!-- row -->
-        <div class="row main-section">
-            <div class="col s2 hide-on-med-and-down white hoverable">
+            <!-- row -->
+            <div class="row main-section">
+                <div class="col s2 hide-on-med-and-down white hoverable">
 
-                <!-- Championship List Menu-->
-                <div class="championship-header blue-c white-text center-align">
-                    Campeonatos
+                    <!-- Championship List Menu-->
+                    <div class="championship-header blue-c white-text center-align">
+                        Campeonatos
+                    </div>
+                    <ul class="championship-list">
+                        <li class="center-align valign-wrapper">
+                            <!-- <i class="material-icons">chevron_right</i> -->
+                            <a href="#">Série A</a>
+                        </li>
+                        <li class="center-align">
+                            <a href="#" class="">Série B</a>
+                        </li>
+                    </ul>
+
                 </div>
-                <ul class="championship-list">
-                    <li class="center-align valign-wrapper">
-                        <!-- <i class="material-icons">chevron_right</i> -->
-                        <a href="#">Série A</a>
-                    </li>
-                    <li class="center-align">
-                        <a href="#" class="">Série B</a>
-                    </li>
-                </ul>
+                <div class="col s12 l8">
+                    <!-- Bets collection-->
+                    <div class="games-table-container">
+                        <table class="bordered highlight white centered games-table">
+                            <thead>
+                                <tr>
+                                    <th>Jogo (Casa x Visitante)</th>
+                                    <th>Casa</th>
+                                    <th>Empate</th>
+                                    <th>Visitante</th>
+                                    <th>Mais Apostas</th>
+                                </tr>
+                            </thead>
 
-            </div>
-            <div class="col s12 l8">
-                <!-- Bets collection-->
-                <div class="games-table-container">
-                    <table class="bordered highlight white centered games-table">
-                        <thead>
-                            <tr>
-                                <th>Jogo (Casa x Visitante)</th>
-                                <th>Casa</th>
-                                <th>Empate</th>
-                                <th>Visitante</th>
-                                <th>Mais Apostas</th>
-                            </tr>
-                        </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Flamengo x Vasco
+                                        <br> 10/12/13 13:44</td>
+                                    <td>
+                                        <span class="cotation">2.3</span>
+                                    </td>
+                                    <td>
+                                        <span class="cotation">2.5</span>
+                                    </td>
+                                    <td>2.6</td>
+                                    <td>
+                                        <i class="small material-icons">add</i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Corintias x Botafogo</td>
+                                    <td>1.4</td>
+                                    <td>3.4</td>
+                                    <td>3.3</td>
+                                    <td>
+                                        <i class="small material-icons">add</i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Chapecoense x Canadense de lá Menode</td>
+                                    <td>3.4</td>
+                                    <td>4.4</td>
+                                    <td>$0.87</td>
+                                    <td>
+                                        <i class="small material-icons">add</i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Carro x Manga</td>
+                                    <td>3.2</td>
+                                    <td>4.2</td>
+                                    <td>0.87</td>
+                                    <td>
+                                        <i class="small material-icons">add</i>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-                        <tbody>
-                            <tr>
-                                <td>Flamengo x Vasco
-                                    <br> 10/12/13 13:44</td>
-                                <td>
-                                    <span class="cotation">2.3</span>
-                                </td>
-                                <td>
-                                    <span class="cotation">2.5</span>
-                                </td>
-                                <td>2.6</td>
-                                <td>
-                                    <i class="small material-icons">add</i>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Corintias x Botafogo</td>
-                                <td>1.4</td>
-                                <td>3.4</td>
-                                <td>3.3</td>
-                                <td>
-                                    <i class="small material-icons">add</i>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Chapecoense x Canadense de lá Menode</td>
-                                <td>3.4</td>
-                                <td>4.4</td>
-                                <td>$0.87</td>
-                                <td>
-                                    <i class="small material-icons">add</i>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Carro x Manga</td>
-                                <td>3.2</td>
-                                <td>4.2</td>
-                                <td>0.87</td>
-                                <td>
-                                    <i class="small material-icons">add</i>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
+                <div class="col s2 hide-on-med-and-down hoverable white">
+                    <!-- Ticket bets -->
+                    <div class="ticket-header blue-c white-text center-align">
+                        Ticket
+                    </div>
+                    <ul class="ticket-list">
+                        <li class="center-align bet">
+                            <div class="bet">
+                                Flamengo x Vasco
+                                <br> 10/12/13 13:44
+                                <br> Casa -> 2.5
+                            </div>
+                            <div class="bet-delete">
+                                <span class="valign-wrapper red-text">Remover
+                                    <i class="small material-icons red-text">delete</i>
+                                </span>
+                            </div>
+                        </li>
+                        <div class="divider"></div>
+                        <li class="center-align">
+                            <div class="bet">
+                                Curitiba x Vasco
+                                <br> 10/12/13 13:44
+                                <br> Casa -> 2.7
+                            </div>
+                            <div class="bet-delete valign-wrapper">
+                                <span class="valign-wrapper red-text">Remover
+                                    <i class="small material-icons red-text">delete</i>
+                                </span>
+                            </div>
+                        </li>
+                        <div class="divider"></div>
 
-            </div>
-            <div class="col s2 hide-on-med-and-down hoverable white">
-                <!-- Ticket bets -->
-                <div class="ticket-header blue-c white-text center-align">
-                    Ticket
-                </div>
-                <ul class="ticket-list">
-                    <li class="center-align bet">
-                        <div class="bet">
-                            Flamengo x Vasco
-                            <br> 10/12/13 13:44
-                            <br> Casa -> 2.5
-                        </div>
-                        <div class="bet-delete">
-                            <span class="valign-wrapper red-text">Remover
-                                <i class="small material-icons red-text">delete</i>
-                            </span>
-                        </div>
-                    </li>
-                    <div class="divider"></div>
-                    <li class="center-align">
-                        <div class="bet">
-                            Curitiba x Vasco
-                            <br> 10/12/13 13:44
-                            <br> Casa -> 2.7
-                        </div>
-                        <div class="bet-delete valign-wrapper">
-                            <span class="valign-wrapper red-text">Remover
-                                <i class="small material-icons red-text">delete</i>
-                            </span>
-                        </div>
-                    </li>
-                    <div class="divider"></div>
+                    </ul>
 
-                </ul>
-
-                <div class="make-bet">
-
-                    <form class="col s12" action="teste.php">
+                    <div class="make-bet">
                         <div class="row">
-                            <div class="input-field col s12">
-                                <label for="bet-ticket-value">Valor da Aposta</label>
-                                <input placeholder="" id="bet-ticket-value" type="number" class="validate center-align">
-                            </div>
+                            <form class="col s12" action="teste.php">
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <label for="bet-ticket-value">Valor da Aposta</label>
+                                        <input placeholder="" id="bet-ticket-value" type="number" class="validate center-align">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col s12 center-align cotation-sum">
+                                        Cota:
+                                        <span class="cota-value">2.3</span>
+                                    </div>
+                                    <div class="col s12 center-align award-value-text">
+                                        Ganho:
+                                        <span class="award-value"> R$ 300 </span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col s12 center-align">
+                                        <button class="btn waves-effect waves-light btn-bet-submit" type="submit">Apostar
+                                            <i class="material-icons right">check</i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                        <div class="row">
-                            <div class="col s12 center-align cotation-sum">
-                                Cota:
-                                <span class="cota-value">2.3</span>
-                            </div>
-                            <div class="col s12 center-align award-value-text">
-                                Ganho:
-                                <span class="award-value"> R$ 300 </span>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col s12 center-align">
-                                <button class="btn waves-effect waves-light btn-bet-submit" type="submit">Apostar
-                                    <i class="material-icons right">check</i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-
+                        
+                    </div>
 
                 </div>
-
+                <!-- end ticket col -->
             </div>
-        </div>
     </main>
 
     <script src="js/jquery-3.2.1.min.js"></script>
