@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Bet,BetTicket,Cotation,Payment,Game
+from .models import Bet,BetTicket,Cotation,Payment,Game,Championship
 # Register your models here.
 
 
@@ -14,16 +14,21 @@ class BetTicketAdmin(admin.ModelAdmin):
 
 
 @admin.register(Cotation)
-class BetAdmin(admin.ModelAdmin):
+class CotationAdmin(admin.ModelAdmin):
 	pass
 
 
 @admin.register(Game)
-class BetAdmin(admin.ModelAdmin):
+class GameAdmin(admin.ModelAdmin):
+	pass
+
+
+@admin.register(Championship)
+class ChampionshipAdmin(admin.ModelAdmin):
 	pass
 
 
 @admin.register(Payment)
-class BetAdmin(admin.ModelAdmin):
+class PaymentAdmin(admin.ModelAdmin):
 	pass
 

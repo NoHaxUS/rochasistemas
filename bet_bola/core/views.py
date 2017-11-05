@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django import forms
 from datetime import datetime
-from core.models import BetTicket,Bet,Game
+from core.models import BetTicket,Bet,Game,Championship
 # Create your views here.
 
 class Home(View):
@@ -33,6 +33,7 @@ class BetTicketForm(forms.ModelForm):
 		fields = '__all__'
 		exclude = ['punter','seller','creation_date','reward']
 
+
 class BetTicketCreate(CreateView):	
 	form_class = BetTicketForm
 	template_name = 'betticket_form.html'	
@@ -51,5 +52,15 @@ class GameListView(ListView):
 
 	def get_context_data(self, **kwargs):
 		context = super(GameListView, self).get_context_data(**kwargs)
+		context['now'] = timezone.now()
+		return context
+
+
+class ChampionshipListView(ListView):
+	model = Championship
+	template_name = 'championship_list.html'	
+
+	def get_context_data(self, **kwargs):
+		context = super(ChampionshipListView, self).get_context_data(**kwargs)
 		context['now'] = timezone.now()
 		return context

@@ -40,8 +40,11 @@ class BetTicket(models.Model):
 class Game(models.Model):
 	name = models.CharField(max_length=45)	
 	start_game_date = models.DateTimeField(null=True)
-	championship = models.CharField(max_length=25)
+	championship = models.ForeignKey('Championship',related_name='my_games')
 	visible = models.BooleanField(default=False)
+
+class Championship(models.Model):
+	name = models.CharField(max_length=45)
 
 
 class Reward(models.Model):
