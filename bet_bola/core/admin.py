@@ -10,7 +10,8 @@ class BetAdmin(admin.ModelAdmin):
 
 @admin.register(BetTicket)
 class BetTicketAdmin(admin.ModelAdmin):
-	pass
+	list_filter = ('bet_ticket_status','punter','seller')
+	
 
 
 @admin.register(Cotation)

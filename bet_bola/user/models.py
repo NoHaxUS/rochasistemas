@@ -15,5 +15,6 @@ class Seller(Generic_User):
 	address = models.CharField(max_length=75)
 
 
+
 class Punter(Generic_User):
 	pass

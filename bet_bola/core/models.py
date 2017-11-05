@@ -27,9 +27,9 @@ class Bet(models.Model):
 		return self.bet_ticket.punter.first_name
 
 
-class BetTicket(models.Model):
-	seller = models.ForeignKey('user.Seller', related_name='bet_tickets_validated_by_me')
+class BetTicket(models.Model):	
 	punter = models.ForeignKey('user.Punter', related_name='my_bet_tickets')
+	seller = models.ForeignKey('user.Seller', related_name='bet_tickets_validated_by_me')
 	creation_date = models.DateTimeField(null=True)
 	payment = models.OneToOneField('Payment')
 	reward = models.ForeignKey('Reward')
@@ -42,6 +42,7 @@ class Game(models.Model):
 	start_game_date = models.DateTimeField(null=True)
 	championship = models.ForeignKey('Championship',related_name='my_games')
 	visible = models.BooleanField(default=False)
+
 
 class Championship(models.Model):
 	name = models.CharField(max_length=45)
