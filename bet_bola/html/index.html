@@ -13,6 +13,35 @@
 
 <body>
 
+    <!-- Modal Login -->
+    <div id="modal-login" class="modal">
+        <div class="modal-content">
+            <h4>Login</h4>
+            <div class="row">
+                <form class="col s12" action="login.py">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input id="login" type="text" class="validate">
+                            <label for="login">Login</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input id="password" type="password" class="validate">
+                            <label for="password">Senha</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Entrar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- end Modal Login -->
+
     <nav>
         <div class="nav-wrapper green-ge">
             <a href="#!" class="brand-logo white-text">Bet Bola</a>
@@ -22,7 +51,7 @@
             <ul class="right hide-on-med-and-down">
 
                 <li>
-                    <a href="login.html" class="waves-effect waves-light btn white grey-text text-darken-4 round">
+                    <a href="#modal-login" class="waves-effect waves-light btn white grey-text text-darken-4 round modal-trigger">
                         <i class="material-icons left">input</i> Login</a>
                 </li>
                 <li>
@@ -38,7 +67,7 @@
             <ul class="side-nav" id="mobile-menu">
 
                 <li>
-                    <a href="login.html" class="waves-effect waves-light btn white grey-text text-darken-4 round">
+                    <a href="#modal-login" class="waves-effect waves-light btn white grey-text text-darken-4 round modal-trigger">
                         <i class="material-icons left">input</i> Login</a>
                 </li>
                 <li>
@@ -177,7 +206,7 @@
                 <div class="col s12 l8">
                     <!-- Bets collection-->
                     <div class="games-table-container">
-                        <table class="bordered highlight white centered games-table">
+                        <table class="bordered highlight white centered games-table hoverable">
                             <thead>
                                 <tr>
                                     <th>Jogo (Casa x Visitante)</th>
@@ -300,9 +329,7 @@
                                 </div>
                             </form>
                         </div>
-
                     </div>
-
                 </div>
                 <!-- end ticket col -->
             </div>
