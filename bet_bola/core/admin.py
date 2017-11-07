@@ -1,15 +1,11 @@
 from django.contrib import admin
-from .models import Bet,BetTicket,Cotation,Payment,Game,Championship
+from .models import BetTicket,Cotation,Payment,Game,Championship
 # Register your models here.
-
-
-@admin.register(Bet)
-class BetAdmin(admin.ModelAdmin):
-	pass
 
 
 @admin.register(BetTicket)
 class BetTicketAdmin(admin.ModelAdmin):
+	exclude = ['reward','payment','value']
 	search_fields = ['seller__first_name']
 	list_filter = ('bet_ticket_status','punter')
 	

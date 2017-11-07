@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django import forms
 from datetime import datetime
-from core.models import BetTicket,Bet,Game,Championship
+from core.models import Cotation,BetTicket,Game,Championship
 # Create your views here.
 
 class Home(View):
@@ -18,7 +18,7 @@ class BetTicketForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		#self.bets = kwargs.pop('bets')
 		super(BetTicketForm, self).__init__(*args, **kwargs)			
-		self.fields.__setitem__('bets',forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,choices=([(bet.pk, bet) for bet in Bet.objects.all()])))
+		self.fields.__setitem__('cotations',forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,choices=([(cotation.pk, cotation) for cotation in Cotation.objects.all()])))
 
 	def get_form_kwargs(self):
 		# pass "user" keyword argument with the current user to your form
@@ -42,7 +42,7 @@ class BetTicketCreate(CreateView):
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
 		context = super(BetTicketCreate, self).get_context_data(**kwargs)
-		context['bets']=Bet.objects.all()
+		context['cotations']=Cotation.objects.all()
 		return context
 
 

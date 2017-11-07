@@ -8,15 +8,15 @@ BET_TICKET_STATUS = (
 	)
 
 COTATION_STATUS = (
-        ('OPEN', 'open'),
-        ('HAPPENING', 'happening'),
-        ('NOT_HAPPENING', 'not_happening'),        
+        ('HOME', 'open'),
+        ('TIE', 'tie'),
+        ('AWAY', 'away'),        
     )
 
 GAME_STATUS = (
-        ('FINISHED', 'finished'),
+		('NOT_HAPPENING', 'not_happening'),        
         ('HAPPENING', 'happening'),
-        ('NOT_HAPPENING', 'not_happening'),        
+        ('FINISHED', 'finished'),        
     )
 
 PAYMENT_STATUS = (
@@ -24,34 +24,34 @@ PAYMENT_STATUS = (
 		('NOT_PAID', 'not_paid'),
 	)
 		
-class Bet(models.Model):
-	bet_ticket = models.ForeignKey('BetTicket',related_name='my_bets')
-	cotation = models.ForeignKey('Cotation',related_name='my_bets')
-
-	@property
-	def user(self):
-		return self.bet_ticket.punter.first_name
-
 
 class BetTicket(models.Model):	
 	punter = models.ForeignKey('user.Punter', related_name='my_bet_tickets')
 	seller = models.ForeignKey('user.Seller', related_name='bet_tickets_validated_by_me')
-	creation_date = models.DateTimeField(null=True)
-	payment = models.OneToOneField('Payment')
-	reward = models.ForeignKey('Reward')
-	value = models.DecimalField(max_digits=4, decimal_places=2)
-	bet_ticket_status = models.CharField(max_length=45, choices=BET_TICKET_STATUS)
+	cotations = models.ManyToManyField('Cotation', related_name='my_bet_tickets')
+	creation_date = models.DateTimeField(blank=True)	
+	reward = models.ForeignKey('Reward',blank=True, null=True)
+	value = models.DecimalField(max_digits=4, decimal_places=2, null=True)
+	bet_ticket_status = models.CharField(max_length=45, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0])
 
+	def __str__(self):
+		return self.punter.first_name
 
 class Game(models.Model):
 	name = models.CharField(max_length=45)	
 	start_game_date = models.DateTimeField(null=True)
 	championship = models.ForeignKey('Championship',related_name='my_games')
-	status_game = models.CharField(max_length=45,default='not happening', choices=GAME_STATUS)
+	status_game = models.CharField(max_length=45,default=GAME_STATUS[0], choices=GAME_STATUS)
+
+	def __str__(self):
+		return self.name	
 
 
 class Championship(models.Model):
 	name = models.CharField(max_length=45)
+
+	def __str__(self):
+		return self.name
 
 
 class Reward(models.Model):
@@ -60,15 +60,17 @@ class Reward(models.Model):
 	reward_date = models.DateTimeField(null=True)
 
 
-class Cotation(models.Model):
-	name = models.CharField(max_length=25)
-	value = models.DecimalField(max_digits=4, decimal_places=2)
-	bet = models.ForeignKey('Bet',related_name='cotations')
+class Cotation(models.Model):	
+	value = models.DecimalField(max_digits=4, decimal_places=2)	
 	game = models.ForeignKey('Game',related_name='cotations')
 	status = models.CharField(max_length=25, choices=COTATION_STATUS)
+
+	def __str__(self):
+		return str(self.value)
 
 
 class Payment(models.Model):
 	status = models.CharField(max_length=25, choices=PAYMENT_STATUS)
 	who_set_payment = models.ForeignKey('user.Seller')
 	payment_date = models.DateTimeField(null=True)
+	bet_ticket = models.OneToOneField('BetTicket')
