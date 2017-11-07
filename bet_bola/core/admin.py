@@ -10,9 +10,9 @@ class BetAdmin(admin.ModelAdmin):
 
 @admin.register(BetTicket)
 class BetTicketAdmin(admin.ModelAdmin):
-	list_filter = ('bet_ticket_status','punter','seller')
+	search_fields = ['seller__first_name']
+	list_filter = ('bet_ticket_status','punter')
 	
-
 
 @admin.register(Cotation)
 class CotationAdmin(admin.ModelAdmin):

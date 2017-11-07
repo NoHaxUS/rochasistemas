@@ -9,8 +9,14 @@ BET_TICKET_STATUS = (
 
 COTATION_STATUS = (
         ('OPEN', 'open'),
-        ('HAPPEN', 'happen'),
-        ('NOT_HAPPEN', 'not_happen'),        
+        ('HAPPENING', 'happening'),
+        ('NOT_HAPPENING', 'not_happening'),        
+    )
+
+GAME_STATUS = (
+        ('FINISHED', 'finished'),
+        ('HAPPENING', 'happening'),
+        ('NOT_HAPPENING', 'not_happening'),        
     )
 
 PAYMENT_STATUS = (
@@ -41,7 +47,7 @@ class Game(models.Model):
 	name = models.CharField(max_length=45)	
 	start_game_date = models.DateTimeField(null=True)
 	championship = models.ForeignKey('Championship',related_name='my_games')
-	visible = models.BooleanField(default=False)
+	status_game = models.CharField(max_length=45,default='not happening', choices=GAME_STATUS)
 
 
 class Championship(models.Model):
