@@ -1,12 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render,reverse
 from django.views import View
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.http import HttpResponse
 from django.utils import timezone
-from django import forms
 from datetime import datetime
-from core.models import Cotation,BetTicket,Game,Championship
+from .models import Cotation,BetTicket,Game,Championship
+from user.models import Punter
+from .forms import BetTicketForm
 # Create your views here.
 
 class Home(View):
@@ -14,30 +15,13 @@ class Home(View):
     def get(self, request, *args, **kargs):
         return HttpResponse("OK")
 
-class BetTicketForm(forms.ModelForm):
-	def __init__(self, *args, **kwargs):
-		#self.bets = kwargs.pop('bets')
-		super(BetTicketForm, self).__init__(*args, **kwargs)			
-		self.fields.__setitem__('cotations',forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,choices=([(cotation.pk, cotation) for cotation in Cotation.objects.all()])))
-
-	def get_form_kwargs(self):
-		# pass "user" keyword argument with the current user to your form
-		kwargs = super(BetTicketForm, self).get_form_kwargs()
-		print(kwargs)
-		kwargs['user'] = self.request.user
-		kwargs['creation_date'] = datetime.now()
-		return kwargs
-
-	class Meta:
-		model = BetTicket
-		fields = '__all__'
-		exclude = ['punter','seller','creation_date','reward']
-
 
 class BetTicketCreate(CreateView):	
 	form_class = BetTicketForm
-	template_name = 'betticket_form.html'	
-	success_url="home"
+	template_name = 'betticket_form.html'		
+
+	def get_success_url(self):
+		return reverse('home')
 
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
@@ -45,6 +29,10 @@ class BetTicketCreate(CreateView):
 		context['cotations']=Cotation.objects.all()
 		return context
 
+	def form_valid(self, form):        
+		form.instance.punter = Punter.objects.get(user_ptr=self.request.user.pk)
+		form.instance.creation_date = datetime.now()
+		return super(BetTicketCreate, self).form_valid(form)
 
 class GameListView(ListView):
 	model = Game
