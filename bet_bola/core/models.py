@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+import decimal
 # Create your models here.
 
 BET_TICKET_STATUS = (
@@ -56,9 +58,14 @@ class Championship(models.Model):
 
 
 class Reward(models.Model):
-	who_rewarded = models.ForeignKey('user.Seller')
-	value = models.DecimalField(max_digits=4, decimal_places=2)
+	who_rewarded = models.ForeignKey('user.Seller')	
 	reward_date = models.DateTimeField(null=True)
+	value_max = models.DecimalField(max_digits=6, decimal_places=1,default=10000.0)
+	value = models.DecimalField(max_digits=6, decimal_places=1,)
+
+	def clean(self):        
+		if self.value_max < self.value:
+			raise ValidationError('Valor excede o valor maximo')
 
 
 class Cotation(models.Model):	
