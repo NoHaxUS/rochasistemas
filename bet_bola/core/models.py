@@ -27,12 +27,13 @@ PAYMENT_STATUS = (
 
 class BetTicket(models.Model):	
 	punter = models.ForeignKey('user.Punter', related_name='my_bet_tickets')
-	seller = models.ForeignKey('user.Seller', related_name='bet_tickets_validated_by_me')
+	seller = models.ForeignKey('user.Seller', blank=True ,related_name='bet_tickets_validated_by_me')
 	cotations = models.ManyToManyField('Cotation', related_name='my_bet_tickets')
 	creation_date = models.DateTimeField(blank=True)	
 	reward = models.ForeignKey('Reward',blank=True, null=True)
 	value = models.DecimalField(max_digits=4, decimal_places=2, null=True)
 	bet_ticket_status = models.CharField(max_length=45, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0])
+	payment = models.OneToOneField('Payment', blank=True)
 
 	def __str__(self):
 		return self.punter.first_name
@@ -72,5 +73,4 @@ class Cotation(models.Model):
 class Payment(models.Model):
 	status = models.CharField(max_length=25, choices=PAYMENT_STATUS)
 	who_set_payment = models.ForeignKey('user.Seller')
-	payment_date = models.DateTimeField(null=True)
-	bet_ticket = models.OneToOneField('BetTicket')
+	payment_date = models.DateTimeField(null=True)	
