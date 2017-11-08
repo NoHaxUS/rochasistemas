@@ -147,3 +147,25 @@ nav .brand-logo{
     font-style: italic;
     margin-top: 15px;
 }
+
+.delay-msg{
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.hcenter{
+    margin: auto;
+    float: none !important;
+}
+.details-header-games{
+    margin-top: 30px !important;
+}
+.ticket-details{
+    margin-top: 20px !important;
+    padding: 20px 3px 20px 3px !important;
+    font-size: 1.2rem !important;
+}
+.ticket-details h5{
+    font-style: italic;
+    font-weight: bold;
+}
