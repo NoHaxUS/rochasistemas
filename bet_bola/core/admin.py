@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BetTicket,Cotation,Payment,Game,Championship
+from .models import BetTicket,Cotation,Payment,Game,Championship,Reward
 # Register your models here.
 
 
@@ -29,3 +29,6 @@ class ChampionshipAdmin(admin.ModelAdmin):
 class PaymentAdmin(admin.ModelAdmin):
 	pass
 
+@admin.register(Reward)
+class BetTicketAdmin(admin.ModelAdmin):
+	pass
