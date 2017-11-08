@@ -18,7 +18,7 @@ class Home(View):
 
 class BetTicketCreate(CreateView):	
 	form_class = BetTicketForm
-	template_name = 'betticket_form.html'		
+	template_name = 'core/betticket_form.html'		
 
 	def get_success_url(self):
 		return reverse('home')
@@ -36,7 +36,7 @@ class BetTicketCreate(CreateView):
 
 class GameListView(ListView):
 	model = Game
-	template_name = 'game_list.html'	
+	template_name = 'core/game_list.html'	
 
 	def get_context_data(self, **kwargs):
 		context = super(GameListView, self).get_context_data(**kwargs)
@@ -46,7 +46,7 @@ class GameListView(ListView):
 
 class ChampionshipListView(ListView):
 	model = Championship
-	template_name = 'championship_list.html'	
+	template_name = 'core/championship_list.html'	
 
 	def get_context_data(self, **kwargs):
 		context = super(ChampionshipListView, self).get_context_data(**kwargs)
