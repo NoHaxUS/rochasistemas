@@ -9,16 +9,31 @@ BET_TICKET_STATUS = (
 		('WON', 'won'),
 	)
 
-COTATION_STATUS = (
-        ('HOME', 'home'),
-        ('TIE', 'tie'),
-        ('AWAY', 'away'),        
-    )
-
 GAME_STATUS = (
+		('NS', 'Not Started'),
+		('LIVE','Live'),
+		('HT', 'Half-time'),
+		('FT', 'Full-Time')	,	
+		('ET', 'Extra-Time'),
+		('PEN_LIVE', 'Penalty Shootout'),
+		('AET', 'Finished after extra time'),
+		('BREAK', 'Match finished, waiting for extra time to start'),
+		('FT_PEN', 'Full-Time after penalties'),
+		('CANCL', 'Cancelled'),
+		('POSTP', 'PostPhoned'),
+		('INT',	'Interrupted'),
+		('ABAN', 'Abandoned'),
+		('SUSP', 'Suspended'),
+		('AWARDED', 'Awarded'),
+		('DELAYED', 'Delayed'),
+		('TBA', 'To Be Announced (Fixture will be updated with exact time later)'),
+		('WO', 'Walkover (Awarding of a victory to a contestant because there are no other contestants)'),
+	)
+
+COTATION_STATUS = (
 		('NOT_HAPPENING', 'not_happening'),        
         ('HAPPENING', 'happening'),
-        ('FINISHED', 'finished'),        
+        ('OPEN', 'open'),        
     )
 
 PAYMENT_STATUS = (
@@ -38,7 +53,7 @@ class BetTicket(models.Model):
 	payment = models.OneToOneField('Payment', blank=True, null=True)
 
 	def __str__(self):
-		return self.punter.first_name
+		return str(self.pk)
 
 class Game(models.Model):
 	name = models.CharField(max_length=45)	

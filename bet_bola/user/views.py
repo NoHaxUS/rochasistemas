@@ -13,7 +13,7 @@ from .models import Punter
 class PunterCreate(CreateView):	
 	model = Punter
 	fields = ['first_name','last_name','username','password','email','date_joined','birthday']	
-	template_name = 'punter_form.html'
+	template_name = 'core/punter_form.html'
 	#success_url = 'core/login'#todo
 
 	def form_valid(self, form):
@@ -40,5 +40,5 @@ class Login(View):
 
 	def get(self, request):
 		form = AuthenticationForm()
-		return render(request, "index.html", {'form':form})
+		return render(request, "user/index.html", {'form':form})
 
