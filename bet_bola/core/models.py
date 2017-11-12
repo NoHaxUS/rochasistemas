@@ -9,6 +9,11 @@ BET_TICKET_STATUS = (
 		('WON', 'won'),
 	)
 
+REWARD_STATUS = (
+		('DONE', 'done'),
+		('NONE', 'none'),
+	)
+
 GAME_STATUS = (
 		('NS', 'Not Started'),
 		('LIVE','Live'),
@@ -77,6 +82,7 @@ class Reward(models.Model):
 	reward_date = models.DateTimeField(null=True)
 	value_max = models.DecimalField(max_digits=6, decimal_places=1,default=10000.0)
 	value = models.DecimalField(max_digits=6, decimal_places=1,)
+	status_reward = models.CharField(max_length=25, choices=REWARD_STATUS)
 
 	def clean(self):        
 		if self.value_max < self.value:
@@ -93,6 +99,6 @@ class Cotation(models.Model):
 
 
 class Payment(models.Model):
-	status = models.CharField(max_length=25, choices=PAYMENT_STATUS)
+	status_payment = models.CharField(max_length=25, choices=PAYMENT_STATUS)
 	who_set_payment = models.ForeignKey('user.Seller')
 	payment_date = models.DateTimeField(null=True)	

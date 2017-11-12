@@ -4,6 +4,8 @@ from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.http import HttpResponse
 from django.utils import timezone
+from django.db.models import Q
+from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
 from .models import Cotation,BetTicket,Game,Championship
 from user.models import Punter
@@ -34,7 +36,12 @@ class BetTicketCreate(CreateView):
 		form.instance.creation_date = datetime.now()
 		return super(BetTicketCreate, self).form_valid(form)
 
-class GameListView(ListView):
+
+class GameListView(ListView,LoginRequiredMixin):
+	login_url='user/championship/'
+	redirect_field_name = 'redirect_to'
+	queryset = Game.objects.filter(Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET")
+		| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED"))
 	model = Game
 	template_name = 'core/game_list.html'	
 
