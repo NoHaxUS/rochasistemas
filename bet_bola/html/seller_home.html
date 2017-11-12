@@ -13,23 +13,65 @@
 
 <body>
 
-    <!-- Bet Success -->
-    <div id="bet-success" class="modal">
+
+    <!-- Pay Bet -->
+    <div id="pay-bet" class="modal">
         <div class="modal-content">
                 <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
 
-            <h5 class="center-align">Sucesso</h5>
+            <h5 class="center-align">Pagar Ganhador</h5>
             <div class="divider"></div>
+
             <div class="row">
-                <div class="col s12 center-align success-bet">
-                    Sua aposta foi cadastrada em nosso sistema. <br>
-                    O número do seu Ticket é: <span class="ticket-number"> #234242 </span> leve até um <br>
-                    de nossos vendedores para validar (pagar) sua aposta.
-                </div>
-            </div>
+                <form class="col s12">
+                  <div class="row">
+                    <div class="input-field col s12">
+                      <i class="material-icons prefix">event_note</i>
+                      <input id="icon_prefix" type="text" class="validate">
+                      <label for="icon_prefix"># Ticket</label>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Pagar</button>
+                        </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
         </div>
     </div>
-    <!-- end Bet Success -->
+    <!-- end Pay Bet -->
+
+
+    <!-- Validate Bet -->
+    <div id="validate-bet" class="modal">
+        <div class="modal-content">
+                <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
+
+            <h5 class="center-align">Validar Ticket</h5>
+            <div class="divider"></div>
+
+            <div class="row">
+                <form class="col s12">
+                  <div class="row">
+                    <div class="input-field col s12">
+                      <i class="material-icons prefix">event_note</i>
+                      <input id="icon_prefix" type="text" class="validate">
+                      <label for="icon_prefix"># Ticket</label>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Validar</button>
+                        </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+        </div>
+    </div>
+    <!-- end Validate Bet -->
 
 
     <nav>
@@ -58,7 +100,7 @@
                     <span class="welcome">Seja bem vindo, Pablo </span>
                 </li>
                 <li>
-                    <a href="cadastro.html" class="waves-effect waves-light btn white grey-text text-darken-4 round">Sair</a>
+                    <a href="sair.html" class="waves-effect waves-light btn white grey-text text-darken-4 round">Sair</a>
                 </li>
 
             </ul>
@@ -83,10 +125,10 @@
                             <ul class="championship-list">
 
                                 <li class="center-align">
-                                    <a href="#" class="">Minhas Apostas</a>
+                                    <a href="#validate-bet" class="modal-trigger">Validar Aposta</a>
                                 </li>
                                 <li class="center-align">
-                                    <a href="#" class="">Mudar Senha</a>
+                                    <a href="#pay-bet" class="modal-trigger">Pagar Ganhador</a>
                                 </li>
                             </ul>
                         </div>
@@ -97,7 +139,7 @@
             </div>
             <!-- row -->
             <div class="row main-section">
-                <div class="col s2 hide-on-med-and-down white hoverable">
+                <div class="col s6 hide-on-med-and-down white hoverable hcenter seller-menu">
 
                     <!-- Championship List Menu-->
                     <div class="championship-header blue-c white-text center-align">
@@ -106,51 +148,15 @@
                     <ul class="championship-list">
                         <li class="center-align valign-wrapper">
                             <!-- <i class="material-icons">chevron_right</i> -->
-                            <a href="#">Minhas Apostas</a>
+                            <a href="#validate-bet" class="modal-trigger">Validar Aposta</a>
                         </li>
                         <li class="center-align">
-                            <a href="#" class="">Mudar Senha</a>
+                            <a href="#pay-bet" class="modal-trigger">Pagar Ganhador</a>
                         </li>
                     </ul>
-
+                    
                 </div>
-                <div class="col s12 l10">
-                    <!-- Bets collection-->
-                    <div class="games-table-container">
-                        <table class="bordered highlight white centered games-table hoverable">
-                            <thead>
-                                <tr>
-                                    <th>Número do Ticket</th>
-                                    <th>Data da aposta</th>
-                                    <th>Status</th>
-                                    <th>Ver</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        # 12342
-                                    </td>
-                                    <td>
-                                        24/08/1987 12:30
-                                    </td>
-                                    <td>
-                                        Aguardando Resultado
-                                    </td>
-                                    <td><i class="material-icons">open_in_new</i></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-                <!--
-                <div class="col s2 hide-on-med-and-down hoverable white">
                 
-                </div>
-            -->
-                <!-- end ticket col -->
             </div>
     </main>
 
@@ -160,7 +166,8 @@
 
     <script>
     $(document).ready(function(){
-        $('#bet-success').modal('open');
+
+        $('.collapsible').collapsible('open', 0);
     });
     </script>
 
