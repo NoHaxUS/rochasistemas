@@ -1,0 +1,11 @@
+{% extends "admin/base.html" %}
+{%block content%}	
+	<h1>Championships</h1>
+	<ul>
+	{% for game in object_list %}
+	    <li>{{ championship.name}} - {{championship.my_games}}</li>
+	{% empty %}
+	    <li>No championship yet.</li>
+	{% endfor %}
+	</ul>
+{%endblock%}	

@@ -17,9 +17,8 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from . import views
 
-urlpatterns = [
-    url(r'^$', views.Home.as_view(), name='home'),
-    url(r'^bet_ticket/$', views.BetTicketCreate.as_view(), name='bet_ticket'),
-	url(r'^game/$', views.GameListView.as_view(), name='game_list_view'),
-    url(r'^championship/$', views.ChampionshipListView.as_view(), name='championship_list_view'),
+urlpatterns = [    
+    #url(r'^$', views.Login.as_view(), name='login'), 
+    url(r'^punter/$', views.PunterCreate.as_view(), name='punter'),	
+    url(r'^login/$', views.Login.as_view(), name='login'),
 ]
