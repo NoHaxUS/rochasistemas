@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Bet Bola - Home</title>
+    <link rel="stylesheet" href="css/materialize.css">
+    <link rel="stylesheet" href="css/alertify.min.css">
+    <link rel="stylesheet" href="css/themes/default.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+
+
+    <!-- Pay Bet -->
+    <div id="pay-bet" class="modal">
+        <div class="modal-content">
+                <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
+
+            <h5 class="center-align">Pagar Ganhador</h5>
+            <div class="divider"></div>
+
+            <div class="row">
+                <form class="col s12">
+                  <div class="row">
+                    <div class="input-field col s12">
+                      <i class="material-icons prefix">event_note</i>
+                      <input id="icon_prefix" type="text" class="validate ticket-pay-input">
+                      <label for="icon_prefix"># Ticket</label>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <button class="btn waves-effect waves-light btn-bet-submit right seller-pay-bet" type="submit">Pagar</button>
+                        </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+        </div>
+    </div>
+    <!-- end Pay Bet -->
+
+
+    <!-- Validate Bet -->
+    <div id="validate-bet" class="modal">
+        <div class="modal-content">
+                <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
+
+            <h5 class="center-align">Validar Ticket</h5>
+            <div class="divider"></div>
+
+            <div class="row">
+                <form id="ticket-form" class="col s12">
+                  <div class="row">
+                    <div class="input-field col s12">
+                      <i class="material-icons prefix">event_note</i>
+                      <input id="icon_prefix" type="text" class="validate ticket-number-input">
+                      <label for="icon_prefix"># Ticket</label>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <button class="btn waves-effect waves-light btn-bet-submit right seller-validate-bet" type="submit">Validar</button>
+                        </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+        </div>
+    </div>
+    <!-- end Validate Bet -->
+
+
+    <nav>
+
+        <div class="nav-wrapper green-ge">
+            <a href="#!" class="brand-logo white-text">Bet Bola</a>
+            <a href="#" data-activates="mobile-menu" class="button-collapse">
+                <i class="material-icons">menu</i>
+            </a>
+            <ul class="right hide-on-med-and-down">
+
+                <li>
+                    <span class="welcome">Seja bem vindo, Pablo </span>
+                      
+                </li>
+                <li>
+                    <a href="#modal-register" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
+                         Sair</a>
+                </li>
+
+
+            </ul>
+            <ul class="side-nav" id="mobile-menu">
+
+                <li>    
+                    <span class="welcome">Seja bem vindo, Pablo </span>
+                </li>
+                <li>
+                    <a href="sair.html" class="waves-effect waves-light btn white grey-text text-darken-4 round">Sair</a>
+                </li>
+
+            </ul>
+
+        </div>
+    </nav>
+
+    <main>
+        <div class="col s12 center-align">
+            <div class="subnav green-bb">
+                <span class="right white-text time">11:30</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12 center-align hide-on-large-only">
+                <ul class="collapsible" data-collapsible="accordion">
+
+                    <li>
+                        <div class="collapsible-header">
+                            <i class="material-icons">assistant_photo</i>Menu</div>
+                        <div class="collapsible-body white">
+                            <ul class="championship-list">
+
+                                <li class="center-align">
+                                    <a href="#validate-bet" class="modal-trigger">Validar Aposta</a>
+                                </li>
+                                <li class="center-align">
+                                    <a href="#pay-bet" class="modal-trigger">Pagar Ganhador</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+
+                <!-- Mobile menus -->
+            </div>
+            <!-- row -->
+            <div class="row main-section">
+                <div class="col s6 hide-on-med-and-down white hoverable hcenter seller-menu">
+
+                    <!-- Championship List Menu-->
+                    <div class="championship-header blue-c white-text center-align">
+                        Menu
+                    </div>
+                    <ul class="championship-list">
+                        <li class="center-align valign-wrapper">
+                            <!-- <i class="material-icons">chevron_right</i> -->
+                            <a href="#validate-bet" class="modal-trigger">Validar Aposta</a>
+                        </li>
+                        <li class="center-align">
+                            <a href="#pay-bet" class="modal-trigger">Pagar Ganhador</a>
+                        </li>
+                    </ul>
+                    
+                </div>
+                
+            </div>
+    </main>
+
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/materialize.js"></script>
+    <script src="js/alertify.min.js"></script>
+    <script src="js/home.js"></script>
+
+    <script>
+    $(document).ready(function(){
+
+        $('.collapsible').collapsible('open', 0);
+        
+    });
+    </script>
+
+</body>
+
+</html>
