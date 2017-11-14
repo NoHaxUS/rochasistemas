@@ -17,9 +17,11 @@ class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'
 
 	def get(self, request, *args, **kwargs):
+		championships = Championship.objects.all()
 		games = Game.objects.filter( Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
 		| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED"))
-		context = {'games': games}
+
+		context = {'games': games ,'championships': championships}
 		return self.render_to_response(context)
 
 

@@ -244,12 +244,12 @@
                     <ul class="championship-list">
                         <li class="center-align valign-wrapper">
                             <!-- <i class="material-icons">chevron_right</i> -->
-                            <a href="#">Série A</a>
-                        </li>
-                        <li class="center-align">
-                            <a href="#" class="">Série B</a>
-                        </li>
-                    </ul>
+                           
+                            {%for championship in championships%}
+                            <li class="center-align">
+                                <a href="#" class="">{{ championship }}</a>
+                            </li>
+                            {%endfor%}
 
                 </div>
                 <div class="col s12 l8">
