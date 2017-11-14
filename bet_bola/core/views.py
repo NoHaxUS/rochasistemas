@@ -17,7 +17,9 @@ class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'
 
 	def get(self, request, *args, **kwargs):
-		context = {'a':'Pablo Henrique'}
+		games = Game.objects.filter( Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
+		| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED"))
+		context = {'games': games}
 		return self.render_to_response(context)
 
 

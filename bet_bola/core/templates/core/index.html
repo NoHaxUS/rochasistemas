@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    {{ a }}
+
     <!-- Modal Login -->
     <div id="modal-login" class="modal">
         <div class="modal-content">
@@ -267,47 +267,22 @@
                             </thead>
 
                             <tbody>
+                                {% for game in games %}
                                 <tr>
-                                    <td>Flamengo x Vasco
-                                        <br> 10/12/13 13:44</td>
                                     <td>
-                                        <span class="cotation">2.3</span>
+                                        {{game.name}}<br> 
+                                        {{game.start_game_date}}
                                     </td>
+                                    {% for cotation in game.cotations.all %}
                                     <td>
-                                        <span class="cotation">2.5</span>
+                                        <span class="cotation">{{cotation.value}}</span>
                                     </td>
-                                    <td>2.6</td>
+                                    {% endfor %}
                                     <td>
                                         <i class="small material-icons">add</i>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>Corintias x Botafogo</td>
-                                    <td>1.4</td>
-                                    <td>3.4</td>
-                                    <td>3.3</td>
-                                    <td>
-                                        <i class="small material-icons">add</i>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Chapecoense x Canadense de lá Menode</td>
-                                    <td>3.4</td>
-                                    <td>4.4</td>
-                                    <td>$0.87</td>
-                                    <td>
-                                        <i class="small material-icons">add</i>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Carro x Manga</td>
-                                    <td>3.2</td>
-                                    <td>4.2</td>
-                                    <td>0.87</td>
-                                    <td>
-                                        <i class="small material-icons">add</i>
-                                    </td>
-                                </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
