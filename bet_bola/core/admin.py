@@ -12,7 +12,7 @@ class BetTicketAdmin(admin.ModelAdmin):
 
 @admin.register(Cotation)
 class CotationAdmin(admin.ModelAdmin):
-	pass
+	list_display = ['name']
 
 
 @admin.register(Game)

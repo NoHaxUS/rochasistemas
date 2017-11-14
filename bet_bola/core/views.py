@@ -10,12 +10,15 @@ from datetime import datetime
 from .models import Cotation,BetTicket,Game,Championship
 from user.models import Punter
 from .forms import BetTicketForm
+from django.views.generic.base import TemplateResponseMixin
 # Create your views here.
 
-class Home(View):
+class Home(TemplateResponseMixin, View):
+	template_name = 'core/index.html'
 
-    def get(self, request, *args, **kargs):
-        return HttpResponse("OK")
+	def get(self, request, *args, **kwargs):
+		context = {'a':'Pablo Henrique'}
+		return self.render_to_response(context)
 
 
 class BetTicketCreate(CreateView):	

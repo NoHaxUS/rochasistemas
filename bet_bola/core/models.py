@@ -89,7 +89,8 @@ class Reward(models.Model):
 			raise ValidationError('Valor excede o valor maximo')
 
 
-class Cotation(models.Model):	
+class Cotation(models.Model):
+	name = models.CharField(max_length=30, null=True)
 	value = models.DecimalField(max_digits=4, decimal_places=2)	
 	game = models.ForeignKey('Game',related_name='cotations')
 	status = models.CharField(max_length=25, choices=COTATION_STATUS)
