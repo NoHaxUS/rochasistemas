@@ -13,36 +13,23 @@
 
 <body>
 
-    <!-- Modal Login -->
+    <!-- Modal Login -->    
     <div id="modal-login" class="modal">
         <div class="modal-content">
                 <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
             <h4>Login</h4>
             <div class="row">
-                <form class="col s12" action="login">
-                    <div class="row">
-                        <div class="input-field col s12">
-                            <input id="login" type="text" class="validate">
-                            <label for="login">Login</label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s12">
-                            <input id="password" type="password" class="validate">
-                            <label for="password">Senha</label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s12">
-                            <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Entrar</button>
-                        </div>
-                    </div>
-                </form>
+                 <form action="" method="post">{% csrf_token %}
+                {{ form.as_p }}                
+                <div class="col s12">
+                    <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Entrar</button>
+                </div>
+            </form>      
             </div>
         </div>
     </div>
     <!-- end Modal Login -->
-
+   
     <!-- Modal Login -->
     <div id="modal-register" class="modal">
         <div class="modal-content">
@@ -97,20 +84,31 @@
                 <i class="material-icons">menu</i>
             </a>
             <ul class="right hide-on-med-and-down">
-
+                {% if user.is_anonymous %}                
                 <li>
                     <a href="#modal-login" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
                          Login</a>
                         
                 </li>
+                
                 <li>
                     <a href="#modal-register" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
                          Cadastre-se</a>
-                </li>
+                </li>               
+                 
                 <li>
                     <a href="consultar.html" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                         Consultar Bilhete</a>
                 </li>
+                {% else %}
+                    <li>{{user}}</li>
+                    <li>
+                        <a href="consultar.html" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                            Consultar Bilhete</a>
+                    </li>
+                    <li><a href="{% url 'logout' %}" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                            logout</a></li>
+                {% endif %}
 
             </ul>
             <ul class="side-nav" id="mobile-menu">
