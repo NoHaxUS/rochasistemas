@@ -27,16 +27,13 @@ class Home(TemplateResponseMixin, View):
 		context = {'games': self.games ,'championships': self.championships,'form': self.form}
 		return self.render_to_response(context)
 
-	def post(self, request):
+	def post(self, request, *args, **kwargs):
 		username = request.POST['username']
 		password = request.POST['password']
 		user = authenticate(username=username, password=password)
 		if user is not None:
-			login(request, user)			
-			championships = Championship.objects.all()
-			games = Game.objects.filter( Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
-			| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED"))
-			context = {'games': games ,'championships': championships,'user': request.user}
+			login(request, user)						
+			context = {'games': self.games ,'championships': self.championships,'user': request.user}
 			return self.render_to_response(context)
 		else:		
 			return HttpResponse("<h1>LOGIN ERROR</h1>")
