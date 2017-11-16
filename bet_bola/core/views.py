@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.base import TemplateResponseMixin
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -37,6 +37,34 @@ class Home(TemplateResponseMixin, View):
 			return self.render_to_response(context)
 		else:		
 			return HttpResponse("<h1>LOGIN ERROR</h1>")
+
+class AddBetToTicket(View):
+
+	def post(self, request, *args, **kwargs):
+
+		request.session.flush()
+		if 'ticket' not in request.session:
+			request.session['ticket'] = []
+			pk = self.kwargs["pk"]
+			request.session['ticket'].append( int(pk) )
+			
+			response = HttpResponse()
+			response.status_code = 201
+			return response
+		else:
+			pk = self.kwargs["pk"]
+			request.session['ticket'].append( int(pk) )
+			response = HttpResponse()
+			response.status_code = 201
+			return response
+
+	def get(self, request, *args, **kwargs):
+		if not request.session['ticket']:
+			return HttpResponse("Empty")
+		else:
+
+			return JsonResponse({'ticket': request.session['ticket']})
+
 
 class GameChampionship(Home):
 	def get(self, request, *args, **kwargs):
