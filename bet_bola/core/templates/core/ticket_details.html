@@ -55,22 +55,22 @@
 
                         <div class="row white">
                             <div class="col s4">
-                                Data de Criação: 23/45/3333 12:33
+                                Data de Criação: {{ticket.creation_date}}
                             </div>
                             <div class="col s4">
-                                Status do Pagamento: Não Pago
+                                Status do Pagamento: {{ticket.payment.status_payment}}
                             </div>
                             <div class="col s4">
-                                Status do Ticket: Aguardando resultado
+                                Status do Ticket: {{ticket.bet_ticket_status}}
                             </div>
                         </div>
                         <div class="divider"></div>
                         <div class="row purple lighten-5">
                             <div class="col s4">
-                                Valor apostado: R$ 10
+                                Valor apostado: {{ticket.value}}
                             </div>
                             <div class="col s4">
-                                Cota Total: 2.5
+                                Cota Total: {{ticket.cota_total}}
                             </div>
                             <div class="col s4">
                                 Ganho Possível: R$ 300
@@ -79,25 +79,28 @@
                         <div class="divider"></div>
                         <div class="row white">
                             <div class="col s12 l6 hcenter">
-                                Recompensa entregue ao ganhador: Sim
+                                Recompensa entregue ao ganhador: {{ticket.reward.status_reward}}
                             </div>
                         </div>
                         <div class="row white">
                             <div class="details-header-games">
-                                <h5>Jogos apostados</h5>
+                                <h5>Jogos apostados</h5>                                
                             </div>
                         </div>
                         <div class="row white">
                             <div class="col s12 l10 hcenter">
+                                {% for cotation in ticket.cotations.all %}
                                 <div class="col s4">
-                                    Jogo: Flamengo x Curitiba
+                                    Jogo: {{cotation}}
                                 </div>
                                 <div class="col s4">
-                                    Cota Apostada: Casa -> 3.4
+                                    Cota Apostada: {{cotation.value}}
                                 </div>
                                 <div class="col s4">
-                                    Status da Cota: Não aconteceu
+                                    Status da Cota: {{cotation.status}}
                                 </div>
+                                {%endfor%}
+                                
                             </div>
                         </div>
                     </div>

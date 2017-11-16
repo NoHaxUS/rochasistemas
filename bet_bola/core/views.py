@@ -73,6 +73,14 @@ class BetTicketCreate(CreateView):
 		form.instance.creation_date = datetime.now()
 		return super(BetTicketCreate, self).form_valid(form)
 
+class BetTicketDetail(TemplateResponseMixin, View):
+	template_name = 'core/ticket_details.html'
+
+	def get(self, request, *args, **kwargs):
+		ticket = get_object_or_404(BetTicket, pk=self.kwargs["pk"])
+		context = {'ticket': ticket}
+		return self.render_to_response(context)	
+
 
 class GameListView(ListView,LoginRequiredMixin):
 	login_url='user/championship/'

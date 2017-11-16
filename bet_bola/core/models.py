@@ -60,8 +60,8 @@ class BetTicket(models.Model):
 	def cota_total(self):
 		cota_total = 0
 		
-		for cotation in self.cotations:
-			cota_total += cotation
+		for cotation in self.cotations.all():
+			cota_total += cotation.value
 		
 		return cota_total
 
