@@ -1,4 +1,4 @@
-from django.shortcuts import render,reverse,redirect
+from django.shortcuts import render,reverse,redirect,get_object_or_404
 from django.http import HttpResponseRedirect
 from django.views import View
 from django.contrib.auth.forms import AuthenticationForm
@@ -18,14 +18,13 @@ from .forms import BetTicketForm
 
 class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'	
-
-	def get(self, request, *args, **kwargs):
-		form = AuthenticationForm()
-		championships = Championship.objects.all()
-		games = Game.objects.filter( Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
+	form = AuthenticationForm()
+	championships = Championship.objects.all()
+	games = Game.objects.filter( Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
 		| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED"))
 
-		context = {'games': games ,'championships': championships,'form': form}
+	def get(self, request, *args, **kwargs):				
+		context = {'games': self.games ,'championships': self.championships,'form': self.form}
 		return self.render_to_response(context)
 
 	def post(self, request):
@@ -41,6 +40,13 @@ class Home(TemplateResponseMixin, View):
 			return self.render_to_response(context)
 		else:		
 			return HttpResponse("<h1>LOGIN ERROR</h1>")
+
+class GameChampionship(Home):
+	def get(self, request, *args, **kwargs):
+		championship = get_object_or_404(Championship, pk=self.kwargs["pk"])		
+		self.games = Game.objects.filter( (Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
+		| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED")) & Q(championship=championship))
+		return super(GameChampionship, self).get(self, request, *args, **kwargs)
 
 
 class Logout(View):

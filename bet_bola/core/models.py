@@ -57,6 +57,14 @@ class BetTicket(models.Model):
 	bet_ticket_status = models.CharField(max_length=45, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0])
 	payment = models.OneToOneField('Payment', blank=True, null=True)
 
+	def cota_total(self):
+		cota_total = 0
+		
+		for cotation in self.cotations:
+			cota_total += cotation
+		
+		return cota_total
+
 	def __str__(self):
 		return str(self.pk)
 

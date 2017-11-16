@@ -20,6 +20,7 @@ from . import views
 urlpatterns = [
     url(r'^$',views.Logout.as_view(), name='logout'),
     url(r'^home$', views.Home.as_view(), name='home'),    
+    url(r'^home/championship/(?P<pk>\d+)$', views.GameChampionship.as_view(), name='game_championship'),
     url(r'^bet_ticket/$', views.BetTicketCreate.as_view(), name='bet_ticket'),    
 	url(r'^game/$', views.GameListView.as_view(), name='game_list_view'),
     url(r'^championship/$', views.ChampionshipListView.as_view(), name='championship_list_view'),

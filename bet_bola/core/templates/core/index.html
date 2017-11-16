@@ -245,7 +245,7 @@
                            
                             {%for championship in championships%}
                             <li class="center-align">
-                                <a href="#" class="">{{ championship }}</a>
+                                <a href="{% url 'game_championship' pk=championship.pk%}" class="">{{ championship }}</a>
                             </li>
                             {%endfor%}
 
