@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
 from .models import Cotation,BetTicket,Game,Championship
+from user.forms.create_punter_form import CreatePunterForm
 from user.models import Punter
 from .forms import BetTicketForm
 # Create your views here.
@@ -19,24 +20,15 @@ from .forms import BetTicketForm
 class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'	
 	form = AuthenticationForm()
+	form_punter = CreatePunterForm()
 	championships = Championship.objects.all()
 	games = Game.objects.filter( Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
 		| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED"))
 
 	def get(self, request, *args, **kwargs):				
-		context = {'games': self.games ,'championships': self.championships,'form': self.form}
+		context = {'games': self.games ,'championships': self.championships,'form': self.form, 'form_punter': self.form_punter}
 		return self.render_to_response(context)
 
-	def post(self, request, *args, **kwargs):
-		username = request.POST['username']
-		password = request.POST['password']
-		user = authenticate(username=username, password=password)
-		if user is not None:
-			login(request, user)						
-			context = {'games': self.games ,'championships': self.championships,'user': request.user}
-			return self.render_to_response(context)
-		else:		
-			return HttpResponse("<h1>LOGIN ERROR</h1>")
 
 class GameChampionship(Home):
 	def get(self, request, *args, **kwargs):
@@ -44,15 +36,6 @@ class GameChampionship(Home):
 		self.games = Game.objects.filter( (Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
 		| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED")) & Q(championship=championship))
 		return super(GameChampionship, self).get(self, request, *args, **kwargs)
-
-
-class Logout(View):
-    """
-    Provides users the ability to logout
-    """    
-    def get(self, request, *args, **kwargs):
-        logout(request)
-        return HttpResponseRedirect('home')
 
 
 class BetTicketCreate(CreateView):	

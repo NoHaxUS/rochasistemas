@@ -19,7 +19,7 @@
                 <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
             <h4>Login</h4>
             <div class="row">
-                 <form action="" method="post">{% csrf_token %}
+                 <form action="{% url 'user:login' %}" method="POST">{% csrf_token %}
                 {{ form.as_p }}                
                 <div class="col s12">
                     <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Entrar</button>
@@ -37,35 +37,8 @@
                 
             <h4>Registro</h4>
             <div class="row">
-                <form class="col s12" action="registrar">
-                    <div class="row">
-                        <div class="input-field col s12">
-                            <input id="name" type="text" class="validate">
-                            <label for="name">Nome</label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s12">
-                          <input id="email" type="email" class="validate">
-                          <label for="email">Email</label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s12">
-                            <input id="login" type="text" class="validate">
-                            <label for="login">Login</label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s12">
-                            <input id="password" type="password" class="validate">
-                            <label for="password">Senha</label>
-                        </div>
-                    </div>
-                    <div class="input-field col s12">
-                        <input id="icon_telephone" type="tel" class="validate">
-                        <label for="icon_telephone">Telephone</label>
-                    </div>
+                <form action="{% url 'user:punter' %}" method="POST">{% csrf_token %}
+                    {{ form_punter.as_p}}
                     <div class="row">
                         <div class="col s12">
                             <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Cadastrar</button>
@@ -106,7 +79,7 @@
                         <a href="consultar.html" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                             Consultar Bilhete</a>
                     </li>
-                    <li><a href="{% url 'logout' %}" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                    <li><a href="{% url 'user:logout' %}" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                             logout</a></li>
                 {% endif %}
 
@@ -245,7 +218,7 @@
                            
                             {%for championship in championships%}
                             <li class="center-align">
-                                <a href="{% url 'game_championship' pk=championship.pk%}" class="">{{ championship }}</a>
+                                <a href="{% url 'core:game_championship' pk=championship.pk%}" class="">{{ championship }}</a>
                             </li>
                             {%endfor%}
 

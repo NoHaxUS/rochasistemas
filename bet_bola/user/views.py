@@ -4,41 +4,57 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.views import View
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView,FormView
+from django.db.models import Q
+from .forms.create_punter_form import CreatePunterForm
 from .models import Punter
+from core.models import Game,Championship
 # Create your views here.
 
 
 
-class PunterCreate(CreateView):	
-	model = Punter
-	fields = ['first_name','last_name','username','password','email','date_joined','birthday']	
-	template_name = 'core/punter_form.html'
-	#success_url = 'core/login'#todo
+class PunterCreate(FormView):	
+	form_class = CreatePunterForm
+	template_name = 'core/index.html'
+	success_url = '/'	
 
 	def form_valid(self, form):
 		obj = form.save(commit=False)		
-		obj.set_password(self.request.POST['password'])#obj.created_by = self.request.user
+		obj.set_password(self.request.POST['password'])
 		obj.save()        
 		return super(PunterCreate, self).form_valid(form)
 
-	def get_success_url(self):
-		return reverse('login')
+	def get_context_data(self, **kwargs):
+		form = AuthenticationForm()		
+		form_punter = CreatePunterForm()
+		championships = Championship.objects.all()
+		games = Game.objects.filter( Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
+			| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED"))
+        
+		context = {'games': games ,'championships': championships,'form': form, 'form_punter': form_punter}
+		return context
 
 
 class Login(View):
+	
+	def get(self, request):
+		form = AuthenticationForm()
+		return render(request, "user/index.html", {'form':form})
+
 	def post(self, request):
 		username = request.POST['username']
 		password = request.POST['password']
 		user = authenticate(username=username, password=password)
 		if user is not None:
-			login(request, user)
-			print("DEU RUUUUUUUUIM")
-			return redirect('game_list_view')
+			login(request, user)			
+			return redirect('core:home')
 		else:		
 			return HttpResponse("<h1>LOGIN ERROR</h1>")
 
-	def get(self, request):
-		form = AuthenticationForm()
-		return render(request, "user/index.html", {'form':form})
-
+class Logout(View):
+    """
+    Provides users the ability to logout
+    """    
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return redirect('core:home')
