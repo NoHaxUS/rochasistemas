@@ -78,9 +78,13 @@ $(document).ready(function(){
         });
 
         $.post('/add_bet/' + id, function(data, status, rq){
+            console.log(data);
+            console.log(rq.status);
+
             if(!rq.status == 201){
                 alertify.alert("Erro no sistema, nos avise pelo email: pabllobeg@gmail.com")
             }
+
         }, 'text');
 
         console.log( $(this).siblings().first().text() );

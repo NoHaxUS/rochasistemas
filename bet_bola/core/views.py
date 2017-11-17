@@ -14,6 +14,8 @@ from datetime import datetime
 from .models import Cotation,BetTicket,Game,Championship
 from user.models import Punter
 from .forms import BetTicketForm
+
+#import pdb; pdb.set_trace()
 # Create your views here.
 
 class Home(TemplateResponseMixin, View):
@@ -41,29 +43,30 @@ class Home(TemplateResponseMixin, View):
 class AddBetToTicket(View):
 
 	def post(self, request, *args, **kwargs):
-
-		request.session.flush()
+		#request.session.flush()
 		if 'ticket' not in request.session:
 			request.session['ticket'] = []
-			pk = self.kwargs["pk"]
+			pk = int(self.kwargs["pk"])
 			request.session['ticket'].append( int(pk) )
-			
-			response = HttpResponse()
+			request.session.modified = True
+			response = HttpResponse(pk)
 			response.status_code = 201
 			return response
 		else:
-			pk = self.kwargs["pk"]
-			request.session['ticket'].append( int(pk) )
-			response = HttpResponse()
+			pk = int(self.kwargs["pk"])
+			if pk not in request.session['ticket']:
+				request.session['ticket'].append( int(pk) )
+			request.session.modified = True
+			response = HttpResponse(pk)
 			response.status_code = 201
 			return response
 
 	def get(self, request, *args, **kwargs):
-		if not request.session['ticket']:
+		if 'ticket' not in request.session:
 			return HttpResponse("Empty")
 		else:
-
-			return JsonResponse({'ticket': request.session['ticket']})
+			return JsonResponse( {'ticket': request.session['ticket']})
+			#return HttpResponse( str(len(request.session['ticket'])) )
 
 
 class GameChampionship(Home):

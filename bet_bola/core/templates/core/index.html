@@ -273,7 +273,7 @@
                                     </td>
                                     {% for cotation in game.cotations.all %}
                                     <td>
-                                        <span class="hide">1</span>
+                                        <span class="hide">{{cotation.pk}}</span>
                                         <span class="cotation">{{cotation.value}}</span>
                                     </td>
                                     {% endfor %}
