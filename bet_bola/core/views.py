@@ -22,8 +22,7 @@ class Home(TemplateResponseMixin, View):
 	form = AuthenticationForm()
 	form_punter = CreatePunterForm()
 	championships = Championship.objects.all()
-	games = Game.objects.filter( Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
-		| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED"))
+	games = Game.objects.able_games()
 
 	def get(self, request, *args, **kwargs):				
 		context = {'games': self.games ,'championships': self.championships,'form': self.form, 'form_punter': self.form_punter}
@@ -33,8 +32,7 @@ class Home(TemplateResponseMixin, View):
 class GameChampionship(Home):
 	def get(self, request, *args, **kwargs):
 		championship = get_object_or_404(Championship, pk=self.kwargs["pk"])		
-		self.games = Game.objects.filter( (Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
-		| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED")) & Q(championship=championship))
+		self.games = Game.objects.able_games().filter(championship = championship)
 		return super(GameChampionship, self).get(self, request, *args, **kwargs)
 
 
@@ -68,8 +66,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 class GameListView(ListView,LoginRequiredMixin):
 	login_url='user/championship/'
 	redirect_field_name = 'redirect_to'
-	queryset = Game.objects.filter(Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET")
-		| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED"))
+	queryset = Game.objects.able_games()
 	model = Game
 	template_name = 'core/game_list.html'	
 

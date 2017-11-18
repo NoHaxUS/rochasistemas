@@ -5,7 +5,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.views import View
 from django.views.generic.edit import CreateView,FormView
-from django.db.models import Q
 from .forms.create_punter_form import CreatePunterForm
 from .models import Punter
 from core.models import Game,Championship
@@ -28,8 +27,7 @@ class PunterCreate(FormView):
 		form = AuthenticationForm()		
 		form_punter = CreatePunterForm()
 		championships = Championship.objects.all()
-		games = Game.objects.filter( Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
-			| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED"))
+		games = Game.objects.able_games()
         
 		context = {'games': games ,'championships': championships,'form': form, 'form_punter': form_punter}
 		return context

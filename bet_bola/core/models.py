@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from .manager import GamesManager
 import decimal
 # Create your models here.
 
@@ -73,7 +74,8 @@ class Game(models.Model):
 	start_game_date = models.DateTimeField(null=True)
 	championship = models.ForeignKey('Championship',related_name='my_games')
 	status_game = models.CharField(max_length=45,default=GAME_STATUS[0], choices=GAME_STATUS)
-
+	objects = GamesManager()
+	
 	def __str__(self):
 		return self.name	
 
