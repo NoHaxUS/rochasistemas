@@ -108,6 +108,8 @@ class Cotation(models.Model):
 	def __str__(self):
 		return str(self.value)
 
+class ExtraCotation(Cotation):
+	pass
 
 class Payment(models.Model):
 	status_payment = models.CharField(max_length=25, choices=PAYMENT_STATUS)
