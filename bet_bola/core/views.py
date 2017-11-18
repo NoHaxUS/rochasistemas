@@ -66,8 +66,7 @@ class AddBetToTicket(View):
 			return HttpResponse("Empty")
 		else:
 			return JsonResponse( {'ticket': request.session['ticket']})
-			#return HttpResponse( str(len(request.session['ticket'])) )
-
+		
 
 class GameChampionship(Home):
 	def get(self, request, *args, **kwargs):
