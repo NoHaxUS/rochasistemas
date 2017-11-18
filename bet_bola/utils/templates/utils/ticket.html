@@ -1,0 +1,48 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+ <html>
+     <head>
+         <title>Title</title>
+         <style type="text/css">
+             body {
+                background-color: #fff9c4;
+                 font-weight: 200;
+                 font-size: 14px;
+             }
+             .header {
+                 padding: 10px 20px 0px 20px;
+                 font-size: 20px;
+                 font-weight: 100;
+                 text-align: center;
+                 
+             }
+             .title {
+                 font-size: 22px;
+                 font-weight: 100;
+                /* text-align: right;*/
+                padding: 10px 20px 0px 20px; 
+             }
+             .title span {
+                 color: #007cae;
+             }
+             .details {
+                 padding: 10px 20px 0px 20px;
+                 text-align: left !important;
+                 /*margin-left: 40%;*/
+             }
+             
+         </style>
+     </head>
+     <body>
+         <div class='wrapper'>
+             <div class='header'>
+                 Bilhete de Aposta
+             </div>
+         <div>
+         <div class='details'>
+             Bill to: {{customer_name}}<br/>
+             Amount: {{amount}} <br/>
+             Date: {{today}}             
+         </div>
+     </div>
+     </body>
+ </html>

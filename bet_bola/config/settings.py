@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ['bola-api.herokuapp.com','localhost']
 INSTALLED_APPS = [
     'core',
     'user',
+    'utils',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
