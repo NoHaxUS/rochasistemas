@@ -63,24 +63,14 @@ class BetTicketDetail(TemplateResponseMixin, View):
 		return self.render_to_response(context)	
 
 
-class GameListView(ListView,LoginRequiredMixin):
+class GameListView(ListView):
 	login_url='user/championship/'
 	redirect_field_name = 'redirect_to'
 	queryset = Game.objects.able_games()
 	model = Game
 	template_name = 'core/game_list.html'	
 
-	def get_context_data(self, **kwargs):
-		context = super(GameListView, self).get_context_data(**kwargs)
-		context['now'] = timezone.now()
-		return context
-
 
 class ChampionshipListView(ListView):
 	model = Championship
 	template_name = 'core/championship_list.html'	
-
-	def get_context_data(self, **kwargs):
-		context = super(ChampionshipListView, self).get_context_data(**kwargs)
-		context['now'] = timezone.now()
-		return context
