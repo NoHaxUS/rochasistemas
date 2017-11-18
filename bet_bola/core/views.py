@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.base import TemplateResponseMixin
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -15,6 +15,8 @@ from .models import Cotation,BetTicket,Game,Championship
 from user.forms.create_punter_form import CreatePunterForm
 from user.models import Punter
 from .forms import BetTicketForm
+
+#import pdb; pdb.set_trace()
 # Create your views here.
 
 class Home(TemplateResponseMixin, View):
@@ -28,6 +30,34 @@ class Home(TemplateResponseMixin, View):
 		context = {'games': self.games ,'championships': self.championships,'form': self.form, 'form_punter': self.form_punter}
 		return self.render_to_response(context)
 
+
+class AddBetToTicket(View):
+
+	def post(self, request, *args, **kwargs):
+		#request.session.flush()
+		if 'ticket' not in request.session:
+			request.session['ticket'] = []
+			pk = int(self.kwargs["pk"])
+			request.session['ticket'].append( int(pk) )
+			request.session.modified = True
+			response = HttpResponse(pk)
+			response.status_code = 201
+			return response
+		else:
+			pk = int(self.kwargs["pk"])
+			if pk not in request.session['ticket']:
+				request.session['ticket'].append( int(pk) )
+			request.session.modified = True
+			response = HttpResponse(pk)
+			response.status_code = 201
+			return response
+
+	def get(self, request, *args, **kwargs):
+		if 'ticket' not in request.session:
+			return HttpResponse("Empty")
+		else:
+			return JsonResponse( {'ticket': request.session['ticket']})
+		
 
 class GameChampionship(Home):
 	def get(self, request, *args, **kwargs):

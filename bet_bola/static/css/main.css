@@ -43,6 +43,7 @@ nav .brand-logo{
     width: 100%;
     color: #0c143a;
 }
+
 .ticket-list li{
     padding: 5px 0px 0px 0px;
 }
@@ -185,4 +186,7 @@ nav .brand-logo{
 
 .seller-menu{
     padding-bottom: 10px !important;
+}
+.game-start-date{
+    padding: 0px 30px;
 }

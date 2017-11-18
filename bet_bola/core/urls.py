@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^bet_ticket/$', views.BetTicketCreate.as_view(), name='bet_ticket'),    
 	url(r'^game/$', views.GameListView.as_view(), name='game_list_view'),
     url(r'^championship/$', views.ChampionshipListView.as_view(), name='championship_list_view'),
+    url(r'^add_bet/(?P<pk>\d+)?$', views.AddBetToTicket.as_view(), name='add_bet_to_ticket'),
 ]
