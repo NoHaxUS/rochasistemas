@@ -93,7 +93,7 @@ $(document).ready(function(){
 
         console.log( $.inArray(game_id, cookies['ticket_games']) );
 
-        if(! ($.inArray(game_id, cookies['ticket_games']) > 0) ){
+        if(! ($.inArray(String(game_id), cookies['ticket_games']) > -1) ){
 
             
             cookies['ticket_games'].push(game_id);
