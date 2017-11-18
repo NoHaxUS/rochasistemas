@@ -98,14 +98,17 @@ $(document).ready(function () {
             //new bet html
             var bet_html = '<div class="divider"></div>' +
                 '<li class="center-align bet">' +
+                '<div class="game-id hide">'+
+                    ticket[key]['game_id'] +
+                '</div>'+
                 '<div class="game-name">' +
-                ticket[key]['game_name'] +
+                    ticket[key]['game_name'] +
                 '</div>' +
                 '<div class="game-start-date">' +
-                ticket[key]['game_start_date'] +
+                    ticket[key]['game_start_date'] +
                 '</div>' +
                 '<div class="game-cotation">' +
-                ticket[key]['cotation_name'] + ' : ' + ticket[key]['cotation_value'] +
+                    ticket[key]['cotation_name'] + ' : ' + ticket[key]['cotation_value'] +
                 '</div>' +
                 '<div class="bet-delete">' +
                 '<span class="valign-wrapper red-text">Remover' +
@@ -121,6 +124,17 @@ $(document).ready(function () {
     }
 
     RenderTicket();
+
+    $(document).on("click",'.bet-delete', function(){
+        ticket = Cookies.getJSON('ticket_cookie');
+
+        game_id_to_delete = $(this).siblings().first().text().trim();
+
+        delete ticket[game_id_to_delete];
+        Cookies.set('ticket_cookie', ticket);
+        RenderTicket();
+        console.debug(Cookies.getJSON('ticket_cookie'));
+    });
 
     $('.cotation').click(function (obj) {
 
