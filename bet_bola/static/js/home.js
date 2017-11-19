@@ -158,6 +158,7 @@ $(document).ready(function () {
         Cookies.set('ticket_cookie', ticket);
         RenderTicket();
         UpdateCotationTotal();
+        $('#ticket-bet-value').trigger('keyup');
         //console.debug(Cookies.getJSON('ticket_cookie'));
     });
 
@@ -183,6 +184,7 @@ $(document).ready(function () {
         AddBetToTicket(bet_info);
         UpdateCotationTotal();
         RenderTicket();
+        $('#ticket-bet-value').trigger('keyup');
 
         //console.debug(Cookies.getJSON('ticket_cookie'));
 
