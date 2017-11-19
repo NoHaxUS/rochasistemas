@@ -144,9 +144,13 @@ $(document).ready(function () {
 
     $('#ticket-bet-value').keyup(function(data){
         var ticket_bet_value = parseFloat($(this).val());
-        var award_value = (COTATION_TOTAL * ticket_bet_value).toFixed(2);
-        $('.award-value').text('R$ ' + award_value);
-        //console.log( award_value );
+        if( isNaN(ticket_bet_value) ){
+            $('.award-value').text('R$ 0');
+        }else{
+            var award_value = (COTATION_TOTAL * ticket_bet_value).toFixed(2);
+            $('.award-value').text('R$ ' + award_value);
+            //console.log( award_value );
+        }
     });
 
     $(document).on("click",'.bet-delete', function(){
