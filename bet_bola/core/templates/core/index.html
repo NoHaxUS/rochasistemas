@@ -20,8 +20,13 @@
                 <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
             <h4>Login</h4>
             <div class="row">
+<<<<<<< HEAD
                  <form action="{% url 'user:login' %}" method="POST">{% csrf_token %}
                 {{ form.as_p }}                
+=======
+                 <form action="" method="post">{% csrf_token %}
+                {{ form.as_p }}             
+>>>>>>> addBetBackEnd
                 <div class="col s12">
                     <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Entrar</button>
                 </div>
@@ -30,6 +35,32 @@
         </div>
     </div>
     <!-- end Modal Login -->
+
+    <!-- Check Ticket -->    
+    <div id="modal-check-ticket" class="modal">
+        <div class="modal-content">
+                <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
+            <h4>Consultar Ticket</h4>
+            <div class="row">
+                <form action="" method="get">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix">event_note</i>
+                            <input id="icon_prefix" type="text" class="validate">
+                            <label for="icon_prefix">N° do Ticket</label>
+                          </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Consultar</button>
+                        </div>
+                    </div>
+                
+            </form>      
+            </div>
+        </div>
+    </div>
+    <!-- end Check Ticket -->
    
     <!-- Modal Login -->
     <div id="modal-register" class="modal">
@@ -71,7 +102,7 @@
                 </li>               
                  
                 <li>
-                    <a href="consultar.html" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                    <a href="#modal-check-ticket" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
                         Consultar Bilhete</a>
                 </li>
                 {% else %}
@@ -256,17 +287,17 @@
                                         Valor da Aposta
                                     </div>
                                     <div class="input-field col s12 bet-ticket-input">
-                                        <input placeholder="Digite aqui" id="bet-ticket-value" type="number" class="validate center-align">
+                                        <input placeholder="Digite aqui" id="ticket-bet-value" type="number" class="validate center-align">
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col s12 center-align cotation-sum">
-                                        Cota:
-                                        <span class="cota-value">2.3</span>
+                                        Cota Total:
+                                        <span class="cotation-total">0</span>
                                     </div>
                                     <div class="col s12 center-align award-value-text">
                                         Ganho:
-                                        <span class="award-value"> R$ 300 </span>
+                                        <span class="award-value">0</span>
                                     </div>
                                 </div>
                                 <div class="row">
