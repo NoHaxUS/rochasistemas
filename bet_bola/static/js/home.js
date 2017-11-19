@@ -161,7 +161,7 @@ $(document).ready(function () {
 
         console.debug(Cookies.getJSON('ticket_cookie'));
 
-            /*
+            
             $.post('/add_bet/' + cotation_id, function(data, status, rq){
                 //console.log(data);
                 //console.log(rq.status);
@@ -171,7 +171,7 @@ $(document).ready(function () {
                 }
 
             }, 'text');
-            */
+            
 
 
     });
