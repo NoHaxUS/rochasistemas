@@ -80,11 +80,26 @@ $(document).ready(function () {
         Cookies.set('ticket_cookie', {});
     }
 
+    function UpdateCotationTotal(){
+        ticket = Cookies.getJSON('ticket_cookie');
+        var total = 1;
+        for (var key in ticket){
+            var cotation_value = parseFloat( (ticket[key]['cotation_value']).replace(',','.') );
+            total = total * cotation_value;
+            //console.log( ticket[key]['cotation_value'].replace(',','.') );
+        }
+        $('.cotation-total').text( parseFloat( total.toFixed(2) ) );
+
+        COTATION_TOTAL = parseFloat( total.toFixed(2) ) ;
+        //console.log(COTATION_TOTAL);
+    }
 
     function AddBetToTicket(bet_info) {
         var ticket = Cookies.getJSON('ticket_cookie'); // {}
         ticket[bet_info['game_id']] = bet_info;
         Cookies.set('ticket_cookie', ticket);
+
+        //console.debug(ticket);
     }
 
     function RenderTicket() {
@@ -123,7 +138,16 @@ $(document).ready(function () {
 
     }
 
+
     RenderTicket();
+    UpdateCotationTotal();
+
+    $('#ticket-bet-value').keyup(function(data){
+        var ticket_bet_value = parseFloat($(this).val());
+        var award_value = (COTATION_TOTAL * ticket_bet_value).toFixed(2);
+        $('.award-value').text('R$ ' + award_value);
+        //console.log( award_value );
+    });
 
     $(document).on("click",'.bet-delete', function(){
         ticket = Cookies.getJSON('ticket_cookie');
@@ -133,7 +157,8 @@ $(document).ready(function () {
         delete ticket[game_id_to_delete];
         Cookies.set('ticket_cookie', ticket);
         RenderTicket();
-        console.debug(Cookies.getJSON('ticket_cookie'));
+        UpdateCotationTotal();
+        //console.debug(Cookies.getJSON('ticket_cookie'));
     });
 
     $('.cotation').click(function (obj) {
@@ -156,10 +181,10 @@ $(document).ready(function () {
         }
 
         AddBetToTicket(bet_info);
-
+        UpdateCotationTotal();
         RenderTicket();
 
-        console.debug(Cookies.getJSON('ticket_cookie'));
+        //console.debug(Cookies.getJSON('ticket_cookie'));
 
             /*
             $.post('/add_bet/' + cotation_id, function(data, status, rq){
