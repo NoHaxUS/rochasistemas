@@ -42,6 +42,12 @@ COTATION_STATUS = (
         ('OPEN', 'open'),        
     )
 
+USUAL_COTATIONS_NAMES = (
+		('CASA', 'Casa'),        
+        ('EMPATE', 'Empate'),
+        ('VISITANTE', 'Visitante'),        
+    )
+
 PAYMENT_STATUS = (
 		('PAID', 'paid'),
 		('NOT_PAID', 'not_paid'),
@@ -100,7 +106,7 @@ class Reward(models.Model):
 
 
 class Cotation(models.Model):
-	name = models.CharField(max_length=30, null=True)
+	name = models.CharField(max_length=30, null=True, choices=USUAL_COTATIONS_NAMES)
 	value = models.DecimalField(max_digits=4, decimal_places=2)	
 	game = models.ForeignKey('Game',related_name='cotations')
 	status = models.CharField(max_length=25, choices=COTATION_STATUS)
