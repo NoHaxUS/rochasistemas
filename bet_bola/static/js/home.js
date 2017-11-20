@@ -83,11 +83,13 @@ $(document).ready(function () {
     function UpdateCotationTotal(){
         ticket = Cookies.getJSON('ticket_cookie');
         var total = 1;
+    
         for (var key in ticket){
             var cotation_value = parseFloat( (ticket[key]['cotation_value']).replace(',','.') );
             total = total * cotation_value;
             //console.log( ticket[key]['cotation_value'].replace(',','.') );
         }
+        if(total == 1) total = 0;
         $('.cotation-total').text( parseFloat( total.toFixed(2) ) );
 
         COTATION_TOTAL = parseFloat( total.toFixed(2) ) ;
@@ -143,7 +145,9 @@ $(document).ready(function () {
     UpdateCotationTotal();
 
     $('#ticket-bet-value').keyup(function(data){
+
         var ticket_bet_value = parseFloat($(this).val());
+        
         if( isNaN(ticket_bet_value) ){
             $('.award-value').text('R$ 0');
         }else{
