@@ -34,21 +34,21 @@ class Home(TemplateResponseMixin, View):
 class AddBetToTicket(View):
 
 	def post(self, request, *args, **kwargs):
+		#return HttpResponse(request.POST['game_id'])
 		#request.session.flush()
 		if 'ticket' not in request.session:
-			request.session['ticket'] = []
-			pk = int(self.kwargs["pk"])
-			request.session['ticket'].append( int(pk) )
+			request.session['ticket'] = {}
+			request.session['ticket'][request.POST['game_id']] = request.POST['cotation_id']
 			request.session.modified = True
-			response = HttpResponse(pk)
+
+			response = HttpResponse()
 			response.status_code = 201
 			return response
 		else:
-			pk = int(self.kwargs["pk"])
-			if pk not in request.session['ticket']:
-				request.session['ticket'].append( int(pk) )
+			request.session['ticket'][request.POST['game_id']] = request.POST['cotation_id']
 			request.session.modified = True
-			response = HttpResponse(pk)
+			
+			response = HttpResponse()
 			response.status_code = 201
 			return response
 
@@ -57,6 +57,9 @@ class AddBetToTicket(View):
 			return HttpResponse("Empty")
 		else:
 			return JsonResponse( {'ticket': request.session['ticket']})
+	
+	#def delete(self, request, *args, **kwargs):
+		#pass
 		
 
 class GameChampionship(Home):

@@ -38,9 +38,9 @@ GAME_STATUS = (
 	)
 
 COTATION_STATUS = (
+		('OPEN', 'Resultado em Aberto'), 
 		('NOT_HAPPENED', 'Não aconteceu'),        
         ('HAPPENED', 'Aconteceu'),
-        ('OPEN', 'Resultado em Aberto'),        
     )
 
 
@@ -105,7 +105,7 @@ class Cotation(models.Model):
 	name = models.CharField(max_length=30)
 	value = models.DecimalField(max_digits=4, decimal_places=2)	
 	game = models.ForeignKey('Game',related_name='cotations')
-	status = models.CharField(max_length=25, choices=COTATION_STATUS)
+	status = models.CharField(max_length=25, choices=COTATION_STATUS, default=COTATION_STATUS[0])
 
 	def __str__(self):
 		return str(self.value)

@@ -197,13 +197,9 @@ $(document).ready(function () {
         //console.debug(Cookies.getJSON('ticket_cookie'));
 
             
-            $.post('/add_bet/' + cotation_id, function(data, status, rq){
-                //console.log(data);
-                //console.log(rq.status);
-
-                if(!rq.status == 201){
-                    alertify.alert("Erro no sistema, nos avise pelo email: pabllobeg@gmail.com")
-                }
+            $.post('/add_bet/', bet_info, function(data, status, rq){
+                console.log(data);
+                console.log(rq.status);
 
             }, 'text');
             
