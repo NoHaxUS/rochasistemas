@@ -5,14 +5,15 @@ import decimal
 # Create your models here.
 
 BET_TICKET_STATUS = (
-		('WAITING_RESULT', 'waiting result'),
-		('NOT_WON', 'not won'),
-		('WON', 'won'),
+		('WAITING_RESULT', 'Aguardando Resultados'),
+		('NOT_WON', 'Não Ganhou'),
+		('WON', 'Ganhou'),
 	)
 
 REWARD_STATUS = (
-		('DONE', 'done'),
-		('NONE', 'none'),
+		('PAID', 'O apostador foi pago'),
+		('NOT_PAID', 'O apostador ainda não foi pago'),
+		('NOT_WON', 'Esse ticket não venceu')
 	)
 
 GAME_STATUS = (
@@ -37,32 +38,28 @@ GAME_STATUS = (
 	)
 
 COTATION_STATUS = (
-		('NOT_HAPPENING', 'not_happening'),        
-        ('HAPPENING', 'happening'),
-        ('OPEN', 'open'),        
+		('NOT_HAPPENED', 'Não aconteceu'),        
+        ('HAPPENED', 'Aconteceu'),
+        ('OPEN', 'Resultado em Aberto'),        
     )
 
-USUAL_COTATIONS_NAMES = (
-		('CASA', 'Casa'),        
-        ('EMPATE', 'Empate'),
-        ('VISITANTE', 'Visitante'),        
-    )
 
 PAYMENT_STATUS = (
-		('PAID', 'paid'),
-		('NOT_PAID', 'not_paid'),
+		('PAID', 'Pago'),
+		('WATING_PAYMENT', 'Aguardando Pagamento do Ticket'),
 	)
 		
 
 class BetTicket(models.Model):	
 	punter = models.ForeignKey('user.Punter', related_name='my_bet_tickets')
-	seller = models.ForeignKey('user.Seller', blank=True, null=True, related_name='bet_tickets_validated_by_me')
+	seller = models.ForeignKey('user.Seller', null=True, related_name='bet_tickets_validated_by_me')
 	cotations = models.ManyToManyField('Cotation', related_name='my_bet_tickets')
-	creation_date = models.DateTimeField(blank=True)	
-	reward = models.ForeignKey('Reward',blank=True, null=True)
-	value = models.DecimalField(max_digits=4, decimal_places=2, null=True)
+	creation_date = models.DateTimeField(auto_now_add=True)	
+	reward = models.ForeignKey('Reward', default=None)
+	payment = models.OneToOneField('Payment', default=None)
+	value = models.DecimalField(max_digits=4, decimal_places=2)
 	bet_ticket_status = models.CharField(max_length=45, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0])
-	payment = models.OneToOneField('Payment', blank=True, null=True)
+
 
 	def cota_total(self):
 		cota_total = 0
@@ -77,7 +74,7 @@ class BetTicket(models.Model):
 
 class Game(models.Model):
 	name = models.CharField(max_length=45)	
-	start_game_date = models.DateTimeField(null=True)
+	start_game_date = models.DateTimeField()
 	championship = models.ForeignKey('Championship',related_name='my_games')
 	status_game = models.CharField(max_length=45,default=GAME_STATUS[0], choices=GAME_STATUS)
 	objects = GamesManager()
@@ -94,19 +91,18 @@ class Championship(models.Model):
 
 
 class Reward(models.Model):
-	who_rewarded = models.ForeignKey('user.Seller')	
+	who_rewarded = models.ForeignKey('user.Seller', null=True)	
 	reward_date = models.DateTimeField(null=True)
-	value_max = models.DecimalField(max_digits=6, decimal_places=1,default=10000.0)
-	value = models.DecimalField(max_digits=6, decimal_places=1,)
+	value = models.DecimalField(max_digits=6, decimal_places=2)
 	status_reward = models.CharField(max_length=25, choices=REWARD_STATUS)
 
 	def clean(self):        
 		if self.value_max < self.value:
-			raise ValidationError('Valor excede o valor maximo')
+			raise ValidationError('Valor excede o valor máximo.')
 
 
 class Cotation(models.Model):
-	name = models.CharField(max_length=30, null=True, choices=USUAL_COTATIONS_NAMES)
+	name = models.CharField(max_length=30)
 	value = models.DecimalField(max_digits=4, decimal_places=2)	
 	game = models.ForeignKey('Game',related_name='cotations')
 	status = models.CharField(max_length=25, choices=COTATION_STATUS)
@@ -114,10 +110,8 @@ class Cotation(models.Model):
 	def __str__(self):
 		return str(self.value)
 
-class ExtraCotation(Cotation):
-	pass
 
 class Payment(models.Model):
+	who_set_payment = models.ForeignKey('user.Seller', null=True)
 	status_payment = models.CharField(max_length=25, choices=PAYMENT_STATUS)
-	who_set_payment = models.ForeignKey('user.Seller')
 	payment_date = models.DateTimeField(null=True)	
