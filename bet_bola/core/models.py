@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from .manager import GamesManager
+from datetime import datetime
+import requests
 import decimal
 # Create your models here.
 
@@ -72,6 +74,7 @@ class BetTicket(models.Model):
 	def __str__(self):
 		return str(self.pk)
 
+
 class Game(models.Model):
 	name = models.CharField(max_length=45)	
 	start_game_date = models.DateTimeField()
@@ -79,12 +82,32 @@ class Game(models.Model):
 	status_game = models.CharField(max_length=45,default=GAME_STATUS[0], choices=GAME_STATUS)
 	objects = GamesManager()
 	
+	@staticmethod
+	def consuming_api():
+		first_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day - 1))
+		second_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day))
+
+		r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?api_token=bx6xLGIjBRCRZ6fpnI2Qvsns2JEfSF3MZHiFJwhvosuw5VEMXsByPKRsWBJe")
+		
+		for game in r.json().get('data'):
+			if Championship(pk = game["league_id"]) in Championship.objects.all():
+				Game(pk=game['id'],
+					start_game_date=datetime.strptime(game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
+					name="xxxxxxxxx", championship=Championship.objects.get(pk=game["league_id"])).save() 
+
 	def __str__(self):
 		return self.name	
 
 
 class Championship(models.Model):
 	name = models.CharField(max_length=45)
+
+	@staticmethod
+	def consuming_api():
+		r = requests.get("https://soccer.sportmonks.com/api/v2.0/leagues/?api_token=bx6xLGIjBRCRZ6fpnI2Qvsns2JEfSF3MZHiFJwhvosuw5VEMXsByPKRsWBJe")
+		
+		for championship in r.json().get('data'):
+			Championship(pk=championship['id'],name = championship['name']).save()
 
 	def __str__(self):
 		return self.name
@@ -105,7 +128,18 @@ class Cotation(models.Model):
 	name = models.CharField(max_length=30)
 	value = models.DecimalField(max_digits=4, decimal_places=2)	
 	game = models.ForeignKey('Game',related_name='cotations')
-	status = models.CharField(max_length=25, choices=COTATION_STATUS, default=COTATION_STATUS[0])
+	status = models.CharField(max_length=25, choices=COTATION_STATUS, default=COTATION_STATUS[0])	
+
+	
+	# @staticmethod
+	# def consuming_api():
+	# 	for game in Game.objects.all():
+	# 		r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+ +"?api_token=bx6xLGIjBRCRZ6fpnI2Qvsns2JEfSF3MZHiFJwhvosuw5VEMXsByPKRsWBJe")
+			
+	# 		for cotation in r.json().get('data'):
+	# 			Cotation(pk=cotation['id'])
+	# 			pass
+
 
 	def __str__(self):
 		return str(self.value)
