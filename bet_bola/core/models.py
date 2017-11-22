@@ -6,7 +6,7 @@ import requests
 import decimal
 # Create your models here.
 
-TOKEN='bx6xLGIjBRCRZ6fpnI2Qvsns2JEfSF3MZHiFJwhvosuw5VEMXsByPKRsWBJe'
+TOKEN='ndvsLZTo8pZxduyPtIHRkGRMkGpem2uHIGYwaz9sZxzppz6EZUhSjsv7g9Ru'
 
 BET_TICKET_STATUS = (
 		('WAITING_RESULT', 'Aguardando Resultados'),
@@ -81,7 +81,7 @@ class Game(models.Model):
 	name = models.CharField(max_length=45)	
 	start_game_date = models.DateTimeField()
 	championship = models.ForeignKey('Championship',related_name='my_games')
-	status_game = models.CharField(max_length=45,default=GAME_STATUS[0][1], choices=GAME_STATUS)
+	status_game = models.CharField(max_length=45,default=GAME_STATUS[0][0], choices=GAME_STATUS)
 	objects = GamesManager()
 	
 	@staticmethod
@@ -89,13 +89,13 @@ class Game(models.Model):
 		first_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day - 1))
 		second_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day))
 
-		r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?api_token="+TOKEN)
+		r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?api_token="+TOKEN+"&include=localTeam,visitorTeam")
 		
 		for game in r.json().get('data'):
 			if Championship(pk = game["league_id"]) in Championship.objects.all():
 				Game(pk=game['id'],
 					start_game_date=datetime.strptime(game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
-					name="xxxxxxxxx", championship=Championship.objects.get(pk=game["league_id"])).save() 
+					name=game['localTeam']['data']['name']+" x " +game['visitorTeam']['data']['name'], championship=Championship.objects.get(pk=game["league_id"])).save() 
 
 	def __str__(self):
 		return self.name	
@@ -130,16 +130,17 @@ class Cotation(models.Model):
 	name = models.CharField(max_length=30)
 	value = models.DecimalField(max_digits=4, decimal_places=2)	
 	game = models.ForeignKey('Game',related_name='cotations')
-	status = models.CharField(max_length=25, choices=COTATION_STATUS, default=COTATION_STATUS[0][1])	
+	status = models.CharField(max_length=25, choices=COTATION_STATUS, default=COTATION_STATUS[0][0])	
 
 	
 	@staticmethod
 	def consuming_api():
 		for game in Game.objects.all():
 			r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN)
-			
-			for cotation in r.json().get('data')[0]['bookmaker']['data'][0]['odds']['data']:				
-				Cotation(name=cotation['label'],value=cotation['value'],game=game).save()
+			if r.json().get('data').__len__() >= 1:
+				if r.json().get('data')[0]['bookmaker']['data'].__len__() >= 1:
+					for cotation in r.json().get('data')[0]['bookmaker']['data'][0]['odds']['data']:				
+						Cotation(name=cotation['label'],value=cotation['value'],game=game).save()
 
 	def __str__(self):
 		return str(self.value)
