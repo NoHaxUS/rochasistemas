@@ -20,7 +20,7 @@
                 <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
             <h4>Login</h4>
             <div class="row">
-                 <form action="{% url 'user:login' %}" method="POST">
+                 <form action="{% url 'user:login' %}" method="POST">{% csrf_token %}
                 {{ form.as_p }}                
                 <div class="col s12">
                     <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Entrar</button>
@@ -57,14 +57,14 @@
     </div>
     <!-- end Check Ticket -->
    
-    <!-- Modal Login -->
+    <!-- Modal Register -->
     <div id="modal-register" class="modal">
         <div class="modal-content">
                 <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
                 
             <h4>Registro</h4>
             <div class="row">
-                <form action="{% url 'user:punter' %}" method="POST">
+                <form action="{% url 'user:punter' %}" method="POST">{% csrf_token %}
                     {{ form_punter.as_p}}
                     <div class="row">
                         <div class="col s12">
@@ -75,7 +75,7 @@
             </div>
         </div>
     </div>
-    <!-- end Modal Login -->
+    <!-- end Modal Register -->
 
     <nav>
         <div class="nav-wrapper green-ge">

@@ -215,7 +215,23 @@ $(document).ready(function () {
         });
 
         $('.btn-bet-submit').on('click', function(){
-            alert("It's time to ");
+            
+            var ticket_value = $('#ticket-bet-value').val();
+            $.post('/bet_ticket/', {'ticket_value': ticket_value} , function(data, status, rq){
+                var dataJSON = jQuery.parseJSON(data);
+                if(dataJSON.status == 401){
+                    $('#modal-login').modal('open');
+
+                }
+                if(dataJSON.status == 201){
+                    alert('OK');
+                }
+
+                console.log(dataJSON.status);
+
+
+            }, 'text');
+
         });
     
     

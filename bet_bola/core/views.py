@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
-from .models import Cotation,BetTicket,Game,Championship
+from .models import Cotation,BetTicket,Game,Championship,Payment,Reward
 from user.forms.create_punter_form import CreatePunterForm
 from user.models import Punter
 from .forms import BetTicketForm
@@ -65,6 +65,26 @@ class BetView(View):
 		request.session['ticket'].pop(pk)
 		request.session.modified = True
 		return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
+
+
+class CreateTicketView(View):
+	def post(self, request, *args, **kwargs):
+		#request.session.flush()
+		if request.user.is_authenticated:
+			ticket = BetTicket(punter=Punter.objects.get(pk=request.user.id), seller=None, 
+			payment=Payment.objects.create(), 
+			reward=Reward.objects.create(value=100), 
+			value=int(request.POST['ticket_value']) )
+			ticket.save()
+
+			for game_id in request.session['ticket']:
+				ticket.cotations.add( Cotation.objects.get(pk=int(request.session['ticket'][game_id])) ) 
+	
+			#return HttpResponseRedirect('/user')
+			return JsonResponse({'status':201})
+		else:
+			return JsonResponse({'status':401})
+			
 		
 
 class GameChampionship(Home):
@@ -73,24 +93,6 @@ class GameChampionship(Home):
 		self.games = Game.objects.able_games().filter(championship = championship)
 		return super(GameChampionship, self).get(self, request, *args, **kwargs)
 
-
-class BetTicketCreate(CreateView):	
-	form_class = BetTicketForm
-	template_name = 'core/betticket_form.html'		
-
-	def get_success_url(self):
-		return reverse('home')
-
-	def get_context_data(self, **kwargs):
-		# Call the base implementation first to get a context
-		context = super(BetTicketCreate, self).get_context_data(**kwargs)
-		context['cotations']=Cotation.objects.all()
-		return context
-
-	def form_valid(self, form):        
-		form.instance.punter = Punter.objects.get(user_ptr=self.request.user.pk)
-		form.instance.creation_date = datetime.now()
-		return super(BetTicketCreate, self).form_valid(form)
 
 class BetTicketDetail(TemplateResponseMixin, View):
 	template_name = 'core/ticket_details.html'

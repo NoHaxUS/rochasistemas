@@ -17,7 +17,8 @@ BET_TICKET_STATUS = (
 REWARD_STATUS = (
 		('PAID', 'O apostador foi pago'),
 		('NOT_PAID', 'O apostador ainda não foi pago'),
-		('NOT_WON', 'Esse ticket não venceu')
+		('NOT_WON', 'Esse ticket não venceu'),
+		('WAITING_RESULT', 'Aguardando Resultado'),
 	)
 
 GAME_STATUS = (
@@ -62,7 +63,7 @@ class BetTicket(models.Model):
 	reward = models.ForeignKey('Reward', default=None)
 	payment = models.OneToOneField('Payment', default=None)
 	value = models.DecimalField(max_digits=4, decimal_places=2)
-	bet_ticket_status = models.CharField(max_length=45, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0])
+	bet_ticket_status = models.CharField(max_length=45, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][0])
 
 
 	def cota_total(self):
@@ -81,7 +82,7 @@ class Game(models.Model):
 	name = models.CharField(max_length=45)	
 	start_game_date = models.DateTimeField()
 	championship = models.ForeignKey('Championship',related_name='my_games')
-	status_game = models.CharField(max_length=45,default=GAME_STATUS[0][0], choices=GAME_STATUS)
+	status_game = models.CharField(max_length=45, choices=GAME_STATUS, default=GAME_STATUS[0][0])
 	objects = GamesManager()
 	
 	@staticmethod
@@ -119,7 +120,7 @@ class Reward(models.Model):
 	who_rewarded = models.ForeignKey('user.Seller', null=True)	
 	reward_date = models.DateTimeField(null=True)
 	value = models.DecimalField(max_digits=6, decimal_places=2)
-	status_reward = models.CharField(max_length=25, choices=REWARD_STATUS)
+	status_reward = models.CharField(max_length=25, choices=REWARD_STATUS, default=REWARD_STATUS[3][0])
 
 	def clean(self):        
 		if self.value_max < self.value:
@@ -148,5 +149,5 @@ class Cotation(models.Model):
 
 class Payment(models.Model):
 	who_set_payment = models.ForeignKey('user.Seller', null=True)
-	status_payment = models.CharField(max_length=25, choices=PAYMENT_STATUS)
+	status_payment = models.CharField(max_length=25, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[1][0])
 	payment_date = models.DateTimeField(null=True)	

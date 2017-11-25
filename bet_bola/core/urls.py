@@ -20,8 +20,8 @@ from . import views
 urlpatterns = [    
     url(r'^$', views.Home.as_view(), name='home'),    
     url(r'^championship/(?P<pk>\d+)$', views.GameChampionship.as_view(), name='game_championship'),
-    url(r'^bet_ticket/(?P<pk>\d+)$', views.BetTicketDetail.as_view(), name='bet_ticket'),
-    url(r'^bet_ticket/$', views.BetTicketCreate.as_view(), name='bet_ticket'),    
+    url(r'^bet_ticket/(?P<pk>\d+)$', views.BetTicketDetail.as_view(), name='bet_ticket_id'),
+    url(r'^bet_ticket/$', views.CreateTicketView.as_view(), name='bet_ticket'),    
 	url(r'^game/$', views.GameListView.as_view(), name='game_list_view'),
     url(r'^championship/$', views.ChampionshipListView.as_view(), name='championship_list_view'),
     url(r'^bet/(?P<pk>\d+)?$', views.BetView.as_view(), name='bet'),
