@@ -66,11 +66,11 @@ $(document).ready(function () {
             alert_msg = 'Confirma o pagamento do ticket? \n Essa ação não pode ser desfeita.'
             alertify.confirm('Confirmação', alert_msg,
                 function () {
-                    alertify.success('Confirmação realizada')
+                    alertify.success('Confirmação realizada');
                     //TODO
                 },
                 function () {
-                    alertify.error('Cancelado')
+                    alertify.error('Cancelado');
                 });
         }
     });
