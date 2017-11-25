@@ -168,6 +168,15 @@ $(document).ready(function () {
             UpdateCotationTotal();
             $('#ticket-bet-value').trigger('keyup');
             //console.debug(Cookies.getJSON('ticket_cookie'));
+
+            $.ajax({
+                url: '/bet/' + game_id_to_delete,
+                method: 'DELETE',
+                complete: function(jqXR) {
+                    console.log(jqXR.status);
+                }
+            });
+
         });
     
         $('.cotation').click(function (obj) {
@@ -197,14 +206,16 @@ $(document).ready(function () {
             //console.debug(Cookies.getJSON('ticket_cookie'));
     
                 
-                $.post('/add_bet/', bet_info, function(data, status, rq){
+                $.post('/bet/', bet_info, function(data, status, rq){
                     console.log(data);
                     console.log(rq.status);
     
                 }, 'text');
-                
     
-    
+        });
+
+        $('.btn-bet-submit').on('click', function(){
+            alert("It's time to ");
         });
     
     

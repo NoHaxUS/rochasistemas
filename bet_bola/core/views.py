@@ -7,6 +7,8 @@ from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.base import TemplateResponseMixin
 from django.http import HttpResponse, JsonResponse
+from rest_framework.response import Response
+from rest_framework import status
 from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -31,7 +33,7 @@ class Home(TemplateResponseMixin, View):
 		return self.render_to_response(context)
 
 
-class AddBetToTicket(View):
+class BetView(View):
 
 	def post(self, request, *args, **kwargs):
 		#return HttpResponse(request.POST['game_id'])
@@ -58,8 +60,11 @@ class AddBetToTicket(View):
 		else:
 			return JsonResponse( {'ticket': request.session['ticket']})
 	
-	#def delete(self, request, *args, **kwargs):
-		#pass
+	def delete(self, request, *args, **kwargs):
+		pk = self.kwargs["pk"]
+		request.session['ticket'].pop(pk)
+		request.session.modified = True
+		return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
 		
 
 class GameChampionship(Home):

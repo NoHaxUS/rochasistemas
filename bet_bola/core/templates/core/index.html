@@ -20,7 +20,7 @@
                 <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
             <h4>Login</h4>
             <div class="row">
-                 <form action="{% url 'user:login' %}" method="POST">{% csrf_token %}
+                 <form action="{% url 'user:login' %}" method="POST">
                 {{ form.as_p }}                
                 <div class="col s12">
                     <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Entrar</button>
@@ -64,7 +64,7 @@
                 
             <h4>Registro</h4>
             <div class="row">
-                <form action="{% url 'user:punter' %}" method="POST">{% csrf_token %}
+                <form action="{% url 'user:punter' %}" method="POST">
                     {{ form_punter.as_p}}
                     <div class="row">
                         <div class="col s12">
@@ -276,7 +276,7 @@
 
                     <div class="make-bet">
                         <div class="row">
-                            <form class="col s12" action="teste.php">
+                            <form class="col s12">
                                 <div class="row">
                                     <div class="col s12 center-align bet-ticket-value-text">
                                         Valor da Aposta
@@ -297,7 +297,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col s12 center-align">
-                                        <button class="btn waves-effect waves-light btn-bet-submit" type="submit">Apostar
+                                        <button class="btn waves-effect waves-light btn-bet-submit" type="button">Apostar
                                             <i class="material-icons right">check</i>
                                         </button>
                                     </div>
