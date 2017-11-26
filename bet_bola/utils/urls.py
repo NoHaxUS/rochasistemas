@@ -17,7 +17,7 @@ from django.conf.urls import url, include
 from . import views
 
 urlpatterns = [    
-    url(r'^ticket_pdf/$', views.GeneratePdf.as_view(), name='generate_pdf'),    
+    #url(r'^ticket_pdf/$', views.GeneratePdf.as_view(), name='generate_pdf'),    
     url(r'^update/$', views.Update.as_view(), name='updating'),    
     url(r'^populate/$', views.PopulatingBD.as_view(), name='populating'),    
 ]
