@@ -17,8 +17,7 @@ BET_TICKET_STATUS = (
 REWARD_STATUS = (
 		('PAID', 'O apostador foi pago'),
 		('NOT_PAID', 'O apostador ainda não foi pago'),
-		('NOT_WON', 'Esse ticket não venceu'),
-		('WAITING_RESULT', 'Aguardando Resultado'),
+		('NOT_WON', 'Esse ticket não venceu')
 	)
 
 GAME_STATUS = (
@@ -63,7 +62,7 @@ class BetTicket(models.Model):
 	reward = models.ForeignKey('Reward', default=None)
 	payment = models.OneToOneField('Payment', default=None)
 	value = models.DecimalField(max_digits=4, decimal_places=2)
-	bet_ticket_status = models.CharField(max_length=45, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][0])
+	bet_ticket_status = models.CharField(max_length=45, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0])
 
 
 	def cota_total(self):
@@ -82,7 +81,7 @@ class Game(models.Model):
 	name = models.CharField(max_length=45)	
 	start_game_date = models.DateTimeField()
 	championship = models.ForeignKey('Championship',related_name='my_games')
-	status_game = models.CharField(max_length=45, choices=GAME_STATUS, default=GAME_STATUS[0][0])
+	status_game = models.CharField(max_length=45,default=GAME_STATUS[0][0], choices=GAME_STATUS)
 	objects = GamesManager()
 	
 	@staticmethod
@@ -94,9 +93,15 @@ class Game(models.Model):
 		
 		for game in r.json().get('data'):
 			if Championship(pk = game["league_id"]) in Championship.objects.all():
-				Game(pk=game['id'],
-					start_game_date=datetime.strptime(game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
-					name=game['localTeam']['data']['name']+" x " +game['visitorTeam']['data']['name'], championship=Championship.objects.get(pk=game["league_id"])).save() 
+				if Game(pk = game["id"]) in Game.objects.all():
+					g = Game.objects.get(pk = game["id"])
+					g.status_game = game['time']['status']
+					g.save()
+					
+				else:
+					Game(pk=game['id'],
+						start_game_date=datetime.strptime(game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
+						name=game['localTeam']['data']['name']+" x " +game['visitorTeam']['data']['name'], championship=Championship.objects.get(pk=game["league_id"]), status_game=game['time']["status"]).save() 
 
 	def __str__(self):
 		return self.name	
@@ -120,7 +125,7 @@ class Reward(models.Model):
 	who_rewarded = models.ForeignKey('user.Seller', null=True)	
 	reward_date = models.DateTimeField(null=True)
 	value = models.DecimalField(max_digits=6, decimal_places=2)
-	status_reward = models.CharField(max_length=25, choices=REWARD_STATUS, default=REWARD_STATUS[3][0])
+	status_reward = models.CharField(max_length=25, choices=REWARD_STATUS)
 
 	def clean(self):        
 		if self.value_max < self.value:
@@ -128,7 +133,7 @@ class Reward(models.Model):
 
 
 class Cotation(models.Model):
-	name = models.CharField(max_length=30)
+	name = models.CharField(max_length=50)
 	value = models.DecimalField(max_digits=4, decimal_places=2)	
 	game = models.ForeignKey('Game',related_name='cotations')
 	status = models.CharField(max_length=25, choices=COTATION_STATUS, default=COTATION_STATUS[0][0])	
@@ -149,5 +154,5 @@ class Cotation(models.Model):
 
 class Payment(models.Model):
 	who_set_payment = models.ForeignKey('user.Seller', null=True)
-	status_payment = models.CharField(max_length=25, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[1][0])
+	status_payment = models.CharField(max_length=25, choices=PAYMENT_STATUS)
 	payment_date = models.DateTimeField(null=True)	
