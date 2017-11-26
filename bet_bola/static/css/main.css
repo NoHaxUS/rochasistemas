@@ -99,6 +99,7 @@ nav .brand-logo{
 .games-table td{
     padding: 10px 5px
 }
+
 .cotation:hover{
     height: 30px;
     width: 30px;
@@ -106,6 +107,12 @@ nav .brand-logo{
     background-color:#2ecbe4;
     line-height: 2;
     border-radius: 20px;
+    cursor: pointer;
+    color: #0e0909;
+    font-weight: bold;
+}
+
+.more-cotation:hover{
     cursor: pointer;
     color: #0e0909;
     font-weight: bold;
@@ -195,4 +202,8 @@ nav .brand-logo{
     font-family: sans-serif;
     font-size: 1.6rem;
     text-transform: capitalize;
+}
+
+.more_cotations_button{
+    cursor: pointer;
 }

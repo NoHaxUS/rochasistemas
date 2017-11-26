@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-    {% load static %}
-    {% load filters %}
+
+{% load static %} {% load filters %}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,27 +15,68 @@
 
 <body>
 
-    <!-- Modal Login -->    
+    <!-- More Cotations -->
+    <div id="more-cotations" class="modal">
+        <div class="modal-content">
+            <a href="#" class="modal-close">
+                <i class="material-icons right">close</i>
+            </a>
+            <h4>Mais Cotas</h4>
+            <div class="row">
+
+                <div class="">
+                    <table class="bordered highlight white centered more-table">
+                        <thead>
+                            <tr>
+                                <th>Cota</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <div class="hide more-game-id"> </div>
+                                <div class="hide more-game-name"> </div>
+                                <div class="hide more-game-start-date"> </div>
+                            </tr>
+                            <tr>
+                                <div class="hide">{{cotation.pk}}</div>
+                                <td>Casa</td>
+                                <td class="more-cotation">3.4</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- More Cotations -->
+
+    <!-- Modal Login -->
     <div id="modal-login" class="modal">
         <div class="modal-content">
-                <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
+            <a href="#" class="modal-close">
+                <i class="material-icons right">close</i>
+            </a>
             <h4>Login</h4>
             <div class="row">
-                 <form action="user/login/" method="POST">{% csrf_token %}
-                {{ form.as_p }}                
-                <div class="col s12">
-                    <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Entrar</button>
-                </div>
-            </form>      
+                <form action="user/login/" method="POST">{% csrf_token %} {{ form.as_p }}
+                    <div class="col s12">
+                        <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Entrar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
     <!-- end Modal Login -->
 
-    <!-- Check Ticket -->    
+    <!-- Check Ticket -->
     <div id="modal-check-ticket" class="modal">
         <div class="modal-content">
-                <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
+            <a href="#" class="modal-close">
+                <i class="material-icons right">close</i>
+            </a>
             <h4>Consultar Ticket</h4>
             <div class="row">
                 <form action="" method="get">
@@ -43,29 +85,30 @@
                             <i class="material-icons prefix">event_note</i>
                             <input id="icon_prefix" type="text" class="validate">
                             <label for="icon_prefix">N° do Ticket</label>
-                          </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col s12">
                             <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Consultar</button>
                         </div>
                     </div>
-                
-            </form>      
+
+                </form>
             </div>
         </div>
     </div>
     <!-- end Check Ticket -->
-   
+
     <!-- Modal Register -->
     <div id="modal-register" class="modal">
         <div class="modal-content">
-                <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
-                
+            <a href="#" class="modal-close">
+                <i class="material-icons right">close</i>
+            </a>
+
             <h4>Registro</h4>
             <div class="row">
-                <form action="TODO" method="POST">{% csrf_token %}
-                    {{ form_punter.as_p}}
+                <form action="TODO" method="POST">{% csrf_token %} {{ form_punter.as_p}}
                     <div class="row">
                         <div class="col s12">
                             <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Cadastrar</button>
@@ -84,30 +127,32 @@
                 <i class="material-icons">menu</i>
             </a>
             <ul class="right hide-on-med-and-down">
-                {% if user.is_anonymous %}                
+                {% if user.is_anonymous %}
                 <li>
                     <a href="#modal-login" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
-                         Login</a>
-                        
+                        Login</a>
+
                 </li>
-                
+
                 <li>
                     <a href="#modal-register" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
-                         Cadastre-se</a>
-                </li>               
-                 
+                        Cadastre-se</a>
+                </li>
+
                 <li>
                     <a href="#modal-check-ticket" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
                         Consultar Bilhete</a>
                 </li>
                 {% else %}
-                    <li class="user-logged-name">Olá, {{user}}</li>
-                    <li>
-                        <a href="user/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
-                            Painel do Cliente</a>
-                    </li>
-                    <li><a href="user/logout" class="waves-effect waves-light btn white grey-text text-darken-4 ">
-                            logout</a></li>
+                <li class="user-logged-name">Olá, {{user}}</li>
+                <li>
+                    <a href="user/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                        Painel do Cliente</a>
+                </li>
+                <li>
+                    <a href="user/logout" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                        logout</a>
+                </li>
                 {% endif %}
 
             </ul>
@@ -214,7 +259,7 @@
                     <ul class="championship-list">
                         <li class="center-align valign-wrapper">
                             <!-- <i class="material-icons">chevron_right</i> -->
-                           
+
                             {%for championship in championships%}
                             <li class="center-align">
                                 <a href="{% url 'core:game_championship' pk=championship.pk%}" class="">{{ championship }}</a>
@@ -248,14 +293,14 @@
                                             {{game.start_game_date}}
                                         </div>
                                     </td>
-                                    {% for cotation in game.cotations.all|order_by:"name"%}                                    
+                                    {% for cotation in game.cotations.all|order_by:"name"%}
                                     <td>
                                         <span class="hide">{{cotation.pk}}</span>
                                         <span class="hide">{{cotation.name}}</span>
                                         <span class="cotation">{{cotation.value}}</span>
                                     </td>
                                     {% endfor %}
-                                    <td>
+                                    <td class="more_cotations_button">
                                         <i class="small material-icons">add</i>
                                     </td>
                                 </tr>
@@ -314,7 +359,7 @@
     <script src="{% static "js/materialize.js" %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     <script src="{% static "js/home.js" %}"></script>
-    
+
 
 </body>
 

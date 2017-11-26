@@ -178,9 +178,14 @@ $(document).ready(function () {
             });
 
         });
+
+        $('.more-cotation').click(function(e){
+
+
+
+        });
     
-        $('.cotation').click(function (obj) {
-    
+        $('.cotation').click(function (e) {
     
             var game_id = $(this).parent().siblings().first().children('.table-game-id').text().trim();
             var game_name = $(this).parent().siblings().first().children('.table-game-name').text().trim();
@@ -217,6 +222,7 @@ $(document).ready(function () {
         $('.btn-bet-submit').on('click', function(){
             
             var ticket_value = $('#ticket-bet-value').val();
+
             $.post('/bet_ticket/', {'ticket_value': ticket_value} , function(data, status, rq){
                 var dataJSON = jQuery.parseJSON(data);
                 if(dataJSON.status == 401){
@@ -226,12 +232,22 @@ $(document).ready(function () {
                 if(dataJSON.status == 201){
                     alert('OK');
                 }
-
                 console.log(dataJSON.status);
-
-
             }, 'text');
 
+        });
+
+        $('.more_cotations_button').on('click', function(e){
+            $('#more-cotations').modal('open');
+
+            $.get('/cotations/1',function(data, status, rq){
+                
+                var dataJSON = jQuery.parseJSON(data);
+                console.log(dataJSON[0]);
+                console.log(rq.status);
+                
+            }, 'text');
+                
         });
     
     

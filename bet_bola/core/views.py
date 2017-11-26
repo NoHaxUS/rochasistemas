@@ -17,6 +17,7 @@ from .models import Cotation,BetTicket,Game,Championship,Payment,Reward
 from user.forms.create_punter_form import CreatePunterForm
 from user.models import Punter
 from .forms import BetTicketForm
+from django.core import serializers
 
 #import pdb; pdb.set_trace()
 # Create your views here.
@@ -31,6 +32,12 @@ class Home(TemplateResponseMixin, View):
 	def get(self, request, *args, **kwargs):				
 		context = {'games': self.games ,'championships': self.championships,'form': self.form, 'form_punter': self.form_punter}
 		return self.render_to_response(context)
+
+class CotationsView(View):
+	
+	def get(self, request, *args, **kwargs):
+		gameid = self.kwargs['gameid']
+		return HttpResponse( serializers.serialize("json", Cotation.objects.filter(game_id=gameid)), content_type='application/json' )
 
 
 class BetView(View):

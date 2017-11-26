@@ -25,4 +25,5 @@ urlpatterns = [
 	url(r'^game/$', views.GameListView.as_view(), name='game_list_view'),
     url(r'^championship/$', views.ChampionshipListView.as_view(), name='championship_list_view'),
     url(r'^bet/(?P<pk>\d+)?$', views.BetView.as_view(), name='bet'),
+    url(r'^cotations/(?P<gameid>\d+)$', views.CotationsView.as_view(), name='cotations'),
 ]
