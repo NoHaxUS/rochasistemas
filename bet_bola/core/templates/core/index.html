@@ -20,7 +20,7 @@
                 <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
             <h4>Login</h4>
             <div class="row">
-                 <form action="{% url 'user:login' %}" method="POST">{% csrf_token %}
+                 <form action="user/login/" method="POST">{% csrf_token %}
                 {{ form.as_p }}                
                 <div class="col s12">
                     <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Entrar</button>
@@ -64,7 +64,7 @@
                 
             <h4>Registro</h4>
             <div class="row">
-                <form action="{% url 'user:punter' %}" method="POST">{% csrf_token %}
+                <form action="TODO" method="POST">{% csrf_token %}
                     {{ form_punter.as_p}}
                     <div class="row">
                         <div class="col s12">
@@ -101,12 +101,12 @@
                         Consultar Bilhete</a>
                 </li>
                 {% else %}
-                    <li>{{user}}</li>
+                    <li class="user-logged-name">Olá, {{user}}</li>
                     <li>
-                        <a href="consultar.html" class="waves-effect waves-light btn white grey-text text-darken-4 ">
-                            Consultar Bilhete</a>
+                        <a href="user/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                            Painel do Cliente</a>
                     </li>
-                    <li><a href="{% url 'user:logout' %}" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                    <li><a href="user/logout" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                             logout</a></li>
                 {% endif %}
 

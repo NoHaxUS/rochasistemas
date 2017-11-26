@@ -190,3 +190,9 @@ nav .brand-logo{
 .game-start-date{
     padding: 0px 30px;
 }
+
+.user-logged-name{
+    font-family: sans-serif;
+    font-size: 1.6rem;
+    text-transform: capitalize;
+}

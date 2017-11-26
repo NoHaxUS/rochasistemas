@@ -1,39 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Bet Bola - Home</title>
-    <link rel="stylesheet" href="css/materialize.css">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="{% static "css/materialize.css" %}">
+    <link rel="stylesheet" href="{% static "css/main.css" %}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
 
-    <!-- Bet Success -->
-    <div id="bet-success" class="modal">
-        <div class="modal-content">
-                <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
-
-            <h5 class="center-align">Sucesso</h5>
-            <div class="divider"></div>
-            <div class="row">
-                <div class="col s12 center-align success-bet">
-                    Sua aposta foi cadastrada em nosso sistema. <br>
-                    O número do seu Ticket é: <span class="ticket-number"> #234242 </span> leve até um <br>
-                    de nossos vendedores para validar (pagar) sua aposta.
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- end Bet Success -->
-
-
     <nav>
-
         <div class="nav-wrapper green-ge">
             <a href="#!" class="brand-logo white-text">Bet Bola</a>
             <a href="#" data-activates="mobile-menu" class="button-collapse">
@@ -43,18 +23,18 @@
 
                 <li>
                     <span class="welcome">Seja bem vindo, Pablo </span>
-                      
+
                 </li>
                 <li>
                     <a href="#modal-register" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
-                         Sair</a>
+                        Sair</a>
                 </li>
 
 
             </ul>
             <ul class="side-nav" id="mobile-menu">
 
-                <li>    
+                <li>
                     <span class="welcome">Seja bem vindo, Pablo </span>
                 </li>
                 <li>
@@ -114,36 +94,28 @@
                     </ul>
 
                 </div>
-                <div class="col s12 l10">
-                    <!-- Bets collection-->
-                    <div class="games-table-container">
-                        <table class="bordered highlight white centered games-table hoverable">
-                            <thead>
-                                <tr>
-                                    <th>Número do Ticket</th>
-                                    <th>Data da aposta</th>
-                                    <th>Status</th>
-                                    <th>Ver</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        # 12342
-                                    </td>
-                                    <td>
-                                        24/08/1987 12:30
-                                    </td>
-                                    <td>
-                                        Aguardando Resultado
-                                    </td>
-                                    <td><i class="material-icons">open_in_new</i></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="col s12 l6 offset-l1">
+                    <div class="row change-pass white">
+                        <form class="col s12" action="login">
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="old-password" type="password" class="validate">
+                                    <label for="old-password">Senha Antiga</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="password" type="password" class="validate">
+                                    <label for="password">Nova senha</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s12">
+                                    <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Mudar</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-
                 </div>
                 <!--
                 <div class="col s2 hide-on-med-and-down hoverable white">
@@ -154,15 +126,10 @@
             </div>
     </main>
 
-    <script src="js/jquery-3.2.1.min.js"></script>
-    <script src="js/materialize.js"></script>
-    <script src="js/home.js"></script>
-
-    <script>
-    $(document).ready(function(){
-        $('#bet-success').modal('open');
-    });
-    </script>
+    <script src="{% static "js/jquery-3.2.1.min.js" %}"></script>
+    <script src="{% static "js/materialize.js" %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src="{% static "js/home.js" %}"></script>
 
 </body>
 
