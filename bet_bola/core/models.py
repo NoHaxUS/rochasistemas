@@ -94,9 +94,15 @@ class Game(models.Model):
 		
 		for game in r.json().get('data'):
 			if Championship(pk = game["league_id"]) in Championship.objects.all():
-				Game(pk=game['id'],
-					start_game_date=datetime.strptime(game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
-					name=game['localTeam']['data']['name']+" x " +game['visitorTeam']['data']['name'], championship=Championship.objects.get(pk=game["league_id"])).save() 
+				if Game(pk = game["id"]) in Game.objects.all():
+					g = Game.objects.get(pk = game["id"])
+					g.status_game = game['time']['status']
+					g.save()
+					
+				else:
+					Game(pk=game['id'],
+						start_game_date=datetime.strptime(game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
+						name=game['localTeam']['data']['name']+" x " +game['visitorTeam']['data']['name'], championship=Championship.objects.get(pk=game["league_id"]), status_game=game['time']["status"]).save() 
 
 	def __str__(self):
 		return self.name	

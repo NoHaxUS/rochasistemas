@@ -9,6 +9,7 @@ from django.views.generic.edit import CreateView,FormView
 from .forms.create_punter_form import CreatePunterForm
 from .models import Punter
 from core.models import Game,Championship,BetTicket
+from datetime import datetime
 # Create your views here.
 
 class PunterChangePass(TemplateResponseMixin, View):
@@ -31,9 +32,9 @@ class PunterCreate(FormView):
 	success_url = '/'	
 
 	def form_valid(self, form):
-		obj = form.save(commit=False)		
-		obj.set_password(self.request.POST['password'])
-		obj.save()        
+		punter = form.save(commit=False)		
+		punter.date_joined = datetime.now()
+		punter.save()        
 		return super(PunterCreate, self).form_valid(form)
 
 	def get_context_data(self, **kwargs):
@@ -44,6 +45,8 @@ class PunterCreate(FormView):
         
 		context = {'games': games ,'championships': championships,'form': form, 'form_punter': form_punter}
 		return context
+
+
 
 
 class Login(View):
