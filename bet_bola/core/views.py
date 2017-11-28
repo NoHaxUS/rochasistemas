@@ -7,14 +7,17 @@ from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.base import TemplateResponseMixin
 from django.http import HttpResponse, JsonResponse
+from rest_framework.response import Response
+from rest_framework import status
 from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
-from .models import Cotation,BetTicket,Game,Championship
+from .models import Cotation,BetTicket,Game,Championship,Payment,Reward
 from user.forms.create_punter_form import CreatePunterForm
 from user.models import Punter
 from .forms import BetTicketForm
+from django.core import serializers
 
 #import pdb; pdb.set_trace()
 # Create your views here.
@@ -30,8 +33,14 @@ class Home(TemplateResponseMixin, View):
 		context = {'games': self.games ,'championships': self.championships,'form': self.form, 'form_punter': self.form_punter}
 		return self.render_to_response(context)
 
+class CotationsView(View):
+	
+	def get(self, request, *args, **kwargs):
+		gameid = self.kwargs['gameid']
+		return HttpResponse( serializers.serialize("json", Cotation.objects.filter(game_id=gameid)), content_type='application/json' )
 
-class AddBetToTicket(View):
+
+class BetView(View):
 
 	def post(self, request, *args, **kwargs):
 		#return HttpResponse(request.POST['game_id'])
@@ -58,8 +67,31 @@ class AddBetToTicket(View):
 		else:
 			return JsonResponse( {'ticket': request.session['ticket']})
 	
-	#def delete(self, request, *args, **kwargs):
-		#pass
+	def delete(self, request, *args, **kwargs):
+		pk = self.kwargs["pk"]
+		request.session['ticket'].pop(pk)
+		request.session.modified = True
+		return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
+
+
+class CreateTicketView(View):
+	def post(self, request, *args, **kwargs):
+		#request.session.flush()
+		if request.user.is_authenticated:
+			ticket = BetTicket(punter=Punter.objects.get(pk=request.user.id), seller=None, 
+			payment=Payment.objects.create(), 
+			reward=Reward.objects.create(value=100), 
+			value=int(request.POST['ticket_value']) )
+			ticket.save()
+
+			for game_id in request.session['ticket']:
+				ticket.cotations.add( Cotation.objects.get(pk=int(request.session['ticket'][game_id])) ) 
+	
+			#return HttpResponseRedirect('/user')
+			return JsonResponse({'status':201})
+		else:
+			return JsonResponse({'status':401})
+			
 		
 
 class GameChampionship(Home):
@@ -68,24 +100,6 @@ class GameChampionship(Home):
 		self.games = Game.objects.able_games().filter(championship = championship)
 		return super(GameChampionship, self).get(self, request, *args, **kwargs)
 
-
-class BetTicketCreate(CreateView):	
-	form_class = BetTicketForm
-	template_name = 'core/betticket_form.html'		
-
-	def get_success_url(self):
-		return reverse('home')
-
-	def get_context_data(self, **kwargs):
-		# Call the base implementation first to get a context
-		context = super(BetTicketCreate, self).get_context_data(**kwargs)
-		context['cotations']=Cotation.objects.all()
-		return context
-
-	def form_valid(self, form):        
-		form.instance.punter = Punter.objects.get(user_ptr=self.request.user.pk)
-		form.instance.creation_date = datetime.now()
-		return super(BetTicketCreate, self).form_valid(form)
 
 class BetTicketDetail(TemplateResponseMixin, View):
 	template_name = 'core/ticket_details.html'

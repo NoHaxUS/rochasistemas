@@ -4,14 +4,27 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.views import View
+from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.edit import CreateView,FormView
 from .forms.create_punter_form import CreatePunterForm
 from .models import Punter
+from core.models import Game,Championship,BetTicket
 from datetime import datetime
-from core.models import Game,Championship
 # Create your views here.
 
+class PunterChangePass(TemplateResponseMixin, View):
+	template_name = 'user/user_change_pass.html'
+	
+	def get(self, request, *args, **kwargs):
+		#bet_tickets = BetTicket.objects.filter(punter=request.user)
+		return self.render_to_response({})
 
+class PunterHome(TemplateResponseMixin, View):
+	template_name = 'user/user_home.html'
+	
+	def get(self, request, *args, **kwargs):
+		bet_tickets = BetTicket.objects.filter(punter=request.user)
+		return self.render_to_response({'bet_tickets': bet_tickets})
 
 class PunterCreate(FormView):	
 	form_class = CreatePunterForm
