@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from .manager import GamesManager
+from .manager import GamesManager,CotationsManager
 from datetime import datetime
 import requests
 import decimal
@@ -40,12 +40,6 @@ GAME_STATUS = (
 		('TBA', 'To Be Announced (Fixture will be updated with exact time later)'),
 		('WO', 'Walkover (Awarding of a victory to a contestant because there are no other contestants)'),
 	)
-
-COTATION_STATUS = (
-		('OPEN', 'Resultado em Aberto'), 
-		('NOT_HAPPENED', 'Não aconteceu'),        
-        ('HAPPENED', 'Aconteceu'),
-    )
 
 
 PAYMENT_STATUS = (
@@ -133,20 +127,33 @@ class Reward(models.Model):
 
 
 class Cotation(models.Model):
-	name = models.CharField(max_length=30)
-	value = models.DecimalField(max_digits=4, decimal_places=2)	
-	game = models.ForeignKey('Game',related_name='cotations')
-	status = models.CharField(max_length=25, choices=COTATION_STATUS, default=COTATION_STATUS[0][0])	
-
+	name = models.CharField(max_length=75)
+	value = models.FloatField()	
+	game = models.ForeignKey('Game',related_name='cotations')	
+	winning = models.BooleanField(default=False)
+	is_standard = models.BooleanField(default=False)
+	kind = models.CharField(max_length=45)
+	objects = GamesManager()
 	
 	@staticmethod
 	def consuming_api():
 		for game in Game.objects.all():
-			r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN)
-			if r.json().get('data').__len__() >= 1:
-				if r.json().get('data')[0]['bookmaker']['data'].__len__() >= 1:
-					for cotation in r.json().get('data')[0]['bookmaker']['data'][0]['odds']['data']:				
-						Cotation(name=cotation['label'],value=cotation['value'],game=game).save()
+			cont = 0
+			r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN)			
+			# if r.json().get('data').__len__() >= 1:
+			# 	if r.json().get('data')[0]['bookmaker']['data'].__len__() >= 1:
+			# 		for cotation in r.json().get('data')[0]['bookmaker']['data'][0]['odds']['data']:				
+			# 			Cotation(name=cotation['label'],value=cotation['value'],game=game, is_standard = True).save()									
+			for kind in r.json().get('data'):
+				kind_name = kind['name']				
+				for cotation in kind['bookmaker']['data'][0]['odds']['data']:
+					if cont == 0:
+						Cotation(name=cotation['label'],value=cotation['value'],game=game, is_standard = True, kind = kind_name).save()						
+					else:
+						Cotation(name=cotation['label'],value=cotation['value'],game=game, is_standard = False, kind = kind_name).save()
+				cont+=1
+
+
 
 	def __str__(self):
 		return str(self.value)
