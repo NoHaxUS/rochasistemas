@@ -127,13 +127,6 @@ class Reward(models.Model):
 
 
 class Cotation(models.Model):
-<<<<<<< HEAD
-	name = models.CharField(max_length=50)
-	value = models.DecimalField(max_digits=4, decimal_places=2)	
-	game = models.ForeignKey('Game',related_name='cotations')
-	status = models.CharField(max_length=25, choices=COTATION_STATUS, default=COTATION_STATUS[0][0])	
-
-=======
 	name = models.CharField(max_length=75)
 	value = models.FloatField()	
 	game = models.ForeignKey('Game',related_name='cotations')	
@@ -141,7 +134,6 @@ class Cotation(models.Model):
 	is_standard = models.BooleanField(default=False)
 	kind = models.CharField(max_length=45)
 	objects = GamesManager()
->>>>>>> 5da2802abc7186d114683ba3d4fb3adc3cdd8dc9
 	
 	@staticmethod
 	def consuming_api():
