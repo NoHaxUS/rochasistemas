@@ -227,7 +227,6 @@ $(document).ready(function () {
                 var dataJSON = jQuery.parseJSON(data);
                 if(dataJSON.status == 401){
                     $('#modal-login').modal('open');
-
                 }
                 if(dataJSON.status == 201){
                     alert('OK');
@@ -240,10 +239,10 @@ $(document).ready(function () {
         $('.more_cotations_button').on('click', function(e){
             $('#more-cotations').modal('open');
 
-            $.get('/cotations/1',function(data, status, rq){
+            $.get('/cotations/1651963',function(data, status, rq){
                 
                 var dataJSON = jQuery.parseJSON(data);
-                console.log(dataJSON[0]);
+                console.log(dataJSON);
                 console.log(rq.status);
                 
             }, 'text');
