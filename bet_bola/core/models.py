@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from .manager import GamesManager,CotationsManager
 from datetime import datetime
+from user.models import Seller
 import requests
 import decimal
 # Create your models here.
@@ -58,6 +59,16 @@ class BetTicket(models.Model):
 	value = models.DecimalField(max_digits=4, decimal_places=2)
 	bet_ticket_status = models.CharField(max_length=45, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0])
 
+
+	def ticket_valid(self, user):
+		self.payment.status_payment = PAYMENT_STATUS[0][0]
+		self.payment.who_set_payment = Seller.objects.get(pk=user.pk)
+		self.payment.save()
+
+	def reward_payment(self, user):
+		self.reward.status_reward = REWARD_STATUS[0][0]
+		self.reward.who_rewarded = Seller.objects.get(pk=user.pk)
+		self.reward.save()
 
 	def cota_total(self):
 		cota_total = 0
@@ -120,10 +131,6 @@ class Reward(models.Model):
 	reward_date = models.DateTimeField(null=True)
 	value = models.DecimalField(max_digits=6, decimal_places=2)
 	status_reward = models.CharField(max_length=25, choices=REWARD_STATUS)
-
-	def clean(self):        
-		if self.value_max < self.value:
-			raise ValidationError('Valor excede o valor máximo.')
 
 
 class Cotation(models.Model):

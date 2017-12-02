@@ -27,4 +27,6 @@ urlpatterns = [
     url(r'^championship/$', views.ChampionshipListView.as_view(), name='championship_list_view'),
     url(r'^bet/(?P<pk>\d+)?$', views.BetView.as_view(), name='bet'),
     url(r'^cotations/(?P<gameid>\d+)$', views.CotationsView.as_view(), name='cotations'),
+    url(r'^validar/$', views.Validar.as_view(), name='validar'),
+    url(r'^punter_payment/$', views.PunterPayment.as_view(), name='punter_payment'),
 ]
