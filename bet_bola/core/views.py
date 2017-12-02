@@ -33,6 +33,14 @@ class Home(TemplateResponseMixin, View):
 		context = {'games': self.games ,'championships': self.championships,'form': self.form, 'form_punter': self.form_punter}
 		return self.render_to_response(context)
 
+
+class SellerHome(TemplateResponseMixin, View):
+	template_name = 'core/seller_home.html'		
+
+	def get(self, request, *args, **kwargs):				
+		context = {}
+		return self.render_to_response(context)
+
 class CotationsView(View):
 	
 	def get(self, request, *args, **kwargs):
