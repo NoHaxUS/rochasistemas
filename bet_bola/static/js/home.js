@@ -101,7 +101,9 @@ $(document).ready(function () {
             ticket[bet_info['game_id']] = bet_info;
             Cookies.set('ticket_cookie', ticket);
     
-            //console.debug(ticket);
+            UpdateCotationTotal();
+            RenderTicket();
+            $('#ticket-bet-value').trigger('keyup');
         }
     
         function RenderTicket() {
@@ -153,7 +155,6 @@ $(document).ready(function () {
             }else{
                 var award_value = (COTATION_TOTAL * ticket_bet_value).toFixed(2);
                 $('.award-value').text('R$ ' + award_value);
-                //console.log( award_value );
             }
         });
     
@@ -204,13 +205,9 @@ $(document).ready(function () {
             }
     
             AddBetToTicket(bet_info);
-            UpdateCotationTotal();
-            RenderTicket();
-            $('#ticket-bet-value').trigger('keyup');
     
             //console.debug(Cookies.getJSON('ticket_cookie'));
     
-                
                 $.post('/bet/', bet_info, function(data, status, rq){
                     console.log(data);
                     console.log(rq.status);
@@ -240,20 +237,20 @@ $(document).ready(function () {
 
             $('#more-cotations').modal('open');
 
-
             var game_id = $(this).siblings().first().children('.table-game-id').text().trim();
             var game_name = $(this).siblings().first().children('.table-game-name').text().trim();
             var game_start_date = $(this).siblings().first().children('.table-game-start-date').text().trim();
+        
+            $('.more_cotation_header').text(game_name);
 
-            console.log( game_start_date );
-
-            var game_info = '<tr>' +
-                '<div class="hide more-game-id">'+ game_id +'</div>' +
-                '<div class="hide more-game-name">'+ game_name +'</div>'+
-                '<div class="hide more-game-start-date">'+ game_start_date +'</div>'+
+            var game_data = '<tr>' +
+                '<td class="hide more-game-id">'+ game_id +'</td>' +
+                '<td class="hide more-game-name">'+ game_name +'</td>'+
+                '<td class="hide more-game-start-date">'+ game_start_date +'</td>'+
             '</tr>';
 
-            $('.more-table tbody').append(game_info);
+            //console.log(game_data);
+            $('.more-table tbody').empty().append(game_data);
 
             $.get('/cotations/'+ game_id, function(data, status, rq){
                 
@@ -263,14 +260,14 @@ $(document).ready(function () {
                 for( key in dataJSON){
                     
                     var more_cotation_html = '<tr>' +
-                    '<div class="hide">'+ dataJSON[key].pk + '</div>' +
+                    '<td class="hide">'+ dataJSON[key].pk + '</td>' +
                     '<td>'+ dataJSON[key].fields.name + '</td>' +
                     '<td class="more-cotation">'+ dataJSON[key].fields.value +'</td>' +
                      '</tr>';
                      full_html += more_cotation_html;
                 };
 
-                $('.more-table tbody').empty().append(full_html);
+                $('.more-table tbody').append(full_html);
 
 
                 //console.log(dataJSON);
@@ -279,8 +276,34 @@ $(document).ready(function () {
             }, 'text');
                 
         });
-    
-    
+
+        $(document).on('click', '.more-cotation',function(){
+            var first_tr = $(this).parent().parent().children().first();
+            var game_id = first_tr.children('.more-game-id').text().trim();
+            var game_name = first_tr.children('.more-game-name').text().trim();
+            var game_start_date = first_tr.children('.more-game-start-date').text().trim();
+            var cotation_id = $(this).siblings().eq(0).text();
+            var cotation_name = $(this).siblings().eq(1).text();
+            var cotation_value = $(this).text().trim();
+
+            console.debug(cotation_id);
+
+            bet_info = {
+                'game_id': game_id,
+                'game_name': game_name,
+                'game_start_date': game_start_date,
+                'cotation_id': cotation_id,
+                'cotation_name': cotation_name,
+                'cotation_value': cotation_value
+            }
+
+            AddBetToTicket(bet_info);
+
+            $('#more-cotations').modal('close');
+
+        });
+
+
     });
     
     
