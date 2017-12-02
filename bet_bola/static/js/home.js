@@ -237,26 +237,44 @@ $(document).ready(function () {
         });
 
         $('.more_cotations_button').on('click', function(e){
+
             $('#more-cotations').modal('open');
 
-            $.get('/cotations/1651963',function(data, status, rq){
+
+            var game_id = $(this).siblings().first().children('.table-game-id').text().trim();
+            var game_name = $(this).siblings().first().children('.table-game-name').text().trim();
+            var game_start_date = $(this).siblings().first().children('.table-game-start-date').text().trim();
+
+            console.log( game_start_date );
+
+            var game_info = '<tr>' +
+                '<div class="hide more-game-id">'+ game_id +'</div>' +
+                '<div class="hide more-game-name">'+ game_name +'</div>'+
+                '<div class="hide more-game-start-date">'+ game_start_date +'</div>'+
+            '</tr>';
+
+            $('.more-table tbody').append(game_info);
+
+            $.get('/cotations/'+ game_id, function(data, status, rq){
                 
                 var dataJSON = jQuery.parseJSON(data);
 
                 var full_html = '';
-                for( ticket in dataJSON){
+                for( key in dataJSON){
+                    
                     var more_cotation_html = '<tr>' +
-                    '<div class="hide">{{cotation.pk}}</div>' +
-                    '<td>'+ ticket.name + '</td>' +
-                    '<td class="more-cotation">3.4</td>' +
+                    '<div class="hide">'+ dataJSON[key].pk + '</div>' +
+                    '<td>'+ dataJSON[key].fields.name + '</td>' +
+                    '<td class="more-cotation">'+ dataJSON[key].fields.value +'</td>' +
                      '</tr>';
                      full_html += more_cotation_html;
-                }
+                };
 
-                
+                $('.more-table tbody').empty().append(full_html);
 
-                console.log(dataJSON);
-                console.log(rq.status);
+
+                //console.log(dataJSON);
+                //console.log(rq.status);
                 
             }, 'text');
                 
