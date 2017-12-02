@@ -37,7 +37,7 @@ class CotationsView(View):
 	
 	def get(self, request, *args, **kwargs):
 		gameid = self.kwargs['gameid']
-		return HttpResponse( serializers.serialize("json", Cotation.objects.filter(game_id=gameid)), content_type='application/json' )
+		return HttpResponse( serializers.serialize("json", Cotation.objects.filter(game_id=gameid, is_standard=False)), content_type='application/json' )
 
 
 class BetView(View):
