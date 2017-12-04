@@ -81,6 +81,12 @@ class BetTicket(models.Model):
 	def __str__(self):
 		return str(self.pk)
 
+	class Meta:
+		permissions = (
+				('can_validate_payment', "Can validate user ticket"),
+				('can_reward', "Can reward a user"),
+			)
+
 
 class Game(models.Model):
 	name = models.CharField(max_length=45)	
