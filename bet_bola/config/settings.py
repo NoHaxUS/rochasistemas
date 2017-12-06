@@ -26,7 +26,7 @@ SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['bola-api.herokuapp.com','localhost']
+ALLOWED_HOSTS = ['bet-bola.herokuapp.com','localhost']
 
 
 # Application definition
@@ -123,17 +123,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.11/howto/static-files/
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
-
-#PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-
-#STATIC_URL = '/static/'
 
 
 #database configuration from env
