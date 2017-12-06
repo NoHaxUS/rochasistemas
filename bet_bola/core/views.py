@@ -89,27 +89,29 @@ class CreateTicketView(View):
 			if 'ticket' not in request.session:
 				return JsonResponse({'status':403})
 
-			ticket = BetTicket(punter=Punter.objects.get(pk=request.user.pk), seller=None, 
-			payment=Payment.objects.create(), 
-			reward=Reward.objects.create(value=100), 
-			value=int(request.POST['ticket_value']) )
+			ticket = BetTicket(
+				punter=Punter.objects.get(pk=request.user.pk), 
+				seller=None,
+				value=int(request.POST['ticket_value']), 
+				payment=Payment.objects.create(), 
+				reward=Reward.objects.create())
 			ticket.save()
 
 			
-
+			cotation_sum = 1
 			for game_id in request.session['ticket']:
 				game_contation = None
 				try:
 					game_contation = Cotation.objects.get(pk=int(request.session['ticket'][game_id]))
-					#game_contation = Cotation.objects.get(pk=int(999999))
+					cotation_sum *= game_contation.value
 				except Cotation.DoesNotExist:
 					return JsonResponse({'status':400})
 
 				ticket.cotations.add( game_contation )
+				ticket.reward.value = cotation_sum * int(request.POST['ticket_value'])
+				ticket.reward.save()
+			return JsonResponse({'ticket_pk': ticket.pk ,'status':201})
 
-	
-			#return HttpResponseRedirect('/user')
-			return JsonResponse({'status':201})
 		else:
 			return JsonResponse({'status':401})
 			

@@ -136,13 +136,13 @@ class Championship(models.Model):
 class Reward(models.Model):
 	who_rewarded = models.ForeignKey('user.Seller', null=True)	
 	reward_date = models.DateTimeField(null=True)
-	value = models.DecimalField(max_digits=6, decimal_places=2)
+	value = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 	status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1])
 
 
 class Cotation(models.Model):
 	name = models.CharField(max_length=80)
-	value = models.FloatField()	
+	value = models.FloatField(default=0)
 	game = models.ForeignKey('Game', related_name='cotations')	
 	winning = models.BooleanField(default=False)
 	is_standard = models.BooleanField(default=False)
