@@ -10,15 +10,16 @@ import decimal
 TOKEN='ndvsLZTo8pZxduyPtIHRkGRMkGpem2uHIGYwaz9sZxzppz6EZUhSjsv7g9Ru'
 
 BET_TICKET_STATUS = (
-		('WAITING_RESULT', 'Aguardando Resultados'),
-		('NOT_WON', 'Não Ganhou'),
-		('WON', 'Ganhou'),
+		('WAITING_RESULT', 'Aguardando Resultados.'),
+		('NOT_WON', 'Não Venceu.'),
+		('WON', 'Venceu.'),
 	)
 
 REWARD_STATUS = (
-		('PAID', 'O apostador foi pago'),
-		('NOT_PAID', 'O apostador ainda não foi pago'),
-		('NOT_WON', 'Esse ticket não venceu')
+		('WAITING_RESULTS', 'Aguardando Resultados.'),
+		('PAID', 'Finalizado, O apostador foi pago.'),
+		('NOT_WON', 'Esse ticket não venceu.'),
+		('WON', 'Venceu, Aguardando pagamento.'),
 	)
 
 GAME_STATUS = (
@@ -44,8 +45,8 @@ GAME_STATUS = (
 
 
 PAYMENT_STATUS = (
-		('PAID', 'Pago'),
-		('WATING_PAYMENT', 'Aguardando Pagamento do Ticket'),
+		('WATING_PAYMENT', 'Aguardando Pagamento do Ticket.'),
+		('PAID', 'Pago.'),
 	)
 		
 
@@ -56,17 +57,17 @@ class BetTicket(models.Model):
 	creation_date = models.DateTimeField(auto_now_add=True)	
 	reward = models.ForeignKey('Reward', default=None)
 	payment = models.OneToOneField('Payment', default=None)
-	value = models.DecimalField(max_digits=4, decimal_places=2)
-	bet_ticket_status = models.CharField(max_length=45, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0])
+	value = models.DecimalField(max_digits=6, decimal_places=2)
+	bet_ticket_status = models.CharField(max_length=80, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][1])
 
 
 	def ticket_valid(self, user):
-		self.payment.status_payment = PAYMENT_STATUS[0][0]
+		self.payment.status_payment = PAYMENT_STATUS[0][1]
 		self.payment.who_set_payment = Seller.objects.get(pk=user.pk)
 		self.payment.save()
 
 	def reward_payment(self, user):
-		self.reward.status_reward = REWARD_STATUS[0][0]
+		self.reward.status_reward = REWARD_STATUS[0][1]
 		self.reward.who_rewarded = Seller.objects.get(pk=user.pk)
 		self.reward.save()
 
@@ -89,10 +90,10 @@ class BetTicket(models.Model):
 
 
 class Game(models.Model):
-	name = models.CharField(max_length=45)	
+	name = models.CharField(max_length=80)	
 	start_game_date = models.DateTimeField()
 	championship = models.ForeignKey('Championship',related_name='my_games')
-	status_game = models.CharField(max_length=45,default=GAME_STATUS[0][0], choices=GAME_STATUS)
+	status_game = models.CharField(max_length=80,default=GAME_STATUS[0][1], choices=GAME_STATUS)
 	objects = GamesManager()
 	
 	@staticmethod
@@ -119,7 +120,7 @@ class Game(models.Model):
 
 
 class Championship(models.Model):
-	name = models.CharField(max_length=45)
+	name = models.CharField(max_length=80)
 
 	@staticmethod
 	def consuming_api():
@@ -136,16 +137,16 @@ class Reward(models.Model):
 	who_rewarded = models.ForeignKey('user.Seller', null=True)	
 	reward_date = models.DateTimeField(null=True)
 	value = models.DecimalField(max_digits=6, decimal_places=2)
-	status_reward = models.CharField(max_length=25, choices=REWARD_STATUS)
+	status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1])
 
 
 class Cotation(models.Model):
-	name = models.CharField(max_length=75)
+	name = models.CharField(max_length=80)
 	value = models.FloatField()	
-	game = models.ForeignKey('Game',related_name='cotations')	
+	game = models.ForeignKey('Game', related_name='cotations')	
 	winning = models.BooleanField(default=False)
 	is_standard = models.BooleanField(default=False)
-	kind = models.CharField(max_length=45)
+	kind = models.CharField(max_length=100)
 	objects = GamesManager()
 	
 	@staticmethod
@@ -174,5 +175,5 @@ class Cotation(models.Model):
 
 class Payment(models.Model):
 	who_set_payment = models.ForeignKey('user.Seller', null=True)
-	status_payment = models.CharField(max_length=25, choices=PAYMENT_STATUS)
-	payment_date = models.DateTimeField(null=True)	
+	status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1])
+	payment_date = models.DateTimeField(null=True)
