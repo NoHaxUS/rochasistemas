@@ -4,8 +4,7 @@ from .models import BetTicket,Cotation,Payment,Game,Championship,Reward
 
 
 @admin.register(BetTicket)
-class BetTicketAdmin(admin.ModelAdmin):
-	exclude = ['reward','payment','value']
+class BetTicketAdmin(admin.ModelAdmin):	
 	search_fields = ['seller__first_name']
 	list_filter = ('bet_ticket_status','punter','seller','payment__status_payment','reward__status_reward')
 	

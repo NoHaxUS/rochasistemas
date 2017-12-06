@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en">    
+    {% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Bet Bola - Home</title>
-    <link rel="stylesheet" href="css/materialize.css">
-    <link rel="stylesheet" href="css/alertify.min.css">
-    <link rel="stylesheet" href="css/themes/default.css">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="{% static "css/materialize.css" %}">
+    <link rel="stylesheet" href="{% static "css/main.css" %}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
@@ -25,16 +23,16 @@
             <div class="divider"></div>
 
             <div class="row">
-                <form class="col s12">
+                <form action = "punter_payment/" method="POST" id="ticket-form" class="col s12">{% csrf_token %}
                   <div class="row">
                     <div class="input-field col s12">
                       <i class="material-icons prefix">event_note</i>
-                      <input id="icon_prefix" type="text" class="validate ticket-pay-input">
+                      <input name="ticket" id="icon_prefix" type="text" class="validate ticket-pay-input">
                       <label for="icon_prefix"># Ticket</label>
                     </div>
                     <div class="row">
                         <div class="col s12">
-                            <button class="btn waves-effect waves-light btn-bet-submit right seller-pay-bet" type="submit">Pagar</button>
+                            <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Pagar</button>
                         </div>
                     </div>
                   </div>
@@ -55,16 +53,16 @@
             <div class="divider"></div>
 
             <div class="row">
-                <form id="ticket-form" class="col s12">
+                <form action = "validar/" method="POST" id="ticket-form" class="col s12">{% csrf_token %}
                   <div class="row">
                     <div class="input-field col s12">
                       <i class="material-icons prefix">event_note</i>
-                      <input id="icon_prefix" type="text" class="validate ticket-number-input">
+                      <input name="ticket" id="icon_prefix" type="text" class="validate ticket-number-input">
                       <label for="icon_prefix"># Ticket</label>
                     </div>
                     <div class="row">
                         <div class="col s12">
-                            <button class="btn waves-effect waves-light btn-bet-submit right seller-validate-bet" type="submit">Validar</button>
+                            <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Validar</button>
                         </div>
                     </div>
                   </div>
@@ -162,10 +160,10 @@
             </div>
     </main>
 
-    <script src="js/jquery-3.2.1.min.js"></script>
-    <script src="js/materialize.js"></script>
-    <script src="js/alertify.min.js"></script>
-    <script src="js/home.js"></script>
+    <script src="{% static "js/jquery-3.2.1.min.js" %}"></script>
+    <script src="{% static "js/materialize.js" %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src="{% static "js/home.js" %}"></script>
 
     <script>
     $(document).ready(function(){

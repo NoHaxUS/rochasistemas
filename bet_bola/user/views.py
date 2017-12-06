@@ -9,6 +9,7 @@ from django.views.generic.edit import CreateView,FormView
 from .forms.create_punter_form import CreatePunterForm
 from .models import Punter
 from core.models import Game,Championship,BetTicket
+from user.models import Punter
 from datetime import datetime
 # Create your views here.
 
@@ -59,9 +60,12 @@ class Login(View):
 		username = request.POST['username']
 		password = request.POST['password']
 		user = authenticate(username=username, password=password)
-		if user is not None:
-			login(request, user)			
-			return redirect('core:home')
+		if user is not None:			
+			login(request, user)	
+			if(request.user.pk in [user.pk for user in Punter.objects.all()]):		
+				return redirect('core:home')
+			else:
+				return redirect('core:seller_home')
 		else:		
 			return HttpResponse("<h1>LOGIN ERROR</h1>")
 

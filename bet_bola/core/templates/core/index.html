@@ -97,7 +97,7 @@
 
             <h4>Registro</h4>
             <div class="row">
-                <form action="TODO" method="POST">{% csrf_token %} {{ form_punter.as_p}}
+                <form action="{% url 'user:create_punter' %}" method="POST">{% csrf_token %} {{ form_punter.as_p}}
                     <div class="row">
                         <div class="col s12">
                             <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Cadastrar</button>

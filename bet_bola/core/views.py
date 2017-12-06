@@ -33,6 +33,14 @@ class Home(TemplateResponseMixin, View):
 		context = {'games': self.games ,'championships': self.championships,'form': self.form, 'form_punter': self.form_punter}
 		return self.render_to_response(context)
 
+
+class SellerHome(TemplateResponseMixin, View):
+	template_name = 'core/seller_home.html'		
+
+	def get(self, request, *args, **kwargs):				
+		context = {}
+		return self.render_to_response(context)
+
 class CotationsView(View):
 	
 	def get(self, request, *args, **kwargs):
@@ -78,7 +86,7 @@ class CreateTicketView(View):
 	def post(self, request, *args, **kwargs):
 		#request.session.flush()
 		if request.user.is_authenticated:
-			ticket = BetTicket(punter=Punter.objects.get(pk=request.user.id), seller=None, 
+			ticket = BetTicket(punter=Punter.objects.get(pk=request.user.pk), seller=None, 
 			payment=Payment.objects.create(), 
 			reward=Reward.objects.create(value=100), 
 			value=int(request.POST['ticket_value']) )
@@ -121,3 +129,39 @@ class GameListView(ListView):
 class ChampionshipListView(ListView):
 	model = Championship
 	template_name = 'core/championship_list.html'	
+
+
+class Validar(View):
+	
+	def get(self, request):
+		pass
+
+	def post(self, request):
+		if request.user.has_perm('core.can_validate_payment'):
+			pk = int(request.POST['ticket'])
+			if pk in [ticket.pk for ticket in BetTicket.objects.all()]:
+				ticket = BetTicket.objects.get(pk = pk)
+				ticket.ticket_valid(request.user)
+				return HttpResponse("<h1>Ticket Validate</h1>")
+			else:			
+				return HttpResponse("<h1>There's no such a ticket</h1>")	
+		else:
+			return HttpResponse("<h1>User has not permission </h1>")	
+
+
+class PunterPayment(View):
+	
+	def get(self, request):
+		pass
+
+	def post(self, request):		
+		if request.user.has_perm('core.can_reward'):
+			pk = int(request.POST['ticket'])
+			if pk in [ticket.pk for ticket in BetTicket.objects.all()]:
+				ticket = BetTicket.objects.get(pk = pk)
+				ticket.reward_payment(request.user)
+				return HttpResponse("<h1>Payment paid</h1>")
+			else:
+				return HttpResponse("<h1>There's no such a betticket</h1>")
+		else:
+			return HttpResponse("<h1>User has not permission </h1>")	
