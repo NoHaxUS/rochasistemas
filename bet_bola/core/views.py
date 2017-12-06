@@ -84,16 +84,29 @@ class BetView(View):
 
 class CreateTicketView(View):
 	def post(self, request, *args, **kwargs):
-		#request.session.flush()
+		
 		if request.user.is_authenticated:
+			if 'ticket' not in request.session:
+				return JsonResponse({'status':403})
+
 			ticket = BetTicket(punter=Punter.objects.get(pk=request.user.pk), seller=None, 
 			payment=Payment.objects.create(), 
 			reward=Reward.objects.create(value=100), 
 			value=int(request.POST['ticket_value']) )
 			ticket.save()
 
+			
+
 			for game_id in request.session['ticket']:
-				ticket.cotations.add( Cotation.objects.get(pk=int(request.session['ticket'][game_id])) ) 
+				game_contation = None
+				try:
+					game_contation = Cotation.objects.get(pk=int(request.session['ticket'][game_id]))
+					#game_contation = Cotation.objects.get(pk=int(999999))
+				except Cotation.DoesNotExist:
+					return JsonResponse({'status':400})
+
+				ticket.cotations.add( game_contation )
+
 	
 			#return HttpResponseRedirect('/user')
 			return JsonResponse({'status':201})

@@ -9,6 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Bet Bola - Home</title>
     <link rel="stylesheet" href="{% static "css/materialize.css" %}">
+    <link rel="stylesheet" href="{% static "css/alertify.min.css" %}">
     <link rel="stylesheet" href="{% static "css/main.css" %}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
@@ -52,7 +53,7 @@
             <div class="row">
                 <form action="user/login/" method="POST">{% csrf_token %} {{ form.as_p }}
                     <div class="col s12">
-                        <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Entrar</button>
+                        <button class="btn waves-effect waves-light right" type="submit">Entrar</button>
                     </div>
                 </form>
             </div>
@@ -78,7 +79,7 @@
                     </div>
                     <div class="row">
                         <div class="col s12">
-                            <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Consultar</button>
+                            <button class="btn waves-effect waves-light right" type="submit">Consultar</button>
                         </div>
                     </div>
 
@@ -100,7 +101,7 @@
                 <form action="{% url 'user:create_punter' %}" method="POST">{% csrf_token %} {{ form_punter.as_p}}
                     <div class="row">
                         <div class="col s12">
-                            <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Cadastrar</button>
+                            <button class="btn waves-effect waves-light right" type="submit">Cadastrar</button>
                         </div>
                     </div>
                 </form>
@@ -326,7 +327,7 @@
                                     </div>
                                     <div class="col s12 center-align award-value-text">
                                         Ganho:
-                                        <span class="award-value">R$ 0</span>
+                                        <span class="award-value">R$ 0.00</span>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -347,8 +348,9 @@
     <script src="{% static "js/jquery-3.2.1.min.js" %}"></script>
     <script src="{% static "js/materialize.js" %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src="{% static "js/alertify.min.js" %}"></script>
     <script src="{% static "js/home.js" %}"></script>
-
+    
 
 </body>
 

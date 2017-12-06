@@ -40,17 +40,17 @@ $(document).ready(function () {
             e.preventDefault();
     
             if ($('.ticket-number-input').val() == '') {
-                alertify.alert('Erro', 'Você deve informar o número do ticket.')
+                alertify.alert('Erro', 'Você deve informar o número do ticket.');
             } else {
     
                 alert_msg = 'Confirma a validação do ticket? \n Essa ação não pode ser desfeita.'
                 alertify.confirm('Confirmação', alert_msg,
                     function () {
-                        alertify.success('Confirmação realizada')
+                        alertify.success('Confirmação realizada');
                         //TODO
                     },
                     function () {
-                        alertify.error('Cancelado')
+                        alertify.error('Cancelado');
                     });
             }
         });
@@ -66,11 +66,11 @@ $(document).ready(function () {
                 alert_msg = 'Confirma o pagamento do ticket? \n Essa ação não pode ser desfeita.'
                 alertify.confirm('Confirmação', alert_msg,
                     function () {
-                        alertify.success('Confirmação realizada')
+                        alertify.success('Confirmação realizada');
                         //TODO
                     },
                     function () {
-                        alertify.error('Cancelado')
+                        alertify.error('Cancelado');
                     });
             }
         });
@@ -93,7 +93,8 @@ $(document).ready(function () {
             $('.cotation-total').text( parseFloat( total.toFixed(2) ) );
     
             COTATION_TOTAL = parseFloat( total.toFixed(2) ) ;
-            //console.log(COTATION_TOTAL);
+            $('#ticket-bet-value').trigger('keyup');
+            
         }
     
         function AddBetToTicket(bet_info) {
@@ -149,9 +150,9 @@ $(document).ready(function () {
         $('#ticket-bet-value').keyup(function(data){
     
             var ticket_bet_value = parseFloat($(this).val());
-            
+        
             if( isNaN(ticket_bet_value) ){
-                $('.award-value').text('R$ 0');
+                $('.award-value').text('R$ 0.00');
             }else{
                 var award_value = (COTATION_TOTAL * ticket_bet_value).toFixed(2);
                 $('.award-value').text('R$ ' + award_value);
@@ -217,19 +218,37 @@ $(document).ready(function () {
         });
 
         $('.btn-bet-submit').on('click', function(){
-            
+            var ticket = Cookies.get('ticket_cookie');
+
             var ticket_value = $('#ticket-bet-value').val();
 
-            $.post('/bet_ticket/', {'ticket_value': ticket_value} , function(data, status, rq){
-                var dataJSON = jQuery.parseJSON(data);
-                if(dataJSON.status == 401){
-                    $('#modal-login').modal('open');
-                }
-                if(dataJSON.status == 201){
-                    alert('OK');
-                }
-                console.log(dataJSON.status);
-            }, 'text');
+            if(ticket == '{}'){
+                alertify.error("Nenhuma cota selecionada nessa sessão.");
+                COTATION_TOTAL = 0;
+                RenderTicket();
+                UpdateCotationTotal();
+            }else{
+
+                $.post('/bet_ticket/', {'ticket_value': ticket_value} , function(data, status, rq){
+                    
+                    var dataJSON = jQuery.parseJSON(data);
+
+                    if(dataJSON.status == 401){
+                        $('#modal-login').modal('open');
+                    }
+                    if(dataJSON.status == 403){
+                        console.log('test');
+                        alertify.error("Selecione cotas antes de apostar.");
+                    }
+                    if(dataJSON.status == 400){
+                        alertify.alert("Erro", "Erro ao tentar processar essa requisição. \n Por favor avise-nos pelo email: pabllobeg@gmail.com");
+                    }
+                    if(dataJSON.status == 201){
+                        alert('OK');
+                    }
+                    console.log(dataJSON.status);
+                }, 'text');
+            }
 
         });
 
