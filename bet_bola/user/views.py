@@ -27,7 +27,11 @@ class PunterHome(TemplateResponseMixin, View):
 
     def get(self, request, *args, **kwargs):
         bet_tickets = BetTicket.objects.filter(punter=request.user)
-        return self.render_to_response({'bet_tickets': bet_tickets})
+        context = list()
+        for i in range(len(bet_tickets)-1, -1,-1):
+            context.append(bet_tickets[i])
+
+        return self.render_to_response({'bet_tickets': context})
 
 
 class PunterCreate(FormView):
