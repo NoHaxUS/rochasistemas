@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User,Permission
 # Create your models here.
 
 class Generic_User(User):
@@ -13,6 +13,16 @@ class Generic_User(User):
 class Seller(Generic_User):
 	cpf = models.CharField(max_length=10)
 	address = models.CharField(max_length=75)
+
+	def save(self, *args, **kwargs):
+		self.clean()
+		self.set_password(self.password) #password encryption 
+		super(Seller, self).save()
+		
+		payment_permission = Permission.objects.get(codename='can_validate_payment')
+		reward_permission = Permission.objects.get(codename='can_reward')
+		self.user_permissions.add(payment_permission)
+		self.user_permissions.add(reward_permission)
 
 
 class Punter(Generic_User):
