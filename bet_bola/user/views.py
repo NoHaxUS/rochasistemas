@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth.forms import AuthenticationForm,PasswordChangeForm
 from django.views import View
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.edit import CreateView, FormView
+from django.contrib import messages
 from .forms.create_punter_form import CreatePunterForm
 from .models import Punter
 from core.models import Game, Championship, BetTicket
@@ -27,11 +28,13 @@ class PunterHome(TemplateResponseMixin, View):
 
     def get(self, request, *args, **kwargs):
         bet_tickets = BetTicket.objects.filter(punter=request.user)
+        change_password_form = PasswordChangeForm(request.user)
         context = list()
         for i in range(len(bet_tickets)-1, -1,-1):
             context.append(bet_tickets[i])
 
-        return self.render_to_response({'bet_tickets': context})
+
+        return self.render_to_response({'bet_tickets': context,'change_password_form': change_password_form})
 
 
 class PunterCreate(FormView):
@@ -86,3 +89,23 @@ class Logout(View):
         response = redirect('core:home')
         response.delete_cookie('ticket_cookie')
         return response
+
+
+class PasswordChange(View):
+    """
+    Provides users the ability to logout
+    """
+
+    def post(self, request, *args, **kwargs):
+
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)#this line makes the user log in automatically, after the password change
+            #messages.success(request, 'Your password was successfully updated!') WE HAVE TO TAKE A LOOK ON THIS METHOD MESSAGE
+            response = redirect('core:home')
+            response.delete_cookie('ticket_cookie')            
+            return response
+        else:
+            pass
+            #messages.error(request, 'Please correct the error below.')
