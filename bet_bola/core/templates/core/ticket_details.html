@@ -49,7 +49,7 @@
                     <div class="col s12 l10 hcenter white ticket-details">
                         <div class="row white">
                             <div class="details-header">
-                                <h5>Detalhes do Ticket #4343</h5>
+                                <h5>Detalhes do Ticket: {{ticket.pk}}</h5>
                             </div>
                         </div>
 
@@ -67,13 +67,13 @@
                         <div class="divider"></div>
                         <div class="row purple lighten-5">
                             <div class="col s4">
-                                Valor apostado: {{ticket.value}}
+                                Valor apostado: R$ {{ticket.value}}
                             </div>
                             <div class="col s4">
                                 Cota Total: {{ticket.cota_total}}
                             </div>
                             <div class="col s4">
-                                Ganho Possível: R$ 300
+                                Ganho Possível: R$ {{ticket.reward.value}}
                             </div>
                         </div>
                         <div class="divider"></div>
@@ -89,15 +89,24 @@
                         </div>
                         <div class="row white">
                             <div class="col s12 l10 hcenter">
+
                                 {% for cotation in ticket.cotations.all %}
+
                                 <div class="col s4">
                                     Jogo: {{cotation.game}}
                                 </div>
                                 <div class="col s4">
-                                    Cota Apostada: {{cotation.value}}
+                                    Cota: {{cotation.name}} : {{cotation.value}}<br>
                                 </div>
                                 <div class="col s4">
-                                    Status da Cota: {{cotation.status}}
+                                    Status da Cota:
+                                    {% if cotation.winning %}
+                                        Você acertou.
+                                    {% elif cotation.winning ==  None %}
+                                        Jogo não aconteceu ainda.
+                                    {% else %}
+                                        Você Perdeu.
+                                    {% endif %}
                                 </div>
                                 {%endfor%}
                                 
