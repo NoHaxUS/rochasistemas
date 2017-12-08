@@ -62,7 +62,7 @@ class BetTicket(models.Model):
 
 
 	def ticket_valid(self, user):
-		self.payment.status_payment = PAYMENT_STATUS[0][1]
+		self.payment.status_payment = PAYMENT_STATUS[1][1]
 		self.payment.who_set_payment = Seller.objects.get(pk=user.pk)
 		self.payment.save()
 
