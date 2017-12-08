@@ -67,7 +67,7 @@ class BetTicket(models.Model):
 		self.payment.save()
 
 	def reward_payment(self, user):
-		self.reward.status_reward = REWARD_STATUS[0][1]
+		self.reward.status_reward = REWARD_STATUS[1][1]
 		self.reward.who_rewarded = Seller.objects.get(pk=user.pk)
 		self.reward.save()
 
