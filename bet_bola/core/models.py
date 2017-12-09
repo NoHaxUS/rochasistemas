@@ -147,6 +147,8 @@ class Cotation(models.Model):
 	winning = models.BooleanField(default=False)
 	is_standard = models.BooleanField(default=False)
 	kind = models.CharField(max_length=100)
+	handicap = models.FloatField(blank = True, null = True)
+	total = models.FloatField(blank = True, null = True)
 	objects = GamesManager()
 	
 	@staticmethod
@@ -154,17 +156,16 @@ class Cotation(models.Model):
 		for game in Game.objects.all():
 			cont = 0
 			r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN)			
-			# if r.json().get('data').__len__() >= 1:
-			# 	if r.json().get('data')[0]['bookmaker']['data'].__len__() >= 1:
-			# 		for cotation in r.json().get('data')[0]['bookmaker']['data'][0]['odds']['data']:				
-			# 			Cotation(name=cotation['label'],value=cotation['value'],game=game, is_standard = True).save()									
+			game.cotations.all().delete()							
 			for kind in r.json().get('data'):
 				kind_name = kind['name']				
 				for cotation in kind['bookmaker']['data'][0]['odds']['data']:
 					if cont == 0:
-						Cotation(name=cotation['label'],value=cotation['value'],game=game, is_standard = True, kind = kind_name).save()						
+						Cotation(name=cotation['label'],value=cotation['value'],game=game, is_standard = True, kind = kind_name,
+							handicap=cotation['handicap'], total=cotation['total']).save()						
 					else:
-						Cotation(name=cotation['label'],value=cotation['value'],game=game, is_standard = False, kind = kind_name).save()
+						Cotation(name=cotation['label'],value=cotation['value'],game=game, is_standard = False, kind = kind_name,
+							handicap=cotation['handicap'], total=cotation['total']).save()
 				cont+=1
 
 
