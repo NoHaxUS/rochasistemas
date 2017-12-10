@@ -76,7 +76,7 @@ class Login(View):
             else:
                 return redirect('core:seller_home')
         else:
-            return HttpResponse("<h1>LOGIN ERROR</h1>")
+            return HttpResponseRedirect('/#/login_error')
 
 
 class Logout(View):

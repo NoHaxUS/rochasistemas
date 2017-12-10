@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 
-{% load static %} {% load filters %}
+{% load static %} 
+{% load filters %}
 
 <head>
     <meta charset="UTF-8">
@@ -109,7 +110,7 @@
         </div>
     </div>
     <!-- end Modal Register -->
-
+    
     <nav>
         <div class="nav-wrapper green-ge">
             <a href="{% url 'core:home' %}" class="brand-logo white-text">Bet Bola</a>
@@ -135,10 +136,18 @@
                 </li>
                 {% else %}
                 <li class="user-logged-name">Olá, {{user}}</li>
+                {% if is_seller %}
+                <li>
+                    <a href="/seller/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                        Painel do Vendedor</a>
+                </li>
+                {% else %}
                 <li>
                     <a href="/user/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                         Painel do Cliente</a>
                 </li>
+                {% endif %}
+
                 <li>
                     <a href="/user/logout" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                         logout</a>

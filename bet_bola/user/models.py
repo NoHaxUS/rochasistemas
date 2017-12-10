@@ -14,6 +14,9 @@ class Seller(Generic_User):
 	cpf = models.CharField(max_length=10)
 	address = models.CharField(max_length=75)
 
+	def is_seller(self):
+		return True
+
 	def save(self, *args, **kwargs):
 		self.clean()
 		self.set_password(self.password) #password encryption 

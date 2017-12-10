@@ -15,7 +15,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
 from .models import Cotation,BetTicket,Game,Championship,Payment,Reward
 from user.forms.create_punter_form import CreatePunterForm
-from user.models import Punter
+from user.models import Punter,Seller
 from .forms import BetTicketForm
 from django.core import serializers
 
@@ -29,9 +29,52 @@ class Home(TemplateResponseMixin, View):
 	championships = Championship.objects.all()
 	games = Game.objects.able_games()
 
-	def get(self, request, *args, **kwargs):				
-		context = {'games': self.games ,'championships': self.championships,'form': self.form, 'form_punter': self.form_punter}
+	def get(self, request, *args, **kwargs):
+
+		is_seller = None
+		if request.user.is_authenticated:
+			try:
+				seller = Seller.objects.get(pk=int(request.user.pk))
+				is_seller = seller.is_seller()
+			except Seller.DoesNotExist:
+				is_seller = False
+
+		context = {'games': self.games ,'championships': self.championships,'form': self.form, 'form_punter': self.form_punter, 'is_seller':is_seller}
+		
 		return self.render_to_response(context)
+
+"""
+class GameChampionship(TemplateResponseMixin, View):
+	template_name = 'core/index.html'	
+	form = AuthenticationForm()
+	form_punter = CreatePunterForm()
+	championships = Championship.objects.all()
+	games = Game.objects.able_games()
+
+	def get(self, request, *args, **kwargs):
+
+		is_seller = None
+		if request.user.is_authenticated:
+			try:
+				seller = Seller.objects.get(pk=int(request.user.pk))
+				is_seller = seller.is_seller()
+			except Seller.DoesNotExist:
+				is_seller = False
+
+		context = {'games': self.games ,'championships': self.championships,'form': self.form, 'form_punter': self.form_punter, 'is_seller':is_seller}
+		
+		return self.render_to_response(context)
+"""
+
+
+class GameChampionship(Home, View):
+	def get(self, request, *args, **kwargs):
+		print(request.user.pk)
+
+		championship = get_object_or_404(Championship, pk=int(self.kwargs["pk"]) )	
+		self.games = Game.objects.able_games().filter(championship = championship)
+		return HttpResponse("OK")
+		return super(GameChampionship, self).get(self, request, *args, **kwargs)
 
 
 class SellerHome(TemplateResponseMixin, View):
@@ -115,13 +158,6 @@ class CreateTicketView(View):
 		else:
 			return JsonResponse({'status':401})
 			
-		
-
-class GameChampionship(Home):
-	def get(self, request, *args, **kwargs):
-		championship = get_object_or_404(Championship, pk=self.kwargs["pk"])		
-		self.games = Game.objects.able_games().filter(championship = championship)
-		return super(GameChampionship, self).get(self, request, *args, **kwargs)
 
 
 class BetTicketDetail(TemplateResponseMixin, View):
@@ -133,23 +169,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 		return self.render_to_response(context)	
 
 
-class GameListView(ListView):
-	login_url='user/championship/'
-	redirect_field_name = 'redirect_to'
-	queryset = Game.objects.able_games()
-	model = Game
-	template_name = 'core/game_list.html'	
-
-
-class ChampionshipListView(ListView):
-	model = Championship
-	template_name = 'core/championship_list.html'	
-
-
 class Validar(View):
-	
-	def get(self, request):
-		pass
 
 	def post(self, request):
 		if request.user.has_perm('core.can_validate_payment'):
@@ -165,9 +185,6 @@ class Validar(View):
 
 
 class PunterPayment(View):
-	
-	def get(self, request):
-		pass
 
 	def post(self, request):		
 		if request.user.has_perm('core.can_reward'):

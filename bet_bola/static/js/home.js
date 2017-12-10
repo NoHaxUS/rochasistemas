@@ -32,6 +32,14 @@ $(document).ready(function () {
         RenderTicket();
         UpdateCotationTotal();
     /** END GENERAL INITIALIZATIONS **/
+
+    /** ERROR MESSAGES**/
+    var type = window.location.hash.substr(1);
+    console.log(type)
+    if(type == '/login_error'){
+        alertify.alert("Erro", "Login ou senha incorretos.")
+    }
+    /* END ERROR MESSAGES */
     
 
     /** MATERIALIZE COMPONENTS INITIALIZATIONS **/
