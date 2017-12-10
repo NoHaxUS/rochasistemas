@@ -26,11 +26,15 @@ class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'	
 	form = AuthenticationForm()
 	form_punter = CreatePunterForm()
-	championships = Championship.objects.all()
 	games = Game.objects.able_games()
+	lista = list()
 
 	def get(self, request, *args, **kwargs):				
-		context = {'games': self.games ,'championships': self.championships,'form': self.form, 'form_punter': self.form_punter}
+		for i in Championship.objects.all():
+			if i.my_games.able_games().count() > 0:
+				self.lista.append(i)
+
+		context = {'games': self.games ,'championships': self.lista,'form': self.form, 'form_punter': self.form_punter}
 		return self.render_to_response(context)
 
 
