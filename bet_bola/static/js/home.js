@@ -102,14 +102,15 @@ $(document).ready(function () {
             for (var key in ticket){
                 var cotation_value = parseFloat( (ticket[key]['cotation_value']).replace(',','.') );
                 total = total * cotation_value;
-                //console.log( ticket[key]['cotation_value'].replace(',','.') );
             }
             if(total == 1) total = 0;
-            
+
             $('.cotation-total').text( parseFloat( total.toFixed(2) ) );
     
             COTATION_TOTAL = parseFloat( total.toFixed(2) ) ;
+
             $('#ticket-bet-value').trigger('keyup');
+            console.log('Entrou aqui');
 
         }
     /** END ATUALIZAR VALOR DE TOTAL DAS COTAS **/
@@ -169,7 +170,7 @@ $(document).ready(function () {
     
        
     /** ATUALIZAR VALOR DA APOSTA AO TECLAR **/
-        $('#ticket-bet-value').keyup(function(data){
+        $('.ticket-bet-value').keyup(function(data){
     
             var ticket_bet_value = parseFloat($(this).val());
         
@@ -179,6 +180,7 @@ $(document).ready(function () {
                 var award_value = (COTATION_TOTAL * ticket_bet_value).toFixed(2);
                 $('.award-value').text('R$ ' + award_value);
             }
+            console.log('Disparado');
         });
      /** END ATUALIZAR VALOR DA APOSTA AO TECLAR **/
 
