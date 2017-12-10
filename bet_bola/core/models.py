@@ -7,7 +7,7 @@ import requests
 import decimal
 # Create your models here.
 
-TOKEN='ndvsLZTo8pZxduyPtIHRkGRMkGpem2uHIGYwaz9sZxzppz6EZUhSjsv7g9Ru'
+TOKEN='OOabOgBw4awrsYQ51DIWz3i4ILKWxBAXqLQI5b01xzZuoKhyBHCcdINUbIeM'
 
 BET_TICKET_STATUS = (
 		('WAITING_RESULT', 'Aguardando Resultados.'),
@@ -108,6 +108,8 @@ class BetTicket(models.Model):
 		return str(self.pk)
 
 	class Meta:
+		verbose_name = 'Ticket'
+		verbose_name_plural = 'Tickets'
 		permissions = (
 				('can_validate_payment', "Can validate user ticket"),
 				('can_reward', "Can reward a user"),
@@ -141,6 +143,10 @@ class Game(models.Model):
 
 			r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?page="+str((i+1))+"&api_token="+TOKEN+"&include=localTeam,visitorTeam")
 	
+	class Meta:
+		verbose_name = 'Jogo'
+		verbose_name_plural = 'Jogos'
+
 	def __str__(self):
 		return self.name	
 
@@ -164,6 +170,10 @@ class Reward(models.Model):
 	reward_date = models.DateTimeField(null=True)
 	value = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 	status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1])
+
+	class Meta:
+		verbose_name = 'Recompensa'
+		verbose_name_plural = 'Recompensas'
 
 
 class Cotation(models.Model):
@@ -210,6 +220,9 @@ class Cotation(models.Model):
 				cont+=1
 
 
+	class Meta:
+		verbose_name = 'Cota'
+		verbose_name_plural = 'Cotas'
 
 	def __str__(self):
 		return str(self.value)
@@ -219,3 +232,7 @@ class Payment(models.Model):
 	who_set_payment = models.ForeignKey('user.Seller', null=True)
 	status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1])
 	payment_date = models.DateTimeField(null=True)
+
+	class Meta:
+		verbose_name = 'Pagamento'
+		verbose_name_plural = 'Pagamentos'
