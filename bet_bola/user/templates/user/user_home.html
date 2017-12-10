@@ -48,34 +48,55 @@
         </div>
     </div>
     <!-- end Password Change -->
-
     <nav>
-
         <div class="nav-wrapper green-ge">
-            <a href="#!" class="brand-logo white-text">Bet Bola</a>
+            <a href="{% url 'core:home' %}" class="brand-logo white-text">Bet Bola</a>
             <a href="#" data-activates="mobile-menu" class="button-collapse">
                 <i class="material-icons">menu</i>
             </a>
             <ul class="right hide-on-med-and-down">
-
+                {% if user.is_anonymous %}
                 <li>
-                    <span class="welcome">Seja bem vindo, Pablo </span>
-                      
+                    <a href="#modal-login" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
+                        Login</a>
+
                 </li>
+
                 <li>
                     <a href="#modal-register" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
-                         Sair</a>
+                        Cadastre-se</a>
                 </li>
 
+                <li>
+                    <a href="#modal-check-ticket" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
+                        Consultar Bilhete</a>
+                </li>
+                {% else %}
+                <li class="user-logged-name">Olá, {{user}}</li>
+                <li>
+                    <a href="/user/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                        Painel do Cliente</a>
+                </li>
+                <li>
+                    <a href="/user/logout" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                        logout</a>
+                </li>
+                {% endif %}
 
             </ul>
             <ul class="side-nav" id="mobile-menu">
 
-                <li>    
-                    <span class="welcome">Seja bem vindo, Pablo </span>
+                <li>
+                    <a href="#modal-login" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
+                        Login</a>
                 </li>
                 <li>
-                    <a href="cadastro.html" class="waves-effect waves-light btn white grey-text text-darken-4 round">Sair</a>
+                    <a href="#modal-register" class="waves-effect waves-light btn white grey-text text-darken-4">
+                        Cadastre-se</a>
+                </li>
+                <li>
+                    <a href="consultar.html" class="waves-effect waves-light btn white grey-text text-darken-4">
+                        Consultar Bilhete</a>
                 </li>
 
             </ul>
@@ -100,7 +121,7 @@
                             <ul class="championship-list">
 
                                 <li class="center-align">
-                                    <a href="#" class="">Minhas Apostas</a>
+                                    <a href="/user/home" class="">Minhas Apostas</a>
                                 </li>
                                 <li class="center-align">
                                     <a href="#modal-change-password" class="">Mudar Senha</a>
@@ -123,7 +144,7 @@
                     <ul class="championship-list">
                         <li class="center-align valign-wrapper">
                             <!-- <i class="material-icons">chevron_right</i> -->
-                            <a href="#" class="modal-trigger">Minhas Apostas</a>
+                            <a href="/user/home" class="modal-trigger">Minhas Apostas</a>
                         </li>
                         <li class="center-align">
                             <a href="#modal-change-password" class="modal-trigger">Mudar Senha</a>
@@ -160,7 +181,9 @@
                                     <td>
                                         {{ ticket.payment.status_payment }}
                                     </td>
-                                    <td><i class="material-icons">open_in_new</i></td>
+                                    <td>
+                                        <a href="/bet_ticket/{{ ticket.pk }}"><i class="material-icons">open_in_new</i> </a>
+                                        </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

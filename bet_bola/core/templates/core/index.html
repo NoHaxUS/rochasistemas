@@ -136,11 +136,11 @@
                 {% else %}
                 <li class="user-logged-name">Olá, {{user}}</li>
                 <li>
-                    <a href="user/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                    <a href="/user/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                         Painel do Cliente</a>
                 </li>
                 <li>
-                    <a href="user/logout" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                    <a href="/user/logout" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                         logout</a>
                 </li>
                 {% endif %}
@@ -273,6 +273,7 @@
 
                             <tbody>
                                 {% for game in games %}
+                                    {% if game.cotations.all.count > 0 %}
                                 <tr>
                                     <td>
                                         <div class="hide table-game-id">{{game.pk}}</div>
@@ -294,6 +295,7 @@
                                         <i class="small material-icons">add</i>
                                     </td>
                                 </tr>
+                                    {% endif %}
                                 {% endfor %}
                             </tbody>
                         </table>
