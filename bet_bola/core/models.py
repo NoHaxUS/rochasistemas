@@ -48,7 +48,32 @@ PAYMENT_STATUS = (
 		('WATING_PAYMENT', 'Aguardando Pagamento do Ticket.'),
 		('PAID', 'Pago.'),
 	)
-		
+COTATION_NAME = {
+	"Team To Score First": "Time a Marcar Primeiro",
+	"Result/Total Goals": "Resultado/Total de Gols",
+	"Correct Score 1st Half": "Resultado Exato Primeiro Tempo",
+	"Both Teams To Score": "2 Times Marcam",
+	"3Way Result 1st Half": "Vencedor Primeiro Tempo",
+	"Total - Away": "Total de Gols do Visitante",
+	"Double Chance": "Dupla Chance",
+	"Total - Home": "Total de Gols da Casa",
+	"Over/Under 1st Half": "Total de Gols do Primeiro Tempo, Acima/Abaixo",
+	"Win To Nil": "Vencedor Não Tomará Gols",
+	"Correct Score": "Resultado Exato",
+	"3Way Result": "Vencedor do Encontro",
+	"Away Team Score a Goal": "Visitante Marca ao Menos Um Gols",
+	"Home/Away": "Casa/Visitante",
+	"Over/Under": "Total de Gols no Encontro, Acima/Abaixo",
+	"Highest Scoring Half": "Etapa com mais gols",
+	"Clean Sheet - Home": "Time da Casa Nao Tomará Gols",
+	"Clean Sheet - Away": "Time Visitante Nao Tomará Gols",
+	"Corners Over Under": "Escanteios, Acima/Abaixo",
+	"HT/FT Double": "Intervalo/Final de Jogo",
+	"Results/Both Teams To Score": "Resultado/2 Times Marcam",
+	"Home Team Score a Goal": "Time da Casa Marca",
+	"Win Both Halves": "Vencedor nas Duas Etapas",
+	"Exact Goals Number": "Exato Numero de Gols",
+}	
 
 class BetTicket(models.Model):	
 	punter = models.ForeignKey('user.Punter', related_name='my_bet_tickets')
@@ -97,24 +122,25 @@ class Game(models.Model):
 	objects = GamesManager()
 	
 	@staticmethod
-	def consuming_api():
-		first_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day - 1))
-		second_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day))
-
+	def consuming_api(first_date, second_date):
 		r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?api_token="+TOKEN+"&include=localTeam,visitorTeam")
-		
-		for game in r.json().get('data'):
-			if Championship(pk = game["league_id"]) in Championship.objects.all():
-				if Game(pk = game["id"]) in Game.objects.all():
-					g = Game.objects.get(pk = game["id"])
-					g.status_game = game['time']['status']
-					g.save()
-					
-				else:
-					Game(pk=game['id'],
-						start_game_date=datetime.strptime(game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
-						name=game['localTeam']['data']['name']+" x " +game['visitorTeam']['data']['name'], championship=Championship.objects.get(pk=game["league_id"]), status_game=game['time']["status"]).save() 
+	
+		for i in range(1,r.json().get('meta')['pagination']['total_pages']):			
 
+			for game in r.json().get('data'):
+				if Championship(pk = game["league_id"]) in Championship.objects.all():
+					if Game(pk = game["id"]) in Game.objects.all():
+						g = Game.objects.get(pk = game["id"])
+						g.status_game = game['time']['status']
+						g.save()
+						
+					else:
+						Game(pk=game['id'],
+							start_game_date=datetime.strptime(game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
+							name=game['localTeam']['data']['name']+" x " +game['visitorTeam']['data']['name'], championship=Championship.objects.get(pk=game["league_id"]), status_game=game['time']["status"]).save() 
+
+			r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?page="+str((i+1))+"&api_token="+TOKEN+"&include=localTeam,visitorTeam")
+	
 	def __str__(self):
 		return self.name	
 
@@ -160,12 +186,27 @@ class Cotation(models.Model):
 			for kind in r.json().get('data'):
 				kind_name = kind['name']				
 				for cotation in kind['bookmaker']['data'][0]['odds']['data']:
-					if cont == 0:
-						Cotation(name=cotation['label'],value=cotation['value'],game=game, is_standard = True, kind = kind_name,
-							handicap=cotation['handicap'], total=cotation['total']).save()						
-					else:
-						Cotation(name=cotation['label'],value=cotation['value'],game=game, is_standard = False, kind = kind_name,
-							handicap=cotation['handicap'], total=cotation['total']).save()
+					if kind_name != 'Asian Handicap' and kind_name != 'Handicap Result' and kind_name != 'Handicap' and kind_name != '3Way Handicap':
+						if cont == 0:
+							c = Cotation(name=cotation['label'],value=cotation['value'],game=game, is_standard = True,
+								handicap=cotation['handicap'], total=cotation['total'])
+							if kind_name in COTATION_NAME.keys():
+								c.kind = COTATION_NAME[kind_name]
+								c.save()
+							else:
+								c.kind = kind_name
+								c.save()
+
+						else:
+							c = Cotation(name=cotation['label'],value=cotation['value'],game=game, is_standard = False,
+								handicap=cotation['handicap'], total=cotation['total'])
+							if kind_name in COTATION_NAME.keys():
+								c.kind = COTATION_NAME[kind_name]
+								c.save()
+							else:
+								c.kind = kind_name
+								c.save()
+
 				cont+=1
 
 
