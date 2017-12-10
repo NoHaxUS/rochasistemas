@@ -207,3 +207,6 @@ nav .brand-logo{
 .more_cotations_button{
     cursor: pointer;
 }
+.collapsible{
+    margin-top: 0;
+}

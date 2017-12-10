@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    
+    /** FUNCTION DEFINITIONS **/
         function getCookie(name) {
             var cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -20,22 +20,37 @@ $(document).ready(function () {
             // these HTTP methods do not require CSRF protection
             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
         }
-    
+    /** END FUNCTION DEFINITIONS **/
+
+
+    /** GENERAL INITIALIZATIONS **/
         var csrftoken = getCookie('csrftoken');
+
+        if (Cookies.get('ticket_cookie') == undefined) {
+            Cookies.set('ticket_cookie', {});
+        }
+        RenderTicket();
+        UpdateCotationTotal();
+    /** END GENERAL INITIALIZATIONS **/
     
-        //Ajax Setup
-        $.ajaxSetup({
-            beforeSend: function (xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                }
-            }
-        });
-    
+
+    /** MATERIALIZE COMPONENTS INITIALIZATIONS **/
         $(".button-collapse").sideNav();
         $('.modal').modal();
+    /** MATERIALIZE COMPONENTS INITIALIZATIONS **/
+
+    /** AJAX SETUP **/
+        //Ajax Setup
+         $.ajaxSetup({
+              beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                  }
+            }
+        });
+    /** END AJAX SETUP  **/
     
-        // Ticket validation confirmation
+    /** SETAR COMO PAGO UM TICKET **/
         $('.seller-validate-bet').click(function (e) {
             e.preventDefault();
     
@@ -54,8 +69,9 @@ $(document).ready(function () {
                     });
             }
         });
+    /** END SETAR COMO PAGO UM TICKET **/
     
-    
+    /** MARCAR COMO RECOMPENSA PAGA AO GANHADOR **/
         $('.seller-pay-bet').click(function (e) {
             e.preventDefault();
     
@@ -74,11 +90,10 @@ $(document).ready(function () {
                     });
             }
         });
+    /** END MARCAR RECOMPENSA PAGA AO GANHADOR **/
     
-        // define cookie if it's the first time on the page
-        if (Cookies.get('ticket_cookie') == undefined) {
-            Cookies.set('ticket_cookie', {});
-        }
+
+    /** ATUALIZAR VALOR DE TOTAL DAS COTAS **/
     
         function UpdateCotationTotal(){
             ticket = Cookies.getJSON('ticket_cookie');
@@ -90,13 +105,17 @@ $(document).ready(function () {
                 //console.log( ticket[key]['cotation_value'].replace(',','.') );
             }
             if(total == 1) total = 0;
+            
             $('.cotation-total').text( parseFloat( total.toFixed(2) ) );
     
             COTATION_TOTAL = parseFloat( total.toFixed(2) ) ;
             $('#ticket-bet-value').trigger('keyup');
 
         }
+    /** END ATUALIZAR VALOR DE TOTAL DAS COTAS **/
     
+
+    /** ADICIONAR APOSTA AO TICKET **/
         function AddBetToTicket(bet_info) {
             var ticket = Cookies.getJSON('ticket_cookie'); // {}
             ticket[bet_info['game_id']] = bet_info;
@@ -106,7 +125,10 @@ $(document).ready(function () {
             RenderTicket();
             $('#ticket-bet-value').trigger('keyup');
         }
+    /** END ADICIONAR APOSTA AO TICKET **/
     
+
+    /** REDERIZAR LISTA TICKETS ATUALZIADA **/
         function RenderTicket() {
     
             ticket = Cookies.getJSON('ticket_cookie');
@@ -142,11 +164,11 @@ $(document).ready(function () {
             }
     
         }
+        /** END REDERIZAR LISTA TICKETS ATUALZIADA **/
     
     
-        RenderTicket();
-        UpdateCotationTotal();
-    
+       
+    /** ATUALIZAR VALOR DA APOSTA AO TECLAR **/
         $('#ticket-bet-value').keyup(function(data){
     
             var ticket_bet_value = parseFloat($(this).val());
@@ -158,7 +180,9 @@ $(document).ready(function () {
                 $('.award-value').text('R$ ' + award_value);
             }
         });
-    
+     /** END ATUALIZAR VALOR DA APOSTA AO TECLAR **/
+
+     /** DELETAR COTA  **/
         $(document).on("click",'.bet-delete', function(){
             ticket = Cookies.getJSON('ticket_cookie');
     
@@ -180,13 +204,9 @@ $(document).ready(function () {
             });
 
         });
+     /** END DELETAR COTA **/   
 
-        $('.more-cotation').click(function(e){
-
-
-
-        });
-    
+     /** AO CLICAR EM UMA COTA **/
         $('.cotation').click(function (e) {
     
             var game_id = $(this).parent().siblings().first().children('.table-game-id').text().trim();
@@ -216,7 +236,10 @@ $(document).ready(function () {
                 }, 'text');
     
         });
+    /** AO CLICAR EM UMA COTA **/
 
+
+    /** SUBMETER TICKET DE APOSTA **/
         $('.btn-bet-submit').on('click', function(){
             var ticket = Cookies.get('ticket_cookie');
 
@@ -253,6 +276,10 @@ $(document).ready(function () {
             }
 
         });
+
+    /** END SUBMETER TICKET DE APOSTA **/
+
+    /** BOTÂO MAIS COTAÇÔES **/
 
         $('.more_cotations_button').on('click', function(e){
 
@@ -297,6 +324,10 @@ $(document).ready(function () {
             }, 'text');
                 
         });
+    /** END BOTÃO MAIS COTAÇOES **/
+
+
+    /** AO CLICAR EM UMA COTA DO MENU MAIS COTAS **/
 
         $(document).on('click', '.more-cotation',function(){
             var first_tr = $(this).parent().parent().children().first();
@@ -324,7 +355,9 @@ $(document).ready(function () {
 
         });
 
-    
+    /** AO CLICAR EM UMA COTA DO MENU MAIS COTAS **/
+
+    /** CONSULTAR TICKET **/
         $('#check-ticket-form').on('submit', function(){
             
             var ticket_num = $('.check-ticket-input').val();
@@ -338,6 +371,7 @@ $(document).ready(function () {
             }
             
         });
+    /** END CONSULTAR COTAS **/
 
 
     });

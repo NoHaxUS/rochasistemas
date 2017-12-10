@@ -7,7 +7,7 @@ import requests
 import decimal
 # Create your models here.
 
-TOKEN='ndvsLZTo8pZxduyPtIHRkGRMkGpem2uHIGYwaz9sZxzppz6EZUhSjsv7g9Ru'
+TOKEN='OOabOgBw4awrsYQ51DIWz3i4ILKWxBAXqLQI5b01xzZuoKhyBHCcdINUbIeM'
 
 BET_TICKET_STATUS = (
 		('WAITING_RESULT', 'Aguardando Resultados.'),

@@ -153,11 +153,11 @@
                         Login</a>
                 </li>
                 <li>
-                    <a href="#modal-register" class="waves-effect waves-light btn white grey-text text-darken-4">
+                    <a href="#modal-register" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
                         Cadastre-se</a>
                 </li>
                 <li>
-                    <a href="consultar.html" class="waves-effect waves-light btn white grey-text text-darken-4">
+                    <a href="#modal-check-ticket" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
                         Consultar Bilhete</a>
                 </li>
 
@@ -181,13 +181,11 @@
                             <i class="material-icons">assistant_photo</i>Campeonatos</div>
                         <div class="collapsible-body white">
                             <ul class="championship-list">
-
+                                {%for championship in championships%}
                                 <li class="center-align">
-                                    <a href="#" class="">Série A</a>
+                                    <a href="{% url 'core:game_championship' pk=championship.pk%}" class="">{{ championship }}</a>
                                 </li>
-                                <li class="center-align">
-                                    <a href="#" class="">Série B</a>
-                                </li>
+                                {%endfor%}
                             </ul>
                         </div>
                     </li>
@@ -201,35 +199,35 @@
 
                             <div class="make-bet">
                                 <div class="row">
-                                    <form class="col s12" action="teste.php">
+                                    <form class="col s12">
                                         <div class="row">
-                                            <div class="col s12 center-align bet-ticket-value-text-m">
+                                            <div class="col s12 center-align bet-ticket-value-text">
                                                 Valor da Aposta
                                             </div>
                                             <div class="input-field col s12 bet-ticket-input">
-                                                <input placeholder="Digite aqui" id="bet-ticket-value" type="number" class="validate center-align">
+                                                <input placeholder="Digite aqui" id="ticket-bet-value" type="number" class="validate center-align">
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col s12 center-align cotation-sum">
-                                                Cota:
-                                                <span class="cota-value">2.3</span>
+                                                Cota Total:
+                                                <span class="cotation-total">0</span>
                                             </div>
                                             <div class="col s12 center-align award-value-text">
                                                 Ganho:
-                                                <span class="award-value"> R$ 300 </span>
+                                                <span class="award-value">R$ 0.00</span>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col s12 center-align">
-                                                <button class="btn waves-effect waves-light btn-bet-submit" type="submit">Apostar
+                                                <button class="btn waves-effect waves-light btn-bet-submit" type="button">Apostar
                                                     <i class="material-icons right">check</i>
                                                 </button>
                                             </div>
                                         </div>
                                     </form>
                                 </div>
-                            </div>
+                            </div><!-- end make-bet -->
 
                         </div>
                         <!-- Collapse Body -->
@@ -302,6 +300,7 @@
                     </div>
 
                 </div>
+
                 <div class="col s2 hide-on-med-and-down hoverable white">
                     <!-- Ticket bets -->
                     <div class="ticket-header blue-c white-text center-align">
@@ -341,9 +340,9 @@
                                 </div>
                             </form>
                         </div>
-                    </div>
-                </div>
-                <!-- end ticket col -->
+                    </div><!-- end make-bet -->
+
+                </div><!-- end ticket col -->
             </div>
     </main>
 
