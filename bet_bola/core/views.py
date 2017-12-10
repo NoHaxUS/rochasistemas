@@ -92,7 +92,7 @@ class CreateTicketView(View):
 			ticket = BetTicket(
 				punter=Punter.objects.get(pk=request.user.pk), 
 				seller=None,
-				value=int(request.POST['ticket_value']), 
+				value=float(request.POST['ticket_value']), 
 				payment=Payment.objects.create(), 
 				reward=Reward.objects.create())
 			ticket.save()
@@ -108,7 +108,7 @@ class CreateTicketView(View):
 					return JsonResponse({'status':400})
 
 				ticket.cotations.add( game_contation )
-				ticket.reward.value = cotation_sum * int(request.POST['ticket_value'])
+				ticket.reward.value = cotation_sum * float(request.POST['ticket_value'])
 				ticket.reward.save()
 			return JsonResponse({'ticket_pk': ticket.pk ,'status':201})
 

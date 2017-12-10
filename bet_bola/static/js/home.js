@@ -324,6 +324,21 @@ $(document).ready(function () {
 
         });
 
+    
+        $('#check-ticket-form').on('submit', function(){
+            
+            var ticket_num = $('.check-ticket-input').val();
+            if (ticket_num == '') {
+                alertify.alert('Erro', 'Você deve informar o número do ticket.');
+            }else{
+                var Url = '/bet_ticket/' + ticket_num;
+                $(this).attr('action', Url);
+                $(this).submit();
+                console.log('HEY');
+            }
+            
+        });
+
 
     });
     
