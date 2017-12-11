@@ -27,6 +27,11 @@ class Seller(Generic_User):
 		self.user_permissions.add(payment_permission)
 		self.user_permissions.add(reward_permission)
 
+	class Meta:
+		verbose_name = 'Vendedor'
+		verbose_name_plural = 'Vendedores'
 
 class Punter(Generic_User):
-	pass
+	class Meta:
+		verbose_name = 'Apostador'
+		verbose_name_plural = 'Apostadores'

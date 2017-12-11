@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from .manager import GamesManager,CotationsManager
 from datetime import datetime
+from .manager import GamesManager,CotationsManager
 from user.models import Seller
 import requests
 import decimal
@@ -48,7 +48,7 @@ PAYMENT_STATUS = (
 		('WATING_PAYMENT', 'Aguardando Pagamento do Ticket.'),
 		('PAID', 'Pago.'),
 	)
-COTATION_NAME = {
+MARKET_NAME = {
 	"Team To Score First": "Time a Marcar Primeiro",
 	"Result/Total Goals": "Resultado/Total de Gols",
 	"Correct Score 1st Half": "Resultado Exato Primeiro Tempo",
@@ -74,6 +74,8 @@ COTATION_NAME = {
 	"Win Both Halves": "Vencedor nas Duas Etapas",
 	"Exact Goals Number": "Exato Numero de Gols",
 }	
+
+
 
 class BetTicket(models.Model):	
 	punter = models.ForeignKey('user.Punter', related_name='my_bet_tickets')
@@ -108,6 +110,8 @@ class BetTicket(models.Model):
 		return str(self.pk)
 
 	class Meta:
+		verbose_name = 'Ticket'
+		verbose_name_plural = 'Tickets'
 		permissions = (
 				('can_validate_payment', "Can validate user ticket"),
 				('can_reward', "Can reward a user"),
@@ -141,6 +145,10 @@ class Game(models.Model):
 
 			r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?page="+str((i+1))+"&api_token="+TOKEN+"&include=localTeam,visitorTeam")
 	
+	class Meta:
+		verbose_name = 'Jogo'
+		verbose_name_plural = 'Jogos'
+
 	def __str__(self):
 		return self.name	
 
@@ -165,6 +173,10 @@ class Reward(models.Model):
 	value = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 	status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1])
 
+	class Meta:
+		verbose_name = 'Recompensa'
+		verbose_name_plural = 'Recompensas'
+
 
 class Cotation(models.Model):
 	name = models.CharField(max_length=80)
@@ -179,37 +191,39 @@ class Cotation(models.Model):
 	
 	@staticmethod
 	def consuming_api():
+		from utils.utils import renaming_cotations
+
 		for game in Game.objects.all():
-			cont = 0
 			r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN)			
 			game.cotations.all().delete()							
 			for kind in r.json().get('data'):
 				kind_name = kind['name']				
 				for cotation in kind['bookmaker']['data'][0]['odds']['data']:
 					if kind_name != 'Asian Handicap' and kind_name != 'Handicap Result' and kind_name != 'Handicap' and kind_name != '3Way Handicap':
-						if cont == 0:
-							c = Cotation(name=cotation['label'],value=cotation['value'],game=game, is_standard = True,
+						if kind_name == '3Way Result':
+							c = Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']),value=cotation['value'],game=game, is_standard = True,
 								handicap=cotation['handicap'], total=cotation['total'])
-							if kind_name in COTATION_NAME.keys():
-								c.kind = COTATION_NAME[kind_name]
+							if kind_name in MARKET_NAME.keys():
+								c.kind = MARKET_NAME[kind_name]
 								c.save()
 							else:
 								c.kind = kind_name
 								c.save()
 
 						else:
-							c = Cotation(name=cotation['label'],value=cotation['value'],game=game, is_standard = False,
+							c = Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']),value=cotation['value'],game=game, is_standard = False,
 								handicap=cotation['handicap'], total=cotation['total'])
-							if kind_name in COTATION_NAME.keys():
-								c.kind = COTATION_NAME[kind_name]
+							if kind_name in MARKET_NAME.keys():
+								c.kind = MARKET_NAME[kind_name]
 								c.save()
 							else:
 								c.kind = kind_name
 								c.save()
 
-				cont+=1
 
-
+	class Meta:
+		verbose_name = 'Cota'
+		verbose_name_plural = 'Cotas'
 
 	def __str__(self):
 		return str(self.value)
@@ -219,3 +233,8 @@ class Payment(models.Model):
 	who_set_payment = models.ForeignKey('user.Seller', null=True)
 	status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1])
 	payment_date = models.DateTimeField(null=True)
+
+	class Meta:
+		verbose_name = 'Pagamento'
+		verbose_name_plural = 'Pagamentos'
+

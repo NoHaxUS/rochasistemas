@@ -16,3 +16,5 @@ class CotationsQuerySet(QuerySet):
 
 
 CotationsManager = CotationsQuerySet.as_manager		
+
+

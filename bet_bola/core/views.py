@@ -26,8 +26,8 @@ class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'	
 	form = AuthenticationForm()
 	form_punter = CreatePunterForm()
-	championships = Championship.objects.all()
 	games = Game.objects.able_games()
+	lista = list()
 
 	def get(self, request, *args, **kwargs):
 
@@ -70,17 +70,6 @@ class GameChampionship(TemplateResponseMixin, View):
 		
 		return self.render_to_response(context)
 
-
-"""
-class GameChampionship(Home):
-	def get(self, request, *args, **kwargs):
-		print(request.user.pk)
-
-		championship = get_object_or_404(Championship, pk=int(self.kwargs["pk"]) )	
-		self.games = Game.objects.able_games().filter(championship = championship)
-		#return HttpResponse("OK")
-		return super(Home, self).get(self, request, *args, **kwargs)
-"""
 
 class SellerHome(TemplateResponseMixin, View):
 	template_name = 'core/seller_home.html'		
