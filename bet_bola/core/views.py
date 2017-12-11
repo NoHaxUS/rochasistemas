@@ -31,6 +31,9 @@ class Home(TemplateResponseMixin, View):
 
 	def get(self, request, *args, **kwargs):
 
+		for i in Championship.objects.all():
+			if i.my_games.able_games().count() > 0:
+				self.lista.append(i)
 		
 		is_seller = None
 		if request.user.is_authenticated:
@@ -40,7 +43,7 @@ class Home(TemplateResponseMixin, View):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'games': self.games ,'championships': self.championships,'form': self.form, 'form_punter': self.form_punter, 'is_seller':is_seller}
+		context = {'games': self.games ,'championships': self.lista,'form': self.form, 'form_punter': self.form_punter, 'is_seller':is_seller}
 		
 		return self.render_to_response(context)
 
