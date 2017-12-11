@@ -26,11 +26,15 @@ class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'	
 	form = AuthenticationForm()
 	form_punter = CreatePunterForm()
-	championships = Championship.objects.all()
+	championships = list()
 	games = Game.objects.able_games()
 
 	def get(self, request, *args, **kwargs):
 
+		for i in Championship.objects.all():
+			if i.my_games.able_games().count() > 0:
+				self.championships.append(i)
+		
 		is_seller = None
 		if request.user.is_authenticated:
 			try:
@@ -49,10 +53,14 @@ class GameChampionship(TemplateResponseMixin, View):
 	template_name = 'core/index.html'	
 	form = AuthenticationForm()
 	form_punter = CreatePunterForm()
-	championships = Championship.objects.all()
+	championships = list()
 
 
 	def get(self, request, *args, **kwargs):
+
+		for i in Championship.objects.all():
+			if i.my_games.able_games().count() > 0:
+				self.championships.append(i)
 
 		championship = Championship.objects.get( pk=int(self.kwargs["pk"]) )
 		games = Game.objects.able_games().filter(championship=championship)
