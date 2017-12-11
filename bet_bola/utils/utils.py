@@ -14,7 +14,7 @@ def updating_games():
 	second_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day + 2))
 	Game.consuming_api(first_date,second_date)
 	Cotation.consuming_api()
-
+	
 
 def renaming_cotations(string, total):
 	COTATION_NAME = {

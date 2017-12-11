@@ -26,12 +26,11 @@ class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'	
 	form = AuthenticationForm()
 	form_punter = CreatePunterForm()
+	championships = Championship.objects.all()
 	games = Game.objects.able_games()
-	lista = list()
 
 	def get(self, request, *args, **kwargs):
 
-		
 		is_seller = None
 		if request.user.is_authenticated:
 			try:
