@@ -31,6 +31,7 @@ class Home(TemplateResponseMixin, View):
 
 	def get(self, request, *args, **kwargs):
 
+		
 		is_seller = None
 		if request.user.is_authenticated:
 			try:
@@ -43,16 +44,20 @@ class Home(TemplateResponseMixin, View):
 		
 		return self.render_to_response(context)
 
-"""
+
+
 class GameChampionship(TemplateResponseMixin, View):
 	template_name = 'core/index.html'	
 	form = AuthenticationForm()
 	form_punter = CreatePunterForm()
 	championships = Championship.objects.all()
-	games = Game.objects.able_games()
+
 
 	def get(self, request, *args, **kwargs):
 
+		championship = Championship.objects.get( pk=int(self.kwargs["pk"]) )
+		games = Game.objects.able_games().filter(championship=championship)
+	
 		is_seller = None
 		if request.user.is_authenticated:
 			try:
@@ -61,21 +66,21 @@ class GameChampionship(TemplateResponseMixin, View):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'games': self.games ,'championships': self.championships,'form': self.form, 'form_punter': self.form_punter, 'is_seller':is_seller}
+		context = {'games': games ,'championships': self.championships,'form': self.form, 'form_punter': self.form_punter, 'is_seller':is_seller}
 		
 		return self.render_to_response(context)
+
+
 """
-
-
-class GameChampionship(Home, View):
+class GameChampionship(Home):
 	def get(self, request, *args, **kwargs):
 		print(request.user.pk)
 
 		championship = get_object_or_404(Championship, pk=int(self.kwargs["pk"]) )	
 		self.games = Game.objects.able_games().filter(championship = championship)
-		return HttpResponse("OK")
-		return super(GameChampionship, self).get(self, request, *args, **kwargs)
-
+		#return HttpResponse("OK")
+		return super(Home, self).get(self, request, *args, **kwargs)
+"""
 
 class SellerHome(TemplateResponseMixin, View):
 	template_name = 'core/seller_home.html'		
