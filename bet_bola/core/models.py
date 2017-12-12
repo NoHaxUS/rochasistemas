@@ -169,6 +169,11 @@ class Championship(models.Model):
 	def __str__(self):
 		return self.name
 
+	class Meta:
+		verbose_name = 'Campeonato'
+		verbose_name_plural = 'Campeonatos'
+
+
 
 class Reward(models.Model):
 	who_rewarded = models.ForeignKey('user.Seller', null=True)	
