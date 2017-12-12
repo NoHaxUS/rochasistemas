@@ -18,6 +18,7 @@ from user.forms.create_punter_form import CreatePunterForm
 from user.models import Punter,Seller
 from .forms import BetTicketForm
 from django.core import serializers
+import json
 
 #import pdb; pdb.set_trace()
 # Create your views here.
@@ -85,11 +86,36 @@ class SellerHome(TemplateResponseMixin, View):
 		context = {}
 		return self.render_to_response(context)
 
+
 class CotationsView(View):
 	
 	def get(self, request, *args, **kwargs):
 		gameid = self.kwargs['gameid']
-		return HttpResponse( serializers.serialize("json", Cotation.objects.filter(game_id=gameid, is_standard=False)), content_type='application/json' )
+		
+		cotations_by_kind = {}
+
+		cotations_of_game = Cotation.objects.filter(game_id=gameid, is_standard=False)
+	
+		for cotation in cotations_of_game:
+			if cotation.kind not in cotations_by_kind:
+				cotations_by_kind[cotation.kind] = []
+				cotations_by_kind[cotation.kind].append(cotation)
+			else:
+				cotations_by_kind[cotation.kind].append(cotation)
+		
+		cotations_serialized = {}
+		for cotation_market in cotations_by_kind:
+			if cotation_market not in cotations_serialized:
+				cotations_serialized[cotation_market] = []
+				cotations_serialized[cotation_market].append( serializers.serialize("json", cotations_by_kind[cotation_market] ) )
+			else:
+				cotations_serialized[cotation_market].append( serializers.serialize("json", cotations_by_kind[cotation_market] ) )
+
+
+		data = json.dumps(cotations_serialized)
+		print(data)
+
+		return HttpResponse( data, content_type='application/json' )
 
 
 class BetView(View):

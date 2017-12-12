@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from datetime import datetime
 from .manager import GamesManager,CotationsManager
 from user.models import Seller
+from django.contrib.auth.models import User
 import requests
 import decimal
 # Create your models here.
@@ -48,31 +49,33 @@ PAYMENT_STATUS = (
 		('WATING_PAYMENT', 'Aguardando Pagamento do Ticket.'),
 		('PAID', 'Pago.'),
 	)
+
+
 MARKET_NAME = {
 	"Team To Score First": "Time a Marcar Primeiro",
-	"Result/Total Goals": "Resultado/Total de Gols",
-	"Correct Score 1st Half": "Resultado Exato Primeiro Tempo",
+	"Result/Total Goals": "Resultado/Total de Gol(s)",
+	"Correct Score 1st Half": "Resultado Exato no Primeiro Tempo",
 	"Both Teams To Score": "2 Times Marcam",
 	"3Way Result 1st Half": "Vencedor Primeiro Tempo",
 	"Total - Away": "Total de Gols do Visitante",
 	"Double Chance": "Dupla Chance",
 	"Total - Home": "Total de Gols da Casa",
 	"Over/Under 1st Half": "Total de Gols do Primeiro Tempo, Acima/Abaixo",
-	"Win To Nil": "Vencedor Não Tomará Gols",
+	"Win To Nil": "Vencedor Não tomará Gol(s)",
 	"Correct Score": "Resultado Exato",
 	"3Way Result": "Vencedor do Encontro",
-	"Away Team Score a Goal": "Visitante Marca ao Menos Um Gols",
+	"Away Team Score a Goal": "Visitante Marca pelo menos Um Gol(s)",
 	"Home/Away": "Casa/Visitante",
-	"Over/Under": "Total de Gols no Encontro, Acima/Abaixo",
-	"Highest Scoring Half": "Etapa com mais gols",
-	"Clean Sheet - Home": "Time da Casa Nao Tomará Gols",
-	"Clean Sheet - Away": "Time Visitante Nao Tomará Gols",
+	"Over/Under": "Total de Gol(s) no Encontro, Acima/Abaixo",
+	"Highest Scoring Half": "Etapa com Mais Gol(s)",
+	"Clean Sheet - Home": "Time da Casa Não Tomará Gol(s)",
+	"Clean Sheet - Away": "Time Visitante Não Tomará Gol(s)",
 	"Corners Over Under": "Escanteios, Acima/Abaixo",
 	"HT/FT Double": "Intervalo/Final de Jogo",
 	"Results/Both Teams To Score": "Resultado/2 Times Marcam",
-	"Home Team Score a Goal": "Time da Casa Marca",
+	"Home Team Score a Goal": "Time da casa Marca",
 	"Win Both Halves": "Vencedor nas Duas Etapas",
-	"Exact Goals Number": "Exato Numero de Gols",
+	"Exact Goals Number": "Número Exato de Gol(s)",
 }	
 
 

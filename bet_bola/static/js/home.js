@@ -314,6 +314,21 @@ $(document).ready(function () {
                 
                 var dataJSON = jQuery.parseJSON(data);
 
+                //console.log(dataJSON['Visitante Marca ao Menos Um Gols'])
+
+                var full_html = '';
+                for( key in dataJSON){
+
+                    console.log("Market: " + key)
+                    //console.log("Dados:" + dataJSON[key])
+
+                    for (var i = 0; i < dataJSON[key].length; i++) {
+                        console.log( dataJSON[key][i].fields.name );
+                    }
+                    
+                }
+
+            /*
                 var full_html = '';
                 for( key in dataJSON){
                     
@@ -326,7 +341,7 @@ $(document).ready(function () {
                 };
 
                 $('.more-table tbody').append(full_html);
-
+                */
 
                 //console.log(dataJSON);
                 //console.log(rq.status);

@@ -17,13 +17,20 @@ def updating_games():
 	
 
 def renaming_cotations(string, total):
+
 	COTATION_NAME = {
 	"Under": "Abaixo",
 	"Over": "Acima",
 	"Draw": "Empate",
 	"Away": "Visitante",
 	"Home": "Casa",
+	"1st Half":"1° Tempo",
+	"2nd Half":"2° Tempo",
+	"No":"Não",
+	"Yes":"Sim",
+	"More":"Mais de"
 	}
+
 	for i in COTATION_NAME.keys():
 		if i in string:
 			string = string.replace(i, COTATION_NAME[i])
