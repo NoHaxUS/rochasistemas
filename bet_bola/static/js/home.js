@@ -313,20 +313,39 @@ $(document).ready(function () {
             $.get('/cotations/'+ game_id, function(data, status, rq){
                 
                 var dataJSON = jQuery.parseJSON(data);
-
-                //console.log(dataJSON['Visitante Marca ao Menos Um Gols'])
+                console.log( jQuery.parseJSON(dataJSON['Visitante Marca ao Menos Um Gols']).length )
+                for( a in  dataJSON['Visitante Marca ao Menos Um Gols']){
+                    //console.log(a)
+                }
 
                 var full_html = '';
+
                 for( key in dataJSON){
 
-                    console.log("Market: " + key)
-                    //console.log("Dados:" + dataJSON[key])
+                    console.log("Market: " + key);
 
-                    for (var i = 0; i < dataJSON[key].length; i++) {
-                        console.log( dataJSON[key][i].fields.name );
+                    full_html += '<tr>' +
+                    '<td class="cotation-market-label">'+ key + '</td>' +
+                    '<td class="cotation-market-label"></td>' +
+                    '</tr>';
+
+                    var array_cotations = jQuery.parseJSON( dataJSON[key] )
+                    var array_cotations_length = array_cotations.length;
+
+                    for (var i = 0; i < array_cotations_length; i++) {
+                        //console.log( array_cotations[i].fields.name );
+                        
+                        full_html += '<tr>' +
+                        '<td class="hide">'+ array_cotations[i].pk + '</td>' +
+                        '<td>'+ array_cotations[i].fields.name + '</td>' +
+                        '<td class="more-cotation">'+ array_cotations[i].fields.value +'</td>' +
+                         '</tr>';
+
                     }
                     
-                }
+                }//for
+
+                $('.more-table tbody').append(full_html);
 
             /*
                 var full_html = '';

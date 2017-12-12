@@ -105,15 +105,10 @@ class CotationsView(View):
 		
 		cotations_serialized = {}
 		for cotation_market in cotations_by_kind:
-			if cotation_market not in cotations_serialized:
-				cotations_serialized[cotation_market] = []
-				cotations_serialized[cotation_market].append( serializers.serialize("json", cotations_by_kind[cotation_market] ) )
-			else:
-				cotations_serialized[cotation_market].append( serializers.serialize("json", cotations_by_kind[cotation_market] ) )
-
+			cotations_serialized[cotation_market] = serializers.serialize("json", cotations_by_kind[cotation_market] )
 
 		data = json.dumps(cotations_serialized)
-		print(data)
+		#print(data)
 
 		return HttpResponse( data, content_type='application/json' )
 

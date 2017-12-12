@@ -210,3 +210,9 @@ nav .brand-logo{
 .collapsible{
     margin-top: 0;
 }
+
+.cotation-market-label{
+    background-color: #b2eaba;
+    font-weight: bolder;
+    font-size: 1.2rem;
+}
