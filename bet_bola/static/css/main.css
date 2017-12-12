@@ -48,10 +48,6 @@ nav .brand-logo{
     padding: 5px 0px 0px 0px;
 }
 
-.ticket-list li:hover{
-    //background-color: #d3dcbec9;
-}
-
 .bet{
     font-weight: bold;
 }
@@ -76,8 +72,8 @@ nav .brand-logo{
 .championship-list li{
     padding: 5px 0px 0px 0px;
 }
-.championship-list li:hover{
-    //background-color: #d3dcbec9;
+.championship-list li a:hover{
+    text-decoration: underline;
 }
 /* end championship */
 
@@ -103,9 +99,9 @@ nav .brand-logo{
 .cotation:hover{
     height: 30px;
     width: 30px;
-    display: inline-block;
-    background-color:#2ecbe4;
-    line-height: 2;
+    line-height: 0.5;
+    border: solid 1px #000000;
+    padding: 5px;
     border-radius: 20px;
     cursor: pointer;
     color: #0e0909;
@@ -219,4 +215,8 @@ nav .brand-logo{
 
 .more-cotations-thead{
     font-size: 1.5rem;
+}
+.table-game-name{
+    font-size: 1.2rem;
+    color: #1027c7;
 }
