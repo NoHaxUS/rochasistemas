@@ -58,6 +58,20 @@ class PunterCreate(FormView):
                    'form': form, 'form_punter': form_punter}
         return context
 
+    def form_invalid(self, form):
+        # help(form.errors)
+        erros = ""
+        for i in form.errors.keys():
+            erros += form.errors[i]
+
+        messages.info(
+            self.request,
+            erros
+        )
+        
+        return super(PunterCreate, self).form_invalid(form)
+
+
 
 class Login(View):
 
