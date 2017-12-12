@@ -35,7 +35,7 @@ $(document).ready(function () {
 
     /** ERROR MESSAGES**/
     var type = window.location.hash.substr(1);
-    console.log(type)
+    //console.log(type)
     if(type == '/login_error'){
         alertify.alert("Erro", "Login ou senha incorretos.")
     }
@@ -118,7 +118,6 @@ $(document).ready(function () {
             COTATION_TOTAL = parseFloat( total.toFixed(2) ) ;
 
             $('#ticket-bet-value').trigger('keyup');
-            console.log('Entrou aqui');
 
         }
     /** END ATUALIZAR VALOR DE TOTAL DAS COTAS **/
@@ -129,6 +128,10 @@ $(document).ready(function () {
             var ticket = Cookies.getJSON('ticket_cookie'); // {}
             ticket[bet_info['game_id']] = bet_info;
             Cookies.set('ticket_cookie', ticket);
+
+            $.post('/bet/', bet_info, function(data, status, rq){
+                console.log(rq.status);
+            }, 'text');
     
             UpdateCotationTotal();
             RenderTicket();
@@ -188,7 +191,7 @@ $(document).ready(function () {
                 var award_value = (COTATION_TOTAL * ticket_bet_value).toFixed(2);
                 $('.award-value').text('R$ ' + award_value);
             }
-            console.log('Disparado');
+            //console.log('Disparado');
         });
      /** END ATUALIZAR VALOR DA APOSTA AO TECLAR **/
 
@@ -236,14 +239,6 @@ $(document).ready(function () {
             }
     
             AddBetToTicket(bet_info);
-    
-            //console.debug(Cookies.getJSON('ticket_cookie'));
-    
-                $.post('/bet/', bet_info, function(data, status, rq){
-                    console.log(data);
-                    console.log(rq.status);
-    
-                }, 'text');
     
         });
     /** AO CLICAR EM UMA COTA **/
@@ -313,16 +308,12 @@ $(document).ready(function () {
             $.get('/cotations/'+ game_id, function(data, status, rq){
                 
                 var dataJSON = jQuery.parseJSON(data);
-                console.log( jQuery.parseJSON(dataJSON['Visitante Marca ao Menos Um Gols']).length )
-                for( a in  dataJSON['Visitante Marca ao Menos Um Gols']){
-                    //console.log(a)
-                }
 
                 var full_html = '';
 
                 for( key in dataJSON){
 
-                    console.log("Market: " + key);
+                    //console.log("Market: " + key);
 
                     full_html += '<tr>' +
                     '<td class="cotation-market-label">'+ key + '</td>' +
@@ -347,20 +338,6 @@ $(document).ready(function () {
 
                 $('.more-table tbody').append(full_html);
 
-            /*
-                var full_html = '';
-                for( key in dataJSON){
-                    
-                    var more_cotation_html = '<tr>' +
-                    '<td class="hide">'+ dataJSON[key].pk + '</td>' +
-                    '<td>'+ dataJSON[key].fields.name + '</td>' +
-                    '<td class="more-cotation">'+ dataJSON[key].fields.value +'</td>' +
-                     '</tr>';
-                     full_html += more_cotation_html;
-                };
-
-                $('.more-table tbody').append(full_html);
-                */
 
                 //console.log(dataJSON);
                 //console.log(rq.status);
@@ -382,7 +359,7 @@ $(document).ready(function () {
             var cotation_name = $(this).siblings().eq(1).text();
             var cotation_value = $(this).text().trim();
 
-            console.debug(cotation_id);
+            //console.debug(cotation_id);
 
             bet_info = {
                 'game_id': game_id,
