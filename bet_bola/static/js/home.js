@@ -119,7 +119,7 @@ $(document).ready(function () {
     
             COTATION_TOTAL = parseFloat( total.toFixed(2) ) ;
 
-            $('#ticket-bet-value').trigger('keyup');
+            $('.ticket-bet-value').trigger('keyup');
 
         }
     /** END ATUALIZAR VALOR DE TOTAL DAS COTAS **/
@@ -127,6 +127,7 @@ $(document).ready(function () {
 
     /** ADICIONAR APOSTA AO TICKET **/
         function AddBetToTicket(bet_info) {
+
             var ticket = Cookies.getJSON('ticket_cookie'); // {}
             ticket[bet_info['game_id']] = bet_info;
             Cookies.set('ticket_cookie', ticket);
@@ -137,7 +138,7 @@ $(document).ready(function () {
     
             UpdateCotationTotal();
             RenderTicket();
-            $('#ticket-bet-value').trigger('keyup');
+            $('.ticket-bet-value').trigger('keyup');
         }
     /** END ADICIONAR APOSTA AO TICKET **/
     
@@ -160,8 +161,8 @@ $(document).ready(function () {
                     '<div class="game-name">' +
                         ticket[key]['game_name'] +
                     '</div>' +
-                    '<div class="game-start-date">' +
-                        ticket[key]['game_start_date'] +
+                    '<div>' +
+                        ticket[key]['cotation_kind'] +
                     '</div>' +
                     '<div class="game-cotation">' +
                         ticket[key]['cotation_name'] + ' : ' + ticket[key]['cotation_value'] +
@@ -207,7 +208,7 @@ $(document).ready(function () {
             Cookies.set('ticket_cookie', ticket);
             RenderTicket();
             UpdateCotationTotal();
-            $('#ticket-bet-value').trigger('keyup');
+            $('.ticket-bet-value').trigger('keyup');
             //console.debug(Cookies.getJSON('ticket_cookie'));
 
             $.ajax({
@@ -226,18 +227,20 @@ $(document).ready(function () {
     
             var game_id = $(this).parent().siblings().first().children('.table-game-id').text().trim();
             var game_name = $(this).parent().siblings().first().children('.table-game-name').text().trim();
-            var game_start_date = $(this).parent().siblings().first().children('.table-game-start-date').text().trim();
+            //var game_start_date = $(this).parent().siblings().first().children('.table-game-start-date').text().trim();
             var cotation_id = $(this).siblings().first().text();
             var cotation_name = $(this).siblings().eq(1).text().trim();
             var cotation_value = $(this).text().trim();
+            var cotation_kind = $(this).siblings().eq(2).text().trim();
+            console.log(cotation_kind);
     
             bet_info = {
                 'game_id': game_id,
                 'game_name': game_name,
-                'game_start_date': game_start_date,
                 'cotation_id': cotation_id,
                 'cotation_name': cotation_name,
-                'cotation_value': cotation_value
+                'cotation_value': cotation_value,
+                'cotation_kind' : cotation_kind
             }
     
             AddBetToTicket(bet_info);
@@ -306,14 +309,13 @@ $(document).ready(function () {
 
             var game_id = $(this).siblings().first().children('.table-game-id').text().trim();
             var game_name = $(this).siblings().first().children('.table-game-name').text().trim();
-            var game_start_date = $(this).siblings().first().children('.table-game-start-date').text().trim();
+            //var game_start_date = $(this).siblings().first().children('.table-game-start-date').text().trim();
         
             $('.more_cotation_header').text(game_name);
 
             var game_data = '<tr>' +
                 '<td class="hide more-game-id">'+ game_id +'</td>' +
-                '<td class="hide more-game-name">'+ game_name +'</td>'+
-                '<td class="hide more-game-start-date">'+ game_start_date +'</td>'+
+                '<td class="hide more-game-name">'+ game_name +'</td>' +
             '</tr>';
 
             //console.log(game_data);
@@ -344,6 +346,7 @@ $(document).ready(function () {
                         '<td class="hide">'+ array_cotations[i].pk + '</td>' +
                         '<td>'+ array_cotations[i].fields.name + '</td>' +
                         '<td class="more-cotation">'+ array_cotations[i].fields.value +'</td>' +
+                        '<td class="more-cotation-kind hide">' + array_cotations[i].fields.kind + '</td>' +
                          '</tr>';
 
                     }
@@ -368,20 +371,22 @@ $(document).ready(function () {
             var first_tr = $(this).parent().parent().children().first();
             var game_id = first_tr.children('.more-game-id').text().trim();
             var game_name = first_tr.children('.more-game-name').text().trim();
-            var game_start_date = first_tr.children('.more-game-start-date').text().trim();
+            //var game_start_date = first_tr.children('.more-game-start-date').text().trim();
             var cotation_id = $(this).siblings().eq(0).text();
             var cotation_name = $(this).siblings().eq(1).text();
             var cotation_value = $(this).text().trim();
+            var cotation_kind = $(this).siblings().eq(2).text();
+            console.log(cotation_kind);
 
             //console.debug(cotation_id);
 
             bet_info = {
                 'game_id': game_id,
                 'game_name': game_name,
-                'game_start_date': game_start_date,
                 'cotation_id': cotation_id,
                 'cotation_name': cotation_name,
-                'cotation_value': cotation_value
+                'cotation_value': cotation_value,
+                'cotation_kind' : cotation_kind
             }
 
             AddBetToTicket(bet_info);
@@ -413,7 +418,6 @@ $(document).ready(function () {
             
             var url_array = window.location.pathname;
             var href = $(e).attr('href');
-            console.log(href);
             if(url_array == href){
 
                 $(e).css('color','red')

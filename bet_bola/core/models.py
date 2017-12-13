@@ -102,10 +102,10 @@ class BetTicket(models.Model):
 		self.reward.save()
 
 	def cota_total(self):
-		cota_total = 0
+		cota_total = 1
 		
 		for cotation in self.cotations.all():
-			cota_total += cotation.value
+			cota_total *= cotation.value
 		
 		return cota_total
 
