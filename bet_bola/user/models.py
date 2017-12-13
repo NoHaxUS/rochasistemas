@@ -11,7 +11,7 @@ class Generic_User(User):
 
 
 class Seller(Generic_User):
-	cpf = models.CharField(max_length=10)
+	cpf = models.CharField(max_length=11)
 	address = models.CharField(max_length=75)
 
 	def is_seller(self):
