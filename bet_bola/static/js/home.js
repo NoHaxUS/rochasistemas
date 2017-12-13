@@ -31,11 +31,13 @@ $(document).ready(function () {
         }
         RenderTicket();
         UpdateCotationTotal();
+
+
+        
     /** END GENERAL INITIALIZATIONS **/
 
     /** ERROR MESSAGES**/
     var type = window.location.hash.substr(1);
-    //console.log(type)
     if(type == '/login_error'){
         alertify.alert("Erro", "Login ou senha incorretos.")
     }
@@ -405,8 +407,22 @@ $(document).ready(function () {
             
         });
     /** END CONSULTAR COTAS **/
+    
 
+        $('ul.championship-list li a').each(function(i,e){
+            
+            var url_array = window.location.pathname;
+            var href = $(e).attr('href');
+            console.log(href);
+            if(url_array == href){
 
-    });
+                $(e).css('color','red')
+                .css('text-decoration','underline');
+            }
+
+        });
+        
+
+});
     
     
