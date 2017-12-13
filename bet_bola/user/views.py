@@ -27,7 +27,7 @@ class PunterHome(TemplateResponseMixin, View):
     template_name = 'user/user_home.html'
 
     def get(self, request, *args, **kwargs):
-        bet_tickets = BetTicket.objects.filter(punter=request.user)
+        bet_tickets = BetTicket.objects.filter(user=request.user)
         change_password_form = PasswordChangeForm(request.user)
         context = list()
         for i in range(len(bet_tickets)-1, -1,-1):

@@ -81,7 +81,7 @@ MARKET_NAME = {
 
 
 class BetTicket(models.Model):	
-	punter = models.ForeignKey('user.Punter', related_name='my_bet_tickets')
+	user = models.ForeignKey('auth.User', related_name='my_bet_tickets')
 	seller = models.ForeignKey('user.Seller', null=True, related_name='bet_tickets_validated_by_me')
 	cotations = models.ManyToManyField('Cotation', related_name='my_bet_tickets')
 	creation_date = models.DateTimeField(auto_now_add=True)	

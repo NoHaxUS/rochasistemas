@@ -18,6 +18,7 @@ from user.forms.create_punter_form import CreatePunterForm
 from user.models import Punter,Seller
 from .forms import BetTicketForm
 from django.core import serializers
+from django.contrib.auth.models import User
 import json
 
 #import pdb; pdb.set_trace()
@@ -151,14 +152,20 @@ class BetView(View):
 class CreateTicketView(View):
 	def post(self, request, *args, **kwargs):
 		
+
 		if request.user.is_authenticated:
 			if 'ticket' not in request.session:
 				return JsonResponse({'status':403})
 
+			if request.POST.get('ticket_value') == '':
+				return JsonResponse({'status':400})
+			
+			ticket_bet_value = float( request.POST.get('ticket_value') )
+			
 			ticket = BetTicket(
-				punter=Punter.objects.get(pk=request.user.pk), 
+				user=User.objects.get(pk=request.user.pk), 
 				seller=None,
-				value=float(request.POST['ticket_value']), 
+				value=ticket_bet_value,
 				payment=Payment.objects.create(), 
 				reward=Reward.objects.create())
 			ticket.save()
@@ -174,7 +181,7 @@ class CreateTicketView(View):
 					return JsonResponse({'status':400})
 
 				ticket.cotations.add( game_contation )
-				ticket.reward.value = cotation_sum * float(request.POST['ticket_value'])
+				ticket.reward.value = cotation_sum * ticket_bet_value
 				ticket.reward.save()
 			return JsonResponse({'ticket_pk': ticket.pk ,'status':201})
 

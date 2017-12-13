@@ -32,6 +32,12 @@ class Seller(Generic_User):
 		verbose_name_plural = 'Vendedores'
 
 class Punter(Generic_User):
+
+	def save(self, *args, **kwargs):
+		self.clean()
+		self.set_password(self.password) #password encryption 
+		super(Punter, self).save()
+
 	class Meta:
 		verbose_name = 'Apostador'
 		verbose_name_plural = 'Apostadores'

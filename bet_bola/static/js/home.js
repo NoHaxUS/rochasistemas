@@ -248,7 +248,15 @@ $(document).ready(function () {
         $('.btn-bet-submit').on('click', function(){
             var ticket = Cookies.get('ticket_cookie');
 
-            var ticket_value = $('#ticket-bet-value').val();
+
+            if($(this).attr('desktop') == 'True'){
+                ticket_value = $('.ticket-bet-value-desktop').val();
+            }else{
+                console.log('False');
+                ticket_value = $('.ticket-bet-value-mobile').val();
+            }
+            
+            console.log(ticket_value);
 
             if(ticket == '{}'){
                 alertify.error("Nenhuma cota selecionada nessa sessão.");
@@ -256,29 +264,33 @@ $(document).ready(function () {
                 RenderTicket();
                 UpdateCotationTotal();
             }else{
+                if(ticket_value != ''){
 
-                $.post('/bet_ticket/', {'ticket_value': ticket_value} , function(data, status, rq){
-                    
-                    var dataJSON = jQuery.parseJSON(data);
+                    $.post('/bet_ticket/', {'ticket_value': ticket_value} , function(data, status, rq){
+                        
+                        var dataJSON = jQuery.parseJSON(data);
 
-                    if(dataJSON.status == 401){
-                        $('#modal-login').modal('open');
-                    }
-                    if(dataJSON.status == 403){
-                        alertify.error("Selecione cotas antes de apostar.");
-                    }
-                    if(dataJSON.status == 400){
-                        alertify.alert("Erro", "Erro ao tentar processar essa requisição. \n Por favor avise-nos pelo email: pabllobeg@gmail.com");
-                    }
-                    if(dataJSON.status == 201){
-                        console.log(dataJSON);
-                        alertify.alert("Sucesso", "O número do Ticket de Aposta é: <b>" + dataJSON.ticket_pk + "</b>"+
-                    "<br /> Para acessar detalhes do Ticket, entre no painel de controle." +
-                    "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket.");
-                    }
-                    console.log(dataJSON.status);
-                }, 'text');
-            }
+                        if(dataJSON.status == 401){
+                            $('#modal-login').modal('open');
+                        }
+                        if(dataJSON.status == 403){
+                            alertify.error("Selecione cotas antes de apostar.");
+                        }
+                        if(dataJSON.status == 400){
+                            alertify.alert("Erro", "Erro ao tentar processar essa requisição. \n Por favor avise-nos pelo email: pabllobeg@gmail.com");
+                        }
+                        if(dataJSON.status == 201){
+                            console.log(dataJSON);
+                            alertify.alert("Sucesso", "O número do Ticket de Aposta é: <b>" + dataJSON.ticket_pk + "</b>"+
+                        "<br /> Para acessar detalhes do Ticket, entre no painel de controle." +
+                        "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket.");
+                        }
+                        console.log(dataJSON.status);
+                    }, 'text');//end post
+                }else{
+                    alertify.error("Informe o valor da sua aposta.");
+                }
+            }//end else
 
         });
 
