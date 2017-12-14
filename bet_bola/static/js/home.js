@@ -425,7 +425,8 @@ $(document).ready(function () {
             }
 
         });
-        
+
+        $("#cellphone_register").mask("(99)99999-999?9");
 
 });
     

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
-from django.contrib.auth.forms import AuthenticationForm,PasswordChangeForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.views import View
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.edit import CreateView, FormView
@@ -14,13 +14,6 @@ from user.models import Punter
 from datetime import datetime
 # Create your views here.
 
-
-class PunterChangePass(TemplateResponseMixin, View):
-    template_name = 'user/user_change_pass.html'
-
-    def get(self, request, *args, **kwargs):
-        #bet_tickets = BetTicket.objects.filter(punter=request.user)
-        return self.render_to_response({})
 
 
 class PunterHome(TemplateResponseMixin, View):
@@ -37,47 +30,14 @@ class PunterHome(TemplateResponseMixin, View):
         return self.render_to_response({'bet_tickets': context,'change_password_form': change_password_form})
 
 
-class PunterCreate(FormView):
-    form_class = CreatePunterForm
-    template_name = 'core/index.html'
-    success_url = '/'
+class PunterCreate(View):
 
-    def form_valid(self, form):
-        punter = form.save(commit=False)
-        punter.date_joined = datetime.now()
-        punter.save()
-        return super(PunterCreate, self).form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        form = AuthenticationForm()
-        form_punter = CreatePunterForm()
-        championships = Championship.objects.all()
-        games = Game.objects.able_games()
-
-        context = {'games': games, 'championships': championships,
-                   'form': form, 'form_punter': form_punter}
-        return context
-
-    def form_invalid(self, form):
-        # help(form.errors)
-        erros = ""
-        for i in form.errors.keys():
-            erros += form.errors[i]
-
-        messages.info(
-            self.request,
-            erros
-        )
-        
-        return super(PunterCreate, self).form_invalid(form)
-
+    def post(self, request):
+        print(request.POST)
+        return HttpResponse("OK")
 
 
 class Login(View):
-
-    def get(self, request):
-        form = AuthenticationForm()
-        return render(request, "user/index.html", {'form': form})
 
     def post(self, request):
         username = request.POST['username']
@@ -97,7 +57,7 @@ class Logout(View):
     """
     Provides users the ability to logout
     """
-
+    
     def get(self, request, *args, **kwargs):
         logout(request)
         response = redirect('core:home')
@@ -107,7 +67,7 @@ class Logout(View):
 
 class PasswordChange(View):
     """
-    Provides users the ability to logout
+    Provides users change password
     """
 
     def post(self, request, *args, **kwargs):

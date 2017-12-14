@@ -19,9 +19,8 @@ from . import views
 
 urlpatterns = [
     url(r'^home/$', views.PunterHome.as_view(), name='home'),
-    url(r'^change_pass/$', views.PunterChangePass.as_view(), name='punter_change_pass'),
+    url(r'^register/$', views.PunterCreate.as_view(), name='punter_create_a'),
     url(r'^login/$', views.Login.as_view(), name='punter_login'),
     url(r'^logout/$',views.Logout.as_view(), name='punter_logout'),
     url(r'^change_password/$',views.PasswordChange.as_view(), name='change_password'),
-    url(r'^$', views.PunterCreate.as_view(), name='create_punter'),
 ]

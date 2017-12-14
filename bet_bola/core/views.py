@@ -25,9 +25,7 @@ import json
 # Create your views here.
 
 class Home(TemplateResponseMixin, View):
-	template_name = 'core/index.html'	
-	form = AuthenticationForm()
-	form_punter = CreatePunterForm()
+	template_name = 'core/index.html'
 	games = Game.objects.able_games()
 
 	def get(self, request, *args, **kwargs):
@@ -45,7 +43,7 @@ class Home(TemplateResponseMixin, View):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'games': self.games ,'championships': championships,'form': self.form, 'form_punter': self.form_punter, 'is_seller':is_seller}
+		context = {'games': self.games ,'championships': championships, 'is_seller':is_seller}
 		
 		return self.render_to_response(context)
 
