@@ -33,6 +33,7 @@ $(document).ready(function () {
         UpdateCotationTotal();
 
 
+        $("#cellphone_register").mask("(99)99999-999?9");
         
     /** END GENERAL INITIALIZATIONS **/
 
@@ -426,7 +427,26 @@ $(document).ready(function () {
 
         });
 
-        $("#cellphone_register").mask("(99)99999-999?9");
+        
+
+        $('#user_register_form').on('submit', function(e){
+            e.preventDefault();
+            var send_data = $(this).serialize();
+
+            $.post('/user/register/', send_data, function(data, status, rq){
+                console.log(rq.status);
+                window.location = '/'
+
+            }).fail(function(rq, status, error){
+                console.log(rq.responseJSON);
+                var erros = '';
+                for(erro in rq.responseJSON.data){
+                    erros += rq.responseJSON.data[erro] + '<br>'
+                }
+                console.log(erros);
+                alertify.alert("Erro", erros )
+            });
+        });
 
 });
     

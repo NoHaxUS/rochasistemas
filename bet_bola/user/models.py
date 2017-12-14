@@ -32,6 +32,7 @@ class Seller(Generic_User):
 		verbose_name_plural = 'Vendedores'
 
 class Punter(Generic_User):
+	cellphone = models.CharField(max_length=14, default='0')
 
 	def save(self, *args, **kwargs):
 		self.clean()
