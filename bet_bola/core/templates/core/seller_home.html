@@ -7,6 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Bet Bola - Home</title>
     <link rel="stylesheet" href="{% static "css/materialize.css" %}">
+    <link rel="stylesheet" href="{% static "css/alertify.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/themes/default.css" %}">
     <link rel="stylesheet" href="{% static "css/main.css" %}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
@@ -23,7 +25,7 @@
             <div class="divider"></div>
 
             <div class="row">
-                <form action = "punter_payment/" method="POST" id="ticket-form" class="col s12">{% csrf_token %}
+                <form id="pay-punter-form" method="POST" class="col s12">{% csrf_token %}
                   <div class="row">
                     <div class="input-field col s12">
                       <i class="material-icons prefix">event_note</i>
@@ -32,7 +34,7 @@
                     </div>
                     <div class="row">
                         <div class="col s12">
-                            <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Pagar</button>
+                            <button class="btn waves-effect waves-light right seller-pay-bet" type="submit">Pagar</button>
                         </div>
                     </div>
                   </div>
@@ -53,7 +55,7 @@
             <div class="divider"></div>
 
             <div class="row">
-                <form action = "validar/" method="POST" id="ticket-form" class="col s12">{% csrf_token %}
+                <form method="POST" id="validate-ticket-form" class="col s12">{% csrf_token %}
                   <div class="row">
                     <div class="input-field col s12">
                       <i class="material-icons prefix">event_note</i>
@@ -62,7 +64,7 @@
                     </div>
                     <div class="row">
                         <div class="col s12">
-                            <button class="btn waves-effect waves-light btn-bet-submit right" type="submit">Validar</button>
+                            <button class="btn waves-effect waves-light right seller-validate-bet" type="submit">Validar</button>
                         </div>
                     </div>
                   </div>
@@ -180,6 +182,8 @@
 
     <script src="{% static "js/jquery-3.2.1.min.js" %}"></script>
     <script src="{% static "js/materialize.js" %}"></script>
+    <script src="{% static "js/jquery.maskedinput.min.js" %}"></script>
+    <script src="{% static "js/alertify.min.js" %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     <script src="{% static "js/home.js" %}"></script>
 

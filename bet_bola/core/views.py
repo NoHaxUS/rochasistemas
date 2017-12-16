@@ -197,31 +197,40 @@ class BetTicketDetail(TemplateResponseMixin, View):
 		return self.render_to_response(context)	
 
 
-class Validar(View):
+class ValidateTicket(View):
 
 	def post(self, request):
+		if not request.POST['ticket']:
+			return JsonResponse({'status': 400})
+
 		if request.user.has_perm('core.can_validate_payment'):
 			pk = int(request.POST['ticket'])
+			print(pk)
 			if pk in [ticket.pk for ticket in BetTicket.objects.all()]:
 				ticket = BetTicket.objects.get(pk = pk)
 				ticket.ticket_valid(request.user)
-				return HttpResponse("<h1>Ticket Validate</h1>")
+				return JsonResponse({'status': 200})
 			else:			
-				return HttpResponse("<h1>There's no such a ticket</h1>")	
+				return JsonResponse({'status': 404})
 		else:
-			return HttpResponse("<h1>User has not permission </h1>")	
+			return JsonResponse({'status': 400})
 
 
 class PunterPayment(View):
 
-	def post(self, request):		
+	def post(self, request):
+		if not request.POST['ticket']:
+			return JsonResponse({'status': 400})
+
 		if request.user.has_perm('core.can_reward'):
 			pk = int(request.POST['ticket'])
 			if pk in [ticket.pk for ticket in BetTicket.objects.all()]:
+				
 				ticket = BetTicket.objects.get(pk = pk)
 				ticket.reward_payment(request.user)
-				return HttpResponse("<h1>Payment paid</h1>")
+
+				return JsonResponse({'status': 200})
 			else:
-				return HttpResponse("<h1>There's no such a betticket</h1>")
+				return JsonResponse({'status': 404})
 		else:
-			return HttpResponse("<h1>User has not permission </h1>")	
+			return JsonResponse({'status': 400})	

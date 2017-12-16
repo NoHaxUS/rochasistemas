@@ -4,6 +4,7 @@ from datetime import datetime
 from .manager import GamesManager,CotationsManager
 from user.models import Seller
 from django.contrib.auth.models import User
+from django.utils import timezone
 import requests
 import decimal
 # Create your models here.
@@ -176,8 +177,8 @@ class Championship(models.Model):
 
 
 class Reward(models.Model):
-	who_rewarded = models.ForeignKey('user.Seller', null=True)	
-	reward_date = models.DateTimeField(null=True)
+	who_rewarded = models.ForeignKey('user.Seller', null=True)
+	reward_date = models.DateTimeField(null=True, auto_now=True)
 	value = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 	status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1])
 
@@ -240,7 +241,7 @@ class Cotation(models.Model):
 class Payment(models.Model):
 	who_set_payment = models.ForeignKey('user.Seller', null=True)
 	status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1])
-	payment_date = models.DateTimeField(null=True)
+	payment_date = models.DateTimeField(null=True, auto_now=True)
 
 	class Meta:
 		verbose_name = 'Pagamento'

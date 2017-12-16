@@ -25,6 +25,6 @@ urlpatterns = [
     url(r'^bet_ticket/$', views.CreateTicketView.as_view(), name='bet_ticket'),
     url(r'^bet/(?P<pk>\d+)?$', views.BetView.as_view(), name='bet'),
     url(r'^cotations/(?P<gameid>\d+)$', views.CotationsView.as_view(), name='cotations'),
-    url(r'^validar/$', views.Validar.as_view(), name='validar'),
-    url(r'^punter_payment/$', views.PunterPayment.as_view(), name='punter_payment'),
+    url(r'^seller/validate_ticket/$', views.ValidateTicket.as_view(), name='validate_ticket'),
+    url(r'^seller/punter_payment/$', views.PunterPayment.as_view(), name='punter_payment'),
 ]

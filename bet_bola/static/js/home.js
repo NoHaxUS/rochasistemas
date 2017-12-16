@@ -62,9 +62,10 @@ $(document).ready(function () {
     /** END AJAX SETUP  **/
     
     /** SETAR COMO PAGO UM TICKET **/
-        $('.seller-validate-bet').click(function (e) {
+        $('#validate-ticket-form').on('submit', function (e) {
             e.preventDefault();
-    
+            var send_data = $(this).serialize();
+            
             if ($('.ticket-number-input').val() == '') {
                 alertify.alert('Erro', 'Você deve informar o número do ticket.');
             } else {
@@ -72,8 +73,19 @@ $(document).ready(function () {
                 alert_msg = 'Confirma a validação do ticket? \n Essa ação não pode ser desfeita.'
                 alertify.confirm('Confirmação', alert_msg,
                     function () {
-                        alertify.success('Confirmação realizada');
-                        //TODO
+                        $.post('validate_ticket/', send_data, function(data, status, rq){
+                            data = jQuery.parseJSON(data);
+
+                            if(data['status'] == 200){
+                                alertify.success('Ticket Validado.');
+                            }
+                            if(data['status'] == 404){
+                                alertify.error('Ticket não encontrado.');
+                            }
+                            if(data['status'] == 400){
+                                alertify.error('Algo deu errado.');
+                            }
+                        }, 'text');
                     },
                     function () {
                         alertify.error('Cancelado');
@@ -83,9 +95,10 @@ $(document).ready(function () {
     /** END SETAR COMO PAGO UM TICKET **/
     
     /** MARCAR COMO RECOMPENSA PAGA AO GANHADOR **/
-        $('.seller-pay-bet').click(function (e) {
+        $('#pay-punter-form').on('submit', function (e) {
             e.preventDefault();
-    
+            var send_data = $(this).serialize();
+
             if ($('.ticket-pay-input').val() == '') {
                 alertify.alert('Erro', 'Você deve informar o número do ticket.')
             } else {
@@ -93,8 +106,22 @@ $(document).ready(function () {
                 alert_msg = 'Confirma o pagamento do ticket? \n Essa ação não pode ser desfeita.'
                 alertify.confirm('Confirmação', alert_msg,
                     function () {
-                        alertify.success('Confirmação realizada');
-                        //TODO
+                        
+                        $.post('punter_payment/', send_data, function(data, status, rq){
+                            
+                            data = jQuery.parseJSON(data);
+
+                            if(data.status == 200){
+                                alertify.success("O Apostador foi pago com sucesso.");
+                            }
+                            if(data.status == 404){
+                                alertify.error('Ticket não encontrado.');
+                            }
+                            if(data.status == 400){
+                                alertify.error('Algo deu errado.');
+                            }
+                        }, 'text');
+        
                     },
                     function () {
                         alertify.error('Cancelado');

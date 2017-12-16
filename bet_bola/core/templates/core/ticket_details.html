@@ -58,7 +58,10 @@
                                 Data de Criação: {{ticket.creation_date}}
                             </div>
                             <div class="col s4">
-                                Status do Pagamento: {{ticket.payment.status_payment}}
+                                Status do Pagamento: {{ticket.payment.status_payment}} <br>
+                            {% if ticket.payment.payment_date %}
+                                Data: {{ticket.payment.payment_date}}
+                            {% endif %}
                             </div>
                             <div class="col s4">
                                 Status do Ticket: {{ticket.bet_ticket_status}}
@@ -79,7 +82,7 @@
                         <div class="divider"></div>
                         <div class="row white">
                             <div class="col s12 l6 hcenter">
-                                Recompensa entregue ao ganhador: {{ticket.reward.status_reward}}
+                                Recompensa entregue ao ganhador? : {{ticket.reward.status_reward}}
                             </div>
                         </div>
                         <div class="row white">
