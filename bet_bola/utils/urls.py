@@ -18,5 +18,6 @@ from . import views
 
 urlpatterns = [  
     url(r'^update/$', views.Update.as_view(), name='updating'),    
-    url(r'^populate/$', views.PopulatingBD.as_view(), name='populating'),    
+    url(r'^populate/$', views.PopulatingBD.as_view(), name='populating'),
+    url(r'^pdf/$', views.PDF.as_view(), name='populating'),    
 ]
