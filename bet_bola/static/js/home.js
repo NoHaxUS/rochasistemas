@@ -298,28 +298,30 @@ $(document).ready(function () {
                 UpdateCotationTotal();
             }else{
                 if(ticket_value != ''){
+                    alertify.confirm('Confirmar aposta?', function(){
 
-                    $.post('/bet_ticket/', {'ticket_value': ticket_value} , function(data, status, rq){
-                        
-                        var dataJSON = jQuery.parseJSON(data);
+                        $.post('/bet_ticket/', {'ticket_value': ticket_value} , function(data, status, rq){
+                            
+                            var dataJSON = jQuery.parseJSON(data);
 
-                        if(dataJSON.status == 401){
-                            $('#modal-login').modal('open');
-                        }
-                        if(dataJSON.status == 403){
-                            alertify.error("Selecione cotas antes de apostar.");
-                        }
-                        if(dataJSON.status == 400){
-                            alertify.alert("Erro", "Erro ao tentar processar essa requisição. \n Por favor avise-nos pelo email: pabllobeg@gmail.com");
-                        }
-                        if(dataJSON.status == 201){
-                            console.log(dataJSON);
-                            alertify.alert("Sucesso", "O número do Ticket de Aposta é: <b>" + dataJSON.ticket_pk + "</b>"+
-                        "<br /> Para acessar detalhes do Ticket, entre no painel de controle." +
-                        "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket.");
-                        }
-                        console.log(dataJSON.status);
-                    }, 'text');//end post
+                            if(dataJSON.status == 401){
+                                $('#modal-login').modal('open');
+                            }
+                            if(dataJSON.status == 403){
+                                alertify.error("Selecione cotas antes de apostar.");
+                            }
+                            if(dataJSON.status == 400){
+                                alertify.alert("Erro", "Erro ao tentar processar essa requisição. \n Por favor avise-nos pelo email: pabllobeg@gmail.com");
+                            }
+                            if(dataJSON.status == 201){
+                                console.log(dataJSON);
+                                alertify.alert("Sucesso", "O número do Ticket de Aposta é: <b>" + dataJSON.ticket_pk + "</b>"+
+                            "<br /> Para acessar detalhes do Ticket, entre no painel de controle." +
+                            "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket.");
+                            }
+                            console.log(dataJSON.status);
+                        }, 'text');//end post
+                    });
                 }else{
                     alertify.error("Informe o valor da sua aposta.");
                 }
@@ -448,7 +450,7 @@ $(document).ready(function () {
             var href = $(e).attr('href');
             if(url_array == href){
 
-                $(e).css('color','red')
+                $(e).css('color','#1027c7')
                 .css('text-decoration','underline');
             }
 
