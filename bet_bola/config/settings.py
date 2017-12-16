@@ -32,8 +32,7 @@ ALLOWED_HOSTS = ['bet-bola.herokuapp.com','localhost']
 # Application definition
 
 INSTALLED_APPS = [
-    'core',
-    'user',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'core',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -116,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'America/Belem'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 

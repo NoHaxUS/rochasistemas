@@ -131,9 +131,9 @@ class Game(models.Model):
 	
 	@staticmethod
 	def consuming_api(first_date, second_date):
-		r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?api_token="+TOKEN+"&include=localTeam,visitorTeam")
-	
-		for i in range(1,r.json().get('meta')['pagination']['total_pages']):			
+		url_request = "https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?api_token="+TOKEN+"&include=localTeam,visitorTeam&tz=America/Sao_Paulo"
+		r = requests.get(url_request)
+		for i in range(1, r.json().get('meta')['pagination']['total_pages']):			
 
 			for game in r.json().get('data'):
 				if Championship(pk = game["league_id"]) in Championship.objects.all():
@@ -147,7 +147,7 @@ class Game(models.Model):
 							start_game_date=datetime.strptime(game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
 							name=game['localTeam']['data']['name']+" x " +game['visitorTeam']['data']['name'], championship=Championship.objects.get(pk=game["league_id"]), status_game=game['time']["status"]).save() 
 
-			r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?page="+str((i+1))+"&api_token="+TOKEN+"&include=localTeam,visitorTeam")
+			r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?page="+str((i+1))+"&api_token="+TOKEN+"&include=localTeam,visitorTeam&tz=America/Sao_Paulo")
 	
 	class Meta:
 		verbose_name = 'Jogo'
@@ -162,7 +162,7 @@ class Championship(models.Model):
 
 	@staticmethod
 	def consuming_api():
-		r = requests.get("https://soccer.sportmonks.com/api/v2.0/leagues/?api_token="+TOKEN)
+		r = requests.get("https://soccer.sportmonks.com/api/v2.0/leagues/?api_token="+TOKEN + "&tz=America/Sao_Paulo")
 		
 		for championship in r.json().get('data'):
 			Championship(pk=championship['id'],name = championship['name']).save()
@@ -203,7 +203,7 @@ class Cotation(models.Model):
 		from utils.utils import renaming_cotations
 
 		for game in Game.objects.all():
-			r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN)			
+			r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN+"&tz=America/Sao_Paulo")			
 			game.cotations.all().delete()							
 			for kind in r.json().get('data'):
 				kind_name = kind['name']				

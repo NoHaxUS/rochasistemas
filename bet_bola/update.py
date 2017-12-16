@@ -7,9 +7,9 @@ def main():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
     django.setup()
     from utils import utils
-    print("POPULATING")
+    print("UPDATING")
     utils.updating_games()
-    print("POPULATING")
+    print("UPDATING")
 
 
 if __name__ == '__main__':
