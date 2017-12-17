@@ -276,7 +276,7 @@ class Cotation(models.Model):
 
 	@staticmethod
 	def processing_cotations():
-		for game in Game.objects.all():			
+		for game in Game.objects.all().filter(status_game='FT'):			
 			#dento do if só entra games q tenham os dados do score ok
 			if game.visitor_team_score is not None and game.local_team_score is not None and game.ht_score is not None and game.ft_score is not None and game.cotations.count() > 0:							
 
