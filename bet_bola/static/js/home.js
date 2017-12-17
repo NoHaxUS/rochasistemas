@@ -82,6 +82,9 @@ $(document).ready(function () {
                             if(data['status'] == 404){
                                 alertify.error('Ticket não encontrado.');
                             }
+                            if(data['status'] == 403){
+                                alertify.alert('Erro', 'Esse ticket não pode mais ser validado, pois um de seus jogos já começou ou terminou.');
+                            }
                             if(data['status'] == 400){
                                 alertify.error('Algo deu errado.');
                             }
