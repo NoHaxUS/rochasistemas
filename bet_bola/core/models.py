@@ -84,7 +84,7 @@ MARKET_NAME = {
 class BetTicket(models.Model):	
 	user = models.ForeignKey('auth.User', related_name='my_bet_tickets')
 	seller = models.ForeignKey('user.Seller', null=True, related_name='bet_tickets_validated_by_me')
-	cotations = models.ManyToManyField('Cotation', related_name='my_bet_tickets')
+	cotations = models.ManyToManyField('Cotation', related_name='bet_ticket')
 	creation_date = models.DateTimeField(auto_now_add=True)	
 	reward = models.ForeignKey('Reward', default=None)
 	payment = models.OneToOneField('Payment', default=None)
@@ -161,8 +161,10 @@ class Game(models.Model):
 	
 	@staticmethod
 	def consuming_api(first_date, second_date):
+
 		url_request = "https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?api_token="+TOKEN+"&include=localTeam,visitorTeam&tz=America/Sao_Paulo"
 		r = requests.get(url_request)
+
 		for i in range(1, r.json().get('meta')['pagination']['total_pages']):			
 
 			for game in r.json().get('data'):					
@@ -399,7 +401,7 @@ class Cotation(models.Model):
 						c.save()
 
 			#  TODO BLOCK{			
-			#'Intervalo/Final de Jogo': TODO
+			#'Intervalo/Final de Jogo': 
 			#							
 			#'Resultado/2 Times Marcam'
 			# 

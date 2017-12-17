@@ -205,11 +205,17 @@ class ValidateTicket(View):
 
 		if request.user.has_perm('core.can_validate_payment'):
 			pk = int(request.POST['ticket'])
-			print(pk)
-			if pk in [ticket.pk for ticket in BetTicket.objects.all()]:
-				ticket = BetTicket.objects.get(pk = pk)
-				ticket.ticket_valid(request.user)
-				return JsonResponse({'status': 200})
+			ticket = BetTicket.objects.filter(pk=pk)
+			if ticket.exists():
+				can_validate = True
+				for cotation in ticket.cotations:
+					if cotation.game.start_game_date < timezone.now():
+						can_validate = False
+				if can_validate:
+					ticket.ticket_valid(request.user)
+					return JsonResponse({'status': 200})
+				else:
+					return JsonResponse({'status': 403})
 			else:			
 				return JsonResponse({'status': 404})
 		else:
