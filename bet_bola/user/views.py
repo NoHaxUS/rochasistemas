@@ -12,6 +12,7 @@ from .models import Punter
 from core.models import Game, Championship, BetTicket
 from user.models import Punter
 from datetime import datetime
+from django.contrib.auth.models import User
 import json
 # Create your views here.
 
@@ -122,14 +123,17 @@ class PasswordChange(View):
 
     def post(self, request, *args, **kwargs):
 
-        form = PasswordChangeForm(request.user, request.POST)
-        if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)#this line makes the user log in automatically, after the password change
-            #messages.success(request, 'Your password was successfully updated!') WE HAVE TO TAKE A LOOK ON THIS METHOD MESSAGE
-            response = redirect('core:home')
-            response.delete_cookie('ticket_cookie')            
-            return response
-        else:
-            pass
-            #messages.error(request, 'Please correct the error below.')
+        if request.user.is_authenticated:
+            actual_pass = request.POST['actual_pass']
+            new_pass = request.POST['new_pass']
+
+            print(request.user)
+            
+            if request.user.check_password(actual_pass):
+                request.user.set_password(new_pass)
+                request.user.save()
+                update_session_auth_hash(request, request.user)
+
+                return JsonResponse({"status":200})
+            else:
+                return JsonResponse({"status":406})

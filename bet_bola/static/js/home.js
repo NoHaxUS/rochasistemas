@@ -480,6 +480,25 @@ $(document).ready(function () {
             });
         });
 
+        $('#change-pass-user-form').on('submit', function(e){
+            e.preventDefault();
+            var send_data = $(this).serialize();
+
+            $.post('/user/change_password/', send_data, function(data, status, rq){
+                //console.log(data);
+                //data = jQuery.parseJSON(data);
+                
+                if (data.status == 200){
+                    alertify.alert("Sucesso", "Senha alterada com sucesso.");
+                    $('#modal-change-password').modal('close');
+
+                }
+                if (data.status == 406){
+                    alertify.alert("Erro", "A senha atual não confere.");
+                }
+            });
+        });
+
 });
     
     
