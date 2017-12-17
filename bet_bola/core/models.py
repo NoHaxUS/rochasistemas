@@ -113,10 +113,11 @@ class BetTicket(models.Model):
 	def update_ticket_status(self):
 		if self.check_ticket_status:			
 			for c in self.cotations.all():
-				if not c.winning and c.winning is not None:
-					self.bet_ticket_status = BET_TICKET_STATUS[1][1]
-					self.save()
-					return 'Status do ticket atualizado com sucesso'
+				if c.winning is not None:
+					if not c.winning:
+						self.bet_ticket_status = BET_TICKET_STATUS[1][1]
+						self.save()
+						return 'Status do ticket atualizado com sucesso'
 				
 			self.bet_ticket_status = BET_TICKET_STATUS[2][1]
 			self.save()
@@ -278,12 +279,15 @@ class Cotation(models.Model):
 
 	@staticmethod
 	def processing_cotations():
-		for game in Game.objects.all():
-			print(game.name)
-			if game.visitor_team_score is not None and game.local_team_score is not None and game.ht_score is not None and game.ft_score is not None and game.cotations.count() > 0:			
-				cotations = game.cotations.all().filter(kind='Vencedor do Encontro')
-				if game.visitor_team_score > game.local_team_score:										
-					cotations.update(winning=False)
+		for game in Game.objects.all().filter(status_game='FT'):			
+			#dento do if só entra games q tenham os dados do score ok
+			if game.visitor_team_score is not None and game.local_team_score is not None and game.ht_score is not None and game.ft_score is not None and game.cotations.count() > 0:							
+
+				#nesse conjunto de if,elif e else são processados 4 markets			
+				#Vencedor do Encontro, Casa/Visitante, Dupla Chance,Vencedor Não tomará Gol(s) 		
+				cotations = game.cotations.all().filter(kind='Vencedor do Encontro') 
+				if game.visitor_team_score > game.local_team_score:					
+					cotations.update(winning=False)									
 					c2 = cotations.get(name='2')					
 					c2.winning = True					
 					c2.save()
@@ -294,11 +298,21 @@ class Cotation(models.Model):
 					c1.winning = True				
 					c.save()
 					c1.save()				
-					cotations = game.cotations.all().filter(kind='Dupla Chance')
-					cotations.update(winning=True)					
-					c2 = cotations.get(name='Casa/Empate    ')										
-					c2.winning = False									
-					c2.save()					
+					if game.cotations.all().filter(kind='Dupla Chance').count()>0:
+						cotations = game.cotations.all().filter(kind='Dupla Chance')
+						cotations.update(winning=True)					
+						c2 = cotations.get(name='Casa/Empate    ')										
+						c2.winning = False									
+						c2.save()					
+
+					if game.cotations.all().filter(kind='Vencedor Não tomará Gol(s)').count()>0:
+						cotations = game.cotations.all().filter(kind='Vencedor Não tomará Gol(s)')
+						cotations.update(winning=True)
+						if game.local_team_score > 0:
+							c = cotations.get(name='2')
+							c.winning = True
+							c.save()
+
 
 				elif game.visitor_team_score < game.local_team_score:
 					cotations.update(winning=False)
@@ -312,11 +326,20 @@ class Cotation(models.Model):
 					c1.winning = False
 					c.save()
 					c1.save()				
-					cotations = game.cotations.all().filter(kind='Dupla Chance')					
-					cotations.update(winning=True)
-					c1 = cotations.get(name='Empate/Visitante    ')										
-					c1.winning = False										
-					c1.save()					
+					if game.cotations.all().filter(kind='Dupla Chance').count()>0:
+						cotations = game.cotations.all().filter(kind='Dupla Chance')					
+						cotations.update(winning=True)
+						c1 = cotations.get(name='Empate/Visitante    ')										
+						c1.winning = False										
+						c1.save()	
+
+					if game.cotations.all().filter(kind='Vencedor Não tomará Gol(s)').count()>0:
+						cotations = game.cotations.all().filter(kind='Vencedor Não tomará Gol(s)')
+						cotations.update(winning=True)
+						if game.visitor_team_score > 0:
+							c = cotations.get(name='1')
+							c.winning = True
+							c.save()		
 
 				else:
 					cotations.update(winning=False)					
@@ -329,13 +352,14 @@ class Cotation(models.Model):
 					c.winning = False
 					c1.winning = False
 					c.save()
-					c1.save()				
-					cotations = game.cotations.all().filter(kind='Dupla Chance')
-					cotations.update(winning=True)
-					c = cotations.get(name='Casa/Visitante    ')					
-					c.winning = False					
-					c.save()					
-					
+					c1.save()			
+					if game.cotations.all().filter(kind='Dupla Chance').count()>0:
+						cotations = game.cotations.all().filter(kind='Dupla Chance')
+						cotations.update(winning=True)
+						c = cotations.get(name='Casa/Visitante    ')					
+						c.winning = False					
+						c.save()					
+				#dentro desse if é tradado o market Etapa com Mais Gol(s)
 				if game.cotations.all().filter(kind='Etapa com Mais Gol(s)').count()>0:
 					cotations = game.cotations.all().filter(kind='Etapa com Mais Gol(s)')
 					result_1_etapa = int(game.ht_score.split('-')[0]) +  int(game.ht_score.split('-')[1])
@@ -358,7 +382,8 @@ class Cotation(models.Model):
 						c1 = cotations.get(name='X')												
 						c1.winning = True												
 						c1.save()
-												
+
+				#dentro desse if é tradado o market Vencendor nas Duas Etapas								
 				if game.cotations.all().filter(kind='Vencedor nas Duas Etapas').count()>0:
 					result_1_etapa = int(game.ht_score.split('-')[0]) - int(game.ht_score.split('-')[1])
 					result_2_etapa = int(game.ft_score.split('-')[0]) - int(game.ft_score.split('-')[1])
@@ -385,6 +410,7 @@ class Cotation(models.Model):
 						c.save()
 						c1.save()
 
+				#dentro desse if é tradado o market Número Exato de Gol(s)
 				if game.cotations.all().filter(kind='Número Exato de Gol(s)').count()>0:
 					result = int(game.ft_score.split('-')[0]) + int(game.ft_score.split('-')[1])
 					cotations = game.cotations.all().filter(kind='Número Exato de Gol(s)')
@@ -400,14 +426,156 @@ class Cotation(models.Model):
 						c.winning = True
 						c.save()
 
-			#  TODO BLOCK{			
-			#'Intervalo/Final de Jogo': 
-			#							
-			#'Resultado/2 Times Marcam'
-			# 
-			#'Resultado/Total de Gol(s)':
-			# 
-			#}
+				#dentro desse if é tradado o market Intervalo/Final de Jogo
+				if game.cotations.all().filter(kind='Intervalo/Final de Jogo').count()>0:
+					result_1_etapa = int(game.ht_score.split('-')[0]) - int(game.ht_score.split('-')[1])
+					result_2_etapa = int(game.ft_score.split('-')[0]) - int(game.ft_score.split('-')[1])
+					cotations = game.cotations.all().filter(kind='Intervalo/Final de Jogo')
+					localTeam = game.name.split('x')[0].strip()
+					visitorTeam = game.name.split('x')[1].strip()
+
+					if result_1_etapa > 0:
+						if result_2_etapa > 0:
+							cotations.update(winning=False)
+							for c in cotations.all():
+								if c.name.split("/")[0].strip() in localTeam and c.name.split("/")[1].strip() in localTeam:
+									c.winning = True
+									c.save()
+						elif result_2_etapa < 0:
+							cotations.update(winning=False)
+							for c in cotations.all():
+								if c.name.split("/")[0].strip() in localTeam and c.name.split("/")[1].strip() in visitorTeam:
+									c.winning = True
+									c.save()							
+						else:
+							cotations.update(winning=False)							
+							for c in cotations.all():
+								if c.name.split("/")[0].strip() in localTeam and c.name.split("/")[1].strip() in "Empate  ":
+									c.winning = True
+									c.save()							
+
+					elif result_1_etapa < 0:
+						if result_2_etapa > 0:
+							cotations.update(winning=False)
+							for c in cotations.all():
+								if c.name.split("/")[0].strip() in visitorTeam and c.name.split("/")[1].strip() in localTeam:
+									c.winning = True
+									c.save()							
+							
+						elif result_2_etapa < 0:
+							cotations.update(winning=False)
+							for c in cotations.all():
+								if c.name.split("/")[0].strip() in visitorTeam and c.name.split("/")[1].strip() in visitorTeam:
+									c.winning = True
+									c.save()							
+
+						else:
+							cotations.update(winning=False)
+							for c in cotations.all():
+								if c.name.split("/")[0].strip() in visitorTeam and c.name.split("/")[1].strip() in "Empate  ":
+									c.winning = True
+									c.save()														
+
+					else:
+						if result_2_etapa > 0:
+							cotations.update(winning=False)
+							for c in cotations.all():
+								if c.name.split("/")[0].strip() in "Empate" and c.name.split("/")[1].strip() in (localTeam + "  "):
+									c.winning = True
+									c.save()							
+							
+						elif result_2_etapa < 0:
+							cotations.update(winning=False)
+							for c in cotations.all():
+								if c.name.split("/")[0].strip() in "Empate" and c.name.split("/")[1].strip() in (visitorTeam + "  "):
+									c.winning = True
+									c.save()							
+							
+						else:
+							cotations.update(winning=False)
+							c = cotations.get(name="Empate"+"/"+"Empate  ")
+							c.winning = True
+							c.save()
+
+				#dentro desse if é tradado 2 markets Resultado/2 Times Marcam e Resultado/Total de Gol(s)
+				if game.cotations.all().filter(kind='Resultado/2 Times Marcam').count()>0:
+					cotations = game.cotations.all().filter(kind='Resultado/2 Times Marcam')
+					result = int(game.ft_score.split('-')[0]) - int(game.ft_score.split('-')[1])
+					if result > 0:
+						if game.local_team_score > 0 and game.visitor_team_score > 0:						
+							cotations.update(winning=False)
+							c = cotations.get(name="Casa/Sim    ")
+							c.winning = True
+							c.save()							
+
+						else:
+							cotations.update(winning=False)
+							c = cotations.get(name="Casa/Não    ")
+							c.winning = True
+							c.save()
+						
+						if game.cotations.all().filter(kind="Resultado/Total de Gol(s)").count()>0:
+								cotations = game.cotations.all().filter(kind="Resultado/Total de Gol(s)")			
+								cotations.update(winning=False)					
+								for c in cotations.filter(name="Casa/Acima    "):
+									if c.total < int(game.ft_score.split('-')[0]) + int(game.ft_score.split('-')[1]):										
+										c.winning = True
+										c.save()				
+
+								for c in cotations.filter(name="Casa/Abaixo    "):
+									if c.total > int(game.ft_score.split('-')[0]) + int(game.ft_score.split('-')[1]):										
+										c.winning = True
+										c.save()				
+
+					elif result < 0:
+						if game.local_team_score > 0 and game.visitor_team_score > 0:						
+							cotations.update(winning=False)
+							c = cotations.get(name="Visitante/Sim    ")
+							c.winning = True
+							c.save()
+						else:
+							cotations.update(winning=False)
+							c = cotations.get(name="Visitante/Não    ")
+							c.winning = True
+							c.save()
+
+						if game.cotations.all().filter(kind="Resultado/Total de Gol(s)").count()>0:
+								cotations = game.cotations.all().filter(kind="Resultado/Total de Gol(s)")			
+								cotations.update(winning=False)					
+								for c in cotations.filter(name="Visitante/Acima    "):
+									if c.total < int(game.ft_score.split('-')[0]) + int(game.ft_score.split('-')[1]):										
+										c.winning = True
+										c.save()								
+
+								for c in cotations.filter(name="Visitante/Abaixo    "):
+									if c.total > int(game.ft_score.split('-')[0]) + int(game.ft_score.split('-')[1]):										
+										c.winning = True
+										c.save()
+
+					else:
+						if game.local_team_score > 0 and game.visitor_team_score > 0:						
+							cotations.update(winning=False)
+							c = cotations.get(name="Empate/Sim    ")
+							c.winning = True
+							c.save()
+						else:
+							cotations.update(winning=False)
+							c = cotations.get(name="Empate/Não    ")
+							c.winning = True
+							c.save()
+						if game.cotations.all().filter(kind="Resultado/Total de Gol(s)").count()>0:
+								cotations = game.cotations.all().filter(kind="Resultado/Total de Gol(s)")			
+								cotations.update(winning=False)					
+								for c in cotations.filter(name="Empate/Acima    "):
+									if c.total < int(game.ft_score.split('-')[0]) + int(game.ft_score.split('-')[1]):										
+										c.winning = True
+										c.save()								
+
+								for c in cotations.filter(name="Empate/Abaixo    "):
+									if c.total > int(game.ft_score.split('-')[0]) + int(game.ft_score.split('-')[1]):										
+										c.winning = True
+										c.save()				
+			
 
 
 	class Meta:
