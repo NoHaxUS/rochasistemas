@@ -112,10 +112,11 @@ class BetTicket(models.Model):
 	def update_ticket_status(self):
 		if self.check_ticket_status:			
 			for c in self.cotations.all():
-				if not c.winning and c.winning is not None:
-					self.bet_ticket_status = BET_TICKET_STATUS[1][1]
-					self.save()
-					return 'Status do ticket atualizado com sucesso'
+				if c.winning is not None:
+					if not c.winning:
+						self.bet_ticket_status = BET_TICKET_STATUS[1][1]
+						self.save()
+						return 'Status do ticket atualizado com sucesso'
 				
 			self.bet_ticket_status = BET_TICKET_STATUS[2][1]
 			self.save()
