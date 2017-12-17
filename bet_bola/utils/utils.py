@@ -8,12 +8,16 @@ def populating_bd():
 	Championship.consuming_api()
 	Game.consuming_api(first_date,second_date)
 	Cotation.consuming_api()
+	Cotation.processing_cotations()
 
 def updating_games():
-	first_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day))
-	second_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day + 2))
+	first_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day-1))
+	second_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day + 7))
+	Championship.consuming_api()
 	Game.consuming_api(first_date,second_date)
 	Cotation.consuming_api()
+	Cotation.processing_cotations()
+
 	
 
 def renaming_cotations(string, total):
