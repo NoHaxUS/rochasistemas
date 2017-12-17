@@ -110,6 +110,31 @@ class BetTicket(models.Model):
 		
 		return cota_total
 
+	def update_ticket_status(self):
+		if self.check_ticket_status:			
+			for c in self.cotations.all():
+				if not c.winning and c.winning is not None:
+					self.bet_ticket_status = BET_TICKET_STATUS[1][1]
+					self.save()
+					return 'Status do ticket atualizado com sucesso'
+				
+			self.bet_ticket_status = BET_TICKET_STATUS[2][1]
+			self.save()
+			return 'Status do ticket atualizado com sucesso'
+		else:
+			return 'Ticket aguardando resultado'
+		
+			
+
+	def check_ticket_status(self):
+		ticket_finished = True
+
+		for c in self.cotations:
+			if not c.game.odds_calculated:
+				ticket_finished = False
+
+		return ticket_finished
+
 	def __str__(self):
 		return str(self.pk)
 
@@ -127,6 +152,11 @@ class Game(models.Model):
 	start_game_date = models.DateTimeField()
 	championship = models.ForeignKey('Championship',related_name='my_games')
 	status_game = models.CharField(max_length=80,default=GAME_STATUS[0][1], choices=GAME_STATUS)
+	odds_calculated = models.BooleanField()
+	visitor_team_score = models.IntegerField(blank = True, null = True)
+	local_team_score = models.IntegerField(blank = True, null = True)
+	ht_score = models.CharField(max_length=80, null=True)
+	ft_score = models.CharField(max_length=80, null=True)
 	objects = GamesManager()
 	
 	@staticmethod
@@ -135,17 +165,26 @@ class Game(models.Model):
 		r = requests.get(url_request)
 		for i in range(1, r.json().get('meta')['pagination']['total_pages']):			
 
-			for game in r.json().get('data'):
-				if Championship(pk = game["league_id"]) in Championship.objects.all():
+			for game in r.json().get('data'):					
+				if Championship(pk = game['league_id']) in Championship.objects.all():
 					if Game(pk = game["id"]) in Game.objects.all():
-						g = Game.objects.get(pk = game["id"])
+						g = Game.objects.get(pk = game['id'])
 						g.status_game = game['time']['status']
+						g.local_team_score=game['scores']['localteam_score']
+						g.visitor_team_score=game['scores']['visitorteam_score']
+						g.ht_score=game['scores']['ht_score']
+						g.ft_score=game['scores']['ft_score']
+						g.odds_calculated=game['winning_odds_calculated']
 						g.save()
 						
 					else:
 						Game(pk=game['id'],
 							start_game_date=datetime.strptime(game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
-							name=game['localTeam']['data']['name']+" x " +game['visitorTeam']['data']['name'], championship=Championship.objects.get(pk=game["league_id"]), status_game=game['time']["status"]).save() 
+							name=game['localTeam']['data']['name']+" x " +game['visitorTeam']['data']['name'], 
+							championship=Championship.objects.get(pk=game["league_id"]), status_game=game['time']["status"],
+							local_team_score=game['scores']['localteam_score'], visitor_team_score=game['scores']['visitorteam_score'],
+							ht_score=game['scores']['ht_score'],ft_score=game['scores']['ft_score'],
+							odds_calculated=game['winning_odds_calculated']).save() 
 
 			r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?page="+str((i+1))+"&api_token="+TOKEN+"&include=localTeam,visitorTeam&tz=America/Sao_Paulo")
 	
@@ -191,12 +230,13 @@ class Cotation(models.Model):
 	name = models.CharField(max_length=80)
 	value = models.FloatField(default=0)
 	game = models.ForeignKey('Game', related_name='cotations')	
-	winning = models.BooleanField(default=False)
+	winning = models.NullBooleanField()
 	is_standard = models.BooleanField(default=False)
 	kind = models.CharField(max_length=100)
 	handicap = models.FloatField(blank = True, null = True)
 	total = models.FloatField(blank = True, null = True)
 	objects = GamesManager()
+
 	
 	@staticmethod
 	def consuming_api():
@@ -208,10 +248,10 @@ class Cotation(models.Model):
 			for kind in r.json().get('data'):
 				kind_name = kind['name']				
 				for cotation in kind['bookmaker']['data'][0]['odds']['data']:
-					if kind_name != 'Asian Handicap' and kind_name != 'Handicap Result' and kind_name != 'Handicap' and kind_name != '3Way Handicap':
+					if kind_name != 'Asian Handicap' and kind_name != 'Handicap Result' and kind_name != 'Handicap' and kind_name != '3Way Handicap' and kind_name != 'Corners Over Under':
 						if kind_name == '3Way Result':
 							c = Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']),value=cotation['value'],game=game, is_standard = True,
-								handicap=cotation['handicap'], total=cotation['total'])
+								handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'])
 							if kind_name in MARKET_NAME.keys():
 								c.kind = MARKET_NAME[kind_name]
 								c.save()
@@ -220,14 +260,152 @@ class Cotation(models.Model):
 								c.save()
 
 						else:
-							c = Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']),value=cotation['value'],game=game, is_standard = False,
-								handicap=cotation['handicap'], total=cotation['total'])
+							if kind_name == 'Result/Total Goals':
+								c = Cotation(name=renaming_cotations(cotation['label']," "),value=cotation['value'],game=game, is_standard = False,
+									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'])
+							else:									
+								c = Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']),value=cotation['value'],game=game, is_standard = False,
+									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'])
+
 							if kind_name in MARKET_NAME.keys():
 								c.kind = MARKET_NAME[kind_name]
 								c.save()
 							else:
 								c.kind = kind_name
 								c.save()
+
+	@staticmethod
+	def processing_cotations():
+		for game in Game.objects.all():
+			print(game.name)
+			if game.visitor_team_score is not None and game.local_team_score is not None and game.ht_score is not None and game.ft_score is not None and game.cotations.count() > 0:			
+				cotations = game.cotations.all().filter(kind='Vencedor do Encontro')
+				if game.visitor_team_score > game.local_team_score:										
+					cotations.update(winning=False)
+					c2 = cotations.get(name='2')					
+					c2.winning = True					
+					c2.save()
+					cotations = game.cotations.all().filter(kind='Casa/Visitante')
+					c = cotations.get(name='1')
+					c1 = cotations.get(name='2')				
+					c.winning = False
+					c1.winning = True				
+					c.save()
+					c1.save()				
+					cotations = game.cotations.all().filter(kind='Dupla Chance')
+					cotations.update(winning=True)					
+					c2 = cotations.get(name='Casa/Empate    ')										
+					c2.winning = False									
+					c2.save()					
+
+				elif game.visitor_team_score < game.local_team_score:
+					cotations.update(winning=False)
+					c = cotations.get(name='1')
+					c.winning = True					
+					c.save()					
+					cotations = game.cotations.all().filter(kind='Casa/Visitante')
+					c = cotations.get(name='1')
+					c1 = cotations.get(name='2')				
+					c.winning = True
+					c1.winning = False
+					c.save()
+					c1.save()				
+					cotations = game.cotations.all().filter(kind='Dupla Chance')					
+					cotations.update(winning=True)
+					c1 = cotations.get(name='Empate/Visitante    ')										
+					c1.winning = False										
+					c1.save()					
+
+				else:
+					cotations.update(winning=False)					
+					c1 = cotations.get(name='X')										
+					c1.winning = True										
+					c1.save()							
+					cotations = game.cotations.all().filter(kind='Casa/Visitante')
+					c = cotations.get(name='1')
+					c1 = cotations.get(name='2')				
+					c.winning = False
+					c1.winning = False
+					c.save()
+					c1.save()				
+					cotations = game.cotations.all().filter(kind='Dupla Chance')
+					cotations.update(winning=True)
+					c = cotations.get(name='Casa/Visitante    ')					
+					c.winning = False					
+					c.save()					
+					
+				if game.cotations.all().filter(kind='Etapa com Mais Gol(s)').count()>0:
+					cotations = game.cotations.all().filter(kind='Etapa com Mais Gol(s)')
+					result_1_etapa = int(game.ht_score.split('-')[0]) +  int(game.ht_score.split('-')[1])
+					result_2_etapa = (int(game.ft_score.split('-')[0]) - int(game.ht_score.split('-')[0])) + (int(game.ft_score.split('-')[1]) - int(game.ht_score.split('-')[1]))
+					if result_1_etapa > result_2_etapa:
+						cotations.update(winning=False)
+						c = cotations.get(name='1° Tempo  ')						
+						c.winning = True						
+						c.save()
+						
+
+					elif result_1_etapa < result_2_etapa:
+						cotations.update(winning=False)						
+						c2 = cotations.get(name='2° Tempo  ')										
+						c2.winning = True						
+						c2.save()
+
+					else:
+						cotations.update(winning=False)						
+						c1 = cotations.get(name='X')												
+						c1.winning = True												
+						c1.save()
+												
+				if game.cotations.all().filter(kind='Vencedor nas Duas Etapas').count()>0:
+					result_1_etapa = int(game.ht_score.split('-')[0]) - int(game.ht_score.split('-')[1])
+					result_2_etapa = int(game.ft_score.split('-')[0]) - int(game.ft_score.split('-')[1])
+					cotations = game.cotations.all().filter(kind='Vencedor nas Duas Etapas')
+					if result_1_etapa > 0 and result_2_etapa > 0:			
+						c = cotations.get(name='1')
+						c1 = cotations.get(name='2')				
+						c.winning = True
+						c1.winning = False
+						c.save()
+						c1.save()
+					elif result_1_etapa < 0 and result_2_etapa < 0:
+						c = cotations.get(name='1')
+						c1 = cotations.get(name='2')				
+						c.winning = False
+						c1.winning = True
+						c.save()
+						c1.save()
+					else:
+						c = cotations.get(name='1')
+						c1 = cotations.get(name='2')				
+						c.winning = False
+						c1.winning = False
+						c.save()
+						c1.save()
+
+				if game.cotations.all().filter(kind='Número Exato de Gol(s)').count()>0:
+					result = int(game.ft_score.split('-')[0]) + int(game.ft_score.split('-')[1])
+					cotations = game.cotations.all().filter(kind='Número Exato de Gol(s)')
+					
+					if result >= 7:
+						cotations.update(winning=False)
+						c = cotations.get(name='more 7')
+						c.winning = True
+						c.save()				
+					else:
+						cotations.update(winning=False)
+						c = cotations.get(name=str(result))
+						c.winning = True
+						c.save()
+
+			#  TODO BLOCK{			
+			#'Intervalo/Final de Jogo': TODO
+			#							
+			#'Resultado/2 Times Marcam'
+			# 
+			#'Resultado/Total de Gol(s)':
+			# 
+			#}
 
 
 	class Meta:
