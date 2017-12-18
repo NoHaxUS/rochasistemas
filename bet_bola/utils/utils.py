@@ -13,6 +13,7 @@ def populating_bd():
 def updating_games():
 	first_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day-3))
 	second_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day + 3))
+	
 	Championship.consuming_api()
 	Game.consuming_api(first_date,second_date)
 	Cotation.consuming_api()
