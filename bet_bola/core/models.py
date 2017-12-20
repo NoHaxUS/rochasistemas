@@ -112,18 +112,27 @@ class BetTicket(models.Model):
 		return cota_total
 
 	def update_ticket_status(self):
+		not_winning = False
 		if self.check_ticket_status:			
 			for c in self.cotations.all():
 				if c.winning is not None:
 					if not c.winning:
 						self.bet_ticket_status = BET_TICKET_STATUS[1][1]
 						self.save()
-						return 'Status do ticket atualizado com sucesso'
-				
-			self.bet_ticket_status = BET_TICKET_STATUS[2][1]
-			self.save()
-			return 'Status do ticket atualizado com sucesso'
+						not_winning = True
+						return 'Status do ticket atualizado com sucesso. You Lost'
+				else:
+					self.bet_ticket_status = BET_TICKET_STATUS[0][1]
+					self.save()
+					return 'Ticket aguardando resultado'
+			
+			if not not_winning:
+				self.bet_ticket_status = BET_TICKET_STATUS[2][1]
+				self.save()
+				return 'Status do ticket atualizado com sucesso. You Won'
 		else:
+			self.bet_ticket_status = BET_TICKET_STATUS[0][1]
+			self.save()
 			return 'Ticket aguardando resultado'
 		
 			
@@ -136,6 +145,12 @@ class BetTicket(models.Model):
 				ticket_finished = False
 
 		return ticket_finished
+
+	@staticmethod
+	def processing_tickets():
+		for ticket in BetTicket.objects.all():
+			ticket.update_ticket_status()
+
 
 	def __str__(self):
 		return str(self.pk)
@@ -248,36 +263,64 @@ class Cotation(models.Model):
 
 		for game in Game.objects.all():
 			r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN+"&tz=America/Sao_Paulo")			
-			game.cotations.all().delete()							
+			# r = requests.get("http://localhost:8000/utils/test_url/")							
 			for kind in r.json().get('data'):
 				kind_name = kind['name']				
 				for cotation in kind['bookmaker']['data'][0]['odds']['data']:
 					if kind_name != 'Asian Handicap' and kind_name != 'Handicap Result' and kind_name != 'Handicap' and kind_name != '3Way Handicap' and kind_name != 'Corners Over Under':
 						if kind_name == '3Way Result':
-							c = Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],game=game, is_standard = True,
-								handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'])
-							if kind_name in MARKET_NAME.keys():
-								c.kind = MARKET_NAME[kind_name]
-								c.save()								
-
+							cotations = game.cotations.all().filter(kind=MARKET_NAME[kind_name])
+							if cotations.filter(name=cotation['label']).exists():
+								c = cotations.filter(name=cotation['label'])
+								c.update(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],game=game, is_standard = True,
+									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'])
 							else:
-								c.kind = kind_name
-								c.save()													
+								c = Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],game=game, is_standard = True,
+									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'])
+
+								if kind_name in MARKET_NAME.keys():
+									c.kind = MARKET_NAME[kind_name]
+									c.save()								
+
+								else:
+									c.kind = kind_name
+									c.save()													
 
 						else:
-							if kind_name == 'Result/Total Goals':
-								c = Cotation(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],game=game, is_standard = False,
-									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'])
-							else:									
-								c = Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],game=game, is_standard = False,
-									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'])
 
-							if kind_name in MARKET_NAME.keys():
-								c.kind = MARKET_NAME[kind_name]
-								c.save()
-							else:
-								c.kind = kind_name
-								c.save()
+							if kind_name == 'Result/Total Goals':
+								cotations = game.cotations.all().filter(kind=kind_name)
+								if cotations.filter(name=cotation['label']).exists():
+									c = cotations.filter(name=cotation['label'])
+									c.pupdate(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],game=game, is_standard = False,
+										handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'])
+								else:									
+									c = Cotation(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],game=game, is_standard = False,
+										handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'])
+
+									if kind_name in MARKET_NAME.keys():
+										c.kind = MARKET_NAME[kind_name]
+										c.save()
+									else:
+										c.kind = kind_name
+										c.save()
+
+							else:									
+								cotations = gabe.cotations.all().filter(kind=kind_name)
+								if cotations.filter(name=cotation['label']).exists():
+									c = cotations.filter(name=cotation['label'])
+									c.update(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],game=game, is_standard = False,
+										handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'])
+								else:
+									c = Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],game=game, is_standard = False,
+										handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'])
+
+									if kind_name in MARKET_NAME.keys():
+										c.kind = MARKET_NAME[kind_name]
+										c.save()
+									else:
+										c.kind = kind_name
+										c.save()
 
 	@staticmethod
 	def processing_cotations():

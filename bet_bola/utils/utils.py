@@ -1,4 +1,4 @@
-from core.models import Championship,Game,Cotation
+from core.models import Championship,Game,Cotation,BetTicket
 from datetime import datetime
 
 def populating_bd():
@@ -9,15 +9,17 @@ def populating_bd():
 	Game.consuming_api(first_date,second_date)
 	Cotation.consuming_api()
 	Cotation.processing_cotations()
+	BetTicket.processing_tickets()
 
 def updating_games():
-	first_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day-3))
-	second_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day + 3))
+	# first_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day-3))
+	# second_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day + 3))
 	
-	Championship.consuming_api()
-	Game.consuming_api(first_date,second_date)
+	# Championship.consuming_api()
+	# Game.consuming_api(first_date,second_date)
 	Cotation.consuming_api()
-	Cotation.processing_cotations()
+	# Cotation.processing_cotations()
+	BetTicket.processing_tickets()
 
 	
 

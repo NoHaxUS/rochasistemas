@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from django.shortcuts import render,redirect
 from django.template.loader import get_template
 from django.views.generic import View
@@ -33,3 +33,60 @@ class PDF(View):
 
 		response.write(buffer)
 		return response
+
+class TestJson(View):
+	def get(self, request, *args, **kwargs):
+		return JsonResponse({
+				    "data": [
+				        {
+				            "id": 1,
+				            "name": "3Way Result",
+				            "bookmaker": {
+				                "data": [
+				                    {
+				                        "id": 2,
+				                        "name": "bet365",
+				                        "odds": {
+				                            "data": [
+				                                {
+				                                    "label": "1",
+				                                    "value": "2.29",
+				                                    "winning": False,
+				                                    "handicap": None,
+				                                    "total": None,
+				                                    "last_update": {
+				                                        "date": "2017-11-28 19:54:03.000000",
+				                                        "timezone_type": 3,
+				                                        "timezone": "UTC"
+				                                    }
+				                                },
+				                                {
+				                                    "label": "X",
+				                                    "value": "3.10",
+				                                    "winning": True,
+				                                    "handicap": None,
+				                                    "total": None,
+				                                    "last_update": {
+				                                        "date": "2017-11-28 19:54:04.000000",
+				                                        "timezone_type": 3,
+				                                        "timezone": "UTC"
+				                                    }
+				                                },
+				                                {
+				                                    "label": "2",
+				                                    "value": "3.20",
+				                                    "winning": None,
+				                                    "handicap": None,
+				                                    "total": None,
+				                                    "last_update": {
+				                                        "date": "2017-11-28 19:54:04.000000",
+				                                        "timezone_type": 3,
+				                                        "timezone": "UTC"
+				                                    }
+				                                }
+				                            ]
+				                        }
+				                    }
+				                ]
+				            }
+				        }]})
