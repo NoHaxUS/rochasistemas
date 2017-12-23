@@ -164,8 +164,9 @@ class CreateTicketView(View):
 				user=User.objects.get(pk=request.user.pk), 
 				seller=None,
 				value=ticket_bet_value,
-				payment=Payment.objects.create(), 
-				reward=Reward.objects.create())
+				payment=Payment.objects.create(payment_date=None), 
+				reward=Reward.objects.create(reward_date=None)
+				)
 			ticket.save()
 
 			

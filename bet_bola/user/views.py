@@ -97,9 +97,10 @@ class Login(View):
         if user is not None:
             login(request, user)
             if(request.user.pk in [user.pk for user in Punter.objects.all()]):
-                return redirect('core:home')
+                return HttpResponseRedirect('/#/login_ok')
             else:
-                return redirect('core:seller_home')
+                #return redirect('core:seller_home')
+                return HttpResponseRedirect('/#/login_ok')
         else:
             return HttpResponseRedirect('/#/login_error')
 
