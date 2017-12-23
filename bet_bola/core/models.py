@@ -278,8 +278,8 @@ class Cotation(models.Model):
 					if kind_name != 'Asian Handicap' and kind_name != 'Handicap Result' and kind_name != 'Handicap' and kind_name != '3Way Handicap' and kind_name != 'Corners Over Under':
 						if kind_name == '3Way Result':
 							cotations = game.cotations.all().filter(kind=MARKET_NAME.setdefault(kind_name,kind_name))
-							if cotations.filter(name=cotation['label']).exists():
-								c = cotations.filter(name=cotation['label'])
+							if cotations.filter(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip()).exists():
+								c = cotations.filter(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip())
 								c.update(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],game=game, is_standard = True,
 									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
 							else:
@@ -290,9 +290,9 @@ class Cotation(models.Model):
 
 							if kind_name == 'Result/Total Goals':
 								cotations = game.cotations.all().filter(kind=MARKET_NAME.setdefault(kind_name,kind_name))
-								if cotations.filter(name=cotation['label']).exists():
-									c = cotations.filter(name=cotation['label'])
-									c.pupdate(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],game=game, is_standard = False,
+								if cotations.filter(name=renaming_cotations(cotation['label']," ").strip()).exists():
+									c = cotations.filter(name=renaming_cotations(cotation['label']," ").strip())
+									c.update(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],game=game, is_standard = False,
 										handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
 								else:									
 									Cotation(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],game=game, is_standard = False,
@@ -301,14 +301,13 @@ class Cotation(models.Model):
 									
 							else:									
 								cotations = game.cotations.all().filter(kind=MARKET_NAME.setdefault(kind_name,kind_name))
-								if cotations.filter(name=cotation['label']).exists():
-									c = cotations.filter(name=cotation['label'])
+								if cotations.filter(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip()).exists():
+									c = cotations.filter(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip())
 									c.update(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],game=game, is_standard = False,
 										handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
 								else:
 									Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],game=game, is_standard = False,
 										handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name)).save()
-
 									
 
 	@staticmethod
