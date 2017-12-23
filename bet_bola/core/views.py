@@ -26,7 +26,7 @@ import json
 
 class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'
-	games = Game.objects.able_games()
+	games = Game.objects.able_games().filter(start_game_date__date=datetime.now().today().date())
 
 	def get(self, request, *args, **kwargs):
 		championships = list()
