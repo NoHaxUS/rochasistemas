@@ -42,6 +42,10 @@ $(document).ready(function () {
     if(type == '/login_error'){
         alertify.alert("Erro", "Login ou senha incorretos.")
     }
+
+    if(type == '/login_ok'){
+        alertify.alert("Sucesso", "Você foi logado.")
+    }
     /* END ERROR MESSAGES */
     
 

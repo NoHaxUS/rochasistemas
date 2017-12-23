@@ -42,7 +42,7 @@
 
             <div class="col s12 center-align">
                 <div class="delay-msg col s12 l6 hcenter">
-                    <i class="red-text material-icons">info</i> Os resultados são atualizados a cada 5 minutos, portanto, resultados incorretos podem ser exibidos
+                    <i class="red-text material-icons">info</i> Os resultados são atualizados a cada 6 horas, portanto, resultados incorretos podem ser exibidos
                     nesse intervalo de tempo.
                 </div>
                 <div class="row">
@@ -60,7 +60,7 @@
                             <div class="col s4">
                                 Status do Pagamento: {{ticket.payment.status_payment}} <br>
                             {% if ticket.payment.payment_date %}
-                                Data: {{ticket.payment.payment_date}}
+                                Última Atualização: {{ticket.payment.payment_date}}
                             {% endif %}
                             </div>
                             <div class="col s4">
@@ -130,6 +130,9 @@
 
     <script src="{% static "js/jquery-3.2.1.min.js" %}"></script>
     <script src="{% static "js/materialize.js" %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src="{% static "js/alertify.min.js" %}"></script>
+    <script src="{% static "js/jquery.maskedinput.min.js" %}"></script>
     <script src="{% static "js/home.js" %}"></script>
 
 </body>
