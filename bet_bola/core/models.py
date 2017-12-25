@@ -225,13 +225,14 @@ class Game(models.Model):
 
 class Championship(models.Model):
 	name = models.CharField(max_length=80)
+	country = models.CharField(max_length=45)
 
 	@staticmethod
 	def consuming_api():
-		r = requests.get("https://soccer.sportmonks.com/api/v2.0/leagues/?api_token="+TOKEN + "&tz=America/Sao_Paulo")
+		r = requests.get("https://soccer.sportmonks.com/api/v2.0/leagues/?api_token="+TOKEN + "&include=country&tz=America/Sao_Paulo")
 		
 		for championship in r.json().get('data'):
-			Championship(pk=championship['id'],name = championship['name']).save()
+			Championship(pk=championship['id'],name = championship['name'],country = championship['country']['data']['name']).save()			
 
 	def __str__(self):
 		return self.name
