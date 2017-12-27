@@ -335,13 +335,22 @@
                             </li>
                             {%endfor%}
 
-                </div>
+                </div>                
                 <div class="col s12 l8">
+                {% for championship in championships %}
+                    {% if championship.my_games.today_able_games.all.count > 0 %}
                     <!-- Bets collection-->
                     <div class="games-table-container">
-                        <table class="bordered highlight white centered games-table hoverable">
+                        <table class="bordered highlight white centered games-table hoverable">                         
                             <thead>
-                                <tr>
+                                    <tr>                                        
+                                        <th colspan="5">                                        
+                                            <div class="championship-header blue-c white-text center-align">
+                                                {{championship.name}} - {{championship.country}}
+                                            </div>
+                                        </th>
+                                    </tr>
+                                    <tr>
                                     <th>JOGO (CASA x VISITANTE)</th>
                                     <th>CASA</th>
                                     <th>VISITANTE</th>
@@ -350,18 +359,7 @@
                                 </tr>
                             </thead>
 
-                            <tbody>
-                                {% for championship in championships %}
-                                    {% if championship.my_games.today_able_games.all.count > 0 %}
-                                    <tr>                                        
-                                        <th colspan="5">                                        
-                                                <div class="championship-header blue-c white-text center-align">
-                                                    {{championship.name}} - {{championship.country}}
-                                                </div>
-                                            
-                                        </th>
-                                    </tr>
-                                    {% endif %}
+                            <tbody>                                                                                                            
                                     {% for game in championship.my_games.today_able_games.all %}                                    
                                         {% if game.cotations.all.count > 0 %}                                        
                                     <tr>
@@ -387,14 +385,13 @@
                                         </td>
                                     </tr>
                                         {% endif %}
-                                    {% endfor %}
-                                {%endfor%}
-                            </tbody>
+                                    {% endfor %}                                
+                            </tbody>                            
                         </table>
                     </div>
-
-                </div>
-
+                    {% endif %}
+                    {%endfor%}
+                </div>                                
                 <div class="col s2 hide-on-med-and-down hoverable white">
                     <!-- Ticket bets -->
                     <div class="ticket-header blue-c white-text center-align">
