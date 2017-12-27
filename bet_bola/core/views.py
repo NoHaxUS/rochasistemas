@@ -17,7 +17,8 @@ from .models import Cotation,BetTicket,Game,Championship,Payment,Reward
 from user.models import Punter,Seller
 from .forms import BetTicketForm
 from django.core import serializers
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
+from user.models import CustomUser
 import json
 
 #import pdb; pdb.set_trace()
@@ -26,6 +27,7 @@ import json
 class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'
 	games = Game.objects.able_games()
+
 
 	def get(self, request, *args, **kwargs):
 		championships = list()
@@ -44,6 +46,7 @@ class Home(TemplateResponseMixin, View):
 
 		context = {'games': self.games ,'championships': championships, 'is_seller':is_seller}
 		
+
 		return self.render_to_response(context)
 
 
@@ -162,7 +165,7 @@ class CreateTicketView(View):
 				return JsonResponse({'status':400})
 			
 			ticket = BetTicket(
-				user=User.objects.get(pk=request.user.pk), 
+				user=Custom_User.objects.get(pk=request.user.pk), 
 				seller=None,
 				value=ticket_bet_value,
 				payment=Payment.objects.create(payment_date=None), 

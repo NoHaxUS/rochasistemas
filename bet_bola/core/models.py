@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.db.models import Q
 import requests
 import decimal
+from django.conf import settings
 # Create your models here.
 
 TOKEN='OOabOgBw4awrsYQ51DIWz3i4ILKWxBAXqLQI5b01xzZuoKhyBHCcdINUbIeM'
@@ -83,7 +84,7 @@ MARKET_NAME = {
 
 
 class BetTicket(models.Model):	
-	user = models.ForeignKey('auth.User', related_name='my_bet_tickets')
+	user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets')
 	seller = models.ForeignKey('user.Seller', null=True, related_name='bet_tickets_validated_by_me')
 	cotations = models.ManyToManyField('Cotation', related_name='bet_ticket')
 	creation_date = models.DateTimeField(auto_now_add=True)	

@@ -1,7 +1,12 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 from .models import BetTicket,Cotation,Payment,Game,Championship,Reward
+from user.models import CustomUser
 # Register your models here.
 
+
+
+admin.site.register(CustomUser, UserAdmin)
 
 @admin.register(BetTicket)
 class BetTicketAdmin(admin.ModelAdmin):	

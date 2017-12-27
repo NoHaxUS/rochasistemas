@@ -11,7 +11,8 @@ from .models import Punter
 from core.models import Game, Championship, BetTicket
 from user.models import Punter
 from datetime import datetime
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
+from user.models import CustomUser
 import json
 # Create your views here.
 
@@ -43,9 +44,6 @@ class PunterCreate(View):
             errors['errors'] = True
             errors['data'].append('O nome é obrigatório')
 
-        elif not request.POST['email']:
-            errors['errors'] = True
-            errors['data'].append('O email é obrigatório')
 
         elif not request.POST['login']:
             errors['errors'] = True
@@ -81,7 +79,7 @@ class PunterCreate(View):
             punter.save()
 
             user = authenticate(username=request.POST['login'], password=request.POST['password'])
-            print(user)
+            
             if user is not None:
                 login(request, user)
                 return HttpResponse("User Created")
