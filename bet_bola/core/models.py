@@ -140,7 +140,7 @@ class BetTicket(models.Model):
 	def check_ticket_status(self):
 		ticket_finished = True
 
-		for c in self.cotations:
+		for c in self.cotations.all():
 			if not c.game.odds_calculated:
 				ticket_finished = False
 

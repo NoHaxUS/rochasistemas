@@ -18,7 +18,7 @@ from . import views
 
 urlpatterns = [  
     url(r'^update/$', views.Update.as_view(), name='updating'),    
-    url(r'^populate/$', views.PopulatingBD.as_view(), name='populating'),
-    url(r'^pdf/$', views.PDF.as_view(), name='populating'),    
-    url(r'^test_url/$', views.TestJson.as_view(), name='test_url'),    
+    url(r'^populate/$', views.PopulatingBD.as_view(), name='populating'),    
+    url(r'^pdf/(?P<pk>\d+)$', views.PDF.as_view(), name='pdf'),
+    url(r'^test_url/$', views.TestJson.as_view(), name='test_url'),
 ]
