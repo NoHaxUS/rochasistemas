@@ -121,6 +121,11 @@ $(document).ready(function () {
                             if(data.status == 200){
                                 alertify.success("O Apostador foi pago com sucesso.");
                             }
+
+                            if(data.status == 401){
+                                alertify.error("Você não pode recompensar um Ticket que não venceu.");
+                            }
+
                             if(data.status == 404){
                                 alertify.error('Ticket não encontrado.');
                             }
@@ -295,7 +300,12 @@ $(document).ready(function () {
                 console.log('False');
                 ticket_value = $('.ticket-bet-value-mobile').val();
             }
-            
+
+            if (ticket_value <= 0){
+                alertify.error("Você deve apostar um valor maior que 0.");
+                return ;
+            }
+
             console.log(ticket_value);
 
             if(ticket == '{}'){

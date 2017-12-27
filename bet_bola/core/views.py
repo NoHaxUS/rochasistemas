@@ -14,7 +14,6 @@ from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
 from .models import Cotation,BetTicket,Game,Championship,Payment,Reward
-from user.forms.create_punter_form import CreatePunterForm
 from user.models import Punter,Seller
 from .forms import BetTicketForm
 from django.core import serializers
@@ -52,7 +51,6 @@ class Home(TemplateResponseMixin, View):
 class GameChampionship(TemplateResponseMixin, View):
 	template_name = 'core/index.html'	
 	form = AuthenticationForm()
-	form_punter = CreatePunterForm()
 
 
 	def get(self, request, *args, **kwargs):
@@ -74,7 +72,7 @@ class GameChampionship(TemplateResponseMixin, View):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'games': games ,'championships': championships,'form': self.form, 'form_punter': self.form_punter, 'is_seller':is_seller}
+		context = {'games': games ,'championships': championships,'form': self.form, 'is_seller':is_seller}
 		
 		return self.render_to_response(context)
 
@@ -159,6 +157,9 @@ class CreateTicketView(View):
 				return JsonResponse({'status':400})
 			
 			ticket_bet_value = float( request.POST.get('ticket_value') )
+
+			if ticket_bet_value <= 0:
+				return JsonResponse({'status':400})
 			
 			ticket = BetTicket(
 				user=User.objects.get(pk=request.user.pk), 
@@ -231,12 +232,16 @@ class PunterPayment(View):
 
 		if request.user.has_perm('core.can_reward'):
 			pk = int(request.POST['ticket'])
-			if pk in [ticket.pk for ticket in BetTicket.objects.all()]:
+			ticket_queryset = BetTicket.objects.filter(pk=pk)
+			if ticket_queryset.exists():
 				
-				ticket = BetTicket.objects.get(pk = pk)
-				ticket.reward_payment(request.user)
+				ticket = ticket_queryset.first()
+				if ticket.bet_ticket_status == 'Venceu.':
+					ticket.reward_payment(request.user)
+					return JsonResponse({'status': 200})
+				else:
+					return JsonResponse({'status': 401})
 
-				return JsonResponse({'status': 200})
 			else:
 				return JsonResponse({'status': 404})
 		else:

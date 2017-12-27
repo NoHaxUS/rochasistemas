@@ -7,7 +7,6 @@ from django.views import View
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.edit import CreateView, FormView
 from django.contrib import messages
-from .forms.create_punter_form import CreatePunterForm
 from .models import Punter
 from core.models import Game, Championship, BetTicket
 from user.models import Punter
