@@ -26,6 +26,9 @@ body{
 .blue-c{
     background-color: #39b54a  !important;
 }
+.championship-color{
+    background-color: #3c91c3;
+}
 /* end color definitions*/
 nav .brand-logo{
     padding: 0 15px;

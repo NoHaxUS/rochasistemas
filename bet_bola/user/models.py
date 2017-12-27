@@ -34,13 +34,6 @@ class CustomUserManager(BaseUserManager):
 
 		return self._create_user(username, password, **extra_fields)
 
-		def normalize_email(email):
-			return email
-
-		def a():
-			pass
-
-
 
 
 class CustomUser(AbstractUser):
