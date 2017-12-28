@@ -31,11 +31,14 @@ class Home(TemplateResponseMixin, View):
 
 	def get(self, request, *args, **kwargs):
 		championships = list()
-
+		country = list()
+		
 		for i in Championship.objects.all():
 			if i.my_games.able_games().count() > 0:
 				championships.append(i)
-		
+				if i.country not in country:					
+					country.append(i.country)
+
 		is_seller = None
 		if request.user.is_authenticated:
 			try:
@@ -44,7 +47,7 @@ class Home(TemplateResponseMixin, View):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'games': self.games ,'championships': championships, 'is_seller':is_seller}
+		context = {'games': self.games ,'championships': championships, 'is_seller':is_seller,'countries':country}
 		
 
 		return self.render_to_response(context)
@@ -52,16 +55,19 @@ class Home(TemplateResponseMixin, View):
 
 
 class GameChampionship(TemplateResponseMixin, View):
-	template_name = 'core/index.html'	
+	template_name = 'core/championship_games.html'	
 	form = AuthenticationForm()
 
 
 	def get(self, request, *args, **kwargs):
 		championships = list()
-
+		country = list()
+		
 		for i in Championship.objects.all():
 			if i.my_games.able_games().count() > 0:
 				championships.append(i)
+				if i.country not in country:					
+					country.append(i.country)
 				
 
 		championship = Championship.objects.get( pk=int(self.kwargs["pk"]) )
@@ -75,7 +81,7 @@ class GameChampionship(TemplateResponseMixin, View):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'games': games ,'championships': championships,'form': self.form, 'is_seller':is_seller}
+		context = {'games': games ,'championships': championships,'form': self.form, 'is_seller':is_seller,'countries':country}
 		
 		return self.render_to_response(context)
 
