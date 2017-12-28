@@ -357,7 +357,7 @@
                             </thead>
 
                             <tbody>                                                                                                            
-                                    {% for game in games %}    
+                                    {% for game in games|order_by:"start_game_date" %}    
                                         {% if game.cotations.all.count > 0 %}                                
                                         <tr>
                                             <td>

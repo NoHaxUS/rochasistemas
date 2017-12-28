@@ -8,3 +8,8 @@ def standard_cotations_order_by(queryset, args):
     args = [x.strip() for x in args.split(',')]
     return queryset.filter(is_standard=True).order_by(*args)
 
+@register.filter(name='order_by')
+def order_by(queryset, args):
+    args = [x.strip() for x in args.split(',')]
+    return queryset.order_by(*args)
+
