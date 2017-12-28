@@ -165,7 +165,7 @@ class CreateTicketView(View):
 				return JsonResponse({'status':400})
 			
 			ticket = BetTicket(
-				user=Custom_User.objects.get(pk=request.user.pk), 
+				user=CustomUser.objects.get(pk=request.user.pk), 
 				seller=None,
 				value=ticket_bet_value,
 				payment=Payment.objects.create(payment_date=None), 

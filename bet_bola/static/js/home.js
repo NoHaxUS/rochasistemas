@@ -157,9 +157,7 @@ $(document).ready(function () {
 
             $('.cotation-total').text( parseFloat( total.toFixed(2) ) );
     
-            COTATION_TOTAL = parseFloat( total.toFixed(2) ) ;
-
-            $('.ticket-bet-value').trigger('keyup');
+            COTATION_TOTAL = parseFloat( total.toFixed(2) );
 
         }
     /** END ATUALIZAR VALOR DE TOTAL DAS COTAS **/
@@ -175,10 +173,14 @@ $(document).ready(function () {
             $.post('/bet/', bet_info, function(data, status, rq){
                 console.log(rq.status);
             }, 'text');
-    
+            
             UpdateCotationTotal();
+            var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
+            updateRewardTotal(ticket_bet_value);
+            console.log(ticket_bet_value);
             RenderTicket();
-            $('.ticket-bet-value').trigger('keyup');
+            //$('.ticket-bet-value').trigger('keyup');
+            //$('.ticket-bet-value-mobile').trigger('keyup');
         }
     /** END ADICIONAR APOSTA AO TICKET **/
     
@@ -222,19 +224,31 @@ $(document).ready(function () {
         /** END REDERIZAR LISTA TICKETS ATUALZIADA **/
     
     
-       
-    /** ATUALIZAR VALOR DA APOSTA AO TECLAR **/
-        $('.ticket-bet-value').keyup(function(data){
+        function updateRewardTotal(ticket_bet_value){
     
-            var ticket_bet_value = parseFloat($(this).val());
-        
             if( isNaN(ticket_bet_value) ){
                 $('.award-value').text('R$ 0.00');
             }else{
                 var award_value = (COTATION_TOTAL * ticket_bet_value).toFixed(2);
                 $('.award-value').text('R$ ' + award_value);
             }
-            //console.log('Disparado');
+        };
+       
+    /** ATUALIZAR VALOR DA APOSTA AO TECLAR **/
+        $('.ticket-bet-value-mobile').keyup(function(data){
+    
+            var ticket_bet_value = parseFloat($(this).val());
+            $('.ticket-bet-value-desktop').val(ticket_bet_value);
+            updateRewardTotal(ticket_bet_value);
+
+        });
+
+        $('.ticket-bet-value-desktop').keyup(function(data){
+    
+            var ticket_bet_value = parseFloat($(this).val());
+            $('.ticket-bet-value-mobile').val(ticket_bet_value);
+            updateRewardTotal(ticket_bet_value);
+
         });
      /** END ATUALIZAR VALOR DA APOSTA AO TECLAR **/
 
@@ -297,7 +311,7 @@ $(document).ready(function () {
             if($(this).attr('desktop') == 'True'){
                 ticket_value = $('.ticket-bet-value-desktop').val();
             }else{
-                console.log('False');
+                //console.log('False');
                 ticket_value = $('.ticket-bet-value-mobile').val();
             }
 

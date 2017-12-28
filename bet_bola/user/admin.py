@@ -8,20 +8,19 @@ class PunterAdmin(admin.ModelAdmin):
 	title = ('Punter')
 
 	fieldsets = (
-        (None, {
-            'fields': ('first_name','last_name','username','password','email','date_joined','birthday')
-        }),
-      
-    )
+		(None, {
+			'fields': ('first_name','last_name','username','password','email','date_joined')
+		}),
+		)
 
 @admin.register(Seller)
 class SellerAdmin(admin.ModelAdmin):
 	title = ('Seller')
 
 	fieldsets = (
-        (None, {
-            'fields': ('first_name','last_name','cpf','username','password','email','date_joined','birthday')
-        }),
-      
-    )
+		(None, {
+			'fields': ('first_name','last_name','cpf','username','password','email','date_joined')
+		}),
+	)
+	list_display = ['username']
 

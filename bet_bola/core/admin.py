@@ -10,8 +10,9 @@ admin.site.register(CustomUser, UserAdmin)
 
 @admin.register(BetTicket)
 class BetTicketAdmin(admin.ModelAdmin):	
-	search_fields = ['seller__first_name']
-	list_filter = ('bet_ticket_status','user','seller','payment__status_payment','reward__status_reward')
+	search_fields = ['user__first_name']
+	list_filter = ('bet_ticket_status','seller','payment__status_payment','reward__status_reward')
+	list_display =('pk','seller','user','creation_date','reward','value','bet_ticket_status')
 	
 
 @admin.register(Cotation)

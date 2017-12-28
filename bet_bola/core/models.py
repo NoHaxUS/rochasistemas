@@ -14,43 +14,43 @@ from django.conf import settings
 TOKEN='OOabOgBw4awrsYQ51DIWz3i4ILKWxBAXqLQI5b01xzZuoKhyBHCcdINUbIeM'
 
 BET_TICKET_STATUS = (
-		('WAITING_RESULT', 'Aguardando Resultados.'),
-		('NOT_WON', 'Não Venceu.'),
-		('WON', 'Venceu.'),
+		('Aguardando Resultados', 'Aguardando Resultados'),
+		('Não Venceu', 'Não Venceu'),
+		('Venceu', 'Venceu'),
 	)
 
 REWARD_STATUS = (
-		('WAITING_RESULTS', 'Aguardando Resultados.'),
-		('PAID', 'Finalizado, O apostador foi pago.'),
-		('NOT_WON', 'Esse ticket não venceu.'),
-		('WON', 'Venceu, Aguardando pagamento.'),
+		('Aguardando Resultados', 'Aguardando Resultados'),
+		('O apostador foi pago', 'O apostador foi pago'),
+		('Esse ticket não venceu', 'Esse ticket não venceu'),
+		('Venceu, Aguardando pagamento', 'Venceu, Aguardando pagamento'),
 	)
 
 GAME_STATUS = (
-		('NS', 'Not Started'),
-		('LIVE','Live'),
-		('HT', 'Half-time'),
-		('FT', 'Full-Time')	,	
-		('ET', 'Extra-Time'),
-		('PEN_LIVE', 'Penalty Shootout'),
-		('AET', 'Finished after extra time'),
-		('BREAK', 'Match finished, waiting for extra time to start'),
-		('FT_PEN', 'Full-Time after penalties'),
-		('CANCL', 'Cancelled'),
-		('POSTP', 'PostPhoned'),
-		('INT',	'Interrupted'),
-		('ABAN', 'Abandoned'),
-		('SUSP', 'Suspended'),
-		('AWARDED', 'Awarded'),
-		('DELAYED', 'Delayed'),
-		('TBA', 'To Be Announced (Fixture will be updated with exact time later)'),
-		('WO', 'Walkover (Awarding of a victory to a contestant because there are no other contestants)'),
+		('NS', 'Não Iniciado'),
+		('LIVE','Ao Vivo'),
+		('HT', 'Meio Tempo'),
+		('FT', 'Tempo Total')	,	
+		('ET', 'Tempo Extra'),
+		('PEN_LIVE', 'Penaltis'),
+		('AET', 'Terminou após tempo extra'),
+		('BREAK', 'Esperando tempo extra'),
+		('FT_PEN', 'Tempo total após os penaltis'),
+		('CANCL', 'Cancelado'),
+		('POSTP', 'Adiado'),
+		('INT', 'Interrompindo'),
+		('ABAN', 'Abandonado'),
+		('SUSP', 'Suspendido'),
+		('AWARDED', 'Premiado'),
+		('DELAYED', 'Atrasado'),
+		('TBA', 'A ser anunciado'),
+		('WO', 'WO'),
 	)
 
 
 PAYMENT_STATUS = (
-		('WATING_PAYMENT', 'Aguardando Pagamento do Ticket.'),
-		('PAID', 'Pago.'),
+		('Aguardando Pagamento do Ticket', 'Aguardando Pagamento do Ticket'),
+		('Pago', 'Pago'),
 	)
 
 
@@ -249,6 +249,9 @@ class Reward(models.Model):
 	reward_date = models.DateTimeField(null=True, auto_now=True)
 	value = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 	status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1])
+
+	def __str__(self):
+		return str(self.value)
 
 	class Meta:
 		verbose_name = 'Recompensa'
