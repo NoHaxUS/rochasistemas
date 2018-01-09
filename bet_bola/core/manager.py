@@ -8,12 +8,12 @@ class GamesQuerySet(QuerySet):
 	def able_games(self):
 
 		return self.all().annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
-			| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED"))
+			| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED")).filter(start_game_date__date__gte=datetime.now().today().date())
 
 	def today_able_games(self):
 
 		return self.all().annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
-			| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED")).filter(start_game_date__date=datetime.now().today().date())																			
+			| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED")).filter(start_game_date__date=datetime.now().today().date())
 
 GamesManager = GamesQuerySet.as_manager
 

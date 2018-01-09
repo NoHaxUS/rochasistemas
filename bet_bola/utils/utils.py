@@ -12,8 +12,8 @@ def populating_bd():
 	BetTicket.processing_tickets()
 
 def updating_games():
-	first_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day-3))
-	second_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day))
+	first_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day))
+	second_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day+1))
 	
 	Championship.consuming_api()
 	Game.consuming_api(first_date,second_date)
