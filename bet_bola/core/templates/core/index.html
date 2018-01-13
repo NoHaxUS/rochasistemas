@@ -76,7 +76,38 @@
             </div>
         </div>
     </div>
-    <!-- end Modal Login -->
+
+    <!-- Modal Random User -->
+    
+    <div id="modal-random-user" class="modal">
+        <div class="modal-content">
+                <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
+            <h4>Informações do Cliente</h4>
+            <div class="row">
+                <form class="col s12">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input name="nome" id="nome" type="text" class="nome">
+                            <label for="Nome">Nome do Cliente</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input name="telefone" id="telefone" type="text" class="telefone">
+                            <label for="Telefone">Telefone</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <button class="btn waves-effect waves-light right user-random" type="button">Enviar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- end Modal Random User -->
 
     <!-- Modal Register -->
     <div id="modal-register" class="modal">
@@ -428,6 +459,15 @@
                                         <span class="award-value">R$ 0.00</span>
                                     </div>
                                 </div>
+                                {% if is_seller %}
+                                <div class="row">
+                                    <div class="col s12 center-align">
+                                        <button class="btn waves-effect waves-light btn-bet-submit-seller" type="button" desktop="True">Apostar
+                                            <i class="material-icons right">check</i>
+                                        </button>
+                                    </div>
+                                </div>                                
+                                {%else%}
                                 <div class="row">
                                     <div class="col s12 center-align">
                                         <button class="btn waves-effect waves-light btn-bet-submit" type="button" desktop="True">Apostar
@@ -435,6 +475,8 @@
                                         </button>
                                     </div>
                                 </div>
+                                {%endif%}
+
                             </form>
                         </div>
                     </div><!-- end make-bet -->

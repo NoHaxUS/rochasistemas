@@ -329,6 +329,7 @@ $(document).ready(function () {
                 UpdateCotationTotal();
             }else{
                 if(ticket_value != ''){
+
                     alertify.confirm('Confirmar aposta?', function(){
 
                         $.post('/bet_ticket/', {'ticket_value': ticket_value} , function(data, status, rq){
@@ -353,6 +354,71 @@ $(document).ready(function () {
                             console.log(dataJSON.status);
                         }, 'text');//end post
                     });
+                }else{
+                    alertify.error("Informe o valor da sua aposta.");
+                }
+            }//end else
+
+        });
+
+    /** END SUBMETER TICKET DE APOSTA **/
+
+    /** SUBMETER TICKET DE APOSTA **/
+        $('.btn-bet-submit-seller').on('click', function(){            
+            $('#modal-random-user').modal('open');
+        });
+
+        $('.user-random').on('click', function(){                 
+            $('#modal-random-user').modal('close');       
+            var nome = $('.nome').val();
+            var telefone = $('.telefone').val();
+            var ticket = Cookies.get('ticket_cookie');                                    
+            if($(this).attr('desktop') == 'True'){
+                ticket_value = $('.ticket-bet-value-desktop').val();                
+                alert('teste');
+            }else{
+                //console.log('False');
+                ticket_value = $('.ticket-bet-value-mobile').val();                
+            }   
+
+            if (ticket_value <= 0){
+                alertify.error("Você deve apostar um valor maior que 0.");
+                return ;
+            }
+
+            console.log(ticket_value);
+
+            if(ticket == '{}'){
+                alertify.error("Nenhuma cota selecionada nessa sessão.");
+                COTATION_TOTAL = 0;
+                RenderTicket();
+                UpdateCotationTotal();
+            }else{
+                if(ticket_value != ''){                                                               
+                        alertify.confirm('Confirmar aposta?', function(){                        
+                        $.post('/bet_ticket/', {'ticket_value': ticket_value, 'nome':nome, 'telefone':telefone} , function(data, status, rq){
+                            
+                            var dataJSON = jQuery.parseJSON(data);
+
+                            if(dataJSON.status == 401){
+                                $('#modal-login').modal('open');
+                            }
+                            if(dataJSON.status == 403){
+                                alertify.error("Selecione cotas antes de apostar.");
+                            }
+                            if(dataJSON.status == 400){
+                                alertify.alert("Erro", "Erro ao tentar processar essa requisição. \n Por favor avise-nos pelo email: pabllobeg@gmail.com");
+                            }
+                            if(dataJSON.status == 201){
+                                console.log(dataJSON);                                
+                                alertify.alert("Sucesso", "O número do Ticket de Aposta é: <b>" + dataJSON.ticket_pk + "</b>"+
+                            "<br /> Para acessar detalhes do Ticket, entre no painel de controle." +
+                            "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket.");
+                            }
+                            console.log(dataJSON.status);
+                        }, 'text');//end post
+                    });
+                    
                 }else{
                     alertify.error("Informe o valor da sua aposta.");
                 }

@@ -18,7 +18,7 @@ from user.models import Punter,Seller
 from .forms import BetTicketForm
 from django.core import serializers
 #from django.contrib.auth.models import User
-from user.models import CustomUser
+from user.models import CustomUser, RandomUser
 import json
 
 #import pdb; pdb.set_trace()
@@ -165,21 +165,34 @@ class CreateTicketView(View):
 			if request.POST.get('ticket_value') == '':
 				return JsonResponse({'status':400})
 			
-			ticket_bet_value = float( request.POST.get('ticket_value') )
+			ticket_bet_value = float( request.POST.get('ticket_value') )					
+			nome = request.POST.get('nome')
+			telefone = request.POST.get('telefone')
+					
+
 
 			if ticket_bet_value <= 0:
 				return JsonResponse({'status':400})
-			
-			ticket = BetTicket(
-				user=CustomUser.objects.get(pk=request.user.pk), 
-				seller=None,
-				value=ticket_bet_value,
-				payment=Payment.objects.create(payment_date=None), 
-				reward=Reward.objects.create(reward_date=None)
-				)
-			ticket.save()
-
-			
+			if nome != None and telefone != None:
+				ticket = BetTicket(
+					user=CustomUser.objects.get(pk=request.user.pk), 
+					seller=None,
+					value=ticket_bet_value,
+					payment=Payment.objects.create(payment_date=None), 
+					reward=Reward.objects.create(reward_date=None),
+					random_user=RandomUser.objects.create(first_name=nome, cellphone=telefone)
+					)
+				ticket.save()
+			else:
+				ticket = BetTicket(
+					user=CustomUser.objects.get(pk=request.user.pk), 
+					seller=None,
+					value=ticket_bet_value,
+					payment=Payment.objects.create(payment_date=None), 
+					reward=Reward.objects.create(reward_date=None),					
+					)
+				ticket.save()
+				
 			cotation_sum = 1
 			for game_id in request.session['ticket']:
 				game_contation = None

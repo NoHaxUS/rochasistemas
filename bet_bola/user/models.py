@@ -12,6 +12,14 @@ class CustomUser(AbstractUser):
 	email = models.EmailField(null=True)
 
 
+class RandomUser(models.Model):
+	first_name = models.CharField(max_length=40)
+	cellphone = models.CharField(max_length=14)
+
+	def __str__(self):
+		return self.first_name
+
+
 class Seller(CustomUser):
 	cpf = models.CharField(max_length=11)
 	address = models.CharField(max_length=75)
