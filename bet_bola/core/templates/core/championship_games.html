@@ -325,8 +325,11 @@
                         CAMPEONATOS
                     </div>
                     <ul class="championship-list">
+                        <li class="center-align">
+                            <a href="{% url 'core:home' %}" class="">Jogos de Hoje</a>
+                        </li>
                         <li class="center-align valign-wrapper">
-                            <!-- <i class="material-icons">chevron_right</i> -->
+                            <!-- <i class="material-icons">chevron_right</i> -->                            
                             {% for country in countries%}                                
                                  <li class="center-align">
                                     <div class="championship-header championship-color white-text center-align">   {{country}} </div>
