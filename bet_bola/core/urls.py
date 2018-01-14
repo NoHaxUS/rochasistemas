@@ -26,6 +26,7 @@ urlpatterns = [
     path('bet_ticket/<int:pk>', views.BetTicketDetail.as_view(), name='bet_ticket_id'),
     path('bet_ticket/', views.CreateTicketView.as_view(), name='bet_ticket'),
     path('bet/', views.BetView.as_view(), name='bet'),
+    path('bet/<str:pk>', views.BetView.as_view(), name='bet'),
     path('cotations/<int:gameid>', views.CotationsView.as_view(), name='cotations'),
     path('seller/validate_ticket/', views.ValidateTicket.as_view(), name='validate_ticket'),
     path('seller/punter_payment/', views.PunterPayment.as_view(), name='punter_payment'),
