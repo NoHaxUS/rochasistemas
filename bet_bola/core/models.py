@@ -88,9 +88,9 @@ class BetTicket(models.Model):
 	seller = models.ForeignKey('user.Seller', null=True, related_name='bet_tickets_validated_by_me')
 	cotations = models.ManyToManyField('Cotation', related_name='bet_ticket')
 	creation_date = models.DateTimeField(auto_now_add=True)	
-	reward = models.ForeignKey('Reward', default=None)
-	payment = models.OneToOneField('Payment', default=None)
-	value = models.DecimalField(max_digits=6, decimal_places=2)
+	reward = models.ForeignKey('Reward', null=True)
+	payment = models.OneToOneField('Payment', null=True)
+	value = models.FloatField()
 	bet_ticket_status = models.CharField(max_length=80, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][1])
 
 
@@ -247,7 +247,7 @@ class Championship(models.Model):
 class Reward(models.Model):
 	who_rewarded = models.ForeignKey('user.Seller', null=True)
 	reward_date = models.DateTimeField(null=True, auto_now=True)
-	value = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+	value = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 	status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1])
 
 	def __str__(self):

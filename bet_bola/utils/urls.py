@@ -20,5 +20,6 @@ urlpatterns = [
     url(r'^update/$', views.Update.as_view(), name='updating'),    
     url(r'^populate/$', views.PopulatingBD.as_view(), name='populating'),    
     url(r'^pdf/(?P<pk>\d+)$', views.PDF.as_view(), name='pdf'),
+    url(r'^imprimir/(?P<pk>\d+)$', views.printTicket.as_view(), name='print'),
     url(r'^test_url/$', views.TestJson.as_view(), name='test_url'),
 ]

@@ -165,11 +165,14 @@ class CreateTicketView(View):
 			if request.POST.get('ticket_value') == '':
 				return JsonResponse({'status':400})
 			
-			ticket_bet_value = float( request.POST.get('ticket_value') )
+			#ticket_bet_value = float( request.POST.get('ticket_value') )
+			ticket_bet_value = 2
 
 			if ticket_bet_value <= 0:
 				return JsonResponse({'status':400})
 			
+			#print(request.POST.get('ticket_value'))
+
 			ticket = BetTicket(
 				user=CustomUser.objects.get(pk=request.user.pk), 
 				seller=None,

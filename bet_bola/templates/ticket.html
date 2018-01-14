@@ -1,0 +1,14 @@
+<head>
+    <script>
+        function sendToQuickPrinterChrome(textEncoded){
+            var textEncoded = encodeURI(textEncoded);
+            window.location.href="intent://"+textEncoded+"#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;";
+        }
+    </script>
+</head>
+
+<body> 
+    <button onclick="sendToQuickPrinterChrome('{{content}}');">
+        IMPRIMIR
+    </button>
+</body>
