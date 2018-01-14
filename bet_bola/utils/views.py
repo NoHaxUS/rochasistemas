@@ -1,12 +1,12 @@
-from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse,JsonResponse, HttpResponseRedirect
 from django.shortcuts import render,redirect,get_object_or_404
 from django.template.loader import get_template
 from django.views.generic import View
 from datetime import datetime
 from .utils import updating_games, populating_bd
-from fpdf import FPDF
 from io import BytesIO
 from core.models import BetTicket
+import urllib
 
 class Update(View):
 	def get(self, request, *args, **kwargs):
@@ -18,35 +18,74 @@ class PopulatingBD(View):
 		populating_bd()
 		return redirect('core:home')
 
+
+class printTicket(View):
+	def get(self, request, *args, **kwargs):
+
+		ticket = get_object_or_404(BetTicket, pk=self.kwargs["pk"])
+		date = str(ticket.creation_date.date().day) + "/" + str(ticket.creation_date.date().month) + "/" + str(ticket.creation_date.date().year)
+
+		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
+		content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
+
+		if ticket.seller != None:
+			content += "<CENTER> COLABORADOR: " + ticket.seller.first_name
+
+		content += "<CENTER> DATA: " + date
+		content += "<BR><BR>"
+
+		content += "<LEFT> APOSTAS <BR>"
+		content += "<CENTER>----------------------------------------------- <BR>"
+
+		for c in ticket.cotations.all():
+			content += "<LEFT>" + c.game.name + "<BR>"
+			game_date = str(c.game.start_game_date.date().day) +"/"+str(c.game.start_game_date.date().month)+"/"+str(c.game.start_game_date.date().day)+ " " +str(c.game.start_game_date.hour)+":"+str(c.game.start_game_date.minute)
+			content += "<LEFT>" + game_date + "<BR>"
+			content += "<LEFT>"+ c.kind + "<BR>"
+			content += "<LEFT>" + c.name + " --> " + str(c.value) + "<BR>"
+
+			if c.game.odds_calculated:
+				content += "<RIGHT> Status: Em Aberto"
+			else:
+				content += "<RIGHT> Status: Fechado - " + ("Venceu" if c.winning else "Perdeu") + "<BR>"
+			
+			content += "<CENTER> ----------------------------------------------- <BR>"
+			content += "<CENTER> BET BOLA"
+
+		return render(request, "ticket.html", {'content': content})
+
+
+
+
+
 class PDF(View):
 	def get(self, request, *args, **kwargs):
 		ticket = get_object_or_404(BetTicket, pk=self.kwargs["pk"])
 		response = HttpResponse(content_type='application/pdf')
 		response['Content-Disposition'] = 'inline; filename="ticket.pdf"'
 
-		date = 'data: ' + str(ticket.creation_date.date().day) + "/" + str(ticket.creation_date.date().month) + "/" + str(ticket.creation_date.date().year)
+		date = 'DATA: ' + str(ticket.creation_date.date().day) + "/" + str(ticket.creation_date.date().month) + "/" + str(ticket.creation_date.date().year)
 
 		pdf = FPDF('P', 'mm', (231, 297 + ticket.cotations.count() * 84))
 		pdf.add_page()
 		pdf.add_font('DejaVu', '', 'DejaVuSansCondensed.ttf', uni=True)		
 		pdf.set_font('DejaVu','',30)				
-		pdf.set_text_color(105,105,105)
-		string = 'TICKET #id: ' + str(ticket.pk)
+		#pdf.set_text_color(105,105,105)
+		string = 'TICKET:' + str(ticket.pk)
 		pdf.text(76,12, string)		
-		string = 'CLIENTE: ' + ticket.user.first_name.upper()										
-		pdf.text(76,26,string)		
-		string = 'COLABORADOR: ' + (' ' if ticket.seller == None else ticket.seller.first_name)
-		pdf.text(76,40,string)										
-		pdf.text(76,54, date)			
-		pdf.text(4,74,'APOSTA')
-		pdf.text(185,74,'COTAS')			
+		string = 'CLIENTE: ' + ticket.user.first_name								
+		pdf.text(76,24,string)									
+		pdf.text(76,36, date)
+		if ticket.seller != None:
+			string = 'COLABORADOR: ' +  ticket.seller.first_name
+			#string = "COLABORADOR PABLO"
+			pdf.text(76,48,string)
+		pdf.text(4,76,'APOSTAS')		
 		pdf.text(0, 82,'--------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
 		h = 86
 		
 		for c in ticket.cotations.all():
 			h=h+8
-			pdf.text(4,h,c.kind)
-			h=h+14
 			pdf.text(4,h,c.game.name)
 			h=h+14
 			pdf.text(4,h, str(c.game.start_game_date.date().day) +"/"+str(c.game.start_game_date.date().month)+"/"+str(c.game.start_game_date.date().day)+ " " +str(c.game.start_game_date.hour)+":"+str(c.game.start_game_date.minute))
