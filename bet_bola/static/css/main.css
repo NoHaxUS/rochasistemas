@@ -233,3 +233,9 @@ nav .brand-logo{
 .user-logged-mobile{
     text-align: center;
 }
+.ajs-message{
+    font-family: Arial, Helvetica, sans-serif;
+    text-transform: uppercase;
+    background-color: #34b876 !important;
+    color: #ffffff !important;
+}
