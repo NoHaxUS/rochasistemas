@@ -111,7 +111,7 @@ class BetTicket(models.Model):
 		for cotation in self.cotations.all():
 			cota_total *= cotation.value
 		
-		return cota_total
+		return round(cota_total,2)
 
 	def update_ticket_status(self):
 		not_winning = False
@@ -248,7 +248,7 @@ class Championship(models.Model):
 class Reward(models.Model):
 	who_rewarded = models.ForeignKey('user.Seller', null=True, on_delete=models.PROTECT)
 	reward_date = models.DateTimeField(null=True, auto_now=True)
-	value = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+	value = models.FloatField(default=0)
 	status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1])
 
 	def __str__(self):

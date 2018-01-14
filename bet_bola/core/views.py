@@ -164,7 +164,7 @@ class CreateTicketView(View):
 				return JsonResponse({'status':400})
 			
 
-			ticket_bet_value = float( request.POST.get('ticket_value') )					
+			ticket_bet_value = round(float( request.POST.get('ticket_value') ), 2)
 			nome = request.POST.get('nome')
 			telefone = request.POST.get('telefone')
 					
@@ -172,6 +172,8 @@ class CreateTicketView(View):
 
 			if ticket_bet_value <= 0:
 				return JsonResponse({'status':400})
+
+
 			if nome != None and telefone != None:
 				ticket = BetTicket(
 					user=CustomUser.objects.get(pk=request.user.pk), 
@@ -202,7 +204,7 @@ class CreateTicketView(View):
 					return JsonResponse({'status':400})
 
 				ticket.cotations.add( game_contation )
-				ticket.reward.value = cotation_sum * ticket_bet_value
+				ticket.reward.value = round(cotation_sum * ticket_bet_value ,2)
 				ticket.reward.save()
 			return JsonResponse({'ticket_pk': ticket.pk ,'status':201})
 
