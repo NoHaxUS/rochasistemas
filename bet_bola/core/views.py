@@ -15,7 +15,7 @@ from .models import Cotation,BetTicket,Game,Championship,Payment,Reward
 from user.models import Punter,Seller
 from .forms import BetTicketForm
 from django.core import serializers
-#from django.contrib.auth.models import User
+from django.conf import settings
 from user.models import CustomUser, RandomUser
 import json
 
@@ -192,21 +192,32 @@ class CreateTicketView(View):
 					payment=Payment.objects.create(payment_date=None), 
 					reward=Reward.objects.create(reward_date=None),					
 					)
-				ticket.save()
+				
 				
 			cotation_sum = 1
+			game_cotations = []
 			for game_id in request.session['ticket']:
 				game_contation = None
 				try:
 					game_contation = Cotation.objects.get(pk=int(request.session['ticket'][game_id]))
+					game_cotations.append(game_contation)
 					cotation_sum *= game_contation.value
 				except Cotation.DoesNotExist:
 					return JsonResponse({'status':400})
+			
+			ticket_reward_value = round(cotation_sum * ticket_bet_value ,2)
+			if float(ticket_reward_value) > float(settings.MAX_REWARD):
+				return JsonResponse({'status':406}) # NOT ACEPTED
 
-				ticket.cotations.add( game_contation )
-				ticket.reward.value = round(cotation_sum * ticket_bet_value ,2)
+			elif len(game_cotations) < settings.MIN_BET_PER_TICKET:
+				return JsonResponse({'status':417}) # EXPECTATION FAILED
+			else:
+				ticket.save()
+				for game in game_cotations:
+					ticket.cotations.add( game )
+				ticket.reward.value = ticket_reward_value
 				ticket.reward.save()
-			return JsonResponse({'ticket_pk': ticket.pk ,'status':201})
+				return JsonResponse({'ticket_pk': ticket.pk ,'status':201})
 
 		else:
 			return JsonResponse({'status':401})

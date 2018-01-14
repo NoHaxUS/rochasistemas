@@ -1,4 +1,15 @@
 $(document).ready(function () {
+
+
+    var myVar = setInterval(function(){ myTimer() }, 1000);
+
+    function myTimer() {
+        var d = new Date();
+        var t = d.toLocaleTimeString();
+        var data = d.toLocaleDateString();
+        $('.time').html(t + ' '+ data);
+    }
+
     /** FUNCTION DEFINITIONS **/
         function getCookie(name) {
             var cookieValue = null;
@@ -21,6 +32,7 @@ $(document).ready(function () {
             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
         }
     /** END FUNCTION DEFINITIONS **/
+
 
 
     /** GENERAL INITIALIZATIONS **/
@@ -172,12 +184,14 @@ $(document).ready(function () {
 
             $.post('/bet/', bet_info, function(data, status, rq){
                 console.log(rq.status);
+                if(rq.status == '201'){
+                    alertify.notify("Adicionado");
+                }
             }, 'text');
             
             UpdateCotationTotal();
             var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
             updateRewardTotal(ticket_bet_value);
-            console.log(ticket_bet_value);
             RenderTicket();
             //$('.ticket-bet-value').trigger('keyup');
             //$('.ticket-bet-value-mobile').trigger('keyup');
@@ -345,6 +359,16 @@ $(document).ready(function () {
                             if(dataJSON.status == 400){
                                 alertify.alert("Erro", "Erro ao tentar processar essa requisição. \n Por favor avise-nos pelo email: pabllobeg@gmail.com");
                             }
+
+                            if(dataJSON.status == 406){
+                                alertify.alert("Erro", "Prezado cliente, gostariamos de lhe informar que não aceitamos apostas com recompensa maior que R$ 4000.00");
+                            }
+
+                            if(dataJSON.status == 417){
+                                alertify.alert("Erro", "Prezado cliente, você deve apostar em pelo menos 2 jogos.");
+                            }
+
+
                             if(dataJSON.status == 201){
                                 console.log(dataJSON);
                                 alertify.alert("Sucesso", "O número do Ticket de Aposta é: <b>" + dataJSON.ticket_pk + "</b>"+
@@ -409,6 +433,15 @@ $(document).ready(function () {
                             if(dataJSON.status == 400){
                                 alertify.alert("Erro", "Erro ao tentar processar essa requisição. \n Por favor avise-nos pelo email: pabllobeg@gmail.com");
                             }
+
+                            if(dataJSON.status == 406){
+                                alertify.alert("Erro", "Prezado cliente, gostariamos de lhe informar que não aceitamos apostas com recompensa maior que R$ 4000.00");
+                            }
+
+                            if(dataJSON.status == 417){
+                                alertify.alert("Erro", "Prezado cliente, você deve apostar em pelo menos 2 jogos.");
+                            }
+
                             if(dataJSON.status == 201){
                                 console.log(dataJSON);                                
                                 alertify.alert("Sucesso", "O número do Ticket de Aposta é: <b>" + dataJSON.ticket_pk + "</b>"+
