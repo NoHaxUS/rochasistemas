@@ -4,7 +4,6 @@ from django.template.loader import get_template
 from django.views.generic import View
 from datetime import datetime
 from .utils import updating_games, populating_bd
-from fpdf import FPDF
 from io import BytesIO
 from core.models import BetTicket
 import urllib

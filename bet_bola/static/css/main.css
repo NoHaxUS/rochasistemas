@@ -23,11 +23,9 @@ body{
 .yellow-bet{
     background-color: #f7f00e !important;
 }
-.blue-c{
-    background-color: #0e791d  !important;
-}
+
 .championship-color{
-    background-color: #287b32d1;
+    background-color: #0fb323;
 }
 /* end color definitions*/
 nav .brand-logo{
@@ -35,6 +33,7 @@ nav .brand-logo{
 }
 
 .ticket-header{
+    background-color: #2d9639;
     font-size: 1.6rem;
 }
 
@@ -64,6 +63,7 @@ nav .brand-logo{
 
 /* championship */
 .championship-header{
+    background-color: #2d9639;
     font-size: 1.6rem;
 }
 .championship-list li a{

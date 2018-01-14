@@ -7,8 +7,6 @@ from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.base import TemplateResponseMixin
 from django.http import HttpResponse, JsonResponse
-from rest_framework.response import Response
-from rest_framework import status
 from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -151,7 +149,7 @@ class BetView(View):
 		pk = self.kwargs["pk"]
 		request.session['ticket'].pop(pk)
 		request.session.modified = True
-		return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
+		return JsonResponse({}, status=204)
 
 
 class CreateTicketView(View):
@@ -165,8 +163,8 @@ class CreateTicketView(View):
 			if request.POST.get('ticket_value') == '':
 				return JsonResponse({'status':400})
 			
-			#ticket_bet_value = float( request.POST.get('ticket_value') )
-			ticket_bet_value = 2
+			ticket_bet_value = float( request.POST.get('ticket_value') )
+			#ticket_bet_value = 2
 
 			if ticket_bet_value <= 0:
 				return JsonResponse({'status':400})
