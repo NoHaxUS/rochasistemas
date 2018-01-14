@@ -5,7 +5,7 @@ from django.views.generic import View
 from datetime import datetime
 from .utils import updating_games, populating_bd
 from io import BytesIO
-from core.models import BetTicket
+from core.models import BetTicket,Cotation
 import urllib
 
 class Update(View):
@@ -110,6 +110,17 @@ class PDF(View):
 
 		response.write(buffer)
 		return response
+
+
+class PercentualReductionCotation(View):
+	def get(self, request, *args, **kwargs):
+		percentual = int(self.kwargs["pk"])
+
+		for cotation in Cotation.objects.all():
+			var_a_ser_adicionada = cotation.value - (cotation.value * float(percentual/100))
+			print("game: "+cotation.game.name+"\nvariavel atual" + str(cotation.value)+ " variavel reduzida " + str(var_a_ser_adicionada))
+		
+		return HttpResponse("Percentual Inserido")
 
 
 class TestJson(View):
