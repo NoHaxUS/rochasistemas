@@ -261,6 +261,7 @@ class Reward(models.Model):
 
 class Cotation(models.Model):
 	name = models.CharField(max_length=80)
+	original_value = models.FloatField(default=0)
 	value = models.FloatField(default=0)
 	game = models.ForeignKey('Game', related_name='cotations', on_delete=models.CASCADE)	
 	winning = models.NullBooleanField()

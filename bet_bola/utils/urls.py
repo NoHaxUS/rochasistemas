@@ -23,6 +23,6 @@ urlpatterns = [
     path('populate/', views.PopulatingBD.as_view(), name='populating'),    
     path('pdf/<int:pk>', views.PDF.as_view(), name='pdf'),
     path('imprimir/<int:pk>', views.printTicket.as_view(), name='print'),
-    path('cotation_reduction/<int:pk>', views.PercentualReductionCotation.as_view(), name='cotation_reduction'),
+    path('cotation_reduction/<str:percentual>', views.PercentualReductionCotation.as_view(), name='cotation_reduction'),
     path('test_url/', views.TestJson.as_view(), name='test_url'),
 ]

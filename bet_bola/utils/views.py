@@ -114,20 +114,19 @@ class PDF(View):
 
 class PercentualReductionCotation(View):
 	def get(self, request, *args, **kwargs):
-		percentual = int(self.kwargs["pk"])
+		percentual = float(self.kwargs["percentual"])
 
 		if  request.user.is_authenticated:
 			if request.user.is_superser:
 				for cotation in Cotation.objects.all():
-					var_a_ser_adicionada = cotation.value - (cotation.value * float(percentual/100))
-					print("game: "+cotation.game.name+"\nvariavel atual" + str(cotation.value)+ " variavel reduzida " + str(var_a_ser_adicionada))
+					cotation.original_value = round(cotation.value * percentual,2)
 			else:
-				return HttpResponse("Nao é super user")
+				return HttpResponse("Você não tem permissão para isso baby.")
 
 		else:
-			return HttpResponse("Nao é super user")
+			return HttpResponse("Não está Logado.")
 
-		return HttpResponse("Percentual Inserido")
+		return HttpResponse("Percentual Alterado.")
 
 
 class TestJson(View):
