@@ -303,7 +303,7 @@ class Cotation(models.Model):
 										handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
 								else:									
 									Cotation(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],original_value=cotation[value],game=game, is_standard = False,
-										handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],original_value=cotation[value],kind=MARKET_NAME.setdefault(kind_name,kind_name)).save()
+										handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name)).save()
 
 									
 							else:									
