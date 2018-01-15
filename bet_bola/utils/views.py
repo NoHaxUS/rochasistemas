@@ -115,11 +115,14 @@ class PDF(View):
 class PercentualReductionCotation(View):
 	def get(self, request, *args, **kwargs):
 		percentual = float(self.kwargs["percentual"])
+		if percentual <= 0 or percentual > 1:
+			return HttpResponse("Valor inválido.")
 
 		if  request.user.is_authenticated:
-			if request.user.is_superser:
+			if request.user.is_superuser:
 				for cotation in Cotation.objects.all():
-					cotation.original_value = round(cotation.value * percentual,2)
+					cotation.value = round(cotation.original_value * percentual,2)
+					cotation.save()
 			else:
 				return HttpResponse("Você não tem permissão para isso baby.")
 
