@@ -116,10 +116,17 @@ class PercentualReductionCotation(View):
 	def get(self, request, *args, **kwargs):
 		percentual = int(self.kwargs["pk"])
 
-		for cotation in Cotation.objects.all():
-			var_a_ser_adicionada = cotation.value - (cotation.value * float(percentual/100))
-			print("game: "+cotation.game.name+"\nvariavel atual" + str(cotation.value)+ " variavel reduzida " + str(var_a_ser_adicionada))
-		
+		if  request.user.is_authenticated:
+			if request.user.is_superser:
+				for cotation in Cotation.objects.all():
+					var_a_ser_adicionada = cotation.value - (cotation.value * float(percentual/100))
+					print("game: "+cotation.game.name+"\nvariavel atual" + str(cotation.value)+ " variavel reduzida " + str(var_a_ser_adicionada))
+			else:
+				return HttpResponse("Nao é super user")
+
+		else:
+			return HttpResponse("Nao é super user")
+
 		return HttpResponse("Percentual Inserido")
 
 

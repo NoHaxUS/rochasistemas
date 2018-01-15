@@ -29,10 +29,6 @@ DEBUG = True
 ALLOWED_HOSTS = ['bet-bola.herokuapp.com','localhost']
 
 
-MAX_REWARD = 4000.00
-MIN_BET_PER_TICKET = 2
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -92,7 +88,7 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': 'localhost',
-        'PORT': '5432',
+        'PORT': '5433',
     }
 }
 
