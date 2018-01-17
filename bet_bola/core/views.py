@@ -174,34 +174,34 @@ class CreateTicketView(View):
 			
 
 			ticket_bet_value = round(float( request.POST.get('ticket_value') ), 2)
-			nome = request.POST.get('nome')
-			telefone = request.POST.get('telefone')
+
+			client_name = request.POST.get('nome')
+			cellphone = request.POST.get('telefone')
 					
 
 
 			if ticket_bet_value <= 0:
 				return JsonResponse({'status':400})
 
-
-			if nome != None and telefone != None:
-				ticket = BetTicket(
-					user=CustomUser.objects.get(pk=request.user.pk), 
-					seller=None,
-					value=ticket_bet_value,
-					payment=Payment.objects.create(payment_date=None), 
-					reward=Reward.objects.create(reward_date=None),
-					random_user=RandomUser.objects.create(first_name=nome, cellphone=telefone)
-					)
-				ticket.save()
+			if not client_name and not cellphone:
+				random_user = None
 			else:
-				ticket = BetTicket(
-					user=CustomUser.objects.get(pk=request.user.pk), 
-					seller=None,
-					value=ticket_bet_value,
-					payment=Payment.objects.create(payment_date=None), 
-					reward=Reward.objects.create(reward_date=None),					
-					)
-				
+				if len(client_name) > 40 or len(cellphone) > 14:
+					return JsonResponse({'status':400})
+				else:
+					random_user = RandomUser.objects.create(first_name=client_name, cellphone=cellphone)
+
+
+	
+			ticket = BetTicket(
+				user=CustomUser.objects.get(pk=request.user.pk), 
+				seller=None,
+				value=ticket_bet_value,
+				payment=Payment.objects.create(payment_date=None), 
+				reward=Reward.objects.create(reward_date=None),
+				random_user=random_user
+				)
+			ticket.save()
 				
 			cotation_sum = 1
 			game_cotations = []

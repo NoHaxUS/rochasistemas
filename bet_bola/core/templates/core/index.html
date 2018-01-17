@@ -88,19 +88,19 @@
                     {% csrf_token %}
                     <div class="row">
                         <div class="input-field col s12">
-                            <input name="nome" id="nome" type="text" class="nome">
-                            <label for="Nome">Nome do Cliente</label>
+                            <input name="nome" id="nome" type="text" class="nome" maxlength="40" required>
+                            <label for="nome">Nome do Cliente</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
-                            <input name="telefone" id="telefone" type="text" class="telefone">
-                            <label for="Telefone">Telefone</label>
+                            <input name="telefone" id="telefone" type="text" class="telefone" maxlength="14" required>
+                            <label for="telefone">Telefone</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col s12">
-                            <button class="btn waves-effect waves-light right user-random" type="button">Enviar</button>
+                            <button class="btn waves-effect waves-light right user-random" type="button">Apostar</button>
                         </div>
                     </div>
                 </form>
