@@ -228,6 +228,13 @@
                 </li>
                 {% endif %}
 
+                {% if user.is_superuser %}
+                <li>
+                    <a href="/config/" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                        Configurações</a>
+                </li>
+                {% endif %}
+
                 <li>
                     <a href="/user/logout" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                         logout</a>
@@ -264,6 +271,13 @@
                 <li>
                     <a href="/user/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                         Painel do Cliente</a>
+                </li>
+                {% endif %}
+
+                {% if user.is_superuser %}
+                <li>
+                    <a href="/config/" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                        Configurações</a>
                 </li>
                 {% endif %}
 

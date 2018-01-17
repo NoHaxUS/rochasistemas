@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">    
+    {% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Bet Bola - Home</title>
+    <link rel="stylesheet" href="{% static "css/materialize.css" %}">
+    <link rel="stylesheet" href="{% static "css/alertify.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/themes/default.css" %}">
+    <link rel="stylesheet" href="{% static "css/main.css" %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+
+
+    <!-- Validate Bet -->
+    <div id="reduce-cotations" class="modal">
+        <div class="modal-content">
+                <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
+
+            <h5 class="center-align">Reduzir Cotas em Massa</h5>
+            <div class="divider"></div>
+
+            <div class="row">
+                <form class="col s12" id="reduce-cotations-form">{% csrf_token %}
+                  <div class="row">
+                    <div class="input-field col s12">
+                      <i class="material-icons prefix">transform</i>
+                      <input name="percent" id="icon_prefix" type="number" class="validate percent-reduction">
+                      <label for="icon_prefix">Setar para X % do valor original (1-100)</label>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <button class="btn waves-effect waves-light right btn-reduce-cotations">Reduzir</button>
+                        </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+        </div>
+    </div>
+    <!-- end Validate Bet -->
+
+
+    <nav>
+            <div class="nav-wrapper green-ge">
+                <a href="{% url 'core:home' %}" class="brand-logo white-text">Bet Bola</a>
+                <a href="#" data-activates="mobile-menu" class="button-collapse">
+                    <i class="material-icons">menu</i>
+                </a>
+                <ul class="right hide-on-med-and-down">
+                    {% if user.is_anonymous %}
+                    <li>
+                        <a href="#modal-login" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
+                            Login</a>
+    
+                    </li>
+    
+                    <li>
+                        <a href="#modal-register" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
+                            Cadastre-se</a>
+                    </li>
+    
+                    <li>
+                        <a href="#modal-check-ticket" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
+                            Consultar Bilhete</a>
+                    </li>
+                    {% else %}
+                    <li class="user-logged-name">Olá, {{user}}</li>
+                    <li>
+                        <a href="/user/logout" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                            logout</a>
+                    </li>
+                    {% endif %}
+    
+                </ul>
+                <ul class="side-nav" id="mobile-menu">
+    
+                    <li>
+                        <a href="#modal-login" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
+                            Login</a>
+                    </li>
+                    <li>
+                        <a href="#modal-register" class="waves-effect waves-light btn white grey-text text-darken-4">
+                            Cadastre-se</a>
+                    </li>
+                    <li>
+                        <a href="consultar.html" class="waves-effect waves-light btn white grey-text text-darken-4">
+                            Consultar Bilhete</a>
+                    </li>
+    
+                </ul>
+    
+            </div>
+        </nav>
+
+    <main>
+        <div class="col s12 center-align">
+            <div class="subnav green-bb">
+                <span class="right white-text time"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12 center-align hide-on-large-only">
+                <ul class="collapsible" data-collapsible="accordion">
+
+                    <li>
+                        <div class="collapsible-header">
+                            <i class="material-icons">assistant_photo</i>Menu</div>
+                        <div class="collapsible-body white">
+                            <ul class="championship-list">
+
+                                <li class="center-align">
+                                    <a href="#reduce-cotations" class="modal-trigger">Reduzir Cotas em Massa</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+
+                <!-- Mobile menus -->
+            </div>
+            <!-- row -->
+            <div class="row main-section">
+                <div class="col s6 hide-on-med-and-down white hoverable hcenter seller-menu">
+
+                    <!-- Championship List Menu-->
+                    <div class="championship-header blue-c white-text center-align">
+                        Menu
+                    </div>
+                    <ul class="championship-list">
+                        <li class="center-align valign-wrapper">
+                            <!-- <i class="material-icons">chevron_right</i> -->
+                            <a href="#reduce-cotations" class="modal-trigger">Reduzir Cotas em Massa</a>
+                        </li>
+                    </ul>
+                    
+                </div>
+                
+            </div>
+    </main>
+
+    <script src="{% static "js/jquery-3.2.1.min.js" %}"></script>
+    <script src="{% static "js/materialize.js" %}"></script>
+    <script src="{% static "js/jquery.maskedinput.min.js" %}"></script>
+    <script src="{% static "js/alertify.min.js" %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src="{% static "js/home.js" %}"></script>
+
+    <script>
+    $(document).ready(function(){
+
+        $('.collapsible').collapsible('open', 0);
+        
+    });
+    </script>
+
+</body>
+
+</html>

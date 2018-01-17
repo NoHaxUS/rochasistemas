@@ -89,7 +89,7 @@ $(document).ready(function () {
                 alert_msg = 'Confirma a validação do ticket? \n Essa ação não pode ser desfeita.'
                 alertify.confirm('Confirmação', alert_msg,
                     function () {
-                        $.post('validate_ticket/', send_data, function(data, status, rq){
+                        $.post('/seller/validate_ticket/', send_data, function(data, status, rq){
                             data = jQuery.parseJSON(data);
 
                             if(data['status'] == 200){
@@ -112,7 +112,51 @@ $(document).ready(function () {
             }
         });
     /** END SETAR COMO PAGO UM TICKET **/
-    
+
+    /** REDUZIR COTAS EM MASSA **/
+    $("#reduce-cotations-form").on('submit', function(e){
+        e.preventDefault();
+        var percent = $('.percent-reduction').val();
+        if(  percent < 1 || percent > 100  ){
+            alertify.alert('Erro', 'Escolha um número entre 1 e 100');
+        }else{
+            var load;
+            $.ajax({
+                url: '/utils/cotation_reduction/' + (percent / 100),
+                method: 'GET',
+                beforeSend: function(jqXR, settings){
+                    
+                    load = alertify.alert().setHeader('<em> Carregando.... </em> ')
+                    .set('closable', false)
+                    .set('frameless', true)
+                    .setContent(
+                    '<div class="preloader-wrapper big active">' +
+                    '<div class="spinner-layer spinner-blue-only">' +
+                        '<div class="circle-clipper left">'+
+                        '<div class="circle"></div>' +
+                        '</div><div class="gap-patch">' +
+                        '<div class="circle"></div>' +
+                        '</div><div class="circle-clipper right">' +
+                        '<div class="circle"></div>' +
+                        '</div>' +
+                    '</div>' +
+                    '</div>'+
+                    '<div class="right">' +
+                    'Processando... operação demorada, não faça isso o tempo todo.' +
+                    '</div>'
+                
+                ).show();
+                },
+                complete: function(jqXR, textStatus){
+                    alertify.notify("Cotas alteradas com sucesso.");
+                    load.close();
+                }
+            });
+
+        }
+
+    });
+    /** REDUZIR COTAS EM MASSA **/
     /** MARCAR COMO RECOMPENSA PAGA AO GANHADOR **/
         $('#pay-punter-form').on('submit', function (e) {
             e.preventDefault();
@@ -126,7 +170,7 @@ $(document).ready(function () {
                 alertify.confirm('Confirmação', alert_msg,
                     function () {
                         
-                        $.post('punter_payment/', send_data, function(data, status, rq){
+                        $.post('/seller/punter_payment/', send_data, function(data, status, rq){
                             
                             data = jQuery.parseJSON(data);
 

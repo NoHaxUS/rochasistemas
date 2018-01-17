@@ -51,6 +51,15 @@ class Home(TemplateResponseMixin, View):
 		return self.render_to_response(context)
 
 
+class GeneralConf(TemplateResponseMixin, View):
+	template_name = 'core/admin_conf.html'
+
+	def get(self, request, *args, **kwargs):
+		context = {}
+		return self.render_to_response(context)
+
+
+
 
 class GameChampionship(TemplateResponseMixin, View):
 	template_name = 'core/championship_games.html'	
