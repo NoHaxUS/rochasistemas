@@ -365,7 +365,7 @@
                             <!-- <i class="material-icons">chevron_right</i> -->                            
                             {% for country in countries%}                                
                                  <li class="center-align">
-                                    <div class="championship-header championship-color white-text center-align">   {{country}} </div>
+                                    <div class="championship-header championship-color white-text center-align">   {{countries_dict|get_translated_country:country}}  </div>
                                  </li>
                                 {%for championship in championships%}
                                     {% if championship.country == country%}

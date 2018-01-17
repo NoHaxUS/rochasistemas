@@ -22,6 +22,39 @@ import json
 #import pdb; pdb.set_trace()
 # Create your views here.
 
+COUNTRY_TRANSLATE = {
+	"Austria":"Áustria",
+	"England":"Inglaterra",
+	"Turkey":"Turquia",
+	"Germany":"Alemanha",
+	"Poland":"Polônia",
+	"France":"França",
+	"Angola":"Ângola",
+	"Albania":"Albânia",
+	"Croatia":"Croácia",
+	"Italy":"Itália",
+	"Sweden":"Suécia",
+	"Spain":"Espanha",
+	"Malta":"Malta",
+	"Brazil":"Brasil",
+	"Saudi Arabia":"Arábia Saudita",
+	"Israel":"Israel",
+	"Denmark":"Dinamarca",
+	"Russia":"Russia",
+	"Hong Kong":"Hong Kong",
+	"International":"Internacional",
+	"Belgium":"Bélgica",
+	"USA":"Estados Unidos",
+	"Europe":"Europa",
+	"Netherlands":"Holanda",
+	"Portugal":"Portugal",
+	"United Arab Emirates":"Emirados Árabes",
+	"Finland":"Finlândia",
+	"Norway":"Noruega"
+
+}
+
+
 class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'
 	games = Game.objects.able_games()
@@ -45,7 +78,7 @@ class Home(TemplateResponseMixin, View):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'games': self.games ,'championships': championships, 'is_seller':is_seller,'countries':country}
+		context = {'games': self.games ,'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
 		
 
 		return self.render_to_response(context)
@@ -88,7 +121,7 @@ class GameChampionship(TemplateResponseMixin, View):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'games': games ,'championships': championships,'form': self.form, 'is_seller':is_seller,'countries':country}
+		context = {'games': games ,'championships': championships,'form': self.form, 'is_seller':is_seller,'countries':country,'countries_dict':COUNTRY_TRANSLATE }
 		
 		return self.render_to_response(context)
 
