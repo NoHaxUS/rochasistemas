@@ -26,6 +26,9 @@ SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+MAX_REWARD = 4000.00
+MIN_BET_PER_TICKET = 2
+
 ALLOWED_HOSTS = ['bet-bola.herokuapp.com','localhost']
 
 
@@ -88,7 +91,7 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': 'localhost',
-        'PORT': '5433',
+        'PORT': '5432',
     }
 }
 
