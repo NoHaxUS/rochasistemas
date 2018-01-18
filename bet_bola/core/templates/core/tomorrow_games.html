@@ -76,7 +76,6 @@
             </div>
         </div>
     </div>
-    <!-- end Modal Login -->
 
     <!-- Modal Random User -->
     
@@ -89,19 +88,19 @@
                     {% csrf_token %}
                     <div class="row">
                         <div class="input-field col s12">
-                            <input name="nome" id="nome" type="text" class="nome">
-                            <label for="Nome">Nome do Cliente</label>
+                            <input name="nome" id="nome" type="text" class="nome" maxlength="40" required>
+                            <label for="nome">Nome do Cliente</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
-                            <input name="telefone" id="telefone" type="text" class="telefone">
-                            <label for="Telefone">Telefone</label>
+                            <input name="telefone" id="telefone" type="text" class="telefone" maxlength="14" required>
+                            <label for="telefone">Telefone</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col s12">
-                            <button class="btn waves-effect waves-light right user-random" type="button">Enviar</button>
+                            <button class="btn waves-effect waves-light right user-random" type="button">Apostar</button>
                         </div>
                     </div>
                 </form>
@@ -109,7 +108,6 @@
         </div>
     </div>
     <!-- end Modal Random User -->
-
 
     <!-- Modal Register -->
     <div id="modal-register" class="modal">
@@ -230,6 +228,13 @@
                 </li>
                 {% endif %}
 
+                {% if user.is_superuser %}
+                <li>
+                    <a href="/config/" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                        Configurações</a>
+                </li>
+                {% endif %}
+
                 <li>
                     <a href="/user/logout" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                         logout</a>
@@ -266,6 +271,13 @@
                 <li>
                     <a href="/user/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                         Painel do Cliente</a>
+                </li>
+                {% endif %}
+
+                {% if user.is_superuser %}
+                <li>
+                    <a href="/config/" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                        Configurações</a>
                 </li>
                 {% endif %}
 
@@ -353,6 +365,7 @@
             <!-- row -->
             <div class="row main-section">
                 <div class="col s2 hide-on-med-and-down white hoverable">
+
                     <!-- Championship List Menu-->
                     <div class="championship-header blue-c white-text center-align">
                         CAMPEONATOS
@@ -365,10 +378,10 @@
                             <a href="{% url 'core:tomorrow_games' %}" class="">Jogos de Amanhã</a>
                         </li>
                         <li class="center-align valign-wrapper">
-                            <!-- <i class="material-icons">chevron_right</i> -->                            
+                            <!-- <i class="material-icons">chevron_right</i> -->
                             {% for country in countries%}                                
                                  <li class="center-align">
-                                    <div class="championship-header championship-color white-text center-align">   {{countries_dict|get_translated_country:country}}  </div>
+                                    <div class="championship-header championship-color white-text center-align">   {{countries_dict|get_translated_country:country}} </div>
                                  </li>
                                 {%for championship in championships%}
                                     {% if championship.country == country%}
@@ -381,11 +394,20 @@
                 </div>
 
                 <div class="col s12 l8">                
+                {% for championship in championships %}
+                    {% if championship.my_games.tomorrow_able_games.all.count > 0 %}
                     <!-- Bets collection-->
                     <div class="games-table-container">
 
                         <table class="bordered highlight white centered games-table hoverable">                         
-                            <thead>                                    
+                            <thead>
+                                    <tr>                                        
+                                        <th colspan="5">                                        
+                                            <div class="championship-header championship-color white-text center-align">
+                                                {{championship.name}} - {{countries_dict|get_translated_country:championship.country}}
+                                            </div>
+                                        </th>
+                                    </tr>
                                     <tr>
                                     <th>CASA x VISITANTE</th>
                                     <th>1</th>
@@ -396,35 +418,37 @@
                             </thead>
 
                             <tbody>                                                                                                            
-                                    {% for game in games|order_by:"start_game_date" %}    
-                                        {% if game.cotations.all.count > 0 %}                                
-                                        <tr>
-                                            <td>
-                                                <div class="hide table-game-id">{{game.pk}}</div>
-                                                <div class="table-game-name">
-                                                    {{game.name}}
-                                                </div>
-                                                <div class="table-game-start-date">
-                                                    {{game.start_game_date}}
-                                                </div>
-                                            </td>
-                                            {% for cotation in game.cotations.all|standard_cotations_order_by:"name"%}                                    
-                                            <td>
-                                                <span class="hide cotation_pk">{{cotation.pk}}</span>
-                                                <span class="hide cotation_name">{{cotation.name}}</span>
-                                                <span class="cotation">{{cotation.value}}</span>
-                                                <span class="hide cotation_kind">{{cotation.kind}}</span>
-                                            </td>
-                                            {% endfor %}
-                                            <td class="more_cotations_button">
-                                                <i class="small material-icons">add</i>
-                                            </td>
-                                        </tr>
+                                    {% for game in championship.my_games.tomorrow_able_games.all %}                                    
+                                        {% if game.cotations.all.count > 0 %}                                        
+                                    <tr>
+                                        <td>
+                                            <div class="hide table-game-id">{{game.pk}}</div>
+                                            <div class="table-game-name">
+                                                {{game.name}}
+                                            </div>
+                                            <div class="table-game-start-date">
+                                                {{game.start_game_date}}
+                                            </div>
+                                        </td>
+                                        {% for cotation in game.cotations.all|standard_cotations_order_by:"name"%}                                    
+                                        <td>
+                                            <span class="hide cotation_pk">{{cotation.pk}}</span>
+                                            <span class="hide cotation_name">{{cotation.name}}</span>
+                                            <span class="cotation">{{cotation.value}}</span>
+                                            <span class="hide cotation_kind">{{cotation.kind}}</span>
+                                        </td>
+                                        {% endfor %}
+                                        <td class="more_cotations_button">
+                                            <i class="small material-icons">add</i>
+                                        </td>
+                                    </tr>
                                         {% endif %}
                                     {% endfor %}                                
                             </tbody>                            
                         </table>
-                    </div>                    
+                    </div>
+                    {% endif %}
+                    {%endfor%}
                 </div>                                
                 <div class="col s2 hide-on-med-and-down hoverable white">
                     <!-- Ticket bets -->
@@ -472,6 +496,7 @@
                                     </div>
                                 </div>
                                 {%endif%}
+
                             </form>
                         </div>
                     </div><!-- end make-bet -->
