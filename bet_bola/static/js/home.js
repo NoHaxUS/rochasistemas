@@ -638,7 +638,13 @@ $(document).ready(function () {
 
             $.post('/user/register/', send_data, function(data, status, rq){
                 console.log(rq.status);
-                window.location = '/'
+
+                alertify.alert("Sucesso","Cadastrado com sucesso, você será logado automaticamente. Boas apostas :)")
+                .set('onok', 
+                function(closeEvent){
+                    window.location = '/';
+                } );
+                
 
             }).fail(function(rq, status, error){
                 console.log(rq.responseJSON);

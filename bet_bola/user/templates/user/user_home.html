@@ -45,19 +45,19 @@
                     {% csrf_token %} 
                     <div class="row">
                         <div class="input-field col s12">
-                            <input name="actual_pass" id="actual_pass" type="password" class="validate">
+                            <input name="actual_pass" id="actual_pass" type="password" class="validate" tabindex="1" autofocus>
                             <label for="login">Senha Atual</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
-                            <input name="new_pass" id="new_pass" type="password" class="validate">
+                            <input name="new_pass" id="new_pass" type="password" class="validate" tabindex="2">
                             <label for="password">Nova Senha</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col s12">
-                            <button class="btn waves-effect waves-light right" type="submit">Trocar</button>
+                            <button class="btn waves-effect waves-light right" type="submit" tabindex="3">Trocar</button>
                         </div>
                     </div>
                 </form>
@@ -67,10 +67,7 @@
     <!-- end Password Change -->
     <nav>
         <div class="nav-wrapper green-ge">
-            <a href="{% url 'core:home' %}" class="brand-logo white-text">Bet Bola</a>
-            <a href="#" data-activates="mobile-menu" class="button-collapse">
-                <i class="material-icons">menu</i>
-            </a>
+            {% include 'core/header_info.html' %}
             <ul class="right hide-on-med-and-down">
                 {% if user.is_anonymous %}
                 <li>
