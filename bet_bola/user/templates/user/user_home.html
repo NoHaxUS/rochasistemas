@@ -2,15 +2,7 @@
 <html lang="en">
     {% load static %}
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Bet Bola - Home</title>
-    <link rel="stylesheet" href="{% static "css/materialize.css" %}">
-    <link rel="stylesheet" href="{% static "css/alertify.min.css" %}">
-    <link rel="stylesheet" href="{% static "css/themes/default.css" %}">
-    <link rel="stylesheet" href="{% static "css/main.css" %}">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    {% include 'core/head.html' %}
 </head>
 
 <body>
@@ -45,19 +37,19 @@
                     {% csrf_token %} 
                     <div class="row">
                         <div class="input-field col s12">
-                            <input name="actual_pass" id="actual_pass" type="password" class="validate">
+                            <input name="actual_pass" id="actual_pass" type="password" class="validate" tabindex="1" autofocus>
                             <label for="login">Senha Atual</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
-                            <input name="new_pass" id="new_pass" type="password" class="validate">
+                            <input name="new_pass" id="new_pass" type="password" class="validate" tabindex="2">
                             <label for="password">Nova Senha</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col s12">
-                            <button class="btn waves-effect waves-light right" type="submit">Trocar</button>
+                            <button class="btn waves-effect waves-light right" type="submit" tabindex="3">Trocar</button>
                         </div>
                     </div>
                 </form>
@@ -67,10 +59,7 @@
     <!-- end Password Change -->
     <nav>
         <div class="nav-wrapper green-ge">
-            <a href="{% url 'core:home' %}" class="brand-logo white-text">Bet Bola</a>
-            <a href="#" data-activates="mobile-menu" class="button-collapse">
-                <i class="material-icons">menu</i>
-            </a>
+            {% include 'core/header_info.html' %}
             <ul class="right hide-on-med-and-down">
                 {% if user.is_anonymous %}
                 <li>
@@ -208,12 +197,7 @@
             </div>
     </main>
 
-    <script src="{% static "js/jquery-3.2.1.min.js" %}"></script>
-    <script src="{% static "js/materialize.js" %}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
-    <script src="{% static "js/jquery.maskedinput.min.js" %}"></script>
-    <script src="{% static "js/alertify.min.js" %}"></script>
-    <script src="{% static "js/home.js" %}"></script>
+    {% include 'core/general_js.html' %}
 
     <script>
     $(document).ready(function(){

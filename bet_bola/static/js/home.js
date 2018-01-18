@@ -87,7 +87,7 @@ $(document).ready(function () {
             } else {
     
                 alert_msg = 'Confirma a validação do ticket? \n Essa ação não pode ser desfeita.'
-                alertify.confirm('Confirmação', alert_msg,
+                alertify.confirm('Confirmação','Confirmação', alert_msg,
                     function () {
                         $.post('/seller/validate_ticket/', send_data, function(data, status, rq){
                             data = jQuery.parseJSON(data);
@@ -388,7 +388,7 @@ $(document).ready(function () {
             }else{
                 if(ticket_value != ''){
 
-                    alertify.confirm('Confirmar aposta?', function(){
+                    alertify.confirm('Confirmação','Confirmar aposta?', function(){
 
                         $.post('/bet_ticket/', {'ticket_value': ticket_value} , function(data, status, rq){
                             
@@ -421,6 +421,8 @@ $(document).ready(function () {
                             }
                             console.log(dataJSON.status);
                         }, 'text');//end post
+                    }, function(){
+                        alertify.error('Cancelado.');
                     });
                 }else{
                     alertify.error("Informe o valor da sua aposta.");
@@ -463,7 +465,7 @@ $(document).ready(function () {
                 UpdateCotationTotal();
             }else{
                 if(ticket_value != ''){                                                               
-                        alertify.confirm('Confirmar aposta?', function(){                        
+                        alertify.confirm('Confirmação','Confirmar aposta?', function(){                        
                         $.post('/bet_ticket/', {'ticket_value': ticket_value, 'nome':nome, 'telefone':telefone} , function(data, status, rq){
                             
                             var dataJSON = jQuery.parseJSON(data);
@@ -638,7 +640,13 @@ $(document).ready(function () {
 
             $.post('/user/register/', send_data, function(data, status, rq){
                 console.log(rq.status);
-                window.location = '/'
+
+                alertify.alert("Sucesso","Cadastrado com sucesso, você será logado automaticamente. Boas apostas :)")
+                .set('onok', 
+                function(closeEvent){
+                    window.location = '/';
+                } );
+                
 
             }).fail(function(rq, status, error){
                 console.log(rq.responseJSON);

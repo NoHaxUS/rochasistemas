@@ -268,7 +268,7 @@ class CreateTicketView(View):
 				reward=Reward.objects.create(reward_date=None),
 				random_user=random_user
 				)
-			ticket.save()
+
 				
 			cotation_sum = 1
 			game_cotations = []

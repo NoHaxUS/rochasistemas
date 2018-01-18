@@ -11,7 +11,8 @@ import decimal
 from django.conf import settings
 # Create your models here.
 
-TOKEN='OOabOgBw4awrsYQ51DIWz3i4ILKWxBAXqLQI5b01xzZuoKhyBHCcdINUbIeM'
+#TOKEN='OOabOgBw4awrsYQ51DIWz3i4ILKWxBAXqLQI5b01xzZuoKhyBHCcdINUbIeM'
+TOKEN='DLHVB3IPJuKN8dxfV5ju0ajHqxMl4zx91u5zxOwLS8rHd5w6SjJeLEOaHpR5'
 
 BET_TICKET_STATUS = (
 		('Aguardando Resultados', 'Aguardando Resultados'),
