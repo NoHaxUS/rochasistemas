@@ -56,7 +56,8 @@ COUNTRY_TRANSLATE = {
 
 
 class Home(TemplateResponseMixin, View):
-	template_name = 'core/index.html'	
+	template_name = 'core/index.html'
+	dict_championship_games = {}
 
 
 	def get(self, request, *args, **kwargs):
@@ -66,6 +67,8 @@ class Home(TemplateResponseMixin, View):
 		for i in Championship.objects.all():
 			if i.my_games.able_games().count() > 0:
 				championships.append(i)
+				if i.my_games.today_able_games().count() > 0:
+					self.dict_championship_games[i] = Game.objects.today_able_games().filter(championship=i)				
 				if i.country not in country:					
 					country.append(i.country)
 
@@ -77,21 +80,25 @@ class Home(TemplateResponseMixin, View):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
+		context = {'dict_championship_games': self.dict_championship_games ,'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
 		
 
 		return self.render_to_response(context)
 
 class TomorrowGames(Home):
-	template_name = 'core/tomorrow_games.html'	
-	
+	template_name = 'core/index.html'
+	dict_championship_games = {}
+
+
 	def get(self, request, *args, **kwargs):
 		championships = list()
 		country = list()
-				
+		
 		for i in Championship.objects.all():
 			if i.my_games.able_games().count() > 0:
 				championships.append(i)
+				if i.my_games.tomorrow_able_games().count() > 0:
+					self.dict_championship_games[i] = Game.objects.tomorrow_able_games().filter(championship=i)				
 				if i.country not in country:					
 					country.append(i.country)
 
@@ -103,7 +110,7 @@ class TomorrowGames(Home):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
+		context = {'dict_championship_games': self.dict_championship_games ,'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
 		
 
 		return self.render_to_response(context)

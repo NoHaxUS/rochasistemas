@@ -381,7 +381,7 @@
                             <!-- <i class="material-icons">chevron_right</i> -->
                             {% for country in countries%}                                
                                  <li class="center-align">
-                                    <div class="championship-header championship-color white-text center-align">   {{countries_dict|get_translated_country:country}} </div>
+                                    <div class="championship-header championship-color white-text center-align">   {{countries_dict|get_item:country}} </div>
                                  </li>
                                 {%for championship in championships%}
                                     {% if championship.country == country%}
@@ -393,9 +393,8 @@
                             {%endfor%}
                 </div>
 
-                <div class="col s12 l8">                
-                {% for championship in championships %}
-                    {% if championship.my_games.today_able_games.all.count > 0 %}
+                <div class="col s12 l8">                               
+                {% for championship in dict_championship_games.keys %}                     
                     <!-- Bets collection-->
                     <div class="games-table-container">
 
@@ -404,7 +403,7 @@
                                     <tr>                                        
                                         <th colspan="5">                                        
                                             <div class="championship-header championship-color white-text center-align">
-                                                {{championship.name}} - {{countries_dict|get_translated_country:championship.country}}
+                                                {{championship.name}} - {{countries_dict|get_item:championship.country}}
                                             </div>
                                         </th>
                                     </tr>
@@ -418,7 +417,7 @@
                             </thead>
 
                             <tbody>                                                                                                            
-                                    {% for game in championship.my_games.today_able_games.all %}                                    
+                                    {% for game in dict_championship_games|get_item:championship%}                                    
                                         {% if game.cotations.all.count > 0 %}                                        
                                     <tr>
                                         <td>
@@ -446,8 +445,7 @@
                                     {% endfor %}                                
                             </tbody>                            
                         </table>
-                    </div>
-                    {% endif %}
+                    </div>                    
                     {%endfor%}
                 </div>                                
                 <div class="col s2 hide-on-med-and-down hoverable white">
