@@ -23,6 +23,7 @@ class RandomUser(models.Model):
 class Seller(CustomUser):
 	cpf = models.CharField(max_length=11)
 	address = models.CharField(max_length=75)
+	cellphone = models.CharField(max_length=14)
 
 	def is_seller(self):
 		return True

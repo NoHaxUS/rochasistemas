@@ -18,6 +18,7 @@ from django.core import serializers
 from django.conf import settings
 from user.models import CustomUser, RandomUser
 import json
+import urllib
 
 #import pdb; pdb.set_trace()
 # Create your views here.
@@ -271,7 +272,41 @@ class BetTicketDetail(TemplateResponseMixin, View):
 
 	def get(self, request, *args, **kwargs):
 		ticket = get_object_or_404(BetTicket, pk=self.kwargs["pk"])
-		context = {'ticket': ticket}
+
+
+		date = str(ticket.creation_date.date().day) + "/" + str(ticket.creation_date.date().month) + "/" + str(ticket.creation_date.date().year)
+
+		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
+		content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
+
+		if ticket.seller != None:
+			content += "<CENTER> COLABORADOR: " + ticket.seller.first_name
+
+		content += "<CENTER> DATA: " + date
+		content += "<BR><BR>"
+
+		content += "<LEFT> APOSTAS <BR>"
+		content += "<CENTER>----------------------------------------------- <BR>"
+
+		for c in ticket.cotations.all():
+			content += "<LEFT>" + c.game.name + "<BR>"
+			game_date = str(c.game.start_game_date.date().day) +"/"+str(c.game.start_game_date.date().month)+"/"+str(c.game.start_game_date.date().day)+ " " +str(c.game.start_game_date.hour)+":"+str(c.game.start_game_date.minute)
+			content += "<LEFT>" + game_date + "<BR>"
+			content += "<LEFT>"+ c.kind + "<BR>"
+			content += "<LEFT>" + c.name + " --> " + str(c.value) + "<BR>"
+
+			if c.game.odds_calculated:
+				content += "<RIGHT> Status: Em Aberto"
+			else:
+				content += "<RIGHT> Status: Fechado - " + ("Venceu" if c.winning else "Perdeu") + "<BR>"
+			
+			content += "<CENTER> ----------------------------------------------- <BR>"
+			content += "<CENTER> BET BOLA"
+		
+		content = urllib.parse.quote_plus(content)
+
+		context = {'ticket': ticket, 'print': content}
+
 		return self.render_to_response(context)	
 
 

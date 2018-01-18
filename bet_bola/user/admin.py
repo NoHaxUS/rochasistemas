@@ -19,7 +19,7 @@ class SellerAdmin(admin.ModelAdmin):
 
 	fieldsets = (
 		(None, {
-			'fields': ('first_name','last_name','cpf','username','password','email','date_joined')
+			'fields': ('first_name','last_name','cpf','username','password','email','cellphone')
 		}),
 	)
 	list_display = ['username']

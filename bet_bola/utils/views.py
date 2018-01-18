@@ -6,6 +6,7 @@ from datetime import datetime
 from .utils import updating_games, populating_bd
 from io import BytesIO
 from core.models import BetTicket,Cotation
+from fpdf import FPDF
 import urllib
 
 class Update(View):
@@ -69,7 +70,7 @@ class PDF(View):
 		pdf = FPDF('P', 'mm', (231, 297 + ticket.cotations.count() * 84))
 		pdf.add_page()
 		pdf.add_font('DejaVu', '', 'DejaVuSansCondensed.ttf', uni=True)		
-		pdf.set_font('DejaVu','',30)				
+		pdf.set_font('DejaVu','',30)		
 		#pdf.set_text_color(105,105,105)
 		string = 'TICKET:' + str(ticket.pk)
 		pdf.text(76,12, string)		
@@ -121,8 +122,10 @@ class PercentualReductionCotation(View):
 		if  request.user.is_authenticated:
 			if request.user.is_superuser:
 				for cotation in Cotation.objects.all():
-					cotation.value = round(cotation.original_value * percentual,2)
-					cotation.save()
+					new_value = round(cotation.original_value * percentual,2)
+					if new_value > 1.25:
+						cotation.value = round(cotation.original_value * percentual,2)
+						cotation.save()
 			else:
 				return HttpResponse("Você não tem permissão para isso baby.")
 
