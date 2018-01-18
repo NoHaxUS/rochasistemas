@@ -268,7 +268,7 @@ class CreateTicketView(View):
 				reward=Reward.objects.create(reward_date=None),
 				random_user=random_user
 				)
-			ticket.save()
+				
 				
 			cotation_sum = 1
 			game_cotations = []
@@ -287,7 +287,9 @@ class CreateTicketView(View):
 
 			elif len(game_cotations) < settings.MIN_BET_PER_TICKET:
 				return JsonResponse({'status':417}) # EXPECTATION FAILED
+				print("CHEGOU AQUI")
 			else:
+				PRINT("AQUI N DEVERIA")
 				ticket.save()
 				for game in game_cotations:
 					ticket.cotations.add( game )
