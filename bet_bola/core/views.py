@@ -10,7 +10,7 @@ from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
-from datetime import datetime
+import datetime
 from .models import Cotation,BetTicket,Game,Championship,Payment,Reward
 from user.models import Punter,Seller
 from .forms import BetTicketForm
@@ -18,13 +18,47 @@ from django.core import serializers
 from django.conf import settings
 from user.models import CustomUser, RandomUser
 import json
+import urllib
 
 #import pdb; pdb.set_trace()
 # Create your views here.
 
+COUNTRY_TRANSLATE = {
+	"Austria":"Áustria",
+	"England":"Inglaterra",
+	"Turkey":"Turquia",
+	"Germany":"Alemanha",
+	"Poland":"Polônia",
+	"France":"França",
+	"Angola":"Ângola",
+	"Albania":"Albânia",
+	"Croatia":"Croácia",
+	"Italy":"Itália",
+	"Sweden":"Suécia",
+	"Spain":"Espanha",
+	"Malta":"Malta",
+	"Brazil":"Brasil",
+	"Saudi Arabia":"Arábia Saudita",
+	"Israel":"Israel",
+	"Denmark":"Dinamarca",
+	"Russia":"Russia",
+	"Hong Kong":"Hong Kong",
+	"International":"Internacional",
+	"Belgium":"Bélgica",
+	"USA":"Estados Unidos",
+	"Europe":"Europa",
+	"Netherlands":"Holanda",
+	"Portugal":"Portugal",
+	"United Arab Emirates":"Emirados Árabes",
+	"Finland":"Finlândia",
+	"Norway":"Noruega"
+
+}
+
+
 class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'
-	games = Game.objects.able_games()
+	dict_championship_games = {}
 
 
 	def get(self, request, *args, **kwargs):
@@ -34,6 +68,8 @@ class Home(TemplateResponseMixin, View):
 		for i in Championship.objects.all():
 			if i.my_games.able_games().count() > 0:
 				championships.append(i)
+				if i.my_games.today_able_games().count() > 0:
+					self.dict_championship_games[i] = Game.objects.today_able_games().filter(championship=i)				
 				if i.country not in country:					
 					country.append(i.country)
 
@@ -45,10 +81,50 @@ class Home(TemplateResponseMixin, View):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'games': self.games ,'championships': championships, 'is_seller':is_seller,'countries':country}
+		context = {'dict_championship_games': self.dict_championship_games ,'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
 		
 
 		return self.render_to_response(context)
+
+class TomorrowGames(Home):
+	template_name = 'core/index.html'
+	dict_championship_games = {}
+
+
+	def get(self, request, *args, **kwargs):
+		championships = list()
+		country = list()
+		
+		for i in Championship.objects.all():
+			if i.my_games.able_games().count() > 0:
+				championships.append(i)
+				if i.my_games.tomorrow_able_games().count() > 0:
+					self.dict_championship_games[i] = Game.objects.tomorrow_able_games().filter(championship=i)				
+				if i.country not in country:					
+					country.append(i.country)
+
+		is_seller = None
+		if request.user.is_authenticated:
+			try:
+				seller = Seller.objects.get(pk=int(request.user.pk))
+				is_seller = seller.is_seller()
+			except Seller.DoesNotExist:
+				is_seller = False
+
+		context = {'dict_championship_games': self.dict_championship_games ,'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
+		
+
+		return self.render_to_response(context)
+
+		
+
+class GeneralConf(TemplateResponseMixin, View):
+	template_name = 'core/admin_conf.html'
+
+	def get(self, request, *args, **kwargs):
+		context = {}
+		return self.render_to_response(context)
+
 
 
 
@@ -79,7 +155,7 @@ class GameChampionship(TemplateResponseMixin, View):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'games': games ,'championships': championships,'form': self.form, 'is_seller':is_seller,'countries':country}
+		context = {'games': games ,'championships': championships,'form': self.form, 'is_seller':is_seller,'countries':country,'countries_dict':COUNTRY_TRANSLATE }
 		
 		return self.render_to_response(context)
 
@@ -165,34 +241,34 @@ class CreateTicketView(View):
 			
 
 			ticket_bet_value = round(float( request.POST.get('ticket_value') ), 2)
-			nome = request.POST.get('nome')
-			telefone = request.POST.get('telefone')
+
+			client_name = request.POST.get('nome')
+			cellphone = request.POST.get('telefone')
 					
 
 
 			if ticket_bet_value <= 0:
 				return JsonResponse({'status':400})
 
-
-			if nome != None and telefone != None:
-				ticket = BetTicket(
-					user=CustomUser.objects.get(pk=request.user.pk), 
-					seller=None,
-					value=ticket_bet_value,
-					payment=Payment.objects.create(payment_date=None), 
-					reward=Reward.objects.create(reward_date=None),
-					random_user=RandomUser.objects.create(first_name=nome, cellphone=telefone)
-					)
-				ticket.save()
+			if not client_name and not cellphone:
+				random_user = None
 			else:
-				ticket = BetTicket(
-					user=CustomUser.objects.get(pk=request.user.pk), 
-					seller=None,
-					value=ticket_bet_value,
-					payment=Payment.objects.create(payment_date=None), 
-					reward=Reward.objects.create(reward_date=None),					
-					)
-				
+				if len(client_name) > 40 or len(cellphone) > 14:
+					return JsonResponse({'status':400})
+				else:
+					random_user = RandomUser.objects.create(first_name=client_name, cellphone=cellphone)
+
+
+	
+			ticket = BetTicket(
+				user=CustomUser.objects.get(pk=request.user.pk), 
+				seller=None,
+				value=ticket_bet_value,
+				payment=Payment.objects.create(payment_date=None), 
+				reward=Reward.objects.create(reward_date=None),
+				random_user=random_user
+				)
+			ticket.save()
 				
 			cotation_sum = 1
 			game_cotations = []
@@ -229,7 +305,41 @@ class BetTicketDetail(TemplateResponseMixin, View):
 
 	def get(self, request, *args, **kwargs):
 		ticket = get_object_or_404(BetTicket, pk=self.kwargs["pk"])
-		context = {'ticket': ticket}
+
+
+		date = str(ticket.creation_date.date().day) + "/" + str(ticket.creation_date.date().month) + "/" + str(ticket.creation_date.date().year)
+
+		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
+		content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
+
+		if ticket.seller != None:
+			content += "<CENTER> COLABORADOR: " + ticket.seller.first_name
+
+		content += "<CENTER> DATA: " + date
+		content += "<BR><BR>"
+
+		content += "<LEFT> APOSTAS <BR>"
+		content += "<CENTER>----------------------------------------------- <BR>"
+
+		for c in ticket.cotations.all():
+			content += "<LEFT>" + c.game.name + "<BR>"
+			game_date = str(c.game.start_game_date.date().day) +"/"+str(c.game.start_game_date.date().month)+"/"+str(c.game.start_game_date.date().day)+ " " +str(c.game.start_game_date.hour)+":"+str(c.game.start_game_date.minute)
+			content += "<LEFT>" + game_date + "<BR>"
+			content += "<LEFT>"+ c.kind + "<BR>"
+			content += "<LEFT>" + c.name + " --> " + str(c.value) + "<BR>"
+
+			if c.game.odds_calculated:
+				content += "<RIGHT> Status: Em Aberto"
+			else:
+				content += "<RIGHT> Status: Fechado - " + ("Venceu" if c.winning else "Perdeu") + "<BR>"
+			
+			content += "<CENTER> ----------------------------------------------- <BR>"
+			content += "<CENTER> BET BOLA"
+		
+		content = urllib.parse.quote_plus(content)
+
+		context = {'ticket': ticket, 'print': content}
+
 		return self.render_to_response(context)	
 
 

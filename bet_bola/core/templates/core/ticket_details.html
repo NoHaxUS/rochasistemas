@@ -42,8 +42,22 @@
 
             <div class="col s12 center-align">
                 <div class="delay-msg col s12 l6 hcenter">
-                    <i class="red-text material-icons">info</i> Os resultados são atualizados a cada 6 horas, portanto, resultados incorretos podem ser exibidos
+                    <i class="red-text material-icons">info</i> Os resultados são atualizados a cada 24 horas, portanto, resultados incorretos podem ser exibidos
                     nesse intervalo de tempo.
+                </div>
+                <div class="row">
+                    <div class="col s6">
+                        <a class="btn waves-effect waves-light" type="button"
+                        href="/utils/pdf/{{ticket.pk}}" target="blank">Abrir PDF
+                            <i class="material-icons right">picture_as_pdf</i>
+                        </a>
+                </div>
+                    <div class="col s6">
+                        <a class="btn waves-effect waves-light"
+                        onclick="window.location.href='intent://{{print}}#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;'">Imprimir
+                            <i class="material-icons right">print</i>
+                        </a>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col s12 l10 hcenter white ticket-details">

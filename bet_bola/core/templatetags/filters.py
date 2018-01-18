@@ -13,3 +13,6 @@ def order_by(queryset, args):
     args = [x.strip() for x in args.split(',')]
     return queryset.order_by(*args)
 
+@register.filter(name='get_item')
+def get_item(dictionary, key):
+	return dictionary.get(key,key)
