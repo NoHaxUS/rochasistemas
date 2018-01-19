@@ -293,10 +293,25 @@
                             <i class="material-icons">assistant_photo</i>CAMPEONATOS</div>
                         <div class="collapsible-body white">
                             <ul class="championship-list">
-                                {%for championship in championships%}
                                 <li class="center-align">
-                                    <a href="{% url 'core:game_championship' pk=championship.pk%}" class="">{{ championship }}</a>
+                                    <a href="{% url 'core:home' %}" class="">Jogos de Hoje</a>
                                 </li>
+                                <li class="center-align">
+                                    <a href="{% url 'core:tomorrow_games' %}" class="">Jogos de Amanhã</a>
+                                </li>
+                        <!-- <li class="center-align valign-wrapper"> -->
+                            <!-- <i class="material-icons">chevron_right</i> -->
+                                {% for country in countries%}                                
+                                     <li class="championship-header championship-color white-text center-align">
+                                        {{countries_dict|get_item:country}}
+                                     </li>
+                                    {%for championship in championships%}
+                                        {% if championship.country == country%}
+                                    <li class="center-align">
+                                        <a href="{% url 'core:game_championship' pk=championship.pk%}" class="">{{ championship }}</a>
+                                    </li>
+                                        {%endif%}
+                                    {%endfor%}
                                 {%endfor%}
                             </ul>
                         </div>
@@ -364,11 +379,11 @@
                         <li class="center-align">
                             <a href="{% url 'core:tomorrow_games' %}" class="">Jogos de Amanhã</a>
                         </li>
-                        <li class="center-align valign-wrapper">
+                        <!-- <li class="center-align valign-wrapper"> -->
                             <!-- <i class="material-icons">chevron_right</i> -->
                             {% for country in countries%}                                
-                                 <li class="center-align">
-                                    <div class="championship-header championship-color white-text center-align">   {{countries_dict|get_item:country}} </div>
+                                 <li class="championship-header championship-color white-text center-align">
+                                    {{countries_dict|get_item:country}}
                                  </li>
                                 {%for championship in championships%}
                                     {% if championship.country == country%}
@@ -378,6 +393,7 @@
                                     {%endif%}
                                 {%endfor%}
                             {%endfor%}
+                    </ul>
                 </div>
 
                 <div class="col s12 l8">                               
