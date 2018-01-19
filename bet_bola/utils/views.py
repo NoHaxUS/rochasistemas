@@ -46,9 +46,9 @@ class printTicket(View):
 			content += "<LEFT>" + c.name + " --> " + str(c.value) + "<BR>"
 
 			if c.game.odds_calculated:
-				content += "<RIGHT> Status: Em Aberto"
-			else:
 				content += "<RIGHT> Status: Fechado - " + ("Venceu" if c.winning else "Perdeu") + "<BR>"
+			else:
+				content += "<RIGHT> Status: Em Aberto"				
 			
 			content += "<CENTER> ----------------------------------------------- <BR>"
 			content += "<CENTER> BET BOLA"
@@ -98,10 +98,10 @@ class PDF(View):
 			h=h+14
 			if c.game.odds_calculated:
 				pdf.text(4,h,"Status:")			
-				pdf.text(190,h,"Em Aberto")
+				pdf.text(140,h,"Fechado - " + ("Venceu" if c.winning else "Perdeu"))				
 			else:
 				pdf.text(4,h,"Status:")			
-				pdf.text(140,h,"Fechado - " + ("Venceu" if c.winning else "Perdeu"))
+				pdf.text(180,h,"Em Aberto")
 
 			h=h+14
 			pdf.text(0,h,'---------------------------------------------------------------------------------------------------------------------------------------------------------')			
