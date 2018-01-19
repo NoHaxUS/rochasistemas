@@ -24,7 +24,7 @@ class printTicket(View):
 	def get(self, request, *args, **kwargs):
 
 		ticket = get_object_or_404(BetTicket, pk=self.kwargs["pk"])
-		date = str(ticket.creation_date.date().day) + "/" + str(ticket.creation_date.date().month) + "/" + str(ticket.creation_date.date().year)
+		date = ticket.creation_date.strftime('%d/%m/%Y %H:%M')
 
 		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
 		content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
@@ -40,7 +40,7 @@ class printTicket(View):
 
 		for c in ticket.cotations.all():
 			content += "<LEFT>" + c.game.name + "<BR>"
-			game_date = str(c.game.start_game_date.date().day) +"/"+str(c.game.start_game_date.date().month)+"/"+str(c.game.start_game_date.date().day)+ " " +str(c.game.start_game_date.hour)+":"+str(c.game.start_game_date.minute)
+			game_date = c.gamestart_game_date.strftime('%d/%m/%Y %H:%M')
 			content += "<LEFT>" + game_date + "<BR>"
 			content += "<LEFT>"+ c.kind + "<BR>"
 			content += "<LEFT>" + c.name + " --> " + str(c.value) + "<BR>"
@@ -65,7 +65,7 @@ class PDF(View):
 		response = HttpResponse(content_type='application/pdf')
 		response['Content-Disposition'] = 'inline; filename="ticket.pdf"'
 
-		date = 'DATA: ' + str(ticket.creation_date.date().day) + "/" + str(ticket.creation_date.date().month) + "/" + str(ticket.creation_date.date().year)
+		date = 'DATA: ' + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
 
 		pdf = FPDF('P', 'mm', (231, 297 + ticket.cotations.count() * 84))
 		pdf.add_page()
@@ -89,7 +89,7 @@ class PDF(View):
 			h=h+8
 			pdf.text(4,h,c.game.name)
 			h=h+14
-			pdf.text(4,h, str(c.game.start_game_date.date().day) +"/"+str(c.game.start_game_date.date().month)+"/"+str(c.game.start_game_date.date().day)+ " " +str(c.game.start_game_date.hour)+":"+str(c.game.start_game_date.minute))
+			pdf.text(4,h, c.game.start_game_date.strftime('%d/%m/%Y %H:%M'))
 			h=h+14			
 			pdf.text(4,h,c.kind)
 			h=h+14
