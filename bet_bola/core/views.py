@@ -259,22 +259,12 @@ class CreateTicketView(View):
 			if ticket_bet_value <= 0:
 				return JsonResponse({'status':400})
 
-			if not client_name and not cellphone:
-				random_user = None
-			else:
-				if len(client_name) > 40 or len(cellphone) > 14:
-					return JsonResponse({'status':400})
-				else:
-					random_user = RandomUser.objects.create(first_name=client_name, cellphone=cellphone)
-
-
 	
 			ticket = BetTicket(
 				user=CustomUser.objects.get(pk=request.user.pk),
 				value=ticket_bet_value,
 				payment=Payment.objects.create(payment_date=None), 
-				reward=Reward.objects.create(reward_date=None),
-				random_user=random_user
+				reward=Reward.objects.create(reward_date=None),				
 				)
 
 				
@@ -297,6 +287,18 @@ class CreateTicketView(View):
 				return JsonResponse({'status':417}) # EXPECTATION FAILED
 			else:
 				ticket.save()
+				if not client_name and not cellphone:
+					random_user = None
+					ticket.random_user=random_user
+					ticket.save()
+				else:
+					if len(client_name) > 40 or len(cellphone) > 14:
+						return JsonResponse({'status':400})
+					else:						
+						random_user = RandomUser.objects.create(first_name=client_name, cellphone=cellphone)
+						ticket.random_user=random_user
+						ticket.save()
+						ticket.ticket_valid(request.user)
 				for game in game_cotations:
 					ticket.cotations.add( game )
 				ticket.reward.value = ticket_reward_value
