@@ -29,8 +29,8 @@ class printTicket(View):
 		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
 		content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
 
-		if ticket.seller != None:
-			content += "<CENTER> COLABORADOR: " + ticket.seller.first_name
+		if ticket.payment.who_set_payment != None:
+			content += "<CENTER> COLABORADOR: " + ticket.payment.who_set_payment.first_name
 
 		content += "<CENTER> DATA: " + date
 		content += "<BR><BR>"
@@ -77,8 +77,8 @@ class PDF(View):
 		string = 'CLIENTE: ' + ticket.user.first_name								
 		pdf.text(76,24,string)									
 		pdf.text(76,36, date)
-		if ticket.seller != None:
-			string = 'COLABORADOR: ' +  ticket.seller.first_name
+		if ticket.payment.who_set_payment != None:
+			string = 'COLABORADOR: ' +  ticket.payment.who_set_payment.first_name
 			#string = "COLABORADOR PABLO"
 			pdf.text(76,48,string)
 		pdf.text(4,76,'APOSTAS')		

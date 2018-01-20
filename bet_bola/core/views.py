@@ -336,8 +336,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 			game_date = str(c.game.start_game_date.date().day) +"/"+str(c.game.start_game_date.date().month)+"/"+str(c.game.start_game_date.date().day)+ " " +str(c.game.start_game_date.hour)+":"+str(c.game.start_game_date.minute)
 			content += "<LEFT>" + game_date + "<BR>"
 			content += "<LEFT>"+ c.kind + "<BR>"
-			content += "<LEFT>" + c.name + " --> " + str(c.value) + "<BR>"
-
+			content += "<LEFT>" + c.name + " --> " + str(round(c.value, 2)) + "<BR>"			
 			if c.game.odds_calculated:
 				content += "<RIGHT> Status: Em Aberto"
 			else:
@@ -348,7 +347,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 		
 		content = urllib.parse.quote_plus(content)
 
-		context = {'ticket': ticket, 'print': content}
+		context = {'ticket': ticket, 'print': content, 'valor_apostado': "%.2f" % c.value, 'ganho_possivel': "%.2f" % ticket.reward.value}
 
 		return self.render_to_response(context)	
 
