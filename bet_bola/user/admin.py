@@ -5,7 +5,9 @@ from .models import Punter, Seller
 
 @admin.register(Punter)
 class PunterAdmin(admin.ModelAdmin):
-	title = ('Punter')
+
+	search_fields = ['first_name']
+	search_fields_hint = 'Buscar pelo nome'
 
 	fieldsets = (
 		(None, {
@@ -15,7 +17,8 @@ class PunterAdmin(admin.ModelAdmin):
 
 @admin.register(Seller)
 class SellerAdmin(admin.ModelAdmin):
-	title = ('Seller')
+	search_fields = ['first_name']
+	search_fields_hint = 'Buscar pelo nome'
 
 	fieldsets = (
 		(None, {
