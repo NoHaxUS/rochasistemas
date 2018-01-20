@@ -301,8 +301,9 @@
                                 </li>
                         <!-- <li class="center-align valign-wrapper"> -->
                             <!-- <i class="material-icons">chevron_right</i> -->
-                                {% for country in countries%}                                
-                                     <li class="championship-header championship-color white-text center-align">
+                                {% for country in countries%}
+                                MANGA                                
+                                     <li class="championship-header white-text center-align">
                                         {{countries_dict|get_item:country}}
                                      </li>
                                     {%for championship in championships%}
@@ -405,7 +406,7 @@
                             <thead>
                                     <tr>                                        
                                         <th colspan="5">                                        
-                                            <div class="championship-header championship-color white-text center-align">
+                                            <div class="championship-main-header championship-color white-text center-align">
                                                 {{championship.name}} - {{countries_dict|get_item:championship.country}}
                                             </div>
                                         </th>

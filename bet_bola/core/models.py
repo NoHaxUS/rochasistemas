@@ -84,14 +84,14 @@ MARKET_NAME = {
 
 
 class BetTicket(models.Model):
-	user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', on_delete=models.PROTECT)
-	random_user = models.ForeignKey('user.RandomUser',null=True, on_delete=models.SET_NULL)
-	cotations = models.ManyToManyField('Cotation', related_name='bet_ticket')
-	creation_date = models.DateTimeField(auto_now_add=True)	
-	reward = models.ForeignKey('Reward', null=True,on_delete=models.PROTECT)
-	payment = models.OneToOneField('Payment', null=True,on_delete=models.PROTECT)
-	value = models.FloatField()
-	bet_ticket_status = models.CharField(max_length=80, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][1])
+	user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', on_delete=models.PROTECT, verbose_name='Apostador')
+	random_user = models.ForeignKey('user.RandomUser',null=True, on_delete=models.SET_NULL, verbose_name='Cliente')
+	cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
+	creation_date = models.DateTimeField(auto_now_add=True, verbose_name='Data da aposta')	
+	reward = models.ForeignKey('Reward', null=True,on_delete=models.PROTECT, verbose_name='Recompensa')
+	payment = models.OneToOneField('Payment', null=True,on_delete=models.PROTECT, verbose_name='Pagamento')
+	value = models.FloatField(verbose_name='Apostado')
+	bet_ticket_status = models.CharField(max_length=80, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][1],verbose_name='Status')
 
 
 	def ticket_valid(self, user):
@@ -166,15 +166,15 @@ class BetTicket(models.Model):
 
 
 class Game(models.Model):
-	name = models.CharField(max_length=80)	
-	start_game_date = models.DateTimeField()
-	championship = models.ForeignKey('Championship',related_name='my_games', on_delete=models.CASCADE)
-	status_game = models.CharField(max_length=80,default=GAME_STATUS[0][1], choices=GAME_STATUS)
+	name = models.CharField(max_length=80, verbose_name='Nome do Jogo')	
+	start_game_date = models.DateTimeField(verbose_name='Início da Partida')
+	championship = models.ForeignKey('Championship',related_name='my_games', on_delete=models.CASCADE,verbose_name='Campeonato')
+	status_game = models.CharField(max_length=80,default=GAME_STATUS[0][1], choices=GAME_STATUS,verbose_name='Status do Jogo')
 	odds_calculated = models.BooleanField()
-	visitor_team_score = models.IntegerField(blank = True, null = True)
-	local_team_score = models.IntegerField(blank = True, null = True)
-	ht_score = models.CharField(max_length=80, null=True)
-	ft_score = models.CharField(max_length=80, null=True)	
+	visitor_team_score = models.IntegerField(blank = True, null = True, verbose_name='Placar do Visitante')
+	local_team_score = models.IntegerField(blank = True, null = True, verbose_name='Placar Time de Casa')
+	ht_score = models.CharField(max_length=80, null=True, verbose_name='Placar até o meio-tempo')
+	ft_score = models.CharField(max_length=80, null=True, verbose_name='Placar no final do Jogo')	
 	objects = GamesManager()
 	
 	@staticmethod
@@ -225,8 +225,8 @@ class Game(models.Model):
 
 
 class Championship(models.Model):
-	name = models.CharField(max_length=80)
-	country = models.CharField(max_length=45)
+	name = models.CharField(max_length=80, verbose_name='Nome', help_text='Campeonato')
+	country = models.CharField(max_length=45, verbose_name='País')
 
 	@staticmethod
 	def consuming_api():
@@ -259,16 +259,16 @@ class Reward(models.Model):
 
 
 class Cotation(models.Model):
-	name = models.CharField(max_length=80)
-	original_value = models.FloatField(default=0)
-	value = models.FloatField(default=0)
-	game = models.ForeignKey('Game', related_name='cotations', on_delete=models.CASCADE)	
-	winning = models.NullBooleanField()
-	is_standard = models.BooleanField(default=False)
-	kind = models.CharField(max_length=100)
+	name = models.CharField(max_length=80, verbose_name='Nome da Cota')
+	original_value = models.FloatField(default=0,verbose_name='Valor Original')
+	value = models.FloatField(default=0, verbose_name='Valor Modificado')
+	game = models.ForeignKey('Game', related_name='cotations', on_delete=models.CASCADE, verbose_name='Jogo')	
+	winning = models.NullBooleanField(verbose_name='Vencedor ?')
+	is_standard = models.BooleanField(default=False, verbose_name='Cota Padrão ?')
+	kind = models.CharField(max_length=100, verbose_name='Tipo')
 	handicap = models.FloatField(blank = True, null = True)
 	total = models.FloatField(blank = True, null = True)
-	objects = GamesManager()	
+	objects = GamesManager()
 
 	
 	@staticmethod
@@ -582,6 +582,10 @@ class Payment(models.Model):
 	status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1])
 	payment_date = models.DateTimeField(null=True, auto_now=True)
 	seller_was_rewarded = models.BooleanField(default=False)
+
+
+	def __str__(self):
+		return self.status_payment
 
 
 

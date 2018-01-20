@@ -24,9 +24,7 @@ body{
     background-color: #f7f00e !important;
 }
 
-.championship-color{
-    background-color: #0fb323;
-}
+
 /* end color definitions*/
 nav .brand-logo{
     padding: 0 15px;
@@ -65,15 +63,25 @@ nav .brand-logo{
 .championship-header{
     background-color: #2d9639;
     font-size: 1.6rem;
+    margin-top: 10px;
+}
+
+.championship-main-header{
+    max-width: 80%;
+    background-color:#29a750 !important;
+    border-radius: 50px;
+    font-size: 1.6rem;
+    margin: auto;
+}
+
+.championship-color{
+    background-color: #2d9639;
 }
 .championship-list li a{
     font-size: 1.4rem;
     display: inline-block;
     width: 100%;
     color: #0c143a;
-}
-.championship-list li{
-    padding: 5px 0px 0px 0px;
 }
 .championship-list li a:hover{
     text-decoration: underline;

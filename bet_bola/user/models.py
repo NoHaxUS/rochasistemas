@@ -7,14 +7,14 @@ class CustomUser(AbstractUser):
 
 	def __str__(self):
 		return self.first_name
-		
 
-	email = models.EmailField(null=True)
+	email = models.EmailField(null=True,verbose_name='E-mail')
+
 
 
 class RandomUser(models.Model):
-	first_name = models.CharField(max_length=40)
-	cellphone = models.CharField(max_length=14)
+	first_name = models.CharField(max_length=40, verbose_name='Nome')
+	cellphone = models.CharField(max_length=14, verbose_name='Celular')
 
 	def __str__(self):
 		return self.first_name
@@ -22,9 +22,9 @@ class RandomUser(models.Model):
 
 
 class Seller(CustomUser):
-	cpf = models.CharField(max_length=11)
-	address = models.CharField(max_length=75)
-	cellphone = models.CharField(max_length=14)
+	cpf = models.CharField(max_length=11, verbose_name='CPF')
+	address = models.CharField(max_length=75, verbose_name='Endereço')
+	cellphone = models.CharField(max_length=14, verbose_name='Celular')
 
 
 	def full_name(self):
@@ -53,7 +53,7 @@ class Seller(CustomUser):
 
 class Punter(CustomUser):
 
-	cellphone = models.CharField(max_length=14)
+	cellphone = models.CharField(max_length=14, verbose_name='Celular')
 
 
 	def save(self, *args, **kwargs):
