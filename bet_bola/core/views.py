@@ -164,8 +164,17 @@ class SellerHome(TemplateResponseMixin, View):
 	template_name = 'core/seller_home.html'		
 
 	def get(self, request, *args, **kwargs):				
-		context = {}
+		
+		total_value = 10
+		context = {'faturamento': total_value}
 		return self.render_to_response(context)
+
+
+class ResetRevenue(View):
+	
+	def post(self, request, *args, **kwargs):
+		return HttpResponse('OK')
+
 
 
 class CotationsView(View):
@@ -261,8 +270,7 @@ class CreateTicketView(View):
 
 	
 			ticket = BetTicket(
-				user=CustomUser.objects.get(pk=request.user.pk), 
-				seller=None,
+				user=CustomUser.objects.get(pk=request.user.pk),
 				value=ticket_bet_value,
 				payment=Payment.objects.create(payment_date=None), 
 				reward=Reward.objects.create(reward_date=None),
@@ -312,8 +320,8 @@ class BetTicketDetail(TemplateResponseMixin, View):
 		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
 		content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
 
-		if ticket.seller != None:
-			content += "<CENTER> COLABORADOR: " + ticket.seller.first_name
+		#if ticket.seller != None:
+		#	content += "<CENTER> COLABORADOR: " + ticket.seller.first_name
 
 		content += "<CENTER> DATA: " + date
 		content += "<BR><BR>"

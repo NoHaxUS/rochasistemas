@@ -22,5 +22,6 @@ class SellerAdmin(admin.ModelAdmin):
 			'fields': ('first_name','last_name','cpf','username','password','email','cellphone')
 		}),
 	)
-	list_display = ['username']
+	list_display =('pk','username','full_name','cellphone')
+
 

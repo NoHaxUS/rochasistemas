@@ -51,7 +51,7 @@
                   <div class="row">
                     <div class="input-field col s12">
                       <i class="material-icons prefix">event_note</i>
-                      <input name="ticket" id="icon_prefix" type="text" class="validate ticket-number-input">
+                      <input name="ticket" id="icon_prefix" type="text" class="validate ticket-number-input" autocomplete="off" autofocus>
                       <label for="icon_prefix"># Ticket</label>
                     </div>
                     <div class="row">
@@ -71,6 +71,7 @@
     <nav>
             <div class="nav-wrapper green-ge">
                 {% include 'core/header_info.html' %}
+
                 <ul class="right hide-on-med-and-down">
                     {% if user.is_anonymous %}
                     <li>
@@ -89,7 +90,7 @@
                             Consultar Bilhete</a>
                     </li>
                     {% else %}
-                    <li class="user-logged-name">Olá, {{user}}</li>
+                    <li class="user-logged-name">Olá, {{user}} - Faturamento: {{faturamento}}</li>
                     <li>
                         <a href="/user/logout" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                             logout</a>

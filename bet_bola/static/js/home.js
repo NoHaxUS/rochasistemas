@@ -87,7 +87,7 @@ $(document).ready(function () {
             } else {
     
                 alert_msg = 'Confirma a validação do ticket? \n Essa ação não pode ser desfeita.'
-                alertify.confirm('Confirmação','Confirmação', alert_msg,
+                alertify.confirm('Confirmação', alert_msg,
                     function () {
                         $.post('/seller/validate_ticket/', send_data, function(data, status, rq){
                             data = jQuery.parseJSON(data);
@@ -113,6 +113,16 @@ $(document).ready(function () {
         });
     /** END SETAR COMO PAGO UM TICKET **/
 
+    /** Zerar Faturamento **/
+    $("#reset-revenue-form").on('submit', function(e){
+        e.preventDefault();
+
+        alert('ok');
+
+    });
+    /** End Zerar Faturamento **/
+
+    
     /** REDUZIR COTAS EM MASSA **/
     $("#reduce-cotations-form").on('submit', function(e){
         e.preventDefault();
@@ -438,14 +448,16 @@ $(document).ready(function () {
             $('#modal-random-user').modal('open');
         });
 
-        $('.user-random').on('click', function(){                 
-            $('#modal-random-user').modal('close');       
+        $('.user-random').on('click', function(){      
+
+            $('#modal-random-user').modal('close');
+
             var nome = $('.nome').val();
             var telefone = $('.telefone').val();
-            var ticket = Cookies.get('ticket_cookie');                                    
+            var ticket = Cookies.get('ticket_cookie');  
+
             if($(this).attr('desktop') == 'True'){
-                ticket_value = $('.ticket-bet-value-desktop').val();                
-                alert('teste');
+                ticket_value = $('.ticket-bet-value-desktop').val();
             }else{
                 //console.log('False');
                 ticket_value = $('.ticket-bet-value-mobile').val();                
@@ -496,6 +508,8 @@ $(document).ready(function () {
                             }
                             console.log(dataJSON.status);
                         }, 'text');//end post
+                    },function(){
+                        alertify.error('Cancelado.');
                     });
                     
                 }else{

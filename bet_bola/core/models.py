@@ -87,7 +87,6 @@ MARKET_NAME = {
 class BetTicket(models.Model):
 	user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', on_delete=models.PROTECT)
 	random_user = models.ForeignKey('user.RandomUser',null=True, on_delete=models.SET_NULL)
-	seller = models.ForeignKey('user.Seller', null=True, related_name='bet_tickets_validated_by_me', on_delete=models.SET_NULL)
 	cotations = models.ManyToManyField('Cotation', related_name='bet_ticket')
 	creation_date = models.DateTimeField(auto_now_add=True)	
 	reward = models.ForeignKey('Reward', null=True,on_delete=models.PROTECT)
@@ -583,6 +582,9 @@ class Payment(models.Model):
 	who_set_payment = models.ForeignKey('user.Seller', null=True, on_delete=models.PROTECT)
 	status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1])
 	payment_date = models.DateTimeField(null=True, auto_now=True)
+	seller_was_rewarded = models.BooleanField(default=False)
+
+
 
 	class Meta:
 		verbose_name = 'Pagamento'

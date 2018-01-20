@@ -32,4 +32,5 @@ urlpatterns = [
     path('seller/validate_ticket/', views.ValidateTicket.as_view(), name='validate_ticket'),
     path('seller/punter_payment/', views.PunterPayment.as_view(), name='punter_payment'),
     path('config/', views.GeneralConf.as_view(), name='general_config'),
+    path('reset_revenue/', views.ResetRevenue.as_view(), name='reset_revenue'),
 ]

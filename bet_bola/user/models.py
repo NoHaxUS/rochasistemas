@@ -20,13 +20,20 @@ class RandomUser(models.Model):
 		return self.first_name
 
 
+
 class Seller(CustomUser):
 	cpf = models.CharField(max_length=11)
 	address = models.CharField(max_length=75)
 	cellphone = models.CharField(max_length=14)
 
+
+	def full_name(self):
+		return self.first_name + ' ' + self.last_name
+	full_name.short_description = 'Nome Completo'
+
 	def is_seller(self):
 		return True
+
 
 	def save(self, *args, **kwargs):
 		self.clean()
@@ -57,3 +64,5 @@ class Punter(CustomUser):
 	class Meta:
 		verbose_name = 'Apostador'
 		verbose_name_plural = 'Apostadores'
+
+
