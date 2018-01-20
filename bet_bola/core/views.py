@@ -122,6 +122,8 @@ class GeneralConf(TemplateResponseMixin, View):
 	template_name = 'core/admin_conf.html'
 
 	def get(self, request, *args, **kwargs):
+		if not request.user.is_superuser:
+			return redirect(to='/')
 		context = {}
 		return self.render_to_response(context)
 
@@ -163,17 +165,60 @@ class GameChampionship(TemplateResponseMixin, View):
 class SellerHome(TemplateResponseMixin, View):
 	template_name = 'core/seller_home.html'		
 
-	def get(self, request, *args, **kwargs):				
+	def get(self, request, *args, **kwargs):
+
+		tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=request.user.pk, payment__seller_was_rewarded=False)
+		revenue_total = 0
+
+		for ticket in tickets_revenue:
+			revenue_total += ticket.value
+
 		
-		total_value = 10
-		context = {'faturamento': total_value}
+		context = {'faturamento': revenue_total}
 		return self.render_to_response(context)
 
 
 class ResetRevenue(View):
+
+
+	def get(self, request, *args, **kwargs):
+
+		if not request.user.is_superuser:
+			return JsonResponse({'status': 400},json_dumps_params={'ensure_ascii': False})
+
+		seller_id = int(request.GET['seller_id'])
+
+		tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=seller_id, payment__seller_was_rewarded=False)
+		revenue_total = 0
+
+		for ticket in tickets_revenue:
+			revenue_total += ticket.value
 	
+		try:
+			seller = Seller.objects.get(pk=seller_id)
+			print(seller)
+			
+			dict_response = {'nome': seller.full_name(), 'cpf': seller.cpf, 
+				'telefone': seller.cellphone,'faturamento': revenue_total, 'status': 200}
+			
+			return JsonResponse(dict_response,json_dumps_params={'ensure_ascii': False})
+
+
+		except Seller.DoesNotExist:
+			return JsonResponse({'status': 404},json_dumps_params={'ensure_ascii': False})
+
+
 	def post(self, request, *args, **kwargs):
-		return HttpResponse('OK')
+		seller_id = int(request.POST['seller_id'])
+		payments = Payment.objects.filter(who_set_payment_id=seller_id, seller_was_rewarded=False)
+
+		for payment in payments:
+			payment.seller_was_rewarded = True
+			payment.save()
+
+		return JsonResponse({'status': 200},json_dumps_params={'ensure_ascii': False})
+
+
 
 
 
