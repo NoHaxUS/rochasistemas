@@ -56,7 +56,7 @@ PAYMENT_STATUS = (
 
 
 MARKET_NAME = {
-	"Team To Score First": "Time a Marcar Primeiro",
+	"Team To Score First": "Time a Marcar Primeiro", 
 	"Result/Total Goals": "Resultado/Total de Gol(s)",
 	"Correct Score 1st Half": "Resultado Exato no Primeiro Tempo",
 	"Both Teams To Score": "2 Times Marcam",
@@ -73,8 +73,7 @@ MARKET_NAME = {
 	"Over/Under": "Total de Gol(s) no Encontro, Acima/Abaixo",
 	"Highest Scoring Half": "Etapa com Mais Gol(s)",
 	"Clean Sheet - Home": "Time da Casa Não Tomará Gol(s)",
-	"Clean Sheet - Away": "Time Visitante Não Tomará Gol(s)",
-	"Corners Over Under": "Escanteios, Acima/Abaixo",
+	"Clean Sheet - Away": "Time Visitante Não Tomará Gol(s)",	
 	"HT/FT Double": "Intervalo/Final de Jogo",
 	"Results/Both Teams To Score": "Resultado/2 Times Marcam",
 	"Home Team Score a Goal": "Time da casa Marca",
@@ -282,7 +281,7 @@ class Cotation(models.Model):
 			for kind in r.json().get('data'):
 				kind_name = kind['name']				
 				for cotation in kind['bookmaker']['data'][0]['odds']['data']:
-					if kind_name != 'Asian Handicap' and kind_name != 'Handicap Result' and kind_name != 'Handicap' and kind_name != '3Way Handicap' and kind_name != 'Corners Over Under':
+					if kind_name in MARKET_NAME.keys():
 						if kind_name == '3Way Result':
 							cotations = game.cotations.all().filter(kind=MARKET_NAME.setdefault(kind_name,kind_name))
 							if cotations.filter(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip()).exists():
