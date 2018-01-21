@@ -484,7 +484,7 @@ $(document).ready(function () {
                             if(dataJSON.status == 201){
                                 console.log(dataJSON);
                                 alertify.alert("Sucesso", "O número do Ticket de Aposta é: <b>" + dataJSON.ticket_pk + "</b>"+
-                            "<br /> Para acessar detalhes do Ticket, entre no painel de controle." +
+                            "<br /> Para acessar detalhes do Ticket, entre no painel do cliente." +
                             "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket.");
                             }
                             console.log(dataJSON.status);
@@ -570,7 +570,7 @@ $(document).ready(function () {
                             if(dataJSON.status == 201){
                                 console.log(dataJSON);                                
                                 alertify.alert("Sucesso", "O número do Ticket de Aposta é: <b>" + dataJSON.ticket_pk + "</b>"+
-                            "<br /> Para acessar detalhes do Ticket, entre no painel de controle." +
+                            "<br /> Para acessar detalhes do Ticket, entre no painel do cliente." +
                             "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket.");
                             }
                             console.log(dataJSON.status);
