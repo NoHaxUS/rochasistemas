@@ -463,11 +463,16 @@ $(document).ready(function () {
                             }
 
                             if(dataJSON.status == 406){
-                                alertify.alert("Erro", "Prezado cliente, gostariamos de lhe informar que não aceitamos apostas com recompensa maior que R$ 4000.00");
+                                alertify.alert("Erro", "Prezado cliente, gostariamos de lhe informar que não aceitamos apostas com recompensa maior que R$" + dataJSON.max_reward_to_pay);
                             }
 
+                            if(dataJSON.status == 410){
+                                alertify.error("A aposta mínima é: R$ " + dataJSON.min_bet_value);
+                            }
+
+
                             if(dataJSON.status == 417){
-                                alertify.alert("Erro", "Prezado cliente, você deve apostar em pelo menos 2 jogos.");
+                                alertify.alert("Erro", "Prezado cliente, você deve apostar em pelo menos "+ dataJSON.min_number_of_choices_per_bet + " jogos.");
                             }
 
                             if(dataJSON.status == 409){
@@ -545,12 +550,16 @@ $(document).ready(function () {
                                 alertify.alert("Erro", "Erro ao tentar processar essa requisição. \n Por favor avise-nos pelo email: pabllobeg@gmail.com");
                             }
 
+                            if(dataJSON.status == 410){
+                                alertify.error("A aposta mínima é: R$ " + dataJSON.min_bet_value);
+                            }
+
                             if(dataJSON.status == 406){
-                                alertify.alert("Erro", "Prezado cliente, gostariamos de lhe informar que não aceitamos apostas com recompensa maior que R$ 4000.00");
+                                alertify.alert("Erro", "Prezado cliente, gostariamos de lhe informar que não aceitamos apostas com recompensa maior que R$" +  dataJSON.max_reward_to_pay);
                             }
 
                             if(dataJSON.status == 417){
-                                alertify.alert("Erro", "Prezado cliente, você deve apostar em pelo menos 2 jogos.");
+                                alertify.alert("Erro", "Prezado cliente, você deve apostar em pelo menos "+ dataJSON.min_number_of_choices_per_bet + " jogos.");
                             }
 
                             if(dataJSON.status == 409){

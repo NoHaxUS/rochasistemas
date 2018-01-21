@@ -70,7 +70,7 @@ class Punter(CustomUser):
 class GeneralConfigurations(models.Model):
 
 	max_cotation_value = models.FloatField(null=True, verbose_name="Valor Máximo das Cotas")
-	min_number_of_choices_per_bet = models.IntegerField(default=0, verbose_name="Número mínimo de escolhas por Aposta")
+	min_number_of_choices_per_bet = models.IntegerField(default=1, verbose_name="Número mínimo de escolhas por Aposta")
 	max_reward_to_pay = models.FloatField(null=True, verbose_name="Valor máximo pago pela Banca")
 	min_bet_value = models.FloatField(null=True, verbose_name="Valor mínimo da aposta")
 

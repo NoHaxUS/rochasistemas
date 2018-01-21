@@ -298,8 +298,25 @@ class CreateTicketView(View):
 
 			client_name = request.POST.get('nome')
 			cellphone = request.POST.get('telefone')
+
+
+			from user.models import GeneralConfigurations
+			try:
+				
+				general_config = GeneralConfigurations.objects.get(pk=1)
+
+				max_reward_to_pay = general_config.max_reward_to_pay
+				min_number_of_choices_per_bet = general_config.min_number_of_choices_per_bet
+				min_bet_value = general_config.min_bet_value
+
+			except GeneralConfigurations.DoesNotExist:
+				max_reward_to_pay = 100000.0
+				min_number_of_choices_per_bet = 1
+				min_bet_value = 1
 					
 
+			if ticket_bet_value < min_bet_value:
+				return JsonResponse({'status':410, 'min_bet_value': min_bet_value})
 
 			if ticket_bet_value <= 0:
 				return JsonResponse({'status':400})
@@ -326,13 +343,15 @@ class CreateTicketView(View):
 					cotation_sum *= game_contation.value
 				except Cotation.DoesNotExist:
 					return JsonResponse({'status':400})
-			
-			ticket_reward_value = round(cotation_sum * ticket_bet_value ,2)
-			if float(ticket_reward_value) > float(settings.MAX_REWARD):
-				return JsonResponse({'status':406}) # NOT ACEPTED
 
-			elif len(game_cotations) < settings.MIN_BET_PER_TICKET:
-				return JsonResponse({'status':417}) # EXPECTATION FAILED
+
+
+			ticket_reward_value = round(cotation_sum * ticket_bet_value ,2)
+			if float(ticket_reward_value) > float(max_reward_to_pay):
+				return JsonResponse({'status':406, 'max_reward_to_pay': max_reward_to_pay}) # NOT ACEPTED
+
+			elif len(game_cotations) < min_number_of_choices_per_bet:
+				return JsonResponse({'status':417, 'min_number_of_choices_per_bet': min_number_of_choices_per_bet}) # EXPECTATION FAILED
 			else:
 				ticket.save()
 				if not client_name and not cellphone:
@@ -379,6 +398,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 		content += "<LEFT> APOSTAS <BR>"
 		content += "<CENTER>----------------------------------------------- <BR>"
 
+
 		for c in ticket.cotations.all():
 			content += "<LEFT>" + c.game.name + "<BR>"
 			game_date = str(c.game.start_game_date.date().day) +"/"+str(c.game.start_game_date.date().month)+"/"+str(c.game.start_game_date.date().day)+ " " +str(c.game.start_game_date.hour)+":"+str(c.game.start_game_date.minute)
@@ -393,9 +413,9 @@ class BetTicketDetail(TemplateResponseMixin, View):
 			content += "<CENTER> ----------------------------------------------- <BR>"
 			content += "<CENTER> BET BOLA"
 		
-		content = urllib.parse.quote_plus(content)
+		content = urllib.parse.urlparse(content).geturl()
 
-		context = {'ticket': ticket, 'print': content, 'valor_apostado': "%.2f" % c.value, 'ganho_possivel': "%.2f" % ticket.reward.value}
+		context = {'ticket': ticket, 'print': content, 'valor_apostado': "%.2f" % ticket.value, 'ganho_possivel': "%.2f" % ticket.reward.value}
 
 		return self.render_to_response(context)	
 
