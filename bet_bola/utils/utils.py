@@ -106,8 +106,9 @@ def consuming_championship_api():
 		Championship(pk=championship['id'],name = championship['name'],country = championship['country']['data']['name']).save()	
 
 
-def consuming_cotation_api():		
-	if GeneralConfigurations.objects.get(pk=1).max_cotation_value:
+def consuming_cotation_api():	
+	max_cotation_value = None
+	if GeneralConfigurations.objects.filter(pk=1):
 		max_cotation_value = GeneralConfigurations.objects.get(pk=1).max_cotation_value
 
 	for game in Game.objects.all():
