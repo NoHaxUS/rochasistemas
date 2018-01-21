@@ -38,6 +38,7 @@ class ChampionshipAdmin(admin.ModelAdmin):
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
+	search_fields = ['pk']
 	list_display = ['pk']
 
 @admin.register(Reward)

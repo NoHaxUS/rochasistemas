@@ -66,3 +66,28 @@ class Punter(CustomUser):
 		verbose_name_plural = 'Apostadores'
 
 
+
+class GeneralConfigurations(models.Model):
+
+	max_cotation_value = models.FloatField(null=True, verbose_name="Valor Máximo das Cotas")
+	min_number_of_choices_per_bet = models.IntegerField(default=0, verbose_name="Número mínimo de escolhas por Aposta")
+	max_reward_to_pay = models.FloatField(null=True, verbose_name="Valor máximo pago pela Banca")
+	min_bet_value = models.FloatField(null=True, verbose_name="Valor mínimo da aposta")
+
+
+	def __str__(self):
+		return "Configuração Atual"
+
+	def save(self, *args, **kwargs):
+
+		self.pk = 1	
+		super(GeneralConfigurations, self).save()
+
+
+
+
+	class Meta:
+		verbose_name = "Configurar Restrições"
+		verbose_name_plural = "Configurar Restrições"
+
+

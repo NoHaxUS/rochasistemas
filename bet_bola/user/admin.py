@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Punter, Seller
+from .models import Punter, Seller, GeneralConfigurations
 # Register your models here.
 
 
@@ -26,5 +26,10 @@ class SellerAdmin(admin.ModelAdmin):
 		}),
 	)
 	list_display =('pk','username','full_name')
+
+
+@admin.register(GeneralConfigurations)
+class GeneralConfigurationsAdmin(admin.ModelAdmin):
+	pass
 
 

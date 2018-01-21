@@ -80,17 +80,12 @@
     
                     </li>
     
-                    <li>
-                        <a href="#modal-register" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
-                            Cadastre-se</a>
-                    </li>
-    
-                    <li>
-                        <a href="#modal-check-ticket" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
-                            Consultar Bilhete</a>
-                    </li>
                     {% else %}
                     <li class="user-logged-name">Olá, {{user}}</li>
+                    <li>
+                        <a href="/admin/" class="waves-effect waves-light btn white grey-text text-darken-4 ">
+                            Voltar</a>
+                    </li>
                     <li>
                         <a href="/user/logout" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                             logout</a>
