@@ -1,6 +1,7 @@
 from core.models import Championship,Game,Cotation,BetTicket
 from datetime import datetime
 from core.models import *
+from user.models import GeneralConfigurations
 import requests
 
 #TOKEN='OOabOgBw4awrsYQ51DIWz3i4ILKWxBAXqLQI5b01xzZuoKhyBHCcdINUbIeM'
@@ -105,7 +106,9 @@ def consuming_championship_api():
 		Championship(pk=championship['id'],name = championship['name'],country = championship['country']['data']['name']).save()	
 
 
-def consuming_cotation_api():	
+def consuming_cotation_api():		
+	if GeneralConfigurations.objects.get(pk=1).max_cotation_value:
+		max_cotation_value = GeneralConfigurations.objects.get(pk=1).max_cotation_value
 
 	for game in Game.objects.all():
 		r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN+"&tz=America/Sao_Paulo")			
@@ -121,8 +124,9 @@ def consuming_cotation_api():
 							c.update(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = True,
 								handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
 						else:
-							Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = True,
-								handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name)).save()
+							c = Cotation.objects.create(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = True,
+								handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
+							
 							
 					else:
 
@@ -133,8 +137,8 @@ def consuming_cotation_api():
 								c.update(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
 									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
 							else:									
-								Cotation(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
-									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name)).save()
+								c = Cotation.objects.create(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
+									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))								
 
 								
 						else:									
@@ -144,8 +148,14 @@ def consuming_cotation_api():
 								c.update(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
 									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
 							else:
-								Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
-									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name)).save()
+								c = Cotation.objects.create(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
+									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
+					
+
+					if max_cotation_value and float(cotation['value']) > max_cotation_value:
+						c.update(value = max_cotation_value)						
+
+
 
 
 def processing_cotations():
