@@ -1,5 +1,6 @@
 /* Resets */
 body{
+    font-family: 'Roboto', sans-serif;
     background-color: #d3dcbec9;
 }
 .row{
@@ -27,10 +28,13 @@ body{
 
 /* end color definitions*/
 nav .brand-logo{
+    font-family: 'Exo 2', sans-serif;
     padding: 0 15px;
 }
 
-.ticket-header{
+.section-header{
+
+    font-family: 'Exo 2', sans-serif;
     background-color: #2d9639;
     font-size: 1.6rem;
 }
@@ -62,15 +66,15 @@ nav .brand-logo{
 /* championship */
 .championship-header{
     background-color: #2d9639;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     margin-top: 10px;
 }
 
 .championship-main-header{
-    max-width: 80%;
+    max-width: 70%;
     background-color:#29a750 !important;
     border-radius: 50px;
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     margin: auto;
 }
 

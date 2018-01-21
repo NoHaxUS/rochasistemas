@@ -470,6 +470,11 @@ $(document).ready(function () {
                                 alertify.alert("Erro", "Prezado cliente, você deve apostar em pelo menos 2 jogos.");
                             }
 
+                            if(dataJSON.status == 409){
+                                alertify.alert("Erro", "Desculpe, um dos jogos selecionados por você já começou, atualize a página.");
+                            }
+
+
 
                             if(dataJSON.status == 201){
                                 console.log(dataJSON);
@@ -547,6 +552,11 @@ $(document).ready(function () {
                             if(dataJSON.status == 417){
                                 alertify.alert("Erro", "Prezado cliente, você deve apostar em pelo menos 2 jogos.");
                             }
+
+                            if(dataJSON.status == 409){
+                                alertify.alert("Erro", "Desculpe, um dos jogos selecionados por você já começou, atualize a página.");
+                            }
+
 
                             if(dataJSON.status == 201){
                                 console.log(dataJSON);                                
@@ -688,8 +698,7 @@ $(document).ready(function () {
             var href = $(e).attr('href');
             if(url_array == href){
 
-                $(e).css('color','#1027c7')
-                .css('text-decoration','underline');
+                $(e).css('color','#1027c7');
             }
 
         });

@@ -312,6 +312,7 @@ class CreateTicketView(View):
 				reward=Reward.objects.create(reward_date=None),				
 				)
 
+
 				
 			cotation_sum = 1
 			game_cotations = []
@@ -319,6 +320,8 @@ class CreateTicketView(View):
 				game_contation = None
 				try:
 					game_contation = Cotation.objects.get(pk=int(request.session['ticket'][game_id]))
+					if game_contation.game.start_game_date < timezone.now():
+						return JsonResponse({'status':409})
 					game_cotations.append(game_contation)
 					cotation_sum *= game_contation.value
 				except Cotation.DoesNotExist:
