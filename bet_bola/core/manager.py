@@ -1,21 +1,20 @@
 from django.db.models.query import QuerySet
 from django.db.models import Q
 from django.db.models import Count
+from django.utils import timezone
 import datetime
+
 
 class GamesQuerySet(QuerySet):
 
 	def able_games(self):
-		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
-			| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED")).filter(start_game_date__date__gte=datetime.datetime.now().today().date())
+		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(status_game="NS").filter(start_game_date__gte=timezone.now())
 
 	def today_able_games(self):
-		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
-			| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED")).filter(start_game_date__date=datetime.datetime.now().today().date())
+		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(status_game="NS").filter(start_game_date__gte=timezone.now()).filter(start_game_date__lte=timezone.now().date() + datetime.timedelta(days=1) )
 
 	def tomorrow_able_games(self):
-		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(Q(status_game="NS")| Q(status_game="LIVE") | Q(status_game="HT") | Q(status_game="ET") 
-			| Q(status_game="PT") | Q(status_game="BREAK") | Q(status_game="DELAYED")).filter(start_game_date__date=datetime.date.today() + datetime.timedelta(days=1) )
+		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(status_game="NS").filter(start_game_date__date=timezone.now().date() + datetime.timedelta(days=1) )
 
 GamesManager = GamesQuerySet.as_manager
 

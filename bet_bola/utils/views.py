@@ -2,6 +2,7 @@ from django.http import HttpResponse,JsonResponse, HttpResponseRedirect
 from django.shortcuts import render,redirect,get_object_or_404
 from django.template.loader import get_template
 from django.views.generic import View
+from django.utils import timezone
 from datetime import datetime
 from io import BytesIO
 from core.models import BetTicket,Cotation
@@ -12,7 +13,7 @@ class printTicket(View):
 	def get(self, request, *args, **kwargs):
 
 		ticket = get_object_or_404(BetTicket, pk=self.kwargs["pk"])
-		date = ticket.creation_date.strftime('%d/%m/%Y %H:%M')
+		date = timezone.localtime(ticket.creation_date).strftime('%d/%m/%Y %H:%M')
 
 		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
 		content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
@@ -28,7 +29,7 @@ class printTicket(View):
 
 		for c in ticket.cotations.all():
 			content += "<LEFT>" + c.game.name + "<BR>"
-			game_date = c.gamestart_game_date.strftime('%d/%m/%Y %H:%M')
+			game_date = timezone.localtime(c.gamestart_game_date).strftime('%d/%m/%Y %H:%M')
 			content += "<LEFT>" + game_date + "<BR>"
 			content += "<LEFT>"+ c.kind + "<BR>"
 			content += "<LEFT>" + c.name + " --> " + str(c.value) + "<BR>"
@@ -53,7 +54,7 @@ class PDF(View):
 		response = HttpResponse(content_type='application/pdf')
 		response['Content-Disposition'] = 'inline; filename="ticket.pdf"'
 
-		date = 'DATA: ' + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
+		date = 'DATA: ' + timezone.localtime(ticket.creation_date).strftime('%d/%m/%Y %H:%M')
 
 		pdf = FPDF('P', 'mm', (231, 297 + ticket.cotations.count() * 84))
 		pdf.add_page()
@@ -77,7 +78,7 @@ class PDF(View):
 			h=h+8
 			pdf.text(4,h,c.game.name)
 			h=h+14
-			pdf.text(4,h, c.game.start_game_date.strftime('%d/%m/%Y %H:%M'))
+			pdf.text(4,h, timezone.localtime(c.game.start_game_date).strftime('%d/%m/%Y %H:%M'))
 			h=h+14			
 			pdf.text(4,h,c.kind)
 			h=h+14

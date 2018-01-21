@@ -8,7 +8,7 @@ def main():
     django.setup()
     from utils import utils
     print("POPULATING")
-    utils.populating_bd(3)
+    utils.populating_bd(7)
     print("POPULATING")
 
 
