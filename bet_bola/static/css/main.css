@@ -113,6 +113,7 @@ nav .brand-logo{
 
 .cotation:hover{
     cursor: pointer;
+    font-weight: bold;
 }
 
 /*
