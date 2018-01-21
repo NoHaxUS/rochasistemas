@@ -105,6 +105,7 @@ $(document).ready(function () {
                                 alertify.error('Algo deu errado.');
                             }
                         }, 'text');
+                        $('#validate-bet').modal('close')
                     },
                     function () {
                         alertify.error('Cancelado');
