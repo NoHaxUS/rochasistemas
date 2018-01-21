@@ -7,7 +7,6 @@
 
 <body>
 
-
     <!-- Pay Bet -->
     <div id="pay-bet" class="modal">
         <div class="modal-content">
@@ -140,6 +139,9 @@
                                 <li class="center-align">
                                     <a href="#pay-bet" class="modal-trigger">Pagar Ganhador</a>
                                 </li>
+                                <li class="center-align">
+                                    <a href="{% url 'core:payed_bets' %}" >Apostas pagas</a>
+                                </li>
                             </ul>
                         </div>
                     </li>
@@ -162,6 +164,9 @@
                         </li>
                         <li class="center-align">
                             <a href="#pay-bet" class="modal-trigger">Pagar Ganhador</a>
+                        </li>
+                        <li class="center-align">
+                            <a href="{% url 'core:payed_bets' %}" >Apostas pagas</a>
                         </li>
                     </ul>
                     

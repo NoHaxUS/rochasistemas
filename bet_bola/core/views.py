@@ -444,3 +444,14 @@ class PunterPayment(View):
 				return JsonResponse({'status': 404})
 		else:
 			return JsonResponse({'status': 400})	
+
+
+class PayedBets(TemplateResponseMixin,View):
+	template_name = 'core/list_bets.html'
+
+	def get(self, request):
+		tickets = BetTicket.objects.filter(payment__who_set_payment_id=request.user.id).filter(payment__status_payment='Pago')
+		context = {"tickets":tickets}
+
+		return self.render_to_response(context)	
+

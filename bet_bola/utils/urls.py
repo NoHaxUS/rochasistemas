@@ -18,9 +18,7 @@ from . import views
 
 app_name = 'utils'
 
-urlpatterns = [  
-    path('update/', views.Update.as_view(), name='updating'),    
-    path('populate/', views.PopulatingBD.as_view(), name='populating'),    
+urlpatterns = [      
     path('pdf/<int:pk>', views.PDF.as_view(), name='pdf'),
     path('print/<int:pk>', views.printTicket.as_view(), name='print'),
     path('cotation_reduction/<str:percentual>', views.PercentualReductionCotation.as_view(), name='cotation_reduction'),

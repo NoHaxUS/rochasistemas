@@ -8,7 +8,7 @@ def main():
     django.setup()
     from utils import utils
     print("UPDATING")
-    utils.updating_games()
+    utils.updating_games(7)
     print("UPDATING")
 
 

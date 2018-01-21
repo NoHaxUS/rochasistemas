@@ -3,22 +3,10 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.template.loader import get_template
 from django.views.generic import View
 from datetime import datetime
-from .utils import updating_games, populating_bd
 from io import BytesIO
 from core.models import BetTicket,Cotation
 from fpdf import FPDF
 import urllib
-
-class Update(View):
-	def get(self, request, *args, **kwargs):
-		updating_games()
-		return redirect('core:home')
-
-class PopulatingBD(View):
-	def get(self, request, *args, **kwargs):
-		populating_bd()
-		return redirect('core:home')
-
 
 class printTicket(View):
 	def get(self, request, *args, **kwargs):

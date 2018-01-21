@@ -23,6 +23,7 @@ urlpatterns = [
     path('', views.Home.as_view(), name='home'),    
     path('tomorrow_games/', views.TomorrowGames.as_view(), name='tomorrow_games'),    
     path('seller/home/', views.SellerHome.as_view(), name='seller_home'),
+    path('seller/home/payed_bets', views.PayedBets.as_view(), name='payed_bets'),
     path('championship/<int:pk>', views.GameChampionship.as_view(), name='game_championship'),
     path('bet_ticket/<int:pk>', views.BetTicketDetail.as_view(), name='bet_ticket_id'),
     path('bet_ticket/', views.CreateTicketView.as_view(), name='bet_ticket'),

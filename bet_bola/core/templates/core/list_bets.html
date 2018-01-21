@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+<head>
+    {% include 'core/head.html' %}
+</head>
+
+<body>
+    <nav>
+            <div class="nav-wrapper green-ge">
+                {% include 'core/header_info.html' %}
+            </div>
+    </nav>
+    <main>
+        <div class="col s12 center-align">
+            <div class="subnav green-bb">
+                <span class="right white-text time">11:30</span>
+            </div>
+        </div>
+                <div class="col s12 l10">
+                    <!-- Bets collection-->
+                    <div class="games-table-container">
+                        <table class="bordered highlight white centered games-table hoverable">
+                            <thead>
+                                <tr>
+                                    <th>Número do Ticket</th>
+                                    <th>Data da aposta</th>
+                                    <th>Status</th>
+                                    <th>Status Pagamento</th>
+                                    <th>Ver</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for ticket in tickets %}
+                                <tr>
+                                    <td>
+                                        # {{ ticket.pk }}
+                                    </td>
+                                    <td>
+                                        {{ ticket.creation_date }}
+                                    </td>
+                                    <td>
+                                        {{ ticket.bet_ticket_status }}
+                                    </td>
+                                    <td>
+                                        {{ ticket.payment.status_payment }}
+                                    </td>
+                                    <td>
+                                        <a href="/bet_ticket/{{ ticket.pk }}"><i class="material-icons">open_in_new</i> </a>
+                                        </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <!--
+                <div class="col s2 hide-on-med-and-down hoverable white">
+                
+                </div>
+            -->
+                <!-- end ticket col -->
+            </div>
+    </main>
+
+    {% include 'core/general_js.html' %}
+
+    <script>
+    $(document).ready(function(){
+        //$('#bet-success').modal('open');
+    });
+    </script>
+
+</body>
+
+</html>
