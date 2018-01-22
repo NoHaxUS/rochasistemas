@@ -416,7 +416,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 			content += "<LEFT>" + game_date + "<BR>"
 			content += "<LEFT>"+ c.kind + "<BR>"
 			content += "<LEFT>" + c.name + " --> " + str(round(c.value, 2)) + "<BR>"			
-			if c.game.odds_calculated:
+			if not c.game.odds_calculated:
 				content += "<RIGHT> Status: Em Aberto"
 			else:
 				content += "<RIGHT> Status: " + ("Venceu" if c.winning else "Perdeu") + "<BR>"

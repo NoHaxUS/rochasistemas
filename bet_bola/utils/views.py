@@ -50,7 +50,7 @@ class PDF(View):
 			h=h+14
 			if c.game.odds_calculated:
 				pdf.text(4,h,"Status:")			
-				pdf.text(140,h,"Fechado - " + ("Venceu" if c.winning else "Perdeu"))				
+				pdf.text(140,h, ("Venceu" if c.winning else "Perdeu"))				
 			else:
 				pdf.text(4,h,"Status:")			
 				pdf.text(180,h,"Em Aberto")
