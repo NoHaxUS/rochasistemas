@@ -26,10 +26,7 @@ SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-MAX_REWARD = 4000.00
-MIN_BET_PER_TICKET = 2
-
-ALLOWED_HOSTS = ['bet-bola.herokuapp.com','localhost']
+ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
 
 # Application definition
@@ -86,9 +83,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'bet_bola',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'NAME': 'db_mestredabola',
+        'USER': 'user_mestredabola',
+        'PASSWORD': '9Akb4RDAQXXmJH7Q',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -135,7 +132,7 @@ USE_TZ = True
 
 #statis files
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
+STATIC_ROOT = '/home/mushzinho/webapps/static_mestredabola'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
