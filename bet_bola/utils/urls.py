@@ -20,7 +20,6 @@ app_name = 'utils'
 
 urlpatterns = [      
     path('pdf/<int:pk>', views.PDF.as_view(), name='pdf'),
-    path('print/<int:pk>', views.printTicket.as_view(), name='print'),
     path('cotation_reduction/<str:percentual>', views.PercentualReductionCotation.as_view(), name='cotation_reduction'),
     path('test_url/', views.TestJson.as_view(), name='test_url'),
 ]

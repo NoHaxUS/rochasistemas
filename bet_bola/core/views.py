@@ -397,6 +397,8 @@ class BetTicketDetail(TemplateResponseMixin, View):
 
 		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
 		content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
+		content += "<CENTER> APOSTA: R$" + str(ticket.value) + "<BR>"
+		content += "<CENTER> GANHO POSSÍVEL: R$" + str(ticket.reward.value) + "<BR>"
 
 		#if ticket.seller != None:
 		#	content += "<CENTER> COLABORADOR: " + ticket.seller.first_name
@@ -405,7 +407,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 		content += "<BR><BR>"
 
 		content += "<LEFT> APOSTAS <BR>"
-		content += "<CENTER>----------------------------------------------- <BR>"
+		content += "<LEFT>-------------------------------> <BR>"
 
 
 		for c in ticket.cotations.all():
@@ -417,10 +419,10 @@ class BetTicketDetail(TemplateResponseMixin, View):
 			if c.game.odds_calculated:
 				content += "<RIGHT> Status: Em Aberto"
 			else:
-				content += "<RIGHT> Status: Fechado - " + ("Venceu" if c.winning else "Perdeu") + "<BR>"
+				content += "<RIGHT> Status: " + ("Venceu" if c.winning else "Perdeu") + "<BR>"
 			
-			content += "<CENTER> ----------------------------------------------- <BR>"
-			content += "<CENTER> BET BOLA"
+			content += "<CENTER> -------------------------------> <BR>"
+		content += "<LEFT> MESTRE DA BOLA"
 		
 		content = urllib.parse.urlparse(content).geturl()
 

@@ -9,44 +9,6 @@ from core.models import BetTicket,Cotation
 from fpdf import FPDF
 import urllib
 
-class printTicket(View):
-	def get(self, request, *args, **kwargs):
-
-		ticket = get_object_or_404(BetTicket, pk=self.kwargs["pk"])
-		date = timezone.localtime(ticket.creation_date).strftime('%d/%m/%Y %H:%M')
-
-		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
-		content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
-
-		if ticket.payment.who_set_payment != None:
-			content += "<CENTER> COLABORADOR: " + ticket.payment.who_set_payment.first_name
-
-		content += "<CENTER> DATA: " + date
-		content += "<BR><BR>"
-
-		content += "<LEFT> APOSTAS <BR>"
-		content += "<CENTER>----------------------------------------------- <BR>"
-
-		for c in ticket.cotations.all():
-			content += "<LEFT>" + c.game.name + "<BR>"
-			game_date = timezone.localtime(c.gamestart_game_date).strftime('%d/%m/%Y %H:%M')
-			content += "<LEFT>" + game_date + "<BR>"
-			content += "<LEFT>"+ c.kind + "<BR>"
-			content += "<LEFT>" + c.name + " --> " + str(c.value) + "<BR>"
-
-			if c.game.odds_calculated:
-				content += "<RIGHT> Status: Fechado - " + ("Venceu" if c.winning else "Perdeu") + "<BR>"
-			else:
-				content += "<RIGHT> Status: Em Aberto"				
-			
-			content += "<CENTER> ----------------------------------------------- <BR>"
-			content += "<CENTER> BET BOLA"
-
-		return render(request, "ticket.html", {'content': content})
-
-
-
-
 
 class PDF(View):
 	def get(self, request, *args, **kwargs):
@@ -66,10 +28,11 @@ class PDF(View):
 		string = 'CLIENTE: ' + ticket.user.first_name								
 		pdf.text(76,24,string)									
 		pdf.text(76,36, date)
-		if ticket.payment.who_set_payment != None:
-			string = 'COLABORADOR: ' +  ticket.payment.who_set_payment.first_name
-			#string = "COLABORADOR PABLO"
-			pdf.text(76,48,string)
+		pdf.text(76,48, "APOSTA: R$" + str(ticket.value) )
+		pdf.text(76,60, "GANHO POSSÍVEL: R$" + str(ticket.reward.value) )
+		#if ticket.payment.who_set_payment != None:
+		#	string = 'COLABORADOR: ' +  ticket.payment.who_set_payment.first_name
+		#	pdf.text(76,48,string)
 		pdf.text(4,76,'APOSTAS')		
 		pdf.text(0, 82,'--------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
 		h = 86
@@ -95,7 +58,7 @@ class PDF(View):
 			h=h+14
 			pdf.text(0,h,'---------------------------------------------------------------------------------------------------------------------------------------------------------')			
 
-		pdf.text(92,h+20,'Bet Bola')
+		pdf.text(70,h+20,'MESTRE DA BOLA')
 		buffer = pdf.output(dest='S').encode('latin-1')
 
 		response.write(buffer)
