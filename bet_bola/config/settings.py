@@ -91,7 +91,7 @@ DATABASES = {
     }
 }
 
-DATABASES_LOCAL = {
+DATABASES__ = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'bet_bola',

@@ -153,8 +153,8 @@ def consuming_cotation_api():
 									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
 					
 
-					if max_cotation_value and float(cotation['value']) > max_cotation_value:
-						c.update(value = max_cotation_value)						
+		#			if max_cotation_value and float(cotation['value']) > max_cotation_value:
+		#				c.update(value = max_cotation_value)						
 
 
 
