@@ -396,7 +396,10 @@ class BetTicketDetail(TemplateResponseMixin, View):
 		date = str(ticket.creation_date.date().day) + "/" + str(ticket.creation_date.date().month) + "/" + str(ticket.creation_date.date().year)
 
 		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
-		content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
+		if ticket.random_user:
+			content += "<CENTER> CLIENTE: " + ticket.random_user.first_name + "<BR>"
+		else:
+			content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
 		content += "<CENTER> APOSTA: R$" + str(ticket.value) + "<BR>"
 		content += "<CENTER> GANHO POSSÍVEL: R$" + str(ticket.reward.value) + "<BR>"
 

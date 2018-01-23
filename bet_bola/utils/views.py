@@ -24,18 +24,21 @@ class PDF(View):
 		pdf.set_font('DejaVu','',30)		
 		#pdf.set_text_color(105,105,105)
 		string = 'TICKET:' + str(ticket.pk)
-		pdf.text(76,12, string)		
-		string = 'CLIENTE: ' + ticket.user.first_name								
-		pdf.text(76,24,string)									
-		pdf.text(76,36, date)
-		pdf.text(76,48, "APOSTA: R$" + str(ticket.value) )
-		pdf.text(76,60, "GANHO POSSÍVEL: R$" + str(ticket.reward.value) )
+		pdf.text(65,12, string)
+		if ticket.random_user:
+			string = 'CLIENTE: ' + ticket.random_user.first_name
+		else:
+			string = 'CLIENTE: ' + ticket.user.first_name							
+		pdf.text(65,24,string)									
+		pdf.text(65,36, date)
+		pdf.text(65,48, "APOSTA: R$" + str(ticket.value) )
+		pdf.text(65,60, "GANHO POSSÍVEL: R$" + str(ticket.reward.value) )
 		#if ticket.payment.who_set_payment != None:
 		#	string = 'COLABORADOR: ' +  ticket.payment.who_set_payment.first_name
 		#	pdf.text(76,48,string)
-		pdf.text(4,76,'APOSTAS')		
-		pdf.text(0, 82,'--------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
-		h = 86
+		pdf.text(4,100,'APOSTAS')		
+		pdf.text(0, 105,'--------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
+		h = 110
 		
 		for c in ticket.cotations.all():
 			h=h+8
