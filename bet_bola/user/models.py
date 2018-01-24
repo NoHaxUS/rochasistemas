@@ -31,6 +31,18 @@ class Seller(CustomUser):
 		return self.first_name + ' ' + self.last_name
 	full_name.short_description = 'Nome Completo'
 
+	def actual_revenue(self):
+		from core.models import BetTicket
+		tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=self.pk, payment__seller_was_rewarded=False)
+		
+		revenue_total = 0
+		for ticket in tickets_revenue:
+			revenue_total += ticket.value
+		to_string = str(revenue_total)
+
+		return "R$ " + to_string
+	actual_revenue.short_description = 'Faturamento Total'
+
 	def is_seller(self):
 		return True
 

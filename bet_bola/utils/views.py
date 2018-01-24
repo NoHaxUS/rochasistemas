@@ -39,8 +39,8 @@ class PDF(View):
 			h=h+8
 			pdf.text(4,h,c.game.name)
 			h=h+14
-			#pdf.text(4,h, timezone.localtime(c.game.start_game_date).strftime('%d/%m/%Y %H:%M'))
-			pdf.text(4,h, c.game.start_game_date.strftime('%d/%m/%Y %H:%M'))
+			pdf.text(4,h, timezone.localtime(c.game.start_game_date).strftime('%d/%m/%Y %H:%M'))
+			#pdf.text(4,h, c.game.start_game_date.strftime('%d/%m/%Y %H:%M'))
 			h=h+14			
 			pdf.text(4,h,c.kind)
 			h=h+14

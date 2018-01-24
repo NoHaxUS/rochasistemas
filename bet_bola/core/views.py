@@ -193,7 +193,6 @@ class ResetRevenue(View):
 	
 		try:
 			seller = Seller.objects.get(pk=seller_id)
-			print(seller)
 			
 			dict_response = {'nome': seller.full_name(), 'cpf': seller.cpf, 
 				'telefone': seller.cellphone,'faturamento': revenue_total, 'status': 200}
@@ -379,8 +378,6 @@ class BetTicketDetail(TemplateResponseMixin, View):
 		ticket = get_object_or_404(BetTicket, pk=self.kwargs["pk"])
 
 
-		date = str(ticket.creation_date.date().day) + "/" + str(ticket.creation_date.date().month) + "/" + str(ticket.creation_date.date().year)
-
 		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
 		if ticket.random_user:
 			content += "<CENTER> CLIENTE: " + ticket.random_user.first_name + "<BR>"
@@ -388,8 +385,8 @@ class BetTicketDetail(TemplateResponseMixin, View):
 			content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
 		content += "<CENTER> APOSTA: R$" + str(ticket.value) + "<BR>"
 		content += "<CENTER> GANHO POSSÍVEL: R$" + str(ticket.reward.value) + "<BR>"
-
-		content += "<CENTER> DATA: " + date
+		
+		content += "<CENTER> DATA: " + timezone.localtime(ticket.creation_date).strftime('%d/%m/%Y %H:%M')
 		content += "<BR><BR>"
 
 		content += "<LEFT> APOSTAS <BR>"
@@ -398,7 +395,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 
 		for c in ticket.cotations.all():
 			content += "<LEFT>" + c.game.name + "<BR>"
-			game_date = str(c.game.start_game_date.date().day) +"/"+str(c.game.start_game_date.date().month)+"/"+str(c.game.start_game_date.date().day)+ " " +str(c.game.start_game_date.hour)+":"+str(c.game.start_game_date.minute)
+			game_date = timezone.localtime(c.game.start_game_date).strftime('%d/%m/%Y %H:%M')
 			content += "<LEFT>" + game_date + "<BR>"
 			content += "<LEFT>"+ c.kind + "<BR>"
 			content += "<LEFT>" + c.name + " --> " + str(round(c.value, 2)) + "<BR>"			
