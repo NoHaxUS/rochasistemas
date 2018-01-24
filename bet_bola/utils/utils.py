@@ -98,6 +98,7 @@ def consuming_game_api(first_date, second_date):
 					cadastros.append(g)
 
 		r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?page="+str((i+1))+"&api_token="+TOKEN+"&include=localTeam,visitorTeam")
+		
 	Game.objects.bulk_create(cadastros)
 
 
@@ -126,56 +127,64 @@ def consuming_cotation_api():
 			for cotation in kind['bookmaker']['data'][0]['odds']['data']:
 				if kind_name in MARKET_NAME.keys():
 					if kind_name == '3Way Result' and cotation['label'] in ['1','2','X']:
-						cotations = game.cotations.filter(kind=MARKET_NAME.setdefault(kind_name,kind_name))
-						if cotations.filter(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip()):
-							c = cotations.filter(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip())
-							c.update(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = True,
-								handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
+						c = game.cotations.filter(kind=MARKET_NAME.setdefault(kind_name,kind_name)).filter(name=renaming_cotations(cotation['label'],
+							" " if cotation['total'] == None else cotation['total']).strip())
+						if c:							
+							c.update(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),
+								value=cotation['value'],original_value=cotation['value'],game=game, is_standard = True,
+								handicap=cotation['handicap'], total=cotation['total'],
+								winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
+							
 							if max_cotation_value and float(cotation['value']) > max_cotation_value:
 								c.update(value = max_cotation_value)	
 
 						else:
 							c = Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = True,
 								handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
+							
 							if max_cotation_value and float(cotation['value']) > max_cotation_value:
 								c.value = max_cotation_value
 							cadastros.append(c)
 							
 							
 					else:
-
 						if kind_name == 'Result/Total Goals':
-							cotations = game.cotations.filter(kind=MARKET_NAME.setdefault(kind_name,kind_name))
-							if cotations.filter(name=renaming_cotations(cotation['label']," ").strip()):
-								c = cotations.filter(name=renaming_cotations(cotation['label']," ").strip())
+							c = game.cotations.filter(kind=MARKET_NAME.setdefault(kind_name,kind_name)).filter(name=renaming_cotations(cotation['label'],
+								" ").strip())
+							if c :								
 								c.update(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
 									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
+								
 								if max_cotation_value and float(cotation['value']) > max_cotation_value:
 									c.update(value = max_cotation_value)		
 
 							else:									
 								c = Cotation(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
 									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))								
+								
 								if max_cotation_value and float(cotation['value']) > max_cotation_value:
 									c.value = max_cotation_value
 								cadastros.append(c)
 
 								
 						else:									
-							cotations = game.cotations.filter(kind=MARKET_NAME.setdefault(kind_name,kind_name))
-							if cotations.filter(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip()).exists():
-								c = cotations.filter(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip())
+							c = game.cotations.filter(kind=MARKET_NAME.setdefault(kind_name,kind_name)).filter(name=renaming_cotations(cotation['label'],
+								" " if cotation['total'] == None else cotation['total']).strip())
+							if c:								
 								c.update(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
 									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
+								
 								if max_cotation_value and float(cotation['value']) > max_cotation_value:
 									c.update(value = max_cotation_value)		
 
 							else:
 								c = Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
 									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
+								
 								if max_cotation_value and float(cotation['value']) > max_cotation_value:
 									c.value = max_cotation_value
 								cadastros.append(c)
+	
 	Cotation.objects.bulk_create(cadastros)
 					
 					
