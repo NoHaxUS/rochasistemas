@@ -75,25 +75,27 @@ def consuming_game_api(first_date, second_date):
 	for i in range(1, r.json().get('meta')['pagination']['total_pages']):			
 
 		for game in r.json().get('data'):					
-			if Championship(pk = game['league_id']) in Championship.objects.all():
+			if Championship.objects.filter(pk = game['league_id']):
 				if Game(pk = game["id"]) in Game.objects.all():
-					g = Game.objects.get(pk = game['id'])
-					g.status_game = game['time']['status']
-					g.local_team_score=game['scores']['localteam_score']
-					g.visitor_team_score=game['scores']['visitorteam_score']
-					g.ht_score=game['scores']['ht_score']
-					g.ft_score=game['scores']['ft_score']
-					g.odds_calculated=game['winning_odds_calculated']
-					g.save()
+					Game.objects.filter(pk = game['id']).update(
+					status_game=game['time']['status'],
+					local_team_score=game['scores']['localteam_score'],
+					visitor_team_score=game['scores']['visitorteam_score'],
+					ht_score=game['scores']['ht_score'],
+					ft_score=game['scores']['ft_score'],
+					odds_calculated=game['winning_odds_calculated'],
+					start_game_date=datetime.strptime(game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S")
+					)
 					
 				else:
-					Game(pk=game['id'],
-						start_game_date=datetime.strptime(game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
-						name=game['localTeam']['data']['name']+" x " +game['visitorTeam']['data']['name'], 
-						championship=Championship.objects.get(pk=game["league_id"]), status_game=game['time']["status"],
-						local_team_score=game['scores']['localteam_score'], visitor_team_score=game['scores']['visitorteam_score'],
-						ht_score=game['scores']['ht_score'],ft_score=game['scores']['ft_score'],
-						odds_calculated=game['winning_odds_calculated']).save() 
+					g = Game(pk=game['id'],
+							start_game_date=datetime.strptime(game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
+							name=game['localTeam']['data']['name']+" x " +game['visitorTeam']['data']['name'], 
+							championship=Championship.objects.get(pk=game["league_id"]), status_game=game['time']["status"],
+							local_team_score=game['scores']['localteam_score'], visitor_team_score=game['scores']['visitorteam_score'],
+							ht_score=game['scores']['ht_score'],ft_score=game['scores']['ft_score'],
+							odds_calculated=game['winning_odds_calculated'])
+					cadastros.append(g)
 
 		r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?page="+str((i+1))+"&api_token="+TOKEN+"&include=localTeam,visitorTeam&tz=America/Santarem")
 
@@ -103,10 +105,13 @@ def consuming_championship_api():
 	r = requests.get("https://soccer.sportmonks.com/api/v2.0/leagues/?api_token="+TOKEN + "&include=country&tz=America/Santarem")
 	
 	for championship in r.json().get('data'):
-		Championship(pk=championship['id'],name = championship['name'],country = championship['country']['data']['name']).save()	
-
+		if not Championship.objects.filter(pk = championship['id']):
+			c = Championship(pk=championship['id'],name = championship['name'],country = championship['country']['data']['name'])
+			cadastros.append(c)
+	Championship.objects.bulk_create(cadastros)
 
 def consuming_cotation_api():	
+	cadastros = []
 	max_cotation_value = None
 	if GeneralConfigurations.objects.filter(pk=1):
 		max_cotation_value = GeneralConfigurations.objects.get(pk=1).max_cotation_value
@@ -118,71 +123,96 @@ def consuming_cotation_api():
 			kind_name = kind['name']				
 			for cotation in kind['bookmaker']['data'][0]['odds']['data']:
 				if kind_name in MARKET_NAME.keys():
-					if kind_name == '3Way Result':
-						cotations = game.cotations.all().filter(kind=MARKET_NAME.setdefault(kind_name,kind_name))
-						if cotations.filter(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip()).exists():
-							c = cotations.filter(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip())
-							c.update(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = True,
-								handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
+					if kind_name == '3Way Result' and cotation['label'] in ['1','2','X']:
+						c = game.cotations.filter(kind=MARKET_NAME.setdefault(kind_name,kind_name)).filter(name=renaming_cotations(cotation['label'],
+							" " if cotation['total'] == None else cotation['total']).strip())
+						if c:							
+							c.update(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),
+								value=cotation['value'],original_value=cotation['value'],game=game, is_standard = True,
+								handicap=cotation['handicap'], total=cotation['total'],
+								winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
+							
+							if max_cotation_value and float(cotation['value']) > max_cotation_value:
+								c.update(value = max_cotation_value)	
+
 						else:
-							c = Cotation.objects.create(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = True,
+							c = Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = True,
 								handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
+							
+							if max_cotation_value and float(cotation['value']) > max_cotation_value:
+								c.value = max_cotation_value
+							cadastros.append(c)
 							
 							
 					else:
-
 						if kind_name == 'Result/Total Goals':
-							cotations = game.cotations.all().filter(kind=MARKET_NAME.setdefault(kind_name,kind_name))
-							if cotations.filter(name=renaming_cotations(cotation['label']," ").strip()).exists():
-								c = cotations.filter(name=renaming_cotations(cotation['label']," ").strip())
+							c = game.cotations.filter(kind=MARKET_NAME.setdefault(kind_name,kind_name)).filter(name=renaming_cotations(cotation['label'],
+								" ").strip())
+							if c :								
 								c.update(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
 									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
+								
+								if max_cotation_value and float(cotation['value']) > max_cotation_value:
+									c.update(value = max_cotation_value)		
+
 							else:									
-								c = Cotation.objects.create(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
+								c = Cotation(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
 									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))								
+								
+								if max_cotation_value and float(cotation['value']) > max_cotation_value:
+									c.value = max_cotation_value
+								cadastros.append(c)
 
 								
 						else:									
-							cotations = game.cotations.all().filter(kind=MARKET_NAME.setdefault(kind_name,kind_name))
-							if cotations.filter(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip()).exists():
-								c = cotations.filter(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip())
+							c = game.cotations.filter(kind=MARKET_NAME.setdefault(kind_name,kind_name)).filter(name=renaming_cotations(cotation['label'],
+								" " if cotation['total'] == None else cotation['total']).strip())
+							if c:								
 								c.update(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
 									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
-							else:
-								c = Cotation.objects.create(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
-									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
-					
+								
+								if max_cotation_value and float(cotation['value']) > max_cotation_value:
+									c.update(value = max_cotation_value)		
 
-		#			if max_cotation_value and float(cotation['value']) > max_cotation_value:
-		#				c.update(value = max_cotation_value)						
+							else:
+								c = Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
+									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
+								
+								if max_cotation_value and float(cotation['value']) > max_cotation_value:
+									c.value = max_cotation_value
+								cadastros.append(c)
+	
+	Cotation.objects.bulk_create(cadastros)
+					
+					
 
 
 
 
 def processing_cotations():
-	for game in Game.objects.all().filter(status_game='FT'):			
+	for game in Game.objects.filter(status_game='FT'):			
 		print(game.pk, game.name)
 		#dento do if só entra games q tenham os dados do score ok
 		try:
 			if game.is_able():							
 				#nesse conjunto de if,elif e else são processados 4 markets			
 				#Vencedor do Encontro, Casa/Visitante, Dupla Chance,Vencedor Não tomará Gol(s) 		
-				cotations = game.cotations.all().filter(kind='Vencedor do Encontro') 
+				cotations = game.cotations.filter(kind='Vencedor do Encontro') 
 				if game.visitor_team_score > game.local_team_score:					
 					cotations.update(winning=False)									
 					c2 = cotations.filter(name='2')					
 					c2.update(winning= True)					
-					cotations = game.cotations.all().filter(kind='Casa/Visitante')
+					cotations = game.cotations.filter(kind='Casa/Visitante')
 					cotations.filter(name='1').update(winning=False)
 					cotations.filter(name='2').update(winning=True)					
-					if game.cotations.all().filter(kind='Dupla Chance').count()>0:
-						cotations = game.cotations.all().filter(kind='Dupla Chance')
+					if game.cotations.filter(kind='Dupla Chance').count()>0:
+						cotations = game.cotations.filter(kind='Dupla Chance')
 						cotations.update(winning=True)					
 						cotations.filter(name='Casa/Empate').update(winning=False)
 						
 
-					if game.cotations.all().filter(kind='Vencedor Não tomará Gol(s)').count()>0:
-						cotations = game.cotations.all().filter(kind='Vencedor Não tomará Gol(s)')
+					if game.cotations.filter(kind='Vencedor Não tomará Gol(s)').count()>0:
+						cotations = game.cotations.filter(kind='Vencedor Não tomará Gol(s)')
 						cotations.update(winning=True)
 						if game.local_team_score > 0:
 							cotations.filter(name='2').update(winning=True)							
@@ -191,17 +221,17 @@ def processing_cotations():
 				elif game.visitor_team_score < game.local_team_score:
 					cotations.update(winning=False)
 					cotations.filter(name='1').update(winning=True)					
-					cotations = game.cotations.all().filter(kind='Casa/Visitante')
+					cotations = game.cotations.filter(kind='Casa/Visitante')
 					cotations.filter(name='1').update(winning=True)
 					cotations.filter(name='2').update(winning=False)
 					
-					if game.cotations.all().filter(kind='Dupla Chance').count()>0:
-						cotations = game.cotations.all().filter(kind='Dupla Chance')					
+					if game.cotations.filter(kind='Dupla Chance').count()>0:
+						cotations = game.cotations.filter(kind='Dupla Chance')					
 						cotations.update(winning=True)
 						cotations.filter(name='Empate/Visitante').update(winning=False)						
 
-					if game.cotations.all().filter(kind='Vencedor Não tomará Gol(s)').count()>0:
-						cotations = game.cotations.all().filter(kind='Vencedor Não tomará Gol(s)')
+					if game.cotations.filter(kind='Vencedor Não tomará Gol(s)').count()>0:
+						cotations = game.cotations.filter(kind='Vencedor Não tomará Gol(s)')
 						cotations.update(winning=True)
 						if game.visitor_team_score > 0:
 							cotations.filter(name='1').update(winning=True)							
@@ -209,17 +239,17 @@ def processing_cotations():
 				else:
 					cotations.update(winning=False)					
 					cotations.filter(name='X').update(winning=True)															
-					cotations = game.cotations.all().filter(kind='Casa/Visitante')
+					cotations = game.cotations.filter(kind='Casa/Visitante')
 					cotations.filter(name='1').update(winning=False)
 					cotations.filter(name='2').update(winning=False)									
-					if game.cotations.all().filter(kind='Dupla Chance').count()>0:
-						cotations = game.cotations.all().filter(kind='Dupla Chance')
+					if game.cotations.filter(kind='Dupla Chance').count()>0:
+						cotations = game.cotations.filter(kind='Dupla Chance')
 						cotations.update(winning=True)
 						c = cotations.filter(name='Casa/Visitante').update(winning=False)
 						
 				#dentro desse if é tradado o market Etapa com Mais Gol(s)
-				if game.cotations.all().filter(kind='Etapa com Mais Gol(s)').count()>0:
-					cotations = game.cotations.all().filter(kind='Etapa com Mais Gol(s)')
+				if game.cotations.filter(kind='Etapa com Mais Gol(s)').count()>0:
+					cotations = game.cotations.filter(kind='Etapa com Mais Gol(s)')
 					result_1_etapa = int(game.ht_score.split('-')[0]) +  int(game.ht_score.split('-')[1])
 					result_2_etapa = (int(game.ft_score.split('-')[0]) - int(game.ht_score.split('-')[0])) + (int(game.ft_score.split('-')[1]) - int(game.ht_score.split('-')[1]))
 					if result_1_etapa > result_2_etapa:
@@ -235,10 +265,10 @@ def processing_cotations():
 						cotations.filter(name='X').update(winning=True)						
 
 				#dentro desse if é tradado o market Vencendor nas Duas Etapas								
-				if game.cotations.all().filter(kind='Vencedor nas Duas Etapas').count()>0:
+				if game.cotations.filter(kind='Vencedor nas Duas Etapas').count()>0:
 					result_1_etapa = int(game.ht_score.split('-')[0]) - int(game.ht_score.split('-')[1])
 					result_2_etapa = int(game.ft_score.split('-')[0]) - int(game.ft_score.split('-')[1])
-					cotations = game.cotations.all().filter(kind='Vencedor nas Duas Etapas')
+					cotations = game.cotations.filter(kind='Vencedor nas Duas Etapas')
 					if result_1_etapa > 0 and result_2_etapa > 0:			
 						cotations.filter(name='1').update(winning=True)
 						c1 = cotations.filter(name='2').update(winning=False)				
@@ -252,9 +282,9 @@ def processing_cotations():
 						cotations.filter(name='2').update(winning=False)
 
 				#dentro desse if é tradado o market Número Exato de Gol(s)
-				if game.cotations.all().filter(kind='Número Exato de Gol(s)').count()>0:
+				if game.cotations.filter(kind='Número Exato de Gol(s)').count()>0:
 					result = int(game.ft_score.split('-')[0]) + int(game.ft_score.split('-')[1])
-					cotations = game.cotations.all().filter(kind='Número Exato de Gol(s)')
+					cotations = game.cotations.filter(kind='Número Exato de Gol(s)')
 					
 					if result >= 7:
 						cotations.update(winning=False)
@@ -266,10 +296,10 @@ def processing_cotations():
 						
 
 				#dentro desse if é tradado o market Intervalo/Final de Jogo
-				if game.cotations.all().filter(kind='Intervalo/Final de Jogo').count()>0:
+				if game.cotations.filter(kind='Intervalo/Final de Jogo').count()>0:
 					result_1_etapa = int(game.ht_score.split('-')[0]) - int(game.ht_score.split('-')[1])
 					result_2_etapa = int(game.ft_score.split('-')[0]) - int(game.ft_score.split('-')[1])
-					cotations = game.cotations.all().filter(kind='Intervalo/Final de Jogo')
+					cotations = game.cotations.filter(kind='Intervalo/Final de Jogo')
 					localTeam = game.name.split('x')[0].strip()
 					visitorTeam = game.name.split('x')[1].strip()
 
@@ -336,8 +366,8 @@ def processing_cotations():
 							
 
 				#dentro desse if é tradado 2 markets Resultado/2 Times Marcam e Resultado/Total de Gol(s)
-				if game.cotations.all().filter(kind='Resultado/2 Times Marcam').count()>0:
-					cotations = game.cotations.all().filter(kind='Resultado/2 Times Marcam')
+				if game.cotations.filter(kind='Resultado/2 Times Marcam').count()>0:
+					cotations = game.cotations.filter(kind='Resultado/2 Times Marcam')
 					result = int(game.ft_score.split('-')[0]) - int(game.ft_score.split('-')[1])
 					if result > 0:
 						if game.local_team_score > 0 and game.visitor_team_score > 0:						
@@ -349,8 +379,8 @@ def processing_cotations():
 							cotations.filter(name="Casa/Não").update(winning=True)
 							
 						
-						if game.cotations.all().filter(kind="Resultado/Total de Gol(s)").count()>0:
-								cotations = game.cotations.all().filter(kind="Resultado/Total de Gol(s)")			
+						if game.cotations.filter(kind="Resultado/Total de Gol(s)").count()>0:
+								cotations = game.cotations.filter(kind="Resultado/Total de Gol(s)")			
 								cotations.update(winning=False)					
 								for c in cotations.filter(name="Casa/Acima"):
 									if c.total < int(game.ft_score.split('-')[0]) + int(game.ft_score.split('-')[1]):										
@@ -371,8 +401,8 @@ def processing_cotations():
 							cotations.update(winning=False)
 							cotations.filter(name="Visitante/Não").update(winning=True)							
 
-						if game.cotations.all().filter(kind="Resultado/Total de Gol(s)").count()>0:
-								cotations = game.cotations.all().filter(kind="Resultado/Total de Gol(s)")			
+						if game.cotations.filter(kind="Resultado/Total de Gol(s)").count()>0:
+								cotations = game.cotations.filter(kind="Resultado/Total de Gol(s)")			
 								cotations.update(winning=False)					
 								for c in cotations.filter(name="Visitante/Acima"):
 									if c.total < int(game.ft_score.split('-')[0]) + int(game.ft_score.split('-')[1]):										
@@ -393,8 +423,8 @@ def processing_cotations():
 							cotations.update(winning=False)
 							cotations.filter(name="Empate/Não").update(winning=True)							
 							
-						if game.cotations.all().filter(kind="Resultado/Total de Gol(s)").count()>0:
-								cotations = game.cotations.all().filter(kind="Resultado/Total de Gol(s)")			
+						if game.cotations.filter(kind="Resultado/Total de Gol(s)").count()>0:
+								cotations = game.cotations.filter(kind="Resultado/Total de Gol(s)")			
 								cotations.update(winning=False)					
 								for c in cotations.filter(name="Empate/Acima"):
 									if c.total < int(game.ft_score.split('-')[0]) + int(game.ft_score.split('-')[1]):										
