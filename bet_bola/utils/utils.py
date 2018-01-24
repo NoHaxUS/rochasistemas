@@ -69,7 +69,7 @@ def renaming_cotations(string, total):
 
 def consuming_game_api(first_date, second_date):
 
-	url_request = "https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?api_token="+TOKEN+"&include=localTeam,visitorTeam&tz=America/Sao_Paulo"
+	url_request = "https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?api_token="+TOKEN+"&include=localTeam,visitorTeam&tz=America/Santarem"
 	r = requests.get(url_request)
 
 	for i in range(1, r.json().get('meta')['pagination']['total_pages']):			
@@ -95,12 +95,12 @@ def consuming_game_api(first_date, second_date):
 						ht_score=game['scores']['ht_score'],ft_score=game['scores']['ft_score'],
 						odds_calculated=game['winning_odds_calculated']).save() 
 
-		r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?page="+str((i+1))+"&api_token="+TOKEN+"&include=localTeam,visitorTeam&tz=America/Sao_Paulo")
+		r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?page="+str((i+1))+"&api_token="+TOKEN+"&include=localTeam,visitorTeam&tz=America/Santarem")
 
 
 
 def consuming_championship_api():
-	r = requests.get("https://soccer.sportmonks.com/api/v2.0/leagues/?api_token="+TOKEN + "&include=country&tz=America/Sao_Paulo")
+	r = requests.get("https://soccer.sportmonks.com/api/v2.0/leagues/?api_token="+TOKEN + "&include=country&tz=America/Santarem")
 	
 	for championship in r.json().get('data'):
 		Championship(pk=championship['id'],name = championship['name'],country = championship['country']['data']['name']).save()	
@@ -112,7 +112,7 @@ def consuming_cotation_api():
 		max_cotation_value = GeneralConfigurations.objects.get(pk=1).max_cotation_value
 
 	for game in Game.objects.all():
-		r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN+"&tz=America/Sao_Paulo")			
+		r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN+"&tz=America/Santarem")			
 		# r = requests.get("http://localhost:8000/utils/test_url/")							
 		for kind in r.json().get('data'):
 			kind_name = kind['name']				
