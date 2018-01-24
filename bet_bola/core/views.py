@@ -295,27 +295,17 @@ class CreateTicketView(View):
 			client_name = request.POST.get('nome')
 			cellphone = request.POST.get('telefone')
 
-
 			from user.models import GeneralConfigurations
+			
 			try:
 				
 				general_config = GeneralConfigurations.objects.get(pk=1)
-				if general_config.max_reward_to_pay:
-					max_reward_to_pay = general_config.max_reward_to_pay
-				else:
-					max_reward_to_pay = 100000.0
-				if general_config.min_number_of_choices_per_bet:
-					min_number_of_choices_per_bet = general_config.min_number_of_choices_per_bet
-				else:
-					min_number_of_choices_per_bet = 1
-
-				if general_config.min_bet_value:
-					min_bet_value = general_config.min_bet_value
-				else:
-					min_bet_value = 1
+				max_reward_to_pay = general_config.max_reward_to_pay
+				min_number_of_choices_per_bet = general_config.min_number_of_choices_per_bet
+				min_bet_value = general_config.min_bet_value
 
 			except GeneralConfigurations.DoesNotExist:
-				max_reward_to_pay = 100000.0
+				max_reward_to_pay = 50000
 				min_number_of_choices_per_bet = 1
 				min_bet_value = 1
 					
