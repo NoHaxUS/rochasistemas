@@ -1,5 +1,6 @@
 from django import template
 from django.template import Library
+from django.conf import settings
 
 register = template.Library()
 
@@ -16,3 +17,8 @@ def order_by(queryset, args):
 @register.filter(name='get_item')
 def get_item(dictionary, key):
 	return dictionary.get(key,key)
+
+
+@register.simple_tag
+def app_name():
+    return settings.APP_VERBOSE_NAME

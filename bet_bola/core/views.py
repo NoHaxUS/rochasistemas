@@ -8,12 +8,9 @@ from django.views.generic.list import ListView
 from django.views.generic.base import TemplateResponseMixin
 from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
-from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
-import datetime
 from .models import Cotation,BetTicket,Game,Championship,Payment,Reward
 from user.models import Punter,Seller
-from .forms import BetTicketForm
 from django.core import serializers
 from django.conf import settings
 from user.models import CustomUser, RandomUser
@@ -251,8 +248,7 @@ class CotationsView(View):
 class BetView(View):
 
 	def post(self, request, *args, **kwargs):
-		#return HttpResponse(request.POST['game_id'])
-		#request.session.flush()
+
 		if 'ticket' not in request.session:
 			request.session['ticket'] = {}
 			request.session['ticket'][request.POST['game_id']] = request.POST['cotation_id']
@@ -403,9 +399,6 @@ class BetTicketDetail(TemplateResponseMixin, View):
 		content += "<CENTER> APOSTA: R$" + str(ticket.value) + "<BR>"
 		content += "<CENTER> GANHO POSSÍVEL: R$" + str(ticket.reward.value) + "<BR>"
 
-		#if ticket.seller != None:
-		#	content += "<CENTER> COLABORADOR: " + ticket.seller.first_name
-
 		content += "<CENTER> DATA: " + date
 		content += "<BR><BR>"
 
@@ -425,7 +418,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 				content += "<RIGHT> Status: " + ("Venceu" if c.winning else "Perdeu") + "<BR>"
 			
 			content += "<CENTER> -------------------------------> <BR>"
-		content += "<LEFT> MESTRE DA BOLA"
+		content += "<LEFT> "+ settings.APP_VERBOSE_NAME
 		
 		content = urllib.parse.urlparse(content).geturl()
 
