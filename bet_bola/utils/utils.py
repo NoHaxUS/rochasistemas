@@ -4,7 +4,6 @@ from core.models import *
 from user.models import GeneralConfigurations
 import requests
 
-#TOKEN='OOabOgBw4awrsYQ51DIWz3i4ILKWxBAXqLQI5b01xzZuoKhyBHCcdINUbIeM'
 TOKEN='DLHVB3IPJuKN8dxfV5ju0ajHqxMl4zx91u5zxOwLS8rHd5w6SjJeLEOaHpR5'
 
 MARKET_NAME = {
@@ -69,7 +68,7 @@ def renaming_cotations(string, total):
 
 def consuming_game_api(first_date, second_date):
 	cadastros = []
-	url_request = "https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?api_token="+TOKEN+"&include=localTeam,visitorTeam"
+	url_request = "https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?api_token="+TOKEN+"&include=localTeam,visitorTeam&tz=America/Santarem"
 	r = requests.get(url_request)
 
 	for i in range(1, r.json().get('meta')['pagination']['total_pages']):			
@@ -97,14 +96,14 @@ def consuming_game_api(first_date, second_date):
 							odds_calculated=game['winning_odds_calculated'])
 					cadastros.append(g)
 
-		r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?page="+str((i+1))+"&api_token="+TOKEN+"&include=localTeam,visitorTeam")
+		r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?page="+str((i+1))+"&api_token="+TOKEN+"&include=localTeam,visitorTeam&tz=America/Santarem")
 		
 	Game.objects.bulk_create(cadastros)
 
 
 def consuming_championship_api():
 	cadastros = []
-	r = requests.get("https://soccer.sportmonks.com/api/v2.0/leagues/?api_token="+TOKEN + "&include=country")
+	r = requests.get("https://soccer.sportmonks.com/api/v2.0/leagues/?api_token="+TOKEN + "&include=country&tz=America/Santarem")
 	
 	for championship in r.json().get('data'):
 		if not Championship.objects.filter(pk = championship['id']):
@@ -120,7 +119,7 @@ def consuming_cotation_api():
 
 	for game in Game.objects.all():		
 
-		r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN)			
+		r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN+"&tz=America/Santarem")	
 		# r = requests.get("http://localhost:8000/utils/test_url/")							
 		for kind in r.json().get('data'):
 			kind_name = kind['name']				
