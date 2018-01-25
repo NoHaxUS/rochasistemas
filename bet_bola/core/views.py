@@ -59,7 +59,7 @@ class Home(TemplateResponseMixin, View):
 		championships = list()
 		country = list()
 
-		dict_championship_games = None
+		#dict_championship_games = None
 		dict_championship_games = {}
 		
 		for i in Championship.objects.all():
