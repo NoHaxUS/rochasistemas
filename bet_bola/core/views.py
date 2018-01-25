@@ -53,24 +53,29 @@ COUNTRY_TRANSLATE = {
 
 class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'
-	dict_championship_games = {}
 
 
 	def get(self, request, *args, **kwargs):
 		championships = list()
 		country = list()
+
+		dict_championship_games = None
+		dict_championship_games = {}
 		
 		for i in Championship.objects.all():
 			if i.my_games.able_games().count() > 0:
 				championships.append(i)
 				if i.my_games.today_able_games().count() > 0:
+
 					game_set = Game.objects.today_able_games().filter(championship=i)
-					game_set.exists()
-					self.dict_championship_games[i] = game_set			
+					len(game_set)
+					dict_championship_games[i] = game_set
+
 				if i.country not in country:					
 					country.append(i.country)
 
 		is_seller = None
+
 		if request.user.is_authenticated:
 			try:
 				seller = Seller.objects.get(pk=int(request.user.pk))
@@ -78,7 +83,7 @@ class Home(TemplateResponseMixin, View):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'dict_championship_games': self.dict_championship_games ,'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
+		context = {'dict_championship_games': dict_championship_games ,'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
 		
 
 		return self.render_to_response(context)
