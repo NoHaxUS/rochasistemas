@@ -23,7 +23,7 @@ GamesManager = GamesQuerySet.as_manager
 class CotationsQuerySet(QuerySet):
 
 	def standard_cotations(self):
-		return self.all().filter(is_standard = True)
+		return self.filter(is_standard = True)
 
 
 CotationsManager = CotationsQuerySet.as_manager		

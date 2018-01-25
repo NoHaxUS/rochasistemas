@@ -64,7 +64,9 @@ class Home(TemplateResponseMixin, View):
 			if i.my_games.able_games().count() > 0:
 				championships.append(i)
 				if i.my_games.today_able_games().count() > 0:
-					self.dict_championship_games[i] = Game.objects.today_able_games().filter(championship=i)				
+					game_set = Game.objects.today_able_games().filter(championship=i)
+					game_set.exists()
+					self.dict_championship_games[i] = game_set			
 				if i.country not in country:					
 					country.append(i.country)
 
