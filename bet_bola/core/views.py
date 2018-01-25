@@ -58,8 +58,6 @@ class Home(TemplateResponseMixin, View):
 	def get(self, request, *args, **kwargs):
 		championships = list()
 		country = list()
-
-		#dict_championship_games = None
 		dict_championship_games = {}
 		
 		for i in Championship.objects.all():
@@ -68,7 +66,7 @@ class Home(TemplateResponseMixin, View):
 				if i.my_games.today_able_games().count() > 0:
 
 					game_set = Game.objects.today_able_games().filter(championship=i)
-					len(game_set)
+					#len(game_set)
 					dict_championship_games[i] = game_set
 
 				if i.country not in country:					
