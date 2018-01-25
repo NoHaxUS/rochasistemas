@@ -8,5 +8,5 @@ def get_timezone():
     return pytz.timezone(settings.TIME_ZONE_LOCAL)
 
 def now():
-    timezone = get_timezone()
-    return datetime.now(timezone).replace(tzinfo=timezone.utc)
+    local_timezone = get_timezone()
+    return datetime.now(local_timezone).replace(tzinfo=timezone.utc)
