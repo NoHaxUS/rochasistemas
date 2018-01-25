@@ -1,5 +1,5 @@
 import pytz
-from datetime import datetime
+from datetime import datetime, timezone
 import functools
 from django.conf import settings
 
@@ -9,4 +9,4 @@ def get_timezone():
 
 def now():
     timezone = get_timezone()
-    return datetime.now(timezone)
+    return datetime.now(timezone).replace(tzinfo=timezone.utc)
