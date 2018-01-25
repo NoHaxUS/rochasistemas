@@ -9,10 +9,10 @@ class GamesQuerySet(QuerySet):
 
 
 	def able_games(self):
-		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(status_game="NS").filter(start_game_date__gte=tzlocal.now())
+		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(status_game="NS").filter(start_game_date__gt=tzlocal.now())
 
 	def today_able_games(self):
-		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(status_game="NS").filter(start_game_date__gte=tzlocal.now()).filter(start_game_date__lte=(tzlocal.now() + timezone.timedelta(days=1)) )
+		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(status_game="NS").filter(start_game_date__gt=tzlocal.now()).filter(start_game_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)) )
 
 	def tomorrow_able_games(self):
 		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(status_game="NS").filter(start_game_date__date=tzlocal.now().date() + timezone.timedelta(days=1) )
