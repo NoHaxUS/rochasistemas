@@ -406,7 +406,7 @@
                     </ul>
                 </div>
 
-                <div class="col s12 l8">                               
+                <div class="col s12 l8">                          
                 {% for championship in dict_championship_games.keys %}                     
                     <!-- Bets collection-->
                     <div class="games-table-container">
@@ -458,7 +458,9 @@
                                     {% endfor %}                                
                             </tbody>                            
                         </table>
-                    </div>                    
+                    </div>
+                    {% empty %}
+                        Todos os jogos do dia disponíveis já começaram ou terminaram.               
                     {%endfor%}
                 </div>                                
                 <div class="col s2 hide-on-med-and-down hoverable white">

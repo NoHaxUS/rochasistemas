@@ -15,7 +15,6 @@ from django.conf import settings
 from user.models import CustomUser, RandomUser
 import json
 import urllib
-from django.utils import timezone
 import utils.timezone as tzlocal
 
 COUNTRY_TRANSLATE = {
@@ -66,7 +65,7 @@ class Home(TemplateResponseMixin, View):
 				if i.my_games.today_able_games().count() > 0:
 
 					game_set = Game.objects.today_able_games().filter(championship=i)
-					#len(game_set)
+					
 					dict_championship_games[i] = game_set
 
 				if i.country not in country:					
@@ -322,6 +321,7 @@ class CreateTicketView(View):
 			ticket = BetTicket(
 				user=CustomUser.objects.get(pk=request.user.pk),
 				value=ticket_bet_value,
+				creation_date = tzlocal.now(),
 				payment=Payment.objects.create(payment_date=None), 
 				reward=Reward.objects.create(reward_date=None),				
 				)
@@ -389,7 +389,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 		content += "<CENTER> APOSTA: R$" + str(ticket.value) + "<BR>"
 		content += "<CENTER> GANHO POSSÍVEL: R$" + str(ticket.reward.value) + "<BR>"
 		
-		content += "<CENTER> DATA: " + timezone.localtime(ticket.creation_date).strftime('%d/%m/%Y %H:%M')
+		content += "<CENTER> DATA: " + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
 		content += "<BR><BR>"
 
 		content += "<LEFT> APOSTAS <BR>"
@@ -398,7 +398,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 
 		for c in ticket.cotations.all():
 			content += "<LEFT>" + c.game.name + "<BR>"
-			game_date = timezone.localtime(c.game.start_game_date).strftime('%d/%m/%Y %H:%M')
+			game_date = c.game.start_game_date.strftime('%d/%m/%Y %H:%M')
 			content += "<LEFT>" + game_date + "<BR>"
 			content += "<LEFT>"+ c.kind + "<BR>"
 			content += "<LEFT>" + c.name + " --> " + str(round(c.value, 2)) + "<BR>"			
@@ -429,7 +429,7 @@ class ValidateTicket(View):
 			if ticket_queryset.exists():
 				can_validate = True
 				for cotation in ticket_queryset.first().cotations.all():
-					if cotation.game.start_game_date < timezone.now():
+					if cotation.game.start_game_date < tzlocal.now():
 						can_validate = False
 				if can_validate:
 					ticket_queryset.first().ticket_valid(request.user)
