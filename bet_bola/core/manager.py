@@ -12,7 +12,7 @@ class GamesQuerySet(QuerySet):
 		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(status_game="NS").filter(start_game_date__gte=timezone.now())
 
 	def today_able_games(self):
-		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(status_game="NS").filter(start_game_date__gte=timezone.localtime(timezone.now())).filter(start_game_date__lte=(timezone.localtime(timezone.now()) + timezone.timedelta(days=1)).date() )
+		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(status_game="NS").filter(start_game_date__gte=timezone.now()).filter(start_game_date__lte=(timezone.now() + timezone.timedelta(days=1)) )
 
 	def tomorrow_able_games(self):
 		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(status_game="NS").filter(start_game_date__date=timezone.now().date() + timezone.timedelta(days=1) )

@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
+DATABASES_ = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'db_mestredabola',
@@ -93,7 +93,7 @@ DATABASES = {
     }
 }
 
-DATABASES_ = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'bet_bola',
@@ -131,14 +131,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'America/Sao_Paulo'
-# #TIME_ZONE = 'America/Santarem'
+#TIME_ZONE = 'America/Sao_Paulo'
+TIME_ZONE = 'America/Santarem'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 #database configuration from env

@@ -1,5 +1,6 @@
 from core.models import Championship,Game,Cotation,BetTicket
 from datetime import datetime
+from django.utils import timezone
 from core.models import *
 from user.models import GeneralConfigurations
 import requests
@@ -34,8 +35,8 @@ MARKET_NAME = {
 
 
 def populating_bd(date):
-	first_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day) - 1)
-	second_date = str(datetime.now().year) + "-" +str(datetime.now().month) + "-" + str((datetime.now().day + date))
+	first_date = str(timezone.now().year) + "-" +str(timezone.now().month) + "-" + str((timezone.now().day) - 1)
+	second_date = str(timezone.now().year) + "-" +str(timezone.now().month) + "-" + str((timezone.now().day + date))
 
 	consuming_championship_api()
 	consuming_game_api(first_date,second_date)
