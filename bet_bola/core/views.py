@@ -7,7 +7,6 @@ from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.base import TemplateResponseMixin
 from django.http import HttpResponse, JsonResponse
-from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Cotation,BetTicket,Game,Championship,Payment,Reward
 from user.models import Punter,Seller
@@ -16,9 +15,8 @@ from django.conf import settings
 from user.models import CustomUser, RandomUser
 import json
 import urllib
-
-#import pdb; pdb.set_trace()
-# Create your views here.
+from django.utils import timezone
+import utils.timezone as tzlocal
 
 COUNTRY_TRANSLATE = {
 	"Austria":"Áustria",
@@ -51,9 +49,6 @@ COUNTRY_TRANSLATE = {
 	"Norway":"Noruega"
 
 }
-
-def get_time_now():
-	return timezone.now() - timezone.timedelta(hours=2)
 
 
 class Home(TemplateResponseMixin, View):
