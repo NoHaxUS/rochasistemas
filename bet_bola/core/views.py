@@ -52,6 +52,9 @@ COUNTRY_TRANSLATE = {
 
 }
 
+def get_time_now():
+	return timezone.now() - timezone.timedelta(hours=2)
+
 
 class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'
@@ -331,7 +334,7 @@ class CreateTicketView(View):
 				game_contation = None
 				try:
 					game_contation = Cotation.objects.get(pk=int(request.session['ticket'][game_id]))
-					if game_contation.game.start_game_date < timezone.now():
+					if game_contation.game.start_game_date < get_time_now():
 						return JsonResponse({'status':409})
 					game_cotations.append(game_contation)
 					cotation_sum *= game_contation.value
