@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
-APP_VERBOSE_NAME = 'Mestre da Bola'
+APP_VERBOSE_NAME = 'Esporte IP'
 
 
 # Application definition
@@ -82,18 +82,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
+DATABASES_ = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'db_mestredabola',
-        'USER': 'user_mestredabola',
-        'PASSWORD': '9Akb4RDAQXXmJH7Q',
+        'NAME': 'db_esporteip',
+        'USER': 'user_esporteip',
+        'PASSWORD': 'DxedULY9yrNd3F8N',
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
 
-DATABASES_ = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'bet_bola',
@@ -145,7 +145,7 @@ USE_TZ = False
 
 #statis files
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = '/home/mushzinho/webapps/static_mestredabola'
+STATIC_ROOT = '/home/mushzinho/webapps/static_esporteip'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
