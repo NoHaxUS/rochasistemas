@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
-APP_VERBOSE_NAME = 'Sorte Brasil'
+APP_VERBOSE_NAME = 'Bola na Rede'
 
 
 # Application definition
@@ -85,9 +85,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'db_sortebrasil',
-        'USER': 'user_sortebrasil',
-        'PASSWORD': 'jCwF8PkS6NUkBRYw',
+        'NAME': 'db_bolanarede',
+        'USER': 'user_bolanarede',
+        'PASSWORD': 'c4bQnZyBhkstDS56',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -145,7 +145,7 @@ USE_TZ = False
 
 #statis files
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = '/home/mushzinho/webapps/static_sortebrasil'
+STATIC_ROOT = '/home/mushzinho/webapps/static_bolanarede'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
