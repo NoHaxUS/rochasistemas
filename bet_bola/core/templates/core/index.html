@@ -460,7 +460,11 @@
                         </table>
                     </div>
                     {% empty %}
-                        Todos os jogos do dia disponíveis já começaram ou terminaram.               
+                    <div class="games-table-container">
+                        <div class="empty_game_set">
+                            Todos os jogos do dia disponíveis já começaram ou terminaram.
+                        </div>
+                    </div>               
                     {%endfor%}
                 </div>                                
                 <div class="col s2 hide-on-med-and-down hoverable white">
