@@ -7,7 +7,6 @@ from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.base import TemplateResponseMixin
 from django.http import HttpResponse, JsonResponse
-from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Cotation,BetTicket,Game,Championship,Payment,Reward
 from user.models import Punter,Seller
@@ -16,9 +15,7 @@ from django.conf import settings
 from user.models import CustomUser, RandomUser
 import json
 import urllib
-
-#import pdb; pdb.set_trace()
-# Create your views here.
+import utils.timezone as tzlocal
 
 COUNTRY_TRANSLATE = {
 	"Austria":"Áustria",
@@ -55,22 +52,27 @@ COUNTRY_TRANSLATE = {
 
 class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'
-	dict_championship_games = {}
 
 
 	def get(self, request, *args, **kwargs):
 		championships = list()
 		country = list()
+		dict_championship_games = {}
 		
 		for i in Championship.objects.all():
 			if i.my_games.able_games().count() > 0:
 				championships.append(i)
 				if i.my_games.today_able_games().count() > 0:
-					self.dict_championship_games[i] = Game.objects.today_able_games().filter(championship=i)				
+
+					game_set = Game.objects.today_able_games().filter(championship=i)
+					
+					dict_championship_games[i] = game_set
+
 				if i.country not in country:					
 					country.append(i.country)
 
 		is_seller = None
+
 		if request.user.is_authenticated:
 			try:
 				seller = Seller.objects.get(pk=int(request.user.pk))
@@ -78,7 +80,7 @@ class Home(TemplateResponseMixin, View):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'dict_championship_games': self.dict_championship_games ,'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
+		context = {'dict_championship_games': dict_championship_games ,'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
 		
 
 		return self.render_to_response(context)
@@ -319,6 +321,7 @@ class CreateTicketView(View):
 			ticket = BetTicket(
 				user=CustomUser.objects.get(pk=request.user.pk),
 				value=ticket_bet_value,
+				creation_date = tzlocal.now(),
 				payment=Payment.objects.create(payment_date=None), 
 				reward=Reward.objects.create(reward_date=None),				
 				)
@@ -331,7 +334,7 @@ class CreateTicketView(View):
 				game_contation = None
 				try:
 					game_contation = Cotation.objects.get(pk=int(request.session['ticket'][game_id]))
-					if game_contation.game.start_game_date < timezone.now():
+					if game_contation.game.start_game_date < tzlocal.now():
 						return JsonResponse({'status':409})
 					game_cotations.append(game_contation)
 					cotation_sum *= game_contation.value
@@ -386,7 +389,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 		content += "<CENTER> APOSTA: R$" + str(ticket.value) + "<BR>"
 		content += "<CENTER> GANHO POSSÍVEL: R$" + str(ticket.reward.value) + "<BR>"
 		
-		content += "<CENTER> DATA: " + timezone.localtime(ticket.creation_date).strftime('%d/%m/%Y %H:%M')
+		content += "<CENTER> DATA: " + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
 		content += "<BR><BR>"
 
 		content += "<LEFT> APOSTAS <BR>"
@@ -395,7 +398,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 
 		for c in ticket.cotations.all():
 			content += "<LEFT>" + c.game.name + "<BR>"
-			game_date = timezone.localtime(c.game.start_game_date).strftime('%d/%m/%Y %H:%M')
+			game_date = c.game.start_game_date.strftime('%d/%m/%Y %H:%M')
 			content += "<LEFT>" + game_date + "<BR>"
 			content += "<LEFT>"+ c.kind + "<BR>"
 			content += "<LEFT>" + c.name + " --> " + str(round(c.value, 2)) + "<BR>"			
@@ -426,7 +429,7 @@ class ValidateTicket(View):
 			if ticket_queryset.exists():
 				can_validate = True
 				for cotation in ticket_queryset.first().cotations.all():
-					if cotation.game.start_game_date < timezone.now():
+					if cotation.game.start_game_date < tzlocal.now():
 						can_validate = False
 				if can_validate:
 					ticket_queryset.first().ticket_valid(request.user)

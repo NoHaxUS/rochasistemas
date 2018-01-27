@@ -15,7 +15,7 @@ class PDF(View):
 		response = HttpResponse(content_type='application/pdf')
 		response['Content-Disposition'] = 'inline; filename="ticket.pdf"'
 
-		date = 'DATA: ' + timezone.localtime(ticket.creation_date).strftime('%d/%m/%Y %H:%M')
+		date = 'DATA: ' + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
 
 		pdf = FPDF('P', 'mm', (231, 297 + ticket.cotations.count() * 84))
 		pdf.add_page()
@@ -39,7 +39,7 @@ class PDF(View):
 			h=h+8
 			pdf.text(4,h,c.game.name)
 			h=h+14
-			pdf.text(4,h, timezone.localtime(c.game.start_game_date).strftime('%d/%m/%Y %H:%M'))
+			pdf.text(4,h, c.game.start_game_date.strftime('%d/%m/%Y %H:%M'))
 			#pdf.text(4,h, c.game.start_game_date.strftime('%d/%m/%Y %H:%M'))
 			h=h+14			
 			pdf.text(4,h,c.kind)

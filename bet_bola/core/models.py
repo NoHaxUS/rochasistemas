@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.db.models import Q
 import decimal
 from django.conf import settings
+import utils.timezone as tzlocal
 # Create your models here.
 
 
@@ -55,7 +56,7 @@ class BetTicket(models.Model):
 	user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', on_delete=models.PROTECT, verbose_name='Apostador')
 	random_user = models.ForeignKey('user.RandomUser',null=True, on_delete=models.SET_NULL, verbose_name='Cliente')
 	cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
-	creation_date = models.DateTimeField(auto_now_add=True, verbose_name='Data da aposta')	
+	creation_date = models.DateTimeField(verbose_name='Data da aposta')	
 	reward = models.ForeignKey('Reward', null=True,on_delete=models.PROTECT, verbose_name='Recompensa')
 	payment = models.OneToOneField('Payment', null=True,on_delete=models.PROTECT, verbose_name='Pagamento')
 	value = models.FloatField(verbose_name='Apostado')
@@ -64,11 +65,13 @@ class BetTicket(models.Model):
 
 	def ticket_valid(self, user):
 		self.payment.status_payment = PAYMENT_STATUS[1][1]
+		self.payment.payment_date = tzlocal.now()
 		self.payment.who_set_payment = Seller.objects.get(pk=user.pk)
 		self.payment.save()
 
 	def reward_payment(self, user):
 		self.reward.status_reward = REWARD_STATUS[1][1]
+		self.reward.reward_date = tzlocal.now()
 		self.reward.who_rewarded = Seller.objects.get(pk=user.pk)
 		self.reward.save()
 
@@ -177,7 +180,7 @@ class Championship(models.Model):
 
 class Reward(models.Model):
 	who_rewarded = models.ForeignKey('user.Seller', null=True, on_delete=models.PROTECT)
-	reward_date = models.DateTimeField(null=True, auto_now=True)
+	reward_date = models.DateTimeField(null=True)
 	value = models.FloatField(default=0)
 	status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1])
 
@@ -213,7 +216,7 @@ class Cotation(models.Model):
 class Payment(models.Model):
 	who_set_payment = models.ForeignKey('user.Seller', null=True, on_delete=models.PROTECT)
 	status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1])
-	payment_date = models.DateTimeField(null=True, auto_now=True)
+	payment_date = models.DateTimeField(null=True)
 	seller_was_rewarded = models.BooleanField(default=False)
 
 
