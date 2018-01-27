@@ -120,7 +120,8 @@ def consuming_cotation_api():
 
 	for game in Game.objects.all():		
 
-		r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN+"&tz=America/Santarem")	
+		r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN+"&tz=America/Santarem")
+		print(game.pk)	
 		# r = requests.get("http://localhost:8000/utils/test_url/")							
 		for kind in r.json().get('data'):
 			kind_name = kind['name']				
