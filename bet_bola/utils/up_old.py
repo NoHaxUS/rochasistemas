@@ -1,14 +1,9 @@
-from core.models import Championship,Game,Cotation,BetTicket
-from datetime import datetime
-from django.utils import timezone
+import requests
 from core.models import *
 from user.models import GeneralConfigurations
-import requests
-
-TOKEN='DLHVB3IPJuKN8dxfV5ju0ajHqxMl4zx91u5zxOwLS8rHd5w6SjJeLEOaHpR5'
 
 MARKET_NAME = {
-	"Team To Score First": "Time a Marcar Primeiro", 
+	"Team To Score First": "Time a Marcar Primeiro",
 	"Result/Total Goals": "Resultado/Total de Gol(s)",
 	"Correct Score 1st Half": "Resultado Exato no Primeiro Tempo",
 	"Both Teams To Score": "2 Times Marcam",
@@ -25,24 +20,15 @@ MARKET_NAME = {
 	"Over/Under": "Total de Gol(s) no Encontro, Acima/Abaixo",
 	"Highest Scoring Half": "Etapa com Mais Gol(s)",
 	"Clean Sheet - Home": "Time da Casa Não Tomará Gol(s)",
-	"Clean Sheet - Away": "Time Visitante Não Tomará Gol(s)",	
+	"Clean Sheet - Away": "Time Visitante Não Tomará Gol(s)",
 	"HT/FT Double": "Intervalo/Final de Jogo",
 	"Results/Both Teams To Score": "Resultado/2 Times Marcam",
 	"Home Team Score a Goal": "Time da casa Marca",
 	"Win Both Halves": "Vencedor nas Duas Etapas",
 	"Exact Goals Number": "Número Exato de Gol(s)",
-}	
+}
 
 
-def populating_bd(date):
-	first_date = str(timezone.now().year) + "-" +str(timezone.now().month) + "-" + str((timezone.now().day) - 1)
-	second_date = str(timezone.now().year) + "-" +str(timezone.now().month) + "-" + str((timezone.now().day + date))
-
-	consuming_championship_api()
-	consuming_game_api(first_date,second_date)
-	consuming_cotation_api()
-	processing_cotations()
-	BetTicket.processing_tickets()
 
 def renaming_cotations(string, total):
 
@@ -65,153 +51,134 @@ def renaming_cotations(string, total):
 			string = string +" "+ total
 	return string
 
+TOKEN = 'DLHVB3IPJuKN8dxfV5ju0ajHqxMl4zx91u5zxOwLS8rHd5w6SjJeLEOaHpR5'
 
-
-def consuming_game_api(first_date, second_date):
-	arq = open('log.txt','a')
-	texto = "Novos Jogos: \n ------------------------- \n"	
-	cadastros = []
-	url_request = "https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?api_token="+TOKEN+"&include=localTeam,visitorTeam&tz=America/Santarem"
-	r = requests.get(url_request)
-
-	for i in range(1, r.json().get('meta')['pagination']['total_pages']):			
-		if r.json().get('data'):
-			for game in r.json().get('data'):					
-				if Championship.objects.filter(pk = game['league_id']):
-					if Game(pk = game["id"]) in Game.objects.all():
-						Game.objects.filter(pk = game['id']).update(
-						status_game=game['time']['status'],
-						local_team_score=game['scores']['localteam_score'],
-						visitor_team_score=game['scores']['visitorteam_score'],
-						ht_score=game['scores']['ht_score'],
-						ft_score=game['scores']['ft_score'],
-						odds_calculated=game['winning_odds_calculated'],
-						start_game_date=datetime.strptime(game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S")
-						)
-						
-					else:
-						g = Game(pk=game['id'],
-								start_game_date=datetime.strptime(game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
-								name=game['localTeam']['data']['name']+" x " +game['visitorTeam']['data']['name'], 
-								championship=Championship.objects.get(pk=game["league_id"]), 
-								status_game=game['time']["status"],
-								local_team_score=game['scores']['localteam_score'], 
-								visitor_team_score=game['scores']['visitorteam_score'],
-								ht_score=game['scores']['ht_score'],
-								ft_score=game['scores']['ft_score'],
-								odds_calculated=game['winning_odds_calculated']
-								)
-						cadastros.append(g)
-						texto += g.name + "\n"
-			r = requests.get("https://soccer.sportmonks.com/api/v2.0/fixtures/between/"+first_date+"/"+second_date+"?page="+str((i+1))+"&api_token="+TOKEN+"&include=localTeam,visitorTeam&tz=America/Santarem")
-		
-	Game.objects.bulk_create(cadastros)	
-	if texto == "Novos Jogos: \n ------------------------- \n": 
-		texto += "Nenhum jogo novo adicionado\n"
-
-	arq.write(texto)
-	arq.close()
 
 def consuming_championship_api():
-	arq = open('log.txt','w')
-	texto = "Novos Campeonatos: \n ------------------------- \n"
-	cadastros = []
-	r = requests.get("https://soccer.sportmonks.com/api/v2.0/leagues/?api_token="+TOKEN + "&include=country&tz=America/Santarem")
-	if r.json().get('data'):
-		for championship in r.json().get('data'):
-			if not Championship.objects.filter(pk = championship['id']):
-				c = Championship(pk=championship['id'],name = championship['name'],country = championship['country']['data']['name'])
-				cadastros.append(c)
-				texto += c.name + "\n"
 
-	Championship.objects.bulk_create(cadastros)
-	if texto == "Novos Campeonatos: \n ------------------------- \n": 
-		texto += "Nenhum campeonato novo adicionado\n"
+	request = requests.get("https://soccer.sportmonks.com/api/v2.0/leagues/?api_token=" +
+						   TOKEN + "&include=country&tz=America/Santarem")
 
-	arq.write(texto)
-	arq.close()
+	if not request.status_code == 200:
+		print('Falha ao buscar campeonatos')
+		print(request.status_code)
 
-def consuming_cotation_api():
-	arq = open('log.txt','a')		
-	cadastros = []
-	max_cotation_value = None
-	games = Game.objects.all()
+	print("Atualizando Campeonatos")
+	json_response = request.json()
+	championship_array = json_response.get('data')
+
+	if championship_array:
+		for championship in championship_array:
+			Championship(pk=championship['id'], name=championship['name'],
+							 country=championship['country']['data']['name']).save()
+	else:
+		print("O array de campeonatos retornou vazio.")
+	
+	consuming_game_cotation_api()
+
+
+def consuming_game_cotation_api():
+
+	print("Atualizando os Games")
+	request = requests.get(
+		'https://soccer.sportmonks.com/api/v2.0/fixtures/between/2018-01-27/2018-01-30?api_token=DLHVB3IPJuKN8dxfV5ju0ajHqxMl4zx91u5zxOwLS8rHd5w6SjJeLEOaHpR5&include=localTeam,visitorTeam,odds&tz=America/Santarem')
+	
+	if not request.status_code == 200:
+		print('Falha ao atualizar Jogos')
+		print(request.status_code)
+
+	json_response = request.json()
+	games_array = json_response.get('data')
+
+	for game in games_array:
+
+		Game(pk=game['id'],
+			 name=game['localTeam']['data']['name'] + " x " + game['visitorTeam']['data']['name'],
+			 status_game=game['time']['status'],
+			 local_team_score=game['scores']['localteam_score'],
+			 visitor_team_score=game['scores']['visitorteam_score'],
+			 ht_score=game['scores']['ht_score'],
+			 ft_score=game['scores']['ft_score'],
+			 odds_calculated=game['winning_odds_calculated'],
+			 start_game_date=datetime.strptime(
+				 game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
+			 championship=Championship.objects.get(pk=game["league_id"])).save()
+
+		save_odds(game['id'], game['odds'])
+
+
+def get_bet365_from_bookmakers(bookmakers):
+
+	for bookmaker in bookmakers:
+		if bookmaker['id'] == 2:
+			return bookmaker
+
+	return bookmakers[0]
+
+
+def save_odds(game_id, odds):
 
 	if GeneralConfigurations.objects.filter(pk=1):
-		max_cotation_value = GeneralConfigurations.objects.get(pk=1).max_cotation_value
+		max_cotation_value = GeneralConfigurations.objects.get(
+			pk=1).max_cotation_value
+	else:
+		max_cotation_value = 200
 
-	for game in games:		
+	odds_array = odds.get('data')
 
-		r = requests.get("https://soccer.sportmonks.com/api/v2.0/odds/fixture/"+str(game.pk)+"/bookmaker/2?api_token="+TOKEN+"&tz=America/Santarem")	
-		# r = requests.get("http://localhost:8000/utils/test_url/")							
-		if r.json().get('data'):
-			for kind in r.json().get('data'):
-				kind_name = kind['name']				
-				for cotation in kind['bookmaker']['data'][0]['odds']['data']:
-					if kind_name in MARKET_NAME.keys():
-						if kind_name == '3Way Result' and cotation['label'] in ['1','2','X']:
-							c = game.cotations.filter(kind=MARKET_NAME.setdefault(kind_name,kind_name)).filter(name=renaming_cotations(cotation['label'],
-								" " if cotation['total'] == None else cotation['total']).strip())
-							if c:							
-								c.update(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),
-									value=cotation['value'],original_value=cotation['value'],game=game, is_standard = True,
-									handicap=cotation['handicap'], total=cotation['total'],
-									winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
-								
-								if max_cotation_value and float(cotation['value']) > max_cotation_value:
-									c.update(value = max_cotation_value)	
+	game_instance = Game.objects.get(pk=game_id)
 
-							else:
-								c = Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = True,
-									handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
-								
-								if max_cotation_value and float(cotation['value']) > max_cotation_value:
-									c.value = max_cotation_value
-								cadastros.append(c)
-								
-								
-						else:
-							if kind_name == 'Result/Total Goals':
-								c = game.cotations.filter(kind=MARKET_NAME.setdefault(kind_name,kind_name)).filter(name=renaming_cotations(cotation['label'],
-									" ").strip())
-								if c :								
-									c.update(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
-										handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
-									
-									if max_cotation_value and float(cotation['value']) > max_cotation_value:
-										c.update(value = max_cotation_value)		
+	for market in odds_array:
 
-								else:									
-									c = Cotation(name=renaming_cotations(cotation['label']," ").strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
-										handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))								
-									
-									if max_cotation_value and float(cotation['value']) > max_cotation_value:
-										c.value = max_cotation_value
-									cadastros.append(c)
+		kind_name = market['name']
+		if kind_name in MARKET_NAME.keys():
+			bookmakers = market['bookmaker']['data']
 
-									
-							else:									
-								c = game.cotations.filter(kind=MARKET_NAME.setdefault(kind_name,kind_name)).filter(name=renaming_cotations(cotation['label'],
-									" " if cotation['total'] == None else cotation['total']).strip())
-								if c:								
-									c.update(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
-										handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
-									
-									if max_cotation_value and float(cotation['value']) > max_cotation_value:
-										c.update(value = max_cotation_value)		
+			bookmaker = get_bet365_from_bookmakers(bookmakers)
+			cotations = bookmaker['odds']['data']
+			for cotation in cotations:
 
-								else:
-									c = Cotation(name=renaming_cotations(cotation['label']," " if cotation['total'] == None else cotation['total']).strip(),value=cotation['value'],original_value=cotation['value'],game=game, is_standard = False,
-										handicap=cotation['handicap'], total=cotation['total'], winning=cotation['winning'],kind=MARKET_NAME.setdefault(kind_name,kind_name))
-									
-									if max_cotation_value and float(cotation['value']) > max_cotation_value:
-										c.value = max_cotation_value
-									cadastros.append(c)
-	
+				if kind_name == '3Way Result' and cotation['label'] in ['1', '2', 'X']:
+					cotation_value = max_cotation_value if float(
+						cotation['value']) > max_cotation_value else float(cotation['value'])
 
-	Cotation.objects.bulk_create(cadastros)
-	arq.write("Quantidade de cotas adicionadas e atualizadas: " + str(len(cadastros)) + "\n" + "total de requests: "+ str(games.count() + 2))
-	arq.close()										
+					Cotation(name=renaming_cotations(cotation['label'], " " if cotation['total'] == None else cotation['total']).strip(),
+					value=cotation_value,
+					original_value=cotation_value,
+					game=game_instance,
+					is_standard=True,
+					handicap=cotation['handicap'],
+					total=cotation['total'],
+					winning=cotation['winning'],
+					kind=MARKET_NAME.setdefault(kind_name, kind_name)).save()
+
+				elif kind_name == 'Result/Total Goals':
+					cotation_value = max_cotation_value if float(
+						cotation['value']) > max_cotation_value else float(cotation['value'])
+
+					Cotation(name=renaming_cotations(cotation['label'], " ").strip(),
+					value=cotation_value,
+					original_value=cotation_value,
+					game=game_instance,
+					is_standard=False,
+					handicap=cotation['handicap'],
+					total=cotation['total'],
+					winning=cotation['winning'],
+					kind=MARKET_NAME.setdefault(kind_name, kind_name)).save()
+				else:
+					cotation_value = max_cotation_value if float(
+						cotation['value']) > max_cotation_value else float(cotation['value'])
+
+					Cotation(name=renaming_cotations(cotation['label'], " " if cotation['total'] == None else cotation['total']).strip(), 
+					value=cotation_value, 
+					original_value=cotation_value,
+					game=game_instance,
+					is_standard=False,
+					handicap=cotation['handicap'], 
+					total=cotation['total'],
+					winning=cotation['winning'],
+					kind=MARKET_NAME.setdefault(kind_name, kind_name)).save()
+
 
 
 
@@ -465,3 +432,4 @@ def processing_cotations():
 			continue			
 		finally:
 			pass
+

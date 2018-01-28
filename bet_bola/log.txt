@@ -1,0 +1,359 @@
+Novos Campeonatos: 
+ ------------------------- 
+Champions League
+Premier League
+Bundesliga
+Ligue 1
+Serie A
+La Liga
+Serie A
+Serie B
+Copa do Brasil
+Serie C
+Serie D
+Copa America
+Primeira Liga
+Acreano
+Alagoano
+Amazonense
+Baiano 1
+Baiano 2
+Brasiliense
+Copa do Nordeste
+Capixaba
+Carioca 1
+Carioca 1 - Taca Rio
+Carioca 2
+Catarinense 1
+Cearense 1
+Cearense 2
+Gaucho 1
+Gaucho 2
+Goiano 1
+Maranhense
+Matogrossense
+Mineiro 1
+Mineiro 2
+Paraense
+Paraibano
+Paranaense 1
+Paranaense 2
+Paulista A1
+Paulista A2
+Paulista A3
+Pernambucano 1
+Piauiense
+Potiguar
+Rondoniense
+Roraimense
+Sergipano
+Sul Matogrossense
+Tocantinense
+Amapaense
+Brasileiro U20
+Copa Verde
+Sao Paolo Youth Cup
+Novos Jogos: 
+ ------------------------- 
+Eintracht Frankfurt x Borussia M'gladbach
+Dijon x Rennes
+Athletic Club x Eibar
+Guarani x Água Santa
+Deportivo La Coruña x Levante
+Osasco x Mogi Mirim
+Paranoá x Santa Maria
+Bayern München x Hoffenheim
+Borussia Dortmund x Freiburg
+RB Leipzig x Hamburger SV
+Köln x Augsburg
+Stuttgart x Schalke 04
+Valencia x Real Madrid
+PSG x Montpellier
+Sassuolo x Atalanta
+Werder Bremen x Hertha BSC
+Málaga x Girona
+Portuguesa x XV de Piracicaba
+Votuporanguense x Inter de Limeira
+Atibaia x São Carlos
+Olímpia x Olímpia
+Serra x Vitória ES
+Desportiva ES x Tupy
+Real FC x Paracatu
+América RJ x Goytacaz
+Bonsucesso x Resende
+América Mineiro x Boa
+Internacional x Avenida
+Lagarto x Confiança
+Bacabal x Imperatriz
+Maranhão x Cordino
+Angers SCO x Amiens SC
+Guingamp x Nantes
+Metz x Nice
+Saint-Étienne x Caen
+Toulouse x Troyes
+Juazeirense x Jacuipense
+Corinthians x São Paulo
+União Barbarense x Monte Azul
+União ABC x Costa Rica
+Aparecidense x Iporá
+Grêmio Anápolis x Rio Verde GO
+Vila Nova x Atlético GO
+Floresta x Guarani de Juazeiro
+Atlético PR x Cianorte
+Itapemirim x Rio Branco-VN
+Real Noroeste x Espírito Santo
+Bragantino x Castanhal
+Fast Clube x Peñarol
+Flamengo x Vasco da Gama
+Vasco da Gama AC x Atlético Acreano
+Villarreal x Real Sociedad
+Chievo x Juventus
+Bahia x Fluminense de Feira
+Altos x Ríver
+São Raimundo AM x Nacional AM
+Oeste x Taubaté
+Sertãozinho x Nacional SP
+Batatais x Rio Claro
+Novorizontino x São Caetano
+Marília x Portuguesa Santista
+Velo Clube x Rio Branco SP
+Tombense x Cruzeiro
+América RN x ABC
+Humaitá x Rio Branco
+Vitória da Conquista x Jequié
+EC São Bernardo x Taboão da Serra
+4 de Julho x Parnahyba
+São Paulo RS x Caxias
+Ceará x Ferroviário
+Águia de Marabá x Parauapebas
+Cametá x Paragominas
+Leganés x Espanyol
+SPAL x Internazionale
+Penapolense x São Bernardo
+Juventus x Osasco Audax
+Matonense x Desportivo Brasil
+Noroeste x Capivariano
+Barretos x Rio Preto
+Samambaia x Brasiliense
+Lille x Strasbourg
+Torino x Benevento
+Napoli x Bologna
+Crotone x Cagliari
+Fiorentina x Hellas Verona
+Genoa x Udinese
+Bayer Leverkusen x Mainz 05
+Atlético Madrid x Las Palmas
+Bordeaux x Olympique Lyonnais
+Hannover 96 x Wolfsburg
+Milan x Lazio
+Sevilla x Getafe
+Bangu x Nova Iguaçu
+Macaé x Portuguesa RJ
+Dorense x Boca Júnior
+Frei Paulistano x Olimpico SE
+Socorrense x Amadense
+Santa Quitéria x Sampaio Corrêa
+Botafogo x Boavista
+CEO x Murici
+Coruripe x Dimensão Saúde
+CRB x Santa Rita
+Atlântico x Vitória
+Bahia de Feira x Jacobina
+Chapecoense x Joinville
+Internacional SC x Hercílio
+Avaí x Figueirense
+Brusque x Concórdia
+Atlético Tubarão x Criciúma
+Bragantino x Palmeiras
+São Bento x Ponte Preta
+Acadêmica Vitória x Náutico
+América PE x Afogados
+Central x Flamengo Arcoverde
+Belo Jardim x Salgueiro
+Operário MS x Novoperário
+URSO x Corumbaense
+7 de Setembro x Águia Negra
+Anápolis x Anapolina
+Itumbiara x Goiás
+Atlético Mineiro x CAP Patrocinense
+Tupi x Caldense
+Uberlândia x Villa Nova
+Horizonte x Fortaleza
+Uniclinic x Iguatu
+Tiradentes CE x Maranguape
+EC São José x Grêmio
+Rio Branco PR x Cascavel CR
+Maringá x Toledo Brazil
+Paraná x Londrina
+União PR x Coritiba
+Prudentópolis x Foz do Iguaçu
+Doze x São Mateus
+Operário Ltda x Dom Bosco
+Poconé x Luverdense
+Araguaia x União Rondonópolis
+CSP x Auto Esporte
+Treze x Campinense
+Moto Club MA x São José MA
+Paysandu x Remo
+Luziânia x Ceilândia
+Bolamense x Sobradinho
+Formosa x Gama
+Botafogo x Boavista
+Barcelona x Deportivo Alavés
+Roma x Sampdoria
+Olympique Marseille x Monaco
+Juventude x Novo Hamburgo
+Cruzeiro RS x Veranópolis
+Atlético Cajazeirense x Botafogo PB
+Sousa x Desportiva PB
+Nacional de Patos x Serrano PB
+Flamengo PI x Piauí
+Rio Negro AM x Princesa Solimões
+Manaus x Manicore
+Itabaiana x Sergipe
+Globo x ASSU
+Potiguar Mossoró x Baraúnas
+Madureira x Fluminense
+São Raimundo x Independente PA
+Cuiabá x Acao Cuiaba
+Sinop x Mixto
+Santos x Ituano
+Santa Cruz de Natal RN x Forca e Luz
+Santo André x Mirassol
+Celta de Vigo x Real Betis
+RB Brasil x CA Linense
+Volta Redonda x Cabofriense
+Ferroviária x Botafogo SP
+São Luiz x Brasil de Pelotas
+Democrata GV x URT
+Sport Recife x Pesqueira
+Swansea City x Arsenal
+West Ham United x Crystal Palace
+Huddersfield Town x Liverpool
+Portuguesa x Oeste
+Vitória da Conquista x Boa
+Caxias x Atlético PR
+Brasiliense x Bolamense
+Altos x Bahia
+Ceará x CSA
+Monte Azul x Matonense
+Desportivo Brasil x Osasco
+Rio Branco SP x Manthiqueira
+Taboão da Serra x Rio Preto
+Nova Iguaçu x Bragantino
+Comercial MS x Costa Rica
+Sobradinho x Samambaia
+Santa Maria x Real FC
+Chelsea x AFC Bournemouth
+Everton x Leicester City
+Newcastle United x Burnley
+Southampton x Brighton & Hove Albion
+Manchester City x West Bromwich Albion
+Stoke City x Watford
+Tottenham Hotspur x Manchester United
+Cuiabá x Operário MS
+Real Ariquemes x SD Sparta
+Rio Branco x São Raimundo RR
+Atlético GO x Anápolis
+Boavista x Internacional
+Caldense x Fluminense
+ABC x Globo
+Noroeste x União Barbarense
+Portuguesa Santista x São Carlos
+Mogi Mirim x Atibaia
+Velo Clube x Marília
+Olímpia x Olímpia
+Capivariano x EC São Bernardo
+Iporá x Itumbiara
+Fortaleza x Tiradentes CE
+Atlético Tubarão x América RN
+Aimoré x Cuiabá
+Paracatu x Luziânia
+Brusque x Criciúma
+Avaí x Concórdia
+Anapolina x Aparecidense
+Rio Verde GO x Vila Nova
+CA Itapemirim x Brasiliense
+Uberlândia x Ituano
+CSE x ASA
+São Raimundo RR x Rio Branco
+Novoperário x Salgueiro
+Interporto x Juventude
+Independente PA x Sampaio Corrêa
+Floresta x Botafogo PB
+Treze x Figueirense
+Itabaiana x Joinville
+Cordino x Náutico
+Goiás x Grêmio Anápolis
+Madureira x São Paulo
+Manaus x Remo
+Princesa Solimões x Fast Clube
+Real Ariquemes x Londrina
+Fluminense de Feira x Santa Cruz
+Atlético Acreano x Santos AP
+Ceilândia x Formosa
+URT x Paraná
+ADESG x Plácido de Castro
+CRB x Confiança
+Ceará x Uniclinic
+Gama x Paranoá
+Novo Hamburgo x Paysandu
+Andirá x Galvez
+Vitória x Ferroviário
+Nacional SP x Taubaté
+Köln x Borussia Dortmund
+Olympique Marseille x Metz
+Real Sociedad x Deportivo La Coruña
+São Bento x Santo André
+Avenida x Juventude
+Guarani x Batatais
+Eibar x Sevilla
+Burnley x Manchester City
+Atibaia x Velo Clube
+Hertha BSC x Hoffenheim
+Freiburg x Bayer Leverkusen
+Schalke 04 x Werder Bremen
+Mainz 05 x Bayern München
+Wolfsburg x Stuttgart
+AFC Bournemouth x Stoke City
+Brighton & Hove Albion x West Ham United
+Leicester City x Swansea City
+Manchester United x Huddersfield Town
+West Bromwich Albion x Southampton
+Real Betis x Villarreal
+Lille x PSG
+Sampdoria x Torino
+Arsenal x Everton
+Borussia M'gladbach x RB Leipzig
+Deportivo Alavés x Celta de Vigo
+São Bernardo x Água Santa
+Rio Claro x Osasco Audax
+Rio Preto x Mogi Mirim
+Manthiqueira x Portuguesa Santista
+Rio Branco SP x Capivariano
+São Mateus x Serra
+Desportiva ES x Real Noroeste
+Resende x Goytacaz
+América RJ x Bonsucesso
+Ituano x Ponte Preta
+Frei Paulistano x Itabaiana
+Amiens SC x Saint-Étienne
+Montpellier x Angers SCO
+Nice x Toulouse
+Strasbourg x Bordeaux
+Troyes x Dijon
+XV de Piracicaba x Inter de Limeira
+São Paulo x Botafogo SP
+São Carlos x Marília
+Grêmio Anápolis x Atlético GO
+Aparecidense x Rio Verde GO
+Iguatu x Horizonte
+CSP x Sousa
+Serrano PB x Botafogo PB
+Auto Esporte x Treze
+Remo x Cametá
+Nacional AM x Rio Negro AM
+Luziânia x Brasiliense
+ABC x Globo
+Quantidade de cotas adicionadas e atualizadas: 16054
+total de requests: 302
