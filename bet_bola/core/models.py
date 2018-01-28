@@ -92,7 +92,7 @@ class BetTicket(models.Model):
 						self.bet_ticket_status = BET_TICKET_STATUS[1][1]
 						self.save()
 						not_winning = True
-						return 'Status do ticket atualizado com sucesso. You Lost'
+						return 'Status do ticket atualizado com sucesso. Perdeu'
 				else:
 					self.bet_ticket_status = BET_TICKET_STATUS[0][1]
 					self.save()
@@ -101,7 +101,7 @@ class BetTicket(models.Model):
 			if not not_winning:
 				self.bet_ticket_status = BET_TICKET_STATUS[2][1]
 				self.save()
-				return 'Status do ticket atualizado com sucesso. You Won'
+				return 'Status do ticket atualizado com sucesso. Ganhou'
 		else:
 			self.bet_ticket_status = BET_TICKET_STATUS[0][1]
 			self.save()
@@ -202,7 +202,13 @@ class Cotation(models.Model):
 	kind = models.CharField(max_length=100, verbose_name='Tipo')
 	handicap = models.FloatField(blank = True, null = True)
 	total = models.FloatField(blank = True, null = True)
-	objects = GamesManager()								
+	objects = GamesManager()
+
+
+	def save(self):
+		if not Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).exists():
+			super().save()
+					
 
 
 	class Meta:

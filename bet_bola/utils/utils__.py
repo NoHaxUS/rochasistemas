@@ -1,6 +1,6 @@
-import requests
 from core.models import *
 from user.models import GeneralConfigurations
+import requests
 
 MARKET_NAME = {
 	"Team To Score First": "Time a Marcar Primeiro",
@@ -78,34 +78,39 @@ def consuming_championship_api():
 
 
 def consuming_game_cotation_api():
-
+	first_date = "2018-01-27"
+	second_date = "2018-01-30"
 	print("Atualizando os Games")
 	request = requests.get(
-		'https://soccer.sportmonks.com/api/v2.0/fixtures/between/2018-01-27/2018-01-30?api_token=DLHVB3IPJuKN8dxfV5ju0ajHqxMl4zx91u5zxOwLS8rHd5w6SjJeLEOaHpR5&include=localTeam,visitorTeam,odds&tz=America/Santarem')
+		'https://soccer.sportmonks.com/api/v2.0/fixtures/between/'+first_date+'/'+second_date+'?api_token='+TOKEN+'&include=localTeam,visitorTeam,odds&tz=America/Santarem')
 	
-	if not request.status_code == 200:
-		print('Falha ao atualizar Jogos')
-		print(request.status_code)
+	pages = request.json().get('meta')['pagination']['total_pages']
 
-	json_response = request.json()
-	games_array = json_response.get('data')
+	for i in range(1, pages):
+		if not request.status_code == 200:
+			print('Falha ao atualizar Jogos')
+			print(request.status_code)
 
-	for game in games_array:
+		json_response = request.json()
+		games_array = json_response.get('data')
 
-		Game(pk=game['id'],
-			 name=game['localTeam']['data']['name'] + " x " + game['visitorTeam']['data']['name'],
-			 status_game=game['time']['status'],
-			 local_team_score=game['scores']['localteam_score'],
-			 visitor_team_score=game['scores']['visitorteam_score'],
-			 ht_score=game['scores']['ht_score'],
-			 ft_score=game['scores']['ft_score'],
-			 odds_calculated=game['winning_odds_calculated'],
-			 start_game_date=datetime.strptime(
-				 game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
-			 championship=Championship.objects.get(pk=game["league_id"])).save()
+		for game in games_array:
 
-		save_odds(game['id'], game['odds'])
+			Game(pk=game['id'],
+				 name=game['localTeam']['data']['name'] + " x " + game['visitorTeam']['data']['name'],
+				 status_game=game['time']['status'],
+				 local_team_score=game['scores']['localteam_score'],
+				 visitor_team_score=game['scores']['visitorteam_score'],
+				 ht_score=game['scores']['ht_score'],
+				 ft_score=game['scores']['ft_score'],
+				 odds_calculated=game['winning_odds_calculated'],
+				 start_game_date=datetime.strptime(
+					 game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
+				 championship=Championship.objects.get(pk=game["league_id"])).save()
 
+			save_odds(game['id'], game['odds'])
+
+		request = requests.get('https://soccer.sportmonks.com/api/v2.0/fixtures/between/'+first_date+'/'+second_date+'?page='+str((i+1))+'&api_token='+TOKEN+'&include=localTeam,visitorTeam,odds&tz=America/Santarem')
 
 def get_bet365_from_bookmakers(bookmakers):
 
@@ -155,7 +160,7 @@ def save_odds(game_id, odds):
 				elif kind_name == 'Result/Total Goals':
 					cotation_value = max_cotation_value if float(
 						cotation['value']) > max_cotation_value else float(cotation['value'])
-
+					
 					Cotation(name=renaming_cotations(cotation['label'], " ").strip(),
 					value=cotation_value,
 					original_value=cotation_value,
@@ -178,7 +183,6 @@ def save_odds(game_id, odds):
 					total=cotation['total'],
 					winning=cotation['winning'],
 					kind=MARKET_NAME.setdefault(kind_name, kind_name)).save()
-
 
 
 
@@ -432,4 +436,3 @@ def processing_cotations():
 			continue			
 		finally:
 			pass
-
