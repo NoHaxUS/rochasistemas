@@ -150,7 +150,7 @@
 
                 </div>
                 <div class="col s12 l10">
-                    <!-- Bets collection-->
+                    <!-- Bets collection-->                    
                     <div class="games-table-container">
                         <table class="bordered highlight white centered games-table hoverable">
                             <thead>
@@ -183,18 +183,33 @@
                                         </td>
                                 </tr>
                                 {% endfor %}
-                            </tbody>
+                            </tbody>                            
                         </table>
-                    </div>
+                        <div class="row">
+                            <ul class="pagination">
+                                <span class="step-links">                                                                     
+                                    {% if bet_tickets.has_previous%}
+                                        <li class="waves-effect"><a href="?page={{ bet_tickets.previous_page_number }}"><i class="material-icons">chevron_left</i></a></li>
+                                    {% endif %}                                    
+                                    
+                                    {%for page in page_range%}
+                                        {% if page == bet_tickets.number %}                                    
+                                            <li class="active" ><a href="?page={{page}}">{{page}}</a></li>
+                                        {% else %}
+                                            <li class="waves-effect"><a href="?page={{page}}">{{page}}</a></li>
+                                        {% endif %}
+                                    {%endfor%}                                
 
-                </div>
-                <!--
-                <div class="col s2 hide-on-med-and-down hoverable white">
-                
-                </div>
-            -->
-                <!-- end ticket col -->
+                                    {% if bet_tickets.has_next%}
+                                        <li class="waves-effect"><a href="?page={{ bet_tickets.next_page_number }}"><i class="material-icons">chevron_right</i></a></li>
+                                    {% endif %}   
+                                </span>                                                                   
+                            </ul>
+                        </div>
+                    </div>
+                </div>                               
             </div>
+            {{bet_tickets.start_index}}
     </main>
 
     {% include 'core/general_js.html' %}
