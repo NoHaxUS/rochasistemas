@@ -387,7 +387,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 		else:
 			content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
 		content += "<CENTER> APOSTA: R$" + str(ticket.value) + "<BR>"
-		content += "<CENTER> GANHO POSSÍVEL: R$" + str(ticket.reward.value) + "<BR>"
+		content += "<CENTER> GANHO POSSIVEL: R$" + str(ticket.reward.value) + "<BR>"
 		
 		content += "<CENTER> DATA: " + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
 		content += "<BR><BR>"
@@ -403,12 +403,12 @@ class BetTicketDetail(TemplateResponseMixin, View):
 			content += "<LEFT>"+ c.kind + "<BR>"
 			content += "<LEFT>" + c.name + " --> " + str(round(c.value, 2)) + "<BR>"			
 			if not c.game.odds_calculated:
-				content += "<RIGHT> Status: Em Aberto"
+				content += "<RIGHT> Status: Em Aberto <BR>"
 			else:
 				content += "<RIGHT> Status: " + ("Venceu" if c.winning else "Perdeu") + "<BR>"
 			
-			content += "<CENTER> -------------------------------> <BR>"
-		content += "<LEFT> "+ settings.APP_VERBOSE_NAME
+			content += "<CENTER>-------------------------------> <BR>"
+		content += "<CENTER> "+ settings.APP_VERBOSE_NAME
 		
 		content = urllib.parse.urlparse(content).geturl()
 
