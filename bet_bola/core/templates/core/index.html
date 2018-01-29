@@ -1,6 +1,6 @@
 {% extends './base.html' %}
 {% load filters %}
-{% block content%}
+{% block content %}
 <div class="col s12 l8">                               
             {% for championship in dict_championship_games.keys %}                     
                     <!-- Bets collection-->
@@ -50,6 +50,13 @@
                                         </td>
                                     </tr>
                                         {% endif %}
+                                        
+                                        {% empty %}
+                                        <div class="games-table-container">
+                                            <div class="empty_game_set">
+                                                Todos os jogos do dia disponíveis já começaram ou terminaram.
+                                            </div>
+                                        </div>
                                     {% endfor %}                                
                             </tbody>                            
                         </table>
