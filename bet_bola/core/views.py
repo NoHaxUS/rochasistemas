@@ -88,18 +88,18 @@ class Home(TemplateResponseMixin, View):
 
 class TomorrowGames(Home):
 	template_name = 'core/index.html'
-	dict_championship_games = {}
 
 
 	def get(self, request, *args, **kwargs):
 		championships = list()
 		country = list()
+		dict_championship_games = {}
 		
 		for i in Championship.objects.all():
 			if i.my_games.able_games().count() > 0:
 				championships.append(i)
 				if i.my_games.tomorrow_able_games().count() > 0:
-					self.dict_championship_games[i] = Game.objects.tomorrow_able_games().filter(championship=i)				
+					dict_championship_games[i] = Game.objects.tomorrow_able_games().filter(championship=i)				
 				if i.country not in country:					
 					country.append(i.country)
 
@@ -111,7 +111,7 @@ class TomorrowGames(Home):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'dict_championship_games': self.dict_championship_games ,'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
+		context = {'dict_championship_games': dict_championship_games ,'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
 		
 
 		return self.render_to_response(context)
@@ -281,6 +281,8 @@ class BetView(View):
 
 
 class CreateTicketView(View):
+
+
 	def post(self, request, *args, **kwargs):
 		
 
@@ -376,6 +378,8 @@ class CreateTicketView(View):
 
 
 class BetTicketDetail(TemplateResponseMixin, View):
+
+
 	template_name = 'core/ticket_details.html'
 
 	def get(self, request, *args, **kwargs):
@@ -420,6 +424,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 
 class ValidateTicket(View):
 
+
 	def post(self, request):
 		if not request.POST['ticket']:
 			return JsonResponse({'status': 400})
@@ -445,6 +450,7 @@ class ValidateTicket(View):
 
 class PunterPayment(View):
 
+
 	def post(self, request):
 		if not request.POST['ticket']:
 			return JsonResponse({'status': 400})
@@ -468,6 +474,8 @@ class PunterPayment(View):
 
 
 class PayedBets(TemplateResponseMixin,View):
+
+	
 	template_name = 'core/list_bets.html'
 
 	def get(self, request):
