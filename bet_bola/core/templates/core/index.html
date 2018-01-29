@@ -50,17 +50,16 @@
                                         </td>
                                     </tr>
                                         {% endif %}
-                                        
-                                        {% empty %}
-                                        <div class="games-table-container">
-                                            <div class="empty_game_set">
-                                                Todos os jogos do dia disponíveis já começaram ou terminaram.
-                                            </div>
-                                        </div>
                                     {% endfor %}                                
                             </tbody>                            
                         </table>
-                    </div>                    
+                    </div>
+                    {% empty %}
+                    <div class="games-table-container">
+                        <div class="empty_game_set">
+                            Todos os jogos do dia disponíveis já começaram ou terminaram.
+                        </div>
+                    </div>             
                     {%endfor%}
                 </div>                                
 {%endblock%}
