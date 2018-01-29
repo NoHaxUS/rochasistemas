@@ -269,3 +269,7 @@ nav .brand-logo{
     padding: 10px;
     font-family: 'Exo 2', sans-serif;
 }
+
+li.active a{ 
+    background-color: #3b9c00;
+}

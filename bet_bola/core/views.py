@@ -2,6 +2,7 @@ from django.shortcuts import render,reverse,redirect,get_object_or_404
 from django.http import HttpResponseRedirect
 from django.views import View
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
@@ -470,8 +471,22 @@ class PayedBets(TemplateResponseMixin,View):
 	template_name = 'core/list_bets.html'
 
 	def get(self, request):
-		tickets = BetTicket.objects.filter(payment__who_set_payment_id=request.user.id).filter(payment__status_payment='Pago')
-		context = {"tickets":tickets}
+		bet_tickets = BetTicket.objects.filter(payment__who_set_payment_id=request.user.id).filter(payment__status_payment='Pago')
 
-		return self.render_to_response(context)	
+		paginator = Paginator(bet_tickets, 10)        
+		page = request.GET.get('page')
+
+		context = paginator.get_page(page)
+
+		index = context.number - 1  # edited to something easier without index
+		# This value is maximum index of your pages, so the last page - 1
+		max_index = len(paginator.page_range)
+		# You want a range of 7, so lets calculate where to slice the list
+		start_index = index - 3 if index >= 3 else 0
+		end_index = index + 3 if index <= max_index - 3 else max_index
+		# Get our new page range. In the latest versions of Django page_range returns 
+		# an iterator. Thus pass it to list, to make our slice possible again.
+		page_range = list(paginator.page_range)[start_index:end_index]		
+
+		return self.render_to_response({'bet_tickets':context, 'page_range':page_range})	
 

@@ -32,28 +32,49 @@
                             </thead>
 
                             <tbody>
-                                {% for ticket in tickets %}
+                                {% for ticket in bet_tickets %}
                                 <tr>
                                     <td>
-                                        # {{ ticket.pk }}
+                                        # {{ bet_tickets.pk }}
                                     </td>
                                     <td>
-                                        {{ ticket.creation_date }}
+                                        {{ bet_tickets.creation_date }}
                                     </td>
                                     <td>
-                                        {{ ticket.bet_ticket_status }}
+                                        {{ bet_tickets.bet_ticket_status }}
                                     </td>
                                     <td>
-                                        {{ ticket.payment.status_payment }}
+                                        {{ bet_tickets.payment.status_payment }}
                                     </td>
                                     <td>
-                                        <a href="/bet_ticket/{{ ticket.pk }}"><i class="material-icons">open_in_new</i> </a>
+                                        <a href="/bet_ticket/{{ bet_tickets.pk }}"><i class="material-icons">open_in_new</i> </a>
                                         </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
+                    <div class="row">
+                            <ul class="pagination">
+                                <span class="step-links">                                                                     
+                                    {% if bet_tickets.has_previous%}
+                                        <li class="waves-effect"><a href="?page={{ bet_tickets.previous_page_number }}"><i class="material-icons">chevron_left</i></a></li>
+                                    {% endif %}                                    
+                                    
+                                    {%for page in page_range%}
+                                        {% if page == bet_tickets.number %}                                    
+                                            <li class="active" ><a href="?page={{page}}">{{page}}</a></li>
+                                        {% else %}
+                                            <li class="waves-effect"><a href="?page={{page}}">{{page}}</a></li>
+                                        {% endif %}
+                                    {%endfor%}                                
+
+                                    {% if bet_tickets.has_next%}
+                                        <li class="waves-effect"><a href="?page={{ bet_tickets.next_page_number }}"><i class="material-icons">chevron_right</i></a></li>
+                                    {% endif %}   
+                                </span>                                                                   
+                            </ul>
+                        </div>
 
                 </div>
                 <!--
