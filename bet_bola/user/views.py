@@ -23,7 +23,8 @@ class PunterHome(TemplateResponseMixin, View):
     template_name = 'user/user_home.html'
 
     def get(self, request, *args, **kwargs):
-        bet_tickets = BetTicket.objects.filter(user=request.user)
+
+        bet_tickets = BetTicket.objects.filter(user=request.user).order_by('-pk')
         change_password_form = PasswordChangeForm(request.user)
         
         paginator = Paginator(bet_tickets, 10)        

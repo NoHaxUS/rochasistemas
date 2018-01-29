@@ -270,6 +270,13 @@ nav .brand-logo{
     font-family: 'Exo 2', sans-serif;
 }
 
-li.active a{ 
+span.step-links li.active a{ 
     background-color: #3b9c00;
+}
+
+@media only screen and (max-width: 992px){
+    nav .brand-logo{
+        padding: 0px;
+    }
+    
 }
