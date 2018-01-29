@@ -1,6 +1,7 @@
 import requests
 from core.models import *
 from user.models import GeneralConfigurations
+import utils.timezone as tzlocal
 
 MARKET_NAME = {
 	"Team To Score First": "Time a Marcar Primeiro",
@@ -110,8 +111,11 @@ def check_request_status(request):
 
 def consuming_game_cotation_api():
 
-	first_date = "2018-01-28"
-	second_date = "2018-01-31"
+
+	first_date = str(tzlocal.now().year) + "-" +str(tzlocal.now().month) + "-" + str((tzlocal.now().day) - 1)
+	second_date = str(tzlocal.now().year) + "-" +str(tzlocal.now().month) + "-" + str((tzlocal.now().day + 8))
+
+	
 	print("Atualizando os Games")
 
 	request = requests.get(
