@@ -1,7 +1,7 @@
 {% load filters %}
 {% load static %}
 <a href="{% url 'core:home' %}" class="brand-logo white-text">
-    <img src="{% static 'img/logo.png' %}" class="main-logo" alt="Logo">
+    {{ app_name }}
      </a>
 <a href="#" data-activates="mobile-menu" class="button-collapse">
     <i class="material-icons">menu</i>
