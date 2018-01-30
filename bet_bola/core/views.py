@@ -479,7 +479,7 @@ class PayedBets(TemplateResponseMixin,View):
 	template_name = 'core/list_bets.html'
 
 	def get(self, request):
-		bet_tickets = BetTicket.objects.filter(payment__who_set_payment_id=request.user.id).filter(payment__status_payment='Pago')
+		bet_tickets = BetTicket.objects.filter(payment__who_set_payment_id=request.user.id).filter(payment__status_payment='Pago').order_by('-pk')
 
 		paginator = Paginator(bet_tickets, 10)        
 		page = request.GET.get('page')
