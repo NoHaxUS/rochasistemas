@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.views import View
@@ -22,14 +23,27 @@ class PunterHome(TemplateResponseMixin, View):
     template_name = 'user/user_home.html'
 
     def get(self, request, *args, **kwargs):
-        bet_tickets = BetTicket.objects.filter(user=request.user)
+
+        bet_tickets = BetTicket.objects.filter(user=request.user).order_by('-pk')
         change_password_form = PasswordChangeForm(request.user)
-        context = list()
-        for i in range(len(bet_tickets)-1, -1,-1):
-            context.append(bet_tickets[i])
+        
+        paginator = Paginator(bet_tickets, 10)        
+        page = request.GET.get('page')
+
+        context = paginator.get_page(page)
+        
+        index = context.number - 1  # edited to something easier without index
+        # This value is maximum index of your pages, so the last page - 1
+        max_index = len(paginator.page_range)
+        # You want a range of 7, so lets calculate where to slice the list
+        start_index = index - 3 if index >= 3 else 0
+        end_index = index + 3 if index <= max_index - 3 else max_index
+        # Get our new page range. In the latest versions of Django page_range returns 
+        # an iterator. Thus pass it to list, to make our slice possible again.
+        page_range = list(paginator.page_range)[start_index:end_index]
 
 
-        return self.render_to_response({'bet_tickets': context,'change_password_form': change_password_form})
+        return self.render_to_response({'bet_tickets': context,'change_password_form': change_password_form, 'page_range':page_range})
 
 
 class PunterCreate(View):

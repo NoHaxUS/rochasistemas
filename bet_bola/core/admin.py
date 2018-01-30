@@ -36,11 +36,3 @@ class ChampionshipAdmin(admin.ModelAdmin):
 	search_fields_hint = 'Buscar pelo nome do Campeoanto'
 
 
-@admin.register(Payment)
-class PaymentAdmin(admin.ModelAdmin):
-	search_fields = ['pk']
-	list_display = ['pk']
-
-@admin.register(Reward)
-class BetTicketAdmin(admin.ModelAdmin):
-	list_display = ['pk']

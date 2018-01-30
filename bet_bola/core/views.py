@@ -2,6 +2,7 @@ from django.shortcuts import render,reverse,redirect,get_object_or_404
 from django.http import HttpResponseRedirect
 from django.views import View
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
@@ -87,18 +88,18 @@ class Home(TemplateResponseMixin, View):
 
 class TomorrowGames(Home):
 	template_name = 'core/index.html'
-	dict_championship_games = {}
 
 
 	def get(self, request, *args, **kwargs):
 		championships = list()
 		country = list()
+		dict_championship_games = {}
 		
 		for i in Championship.objects.all():
 			if i.my_games.able_games().count() > 0:
 				championships.append(i)
 				if i.my_games.tomorrow_able_games().count() > 0:
-					self.dict_championship_games[i] = Game.objects.tomorrow_able_games().filter(championship=i)				
+					dict_championship_games[i] = Game.objects.tomorrow_able_games().filter(championship=i)				
 				if i.country not in country:					
 					country.append(i.country)
 
@@ -110,7 +111,7 @@ class TomorrowGames(Home):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'dict_championship_games': self.dict_championship_games ,'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
+		context = {'dict_championship_games': dict_championship_games ,'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
 		
 
 		return self.render_to_response(context)
@@ -280,6 +281,8 @@ class BetView(View):
 
 
 class CreateTicketView(View):
+
+
 	def post(self, request, *args, **kwargs):
 		
 
@@ -375,6 +378,8 @@ class CreateTicketView(View):
 
 
 class BetTicketDetail(TemplateResponseMixin, View):
+
+
 	template_name = 'core/ticket_details.html'
 
 	def get(self, request, *args, **kwargs):
@@ -387,7 +392,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 		else:
 			content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
 		content += "<CENTER> APOSTA: R$" + str(ticket.value) + "<BR>"
-		content += "<CENTER> GANHO POSSÍVEL: R$" + str(ticket.reward.value) + "<BR>"
+		content += "<CENTER> GANHO POSSIVEL: R$" + str(ticket.reward.value) + "<BR>"
 		
 		content += "<CENTER> DATA: " + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
 		content += "<BR><BR>"
@@ -403,12 +408,12 @@ class BetTicketDetail(TemplateResponseMixin, View):
 			content += "<LEFT>"+ c.kind + "<BR>"
 			content += "<LEFT>" + c.name + " --> " + str(round(c.value, 2)) + "<BR>"			
 			if not c.game.odds_calculated:
-				content += "<RIGHT> Status: Em Aberto"
+				content += "<RIGHT> Status: Em Aberto <BR>"
 			else:
 				content += "<RIGHT> Status: " + ("Venceu" if c.winning else "Perdeu") + "<BR>"
 			
-			content += "<CENTER> -------------------------------> <BR>"
-		content += "<LEFT> "+ settings.APP_VERBOSE_NAME
+			content += "<CENTER>-------------------------------> <BR>"
+		content += "<CENTER> "+ settings.APP_VERBOSE_NAME
 		
 		content = urllib.parse.urlparse(content).geturl()
 
@@ -418,6 +423,7 @@ class BetTicketDetail(TemplateResponseMixin, View):
 
 
 class ValidateTicket(View):
+
 
 	def post(self, request):
 		if not request.POST['ticket']:
@@ -444,6 +450,7 @@ class ValidateTicket(View):
 
 class PunterPayment(View):
 
+
 	def post(self, request):
 		if not request.POST['ticket']:
 			return JsonResponse({'status': 400})
@@ -467,11 +474,27 @@ class PunterPayment(View):
 
 
 class PayedBets(TemplateResponseMixin,View):
+
+	
 	template_name = 'core/list_bets.html'
 
 	def get(self, request):
-		tickets = BetTicket.objects.filter(payment__who_set_payment_id=request.user.id).filter(payment__status_payment='Pago')
-		context = {"tickets":tickets}
+		bet_tickets = BetTicket.objects.filter(payment__who_set_payment_id=request.user.id).filter(payment__status_payment='Pago')
 
-		return self.render_to_response(context)	
+		paginator = Paginator(bet_tickets, 10)        
+		page = request.GET.get('page')
+
+		context = paginator.get_page(page)
+
+		index = context.number - 1  # edited to something easier without index
+		# This value is maximum index of your pages, so the last page - 1
+		max_index = len(paginator.page_range)
+		# You want a range of 7, so lets calculate where to slice the list
+		start_index = index - 3 if index >= 3 else 0
+		end_index = index + 3 if index <= max_index - 3 else max_index
+		# Get our new page range. In the latest versions of Django page_range returns 
+		# an iterator. Thus pass it to list, to make our slice possible again.
+		page_range = list(paginator.page_range)[start_index:end_index]		
+
+		return self.render_to_response({'bet_tickets':context, 'page_range':page_range})	
 
