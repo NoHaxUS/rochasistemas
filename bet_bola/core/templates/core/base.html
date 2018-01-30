@@ -184,14 +184,11 @@
                 <li>
                     <a href="#modal-login" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger hoverable">
                         Login</a>
-
                 </li>
-
                 <li>
                     <a href="#modal-register" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
                         Cadastre-se</a>
                 </li>
-
                 <li>
                     <a href="#modal-check-ticket" class="waves-effect waves-light btn white grey-text text-darken-4 modal-trigger">
                         Consultar Bilhete</a>
@@ -203,11 +200,9 @@
                     <a href="/seller/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                         Painel do Vendedor</a>
                 </li>
-                <li>
-                    <a href="/user/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
-                        Painel do Cliente</a>
-                </li>
-                {% else %}
+                {% endif %}
+
+                {% if not is_seller and  not user.is_superuser %}
                 <li>
                     <a href="/user/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                         Painel do Cliente</a>
@@ -217,7 +212,7 @@
                 {% if user.is_superuser %}
                 <li>
                     <a href="/admin/" class="waves-effect waves-light btn white grey-text text-darken-4 ">
-                        ADMIN</a>
+                        Administração</a>
                 </li>
                 {% endif %}
 
@@ -249,11 +244,8 @@
                     <a href="/seller/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                         Painel do Vendedor</a>
                 </li>
-                <li>
-                    <a href="/user/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
-                        Painel do Cliente</a>
-                </li>
-                {% else %}
+                {% endif %}
+                {% if not is_seller and  not user.is_superuser %}
                 <li>
                     <a href="/user/home" class="waves-effect waves-light btn white grey-text text-darken-4 ">
                         Painel do Cliente</a>
@@ -263,7 +255,7 @@
                 {% if user.is_superuser %}
                 <li>
                     <a href="/admin/" class="waves-effect waves-light btn white grey-text text-darken-4 ">
-                        ADMIN</a>
+                        Administração</a>
                 </li>
                 {% endif %}
 
