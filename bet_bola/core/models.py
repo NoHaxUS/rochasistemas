@@ -145,7 +145,9 @@ class Game(models.Model):
 	visitor_team_score = models.IntegerField(blank = True, null = True, verbose_name='Placar do Visitante')
 	local_team_score = models.IntegerField(blank = True, null = True, verbose_name='Placar Time de Casa')
 	ht_score = models.CharField(max_length=80, null=True, verbose_name='Placar até o meio-tempo')
-	ft_score = models.CharField(max_length=80, null=True, verbose_name='Placar no final do Jogo')	
+	ft_score = models.CharField(max_length=80, null=True, verbose_name='Placar no final do Jogo')
+	odds_processed = models.BooleanField(default=False)
+
 	objects = GamesManager()
 	
 	

@@ -195,14 +195,13 @@ def save_odds(game_id, odds):
 					kind=MARKET_NAME.setdefault(kind_name, kind_name)).save()
 
 
-
-
 def processing_cotations():
 	for game in Game.objects.filter(status_game='FT'):			
 		print(game.pk, game.name)
 		#dento do if só entra games q tenham os dados do score ok
 		try:
-			if game.is_able():							
+			if game.is_able():	
+
 				#nesse conjunto de if,elif e else são processados 4 markets			
 				#Vencedor do Encontro, Casa/Visitante, Dupla Chance,Vencedor Não tomará Gol(s) 		
 				cotations = game.cotations.filter(kind='Vencedor do Encontro') 
