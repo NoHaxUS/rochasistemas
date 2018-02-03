@@ -226,6 +226,21 @@ def processing_cotations_v2():
         resultado_e_2_times_marcam(game, not_calculaded_cotations)
         resultado_e_total_de_gols(game, not_calculaded_cotations)
         total_de_gols_impar_par(game, not_calculaded_cotations)
+        resultado_exato_primeiro_tempo(game, not_calculaded_cotations)
+        os_dois_times_marcam(game, not_calculaded_cotations)
+        vencedor_primeiro_tempo(game, not_calculaded_cotations)
+        total_gols_visitante(game, not_calculaded_cotations)
+        total_gols_casa(game, not_calculaded_cotations)
+        total_gols_primeiro_tempo_acima_abaixo(game, not_calculaded_cotations)
+        resultado_exato(game, not_calculaded_cotations)
+        visitante_marca_pelo_menos_um_gol(game, not_calculaded_cotations)
+        total_gols_encontro_acima_abaixo(game, not_calculaded_cotations)
+        time_casa_nao_tomara_gols(game, not_calculaded_cotations)
+        time_visitante_nao_tomara_gols(game, not_calculaded_cotations)
+        time_casa_marca(game, not_calculaded_cotations)
+
+
+
 
         game.update(odds_processed=True)
 
@@ -441,7 +456,7 @@ def total_de_gols_impar_par(game, all_cotations):
     cotations = all_cotations.filter(kind="Impar/Par") 
     total_gols = int(game.ft_score.split('-')[0]) + int(game.ft_score.split('-')[1])
            
-    if contations.count() > 0:
+    if cotations.count() > 0:
         cotations.update(winning=False)
         if total_gols == 0 or total_gols % 2 == 0:
             cotations.filter(name="Par").update(winning=True)
