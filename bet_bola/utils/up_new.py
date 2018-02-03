@@ -388,32 +388,33 @@ def intervalo_e_final_de_jogo(game, all_cotations):
 
 def resultado_e_2_times_marcam(game, all_cotations):
 
-    casa_placar_1, visitante_placar_1 = game.ft_score.split('-')
-    result = int(game.ft_score.split('-')[0]) - int(game.ft_score.split('-')[1])
+    casa_placar, visitante_placar = game.ft_score.split('-')
+    result = int(casa_placar) - int(visitante_placar)
 
     cotations = all_cotations.filter(kind='Resultado/2 Times Marcam')
-    cotations.update(winning=False)
 
-    if result > 0:
-        if game.local_team_score > 0 and game.visitor_team_score > 0:                                   
-            cotations.filter(name="Casa/Sim").update(winning=True)                          
+    if cotations.count() > 0:
+        cotations.update(winning=False)
+        if result > 0:
+            if game.local_team_score > 0 and game.visitor_team_score > 0:                                   
+                cotations.filter(name="Casa/Sim").update(winning=True)                          
 
-        else:            
-            cotations.filter(name="Casa/Não").update(winning=True)
+            else:            
+                cotations.filter(name="Casa/Não").update(winning=True)
 
-    elif result < 0:
-        if game.local_team_score > 0 and game.visitor_team_score > 0:                                   
-            cotations.filter(name="Visitante/Sim").update(winning=True)
-            
+        elif result < 0:
+            if game.local_team_score > 0 and game.visitor_team_score > 0:                                   
+                cotations.filter(name="Visitante/Sim").update(winning=True)
+                
+            else:
+                cotations.filter(name="Visitante/Não").update(winning=True)                         
+
         else:
-            cotations.filter(name="Visitante/Não").update(winning=True)                         
+            if game.local_team_score > 0 and game.visitor_team_score > 0:                                   
+                cotations.filter(name="Empate/Sim").update(winning=True)
 
-    else:
-        if game.local_team_score > 0 and game.visitor_team_score > 0:                                   
-            cotations.filter(name="Empate/Sim").update(winning=True)
-
-        else:            
-            cotations.filter(name="Empate/Não").update(winning=True)                            
+            else:            
+                cotations.filter(name="Empate/Não").update(winning=True)                            
 
 
 def resultado_e_total_de_gols(game, all_cotations):
