@@ -374,7 +374,7 @@ $(document).ready(function () {
             ticket = Cookies.getJSON('ticket_cookie');
     
             game_id_to_delete = $(this).siblings().first().text().trim();
-    
+
             delete ticket[game_id_to_delete];
             Cookies.set('ticket_cookie', ticket);
             RenderTicket();
@@ -418,7 +418,22 @@ $(document).ready(function () {
     
         });
     /** AO CLICAR EM UMA COTA **/
+        $('.btn-bet-undo').on('click', function(){                                
 
+            bet_info = {
+                'game_id': -1,
+                'game_name': '-1',
+                'cotation_id': -1,
+                'cotation_name': '-1',
+                'cotation_value': '1',
+                'cotation_kind' : '-1'
+            }            
+
+            AddBetToTicket(bet_info);            
+
+            Cookies.set('ticket_cookie', {});
+            RenderTicket();
+        });
 
     /** SUBMETER TICKET DE APOSTA **/
         $('.btn-bet-submit').on('click', function(){

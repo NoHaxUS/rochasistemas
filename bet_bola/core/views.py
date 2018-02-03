@@ -249,9 +249,13 @@ class CotationsView(View):
 
 class BetView(View):
 
-	def post(self, request, *args, **kwargs):
+	def post(self, request, *args, **kwargs):		
+		if int(request.POST['cotation_id']) < 0:			
+			request.session.flush()			
+			request.session.modified = True
+			return JsonResponse({}, status=204)
 
-		if 'ticket' not in request.session:
+		if 'ticket' not in request.session:						
 			request.session['ticket'] = {}
 			request.session['ticket'][request.POST['game_id']] = request.POST['cotation_id']
 			request.session.modified = True
@@ -265,7 +269,7 @@ class BetView(View):
 			
 			response = HttpResponse()
 			response.status_code = 201
-			return response
+			return response		
 
 	def get(self, request, *args, **kwargs):
 		if 'ticket' not in request.session:
