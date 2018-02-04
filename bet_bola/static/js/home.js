@@ -1,15 +1,6 @@
 $(document).ready(function () {
 
 
-    var myVar = setInterval(function(){ myTimer() }, 1000);
-
-    function myTimer() {
-        var d = new Date();
-        var t = d.toLocaleTimeString();
-        var data = d.toLocaleDateString();
-        $('.time').html(t + ' '+ data);
-    }
-
     /** FUNCTION DEFINITIONS **/
         function getCookie(name) {
             var cookieValue = null;
@@ -422,7 +413,6 @@ $(document).ready(function () {
         $('.btn-bet-undo').on('click', function(){                                
 
             alertify.confirm('Limpar apostas?', function(){
-                
                 bet_info = {
                     'game_id': -1,
                     'game_name': '-1',

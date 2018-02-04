@@ -272,7 +272,6 @@
     <main>
         <div class="col s12 center-align">
             <div class="subnav green-bb">
-                <span class="right white-text time"></span>
             </div>
         </div>
         <div class="row">
@@ -290,8 +289,6 @@
                                 <li class="center-align">
                                     <a href="{% url 'core:tomorrow_games' %}" class="">Jogos de Amanhã</a>
                                 </li>
-                        <!-- <li class="center-align valign-wrapper"> -->
-                            <!-- <i class="material-icons">chevron_right</i> -->
                                 {% for country in countries%}                             
                                      <li class="championship-header white-text center-align">
                                         {{countries_dict|get_item:country}}
@@ -386,19 +383,26 @@
                         <li class="center-align">
                             <a href="{% url 'core:tomorrow_games' %}" class="">Jogos de Amanhã</a>
                         </li>
-                        <!-- <li class="center-align valign-wrapper"> -->
-                            <!-- <i class="material-icons">chevron_right</i> -->
+                    </ul>
+                    <ul class="collapsible ul-collapsible" data-collapsible="accordion">
                             {% for country in countries%}                                
-                                 <li class="championship-header championship-color white-text center-align">
-                                    {{countries_dict|get_item:country}}
-                                 </li>
-                                {%for championship in championships%}
-                                    {% if championship.country == country%}
-                                <li class="center-align">
-                                    <a href="{% url 'core:game_championship' pk=championship.pk%}" class="">{{ championship }}</a>
+                                <li>
+                                    <div class="collapsible-header championship-collapse-header">
+                                        <i class="large material-icons green-text">dehaze</i>
+                                        {{countries_dict|get_item:country}}
+                                    </div>    
+                                <div class="collapsible-body championship-collapse-body">
+                                    <ul>  
+                                    {%for championship in championships%}
+                                        {% if championship.country == country%}
+                                        <li class="center-align">
+                                            <a href="{% url 'core:game_championship' pk=championship.pk%}" class="championship-li">{{ championship }}</a>
+                                        </li>
+                                        {%endif%}
+                                    {%endfor%}
+                                    </ul>
+                                </div>
                                 </li>
-                                    {%endif%}
-                                {%endfor%}
                             {%endfor%}
                     </ul>
                 </div>
