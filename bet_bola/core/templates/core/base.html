@@ -343,6 +343,9 @@
                                                     <button class="btn waves-effect waves-light btn-bet-submit-seller" type="button" desktop="True">Apostar
                                                         <i class="material-icons right">check</i>
                                                     </button>
+                                                    <button class="btn waves-effect waves-light btn-bet-undo red" type="button" desktop="True">Resetar
+                                                        <i class="material-icons right">clear_all</i>
+                                                    </button>
                                                 </div>
                                             </div>                                
                                         {%else%}
@@ -351,16 +354,12 @@
                                                     <button class="btn waves-effect waves-light btn-bet-submit" type="button" desktop="True">Apostar
                                                         <i class="material-icons right">check</i>
                                                     </button>
+                                                    <button class="btn waves-effect waves-light btn-bet-undo red" type="button" desktop="True">Resetar
+                                                        <i class="material-icons right">clear_all</i>
+                                                    </button>
                                                 </div>
                                             </div>
                                         {%endif%}
-                                        <div class="row">
-                                            <div class="col s12 center-align">
-                                                <button class="btn waves-effect waves-light btn-bet-undo" type="button" desktop="True">Desfazer Aposta
-                                                    <i class="material-icons right">check</i>
-                                                </button>
-                                            </div>
-                                        </div>
                                     </form>
                                 </div>
                             </div><!-- end make-bet -->
@@ -441,24 +440,23 @@
                                         <button class="btn waves-effect waves-light btn-bet-submit-seller" type="button" desktop="True">Apostar
                                             <i class="material-icons right">check</i>
                                         </button>
+                                        <button class="btn waves-effect waves-light btn-bet-undo red" type="button" desktop="True">Resetar
+                                            <i class="material-icons right">clear_all</i>
+                                        </button>
                                     </div>
                                 </div>                                
                                 {%else%}
-                                <div class="row">
+                                <div class="row bet-buttons">
                                     <div class="col s12 center-align">
                                         <button class="btn waves-effect waves-light btn-bet-submit" type="button" desktop="True">Apostar
                                             <i class="material-icons right">check</i>
                                         </button>
-                                    </div>
-                                </div>
-                                {%endif%}
-                                <div class="row">
-                                    <div class="col s12 center-align">
-                                        <button class="btn waves-effect waves-light btn-bet-undo" type="button" desktop="True">Desfazer Aposta
-                                            <i class="material-icons right">check</i>
+                                        <button class="btn waves-effect waves-light btn-bet-undo red" type="button" desktop="True">Resetar
+                                            <i class="material-icons right">clear_all</i>
                                         </button>
                                     </div>
                                 </div>
+                                {%endif%}
                             </form>
                         </div>
                     </div><!-- end make-bet -->

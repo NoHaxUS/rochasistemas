@@ -417,22 +417,30 @@ $(document).ready(function () {
             AddBetToTicket(bet_info);
     
         });
+
     /** AO CLICAR EM UMA COTA **/
         $('.btn-bet-undo').on('click', function(){                                
 
-            bet_info = {
-                'game_id': -1,
-                'game_name': '-1',
-                'cotation_id': -1,
-                'cotation_name': '-1',
-                'cotation_value': '1',
-                'cotation_kind' : '-1'
-            }            
+            alertify.confirm('Limpar apostas?', function(){
+                
+                bet_info = {
+                    'game_id': -1,
+                    'game_name': '-1',
+                    'cotation_id': -1,
+                    'cotation_name': '-1',
+                    'cotation_value': '1',
+                    'cotation_kind' : '-1'
+                }            
+    
+                AddBetToTicket(bet_info);            
+                Cookies.set('ticket_cookie', {});
+                RenderTicket();
+                alertify.notify('Feito.');
 
-            AddBetToTicket(bet_info);            
-
-            Cookies.set('ticket_cookie', {});
-            RenderTicket();
+            }, function(){
+                alertify.notify('Cancelado.');
+            });
+ 
         });
 
     /** SUBMETER TICKET DE APOSTA **/
