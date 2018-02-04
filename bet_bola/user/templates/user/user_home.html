@@ -144,10 +144,9 @@
                     </ul>
 
                 </div>
-                <div class="col s12 l10">
-                    <!-- Bets collection-->                    
+                <div class="col s12 l10">                
                     <div class="games-table-container">
-                        {% for ticket in bet_tickets %}
+                        {% if bet_tickets %}
                         <table class="bordered highlight white centered games-table hoverable">
                             <thead>
                                 <tr>
@@ -160,7 +159,7 @@
                             </thead>
 
                             <tbody>
-                                
+                                {% for ticket in bet_tickets %}
                                 <tr>
                                     <td>
                                         # {{ ticket.pk }}
@@ -178,13 +177,14 @@
                                         <a href="/bet_ticket/{{ ticket.pk }}"><i class="medium-icon material-icons">open_in_new</i> </a>
                                         </td>
                                 </tr>
-                                {% empty %}
-                                <div class="empty_game_set">
-                                    Você não fez nenhuma aposta.
-                                </div>
                                 {% endfor %}
                             </tbody>                            
                         </table>
+                        {% else %}
+                        <div class="empty_game_set">
+                            Você não fez nenhuma aposta.
+                        </div>
+                        {% endif %}
                         <div class="row">
                             <ul class="pagination">
                                 <span class="step-links">                                                                     
