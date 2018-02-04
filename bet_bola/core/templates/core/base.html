@@ -13,7 +13,7 @@
             <a href="#" class="modal-close">
                 <i class="material-icons right">close</i>
             </a>
-            <h4>Mais Cotas: <span class="more_cotation_header"></span></h4>
+            <h4 class="more_cotation_header-h4">Mais Cotas: <span class="more_cotation_header"></span></h4>
             <div class="row">
                 <div class="">
                     <table class="bordered highlight white centered more-table">
@@ -24,6 +24,10 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <div class="progress more_cotation_progress">
+                                <div class="indeterminate"></div>
+                            </div>
+                                  
                         </tbody>
                     </table>
 
@@ -279,8 +283,8 @@
                 <ul class="collapsible" data-collapsible="accordion">
 
                     <li>
-                        <div class="collapsible-header">
-                            <i class="material-icons">assistant_photo</i>CAMPEONATOS</div>
+                        <div class="collapsible-header collapsible-header-mobile">
+                            <i class="material-icons">play_circle_outline</i>CAMPEONATOS</div>
                         <div class="collapsible-body white">
                             <ul class="championship-list">
                                 <li class="center-align">
@@ -305,7 +309,7 @@
                         </div>
                     </li>
                     <li>
-                        <div class="collapsible-header">
+                        <div class="collapsible-header collapsible-header-mobile">
                             <i class="material-icons">event_note</i>
                             TICKET
                         </div>
@@ -392,7 +396,7 @@
                                         {{countries_dict|get_item:country}}
                                     </div>    
                                 <div class="collapsible-body championship-collapse-body">
-                                    <ul>  
+                                    <ul class='ul-championship-title'>  
                                     {%for championship in championships%}
                                         {% if championship.country == country%}
                                         <li class="center-align">

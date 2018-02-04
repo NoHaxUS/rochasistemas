@@ -609,12 +609,13 @@ $(document).ready(function () {
 
         $('.more_cotations_button').on('click', function(e){
 
+            $('.more_cotation_progress').show();
+
             $('#more-cotations').modal('open');
 
             var game_id = $(this).siblings().first().children('.table-game-id').text().trim();
             var game_name = $(this).siblings().first().children('.table-game-name').text().trim();
-            //var game_start_date = $(this).siblings().first().children('.table-game-start-date').text().trim();
-        
+
             $('.more_cotation_header').text(game_name);
 
             var game_data = '<tr>' +
@@ -622,7 +623,6 @@ $(document).ready(function () {
                 '<td class="hide more-game-name">'+ game_name +'</td>' +
             '</tr>';
 
-            //console.log(game_data);
             $('.more-table tbody').empty().append(game_data);
 
             $.get('/cotations/'+ game_id, function(data, status, rq){
@@ -632,8 +632,6 @@ $(document).ready(function () {
                 var full_html = '';
 
                 for( key in dataJSON){
-
-                    //console.log("Market: " + key);
 
                     full_html += '<tr>' +
                     '<td class="cotation-market-label">'+ key + '</td>' +
@@ -658,6 +656,7 @@ $(document).ready(function () {
                 }//for
 
                 $('.more-table tbody').append(full_html);
+                $('.more_cotation_progress').hide();
 
 
                 //console.log(dataJSON);

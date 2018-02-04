@@ -88,10 +88,11 @@ nav .brand-logo{
     background-color: #2d9639;
 }
 .championship-list li a{
-    font-size: 1.4rem;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.5rem;
     display: inline-block;
     width: 100%;
-    color: #0c143a;
+    color: #000000;
 }
 .championship-list li a:hover{
     text-decoration: underline;
@@ -164,7 +165,8 @@ nav .brand-logo{
 .side-nav{
     background-color: #39B54A;
 }
-.collapsible-header{
+.collapsible-header-mobile{
+    font-family: 'Exo 2', sans-serif;
     background-color: #39B54A;
     color: #ffffff;
     font-size: 1.4rem;
@@ -345,9 +347,21 @@ span.step-links li.active a{
     background-color: #8ad863;
 }
 
+.ul-championship-title li a:hover{
+    text-decoration: underline;
+}
+
 @media only screen and (max-width: 992px){
     nav .brand-logo{
         padding: 0px;
+    }
+
+    .modal {
+        width: 98%;
+        max-height: 85%;
+    }
+    .more_cotation_header-h4{
+        font-size: 1.8rem;
     }
 }
 
