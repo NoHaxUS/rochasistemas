@@ -286,26 +286,37 @@
                         <div class="collapsible-header collapsible-header-mobile">
                             <i class="material-icons">play_circle_outline</i>CAMPEONATOS</div>
                         <div class="collapsible-body white">
-                            <ul class="championship-list">
-                                <li class="center-align">
+                            <ul class="championship-list championship-list-mobile">
+                                <li>
                                     <a href="{% url 'core:home' %}" class="">Jogos de Hoje</a>
                                 </li>
-                                <li class="center-align">
+                                <li>
                                     <a href="{% url 'core:tomorrow_games' %}" class="">Jogos de Amanhã</a>
                                 </li>
-                                {% for country in countries%}                             
-                                     <li class="championship-header white-text center-align">
-                                        {{countries_dict|get_item:country}}
-                                     </li>
-                                    {%for championship in championships%}
-                                        {% if championship.country == country%}
-                                    <li class="center-align">
-                                        <a href="{% url 'core:game_championship' pk=championship.pk%}" class="">{{ championship }}</a>
-                                    </li>
-                                        {%endif%}
-                                    {%endfor%}
-                                {%endfor%}
                             </ul>
+
+                            <ul class="collapsible ul-collapsible" data-collapsible="accordion">
+                                    {% for country in countries%}                                
+                                        <li>
+                                            <div class="collapsible-header championship-collapse-header">
+                                                <i class="large material-icons green-text">dehaze</i>
+                                                {{countries_dict|get_item:country}}
+                                            </div>    
+                                        <div class="collapsible-body championship-collapse-body">
+                                            <ul class='ul-championship-title'>  
+                                            {%for championship in championships%}
+                                                {% if championship.country == country%}
+                                                <li class="center-align">
+                                                    <a href="{% url 'core:game_championship' pk=championship.pk%}" class="championship-li">{{ championship }}</a>
+                                                </li>
+                                                {%endif%}
+                                            {%endfor%}
+                                            </ul>
+                                        </div>
+                                        </li>
+                                    {%endfor%}
+                            </ul>
+
                         </div>
                     </li>
                     <li>
@@ -320,7 +331,7 @@
                             <div class="make-bet">
                                 <div class="row">
                                     <form class="col s12">
-                                        <div class="row">
+                                        <div class="row bet-ticket-value-row">
                                             <div class="col s12 center-align bet-ticket-value-text">
                                                 Valor da Aposta
                                             </div>

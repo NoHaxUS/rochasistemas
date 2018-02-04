@@ -87,6 +87,13 @@ nav .brand-logo{
 .championship-color{
     background-color: #2d9639;
 }
+
+.championship-list-mobile{
+    margin-bottom: 20px;
+}
+.bet-ticket-value-row{
+    margin-top: 20px;
+}
 .championship-list li a{
     font-family: 'Roboto', sans-serif;
     font-size: 1.5rem;
