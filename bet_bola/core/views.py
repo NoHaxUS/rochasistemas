@@ -116,26 +116,12 @@ class TomorrowGames(Home):
 
 		return self.render_to_response(context)
 
-		
-
-class GeneralConf(TemplateResponseMixin, View):
-	template_name = 'core/admin_conf.html'
-
-	def get(self, request, *args, **kwargs):
-		if not request.user.is_superuser:
-			return redirect(to='/')
-		context = {}
-		return self.render_to_response(context)
-
-
-
 
 class GameChampionship(TemplateResponseMixin, View):
-	template_name = 'core/championship_games.html'	
-	form = AuthenticationForm()
-
+	template_name = 'core/championship_games.html'
 
 	def get(self, request, *args, **kwargs):
+		
 		championships = list()
 		country = list()
 		
@@ -147,6 +133,7 @@ class GameChampionship(TemplateResponseMixin, View):
 				
 
 		championship = Championship.objects.get( pk=int(self.kwargs["pk"]) )
+		championship_country = championship.name +" - "+ COUNTRY_TRANSLATE[championship.country]
 		games = Game.objects.able_games().filter(championship=championship)
 	
 		is_seller = None
@@ -157,8 +144,18 @@ class GameChampionship(TemplateResponseMixin, View):
 			except Seller.DoesNotExist:
 				is_seller = False
 
-		context = {'games': games ,'championships': championships,'form': self.form, 'is_seller':is_seller,'countries':country,'countries_dict':COUNTRY_TRANSLATE }
+		context = {'games': games ,'championships': championships, 'is_seller':is_seller,'countries':country,'countries_dict':COUNTRY_TRANSLATE,'championship_country':championship_country }
 		
+		return self.render_to_response(context)
+
+
+class GeneralConf(TemplateResponseMixin, View):
+	template_name = 'core/admin_conf.html'
+
+	def get(self, request, *args, **kwargs):
+		if not request.user.is_superuser:
+			return redirect(to='/')
+		context = {}
 		return self.render_to_response(context)
 
 

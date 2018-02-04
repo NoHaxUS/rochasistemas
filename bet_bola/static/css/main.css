@@ -240,19 +240,21 @@ nav .brand-logo{
     font-size: 1.5rem;
 }
 .table-game-name{
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     color: #1027c7;
 }
 
 .user-logged-mobile{
     text-align: center;
 }
+
 .ajs-message{
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Exo 2', sans-serif;
     text-transform: uppercase;
-    background-color: #34b876 !important;
+    background-color: #458e43 !important;
     color: #ffffff !important;
 }
+
 .empty_game_set{
     text-align: center;
     font-size: 1.6rem;

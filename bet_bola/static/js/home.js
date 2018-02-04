@@ -84,10 +84,10 @@ $(document).ready(function () {
                             data = jQuery.parseJSON(data);
 
                             if(data['status'] == 200){
-                                alertify.success('Ticket Validado.');
+                                alertify.success('Ticket Validado');
                             }
                             if(data['status'] == 404){
-                                alertify.error('Ticket não encontrado.');
+                                alertify.error('Ticket não encontrado');
                             }
                             if(data['status'] == 403){
                                 alertify.alert('Erro', 'Esse ticket não pode mais ser validado, pois um de seus jogos já começou ou terminou.');
@@ -198,7 +198,7 @@ $(document).ready(function () {
                 ).show();
                 },
                 complete: function(jqXR, textStatus){
-                    alertify.notify("Cotas alteradas com sucesso.");
+                    alertify.notify("Cotas alteradas com sucesso");
                     load.close();
                 }
             });
@@ -225,7 +225,7 @@ $(document).ready(function () {
                             data = jQuery.parseJSON(data);
 
                             if(data.status == 200){
-                                alertify.success("O Apostador foi pago com sucesso.");
+                                alertify.success("O Apostador foi pago com sucesso");
                             }
 
                             if(data.status == 401){
@@ -412,7 +412,7 @@ $(document).ready(function () {
     /** AO CLICAR EM UMA COTA **/
         $('.btn-bet-undo').on('click', function(){                                
 
-            alertify.confirm('Limpar apostas?', function(){
+            alertify.confirm('Limpar apostas', 'Deseja mesmo limpar as apostas ?', function(){
                 bet_info = {
                     'game_id': -1,
                     'game_name': '-1',
@@ -425,10 +425,10 @@ $(document).ready(function () {
                 AddBetToTicket(bet_info);            
                 Cookies.set('ticket_cookie', {});
                 RenderTicket();
-                alertify.notify('Feito.');
+                alertify.notify('Feito');
 
             }, function(){
-                alertify.notify('Cancelado.');
+                alertify.notify('Cancelado');
             });
  
         });
@@ -446,14 +446,14 @@ $(document).ready(function () {
             }
 
             if (ticket_value <= 0){
-                alertify.error("Você deve apostar um valor maior que 0.");
+                alertify.error("Você deve apostar um valor maior que 0");
                 return ;
             }
 
             console.log(ticket_value);
 
             if(ticket == '{}'){
-                alertify.error("Nenhuma cota selecionada nessa sessão.");
+                alertify.error("Nenhuma cota selecionada nessa sessão");
                 COTATION_TOTAL = 0;
                 RenderTicket();
                 UpdateCotationTotal();
