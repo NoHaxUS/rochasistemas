@@ -358,6 +358,17 @@ span.step-links li.active a{
     text-decoration: underline;
 }
 
+.see-ticket-after-create{
+    font-family: 'Roboto', sans-serif;
+    display: block;
+    margin: 0 auto;
+    background-color: #173875;
+}
+
+.ticket-number-after-create{
+    font-size: 2rem;
+}
+
 @media only screen and (max-width: 992px){
     nav .brand-logo{
         padding: 0px;

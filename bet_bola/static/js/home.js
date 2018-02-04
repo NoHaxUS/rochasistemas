@@ -497,10 +497,10 @@ $(document).ready(function () {
 
                             if(dataJSON.status == 201){
                                 console.log(dataJSON);
-                                alertify.alert("Sucesso", "O número do Ticket de Aposta é: <b>" + dataJSON.ticket_pk + "</b>"+
+                                alertify.alert("Sucesso", "Ticket N° <span class='ticket-number-after-create'>" + dataJSON.ticket_pk + "</span>"+
                             "<br /> Para acessar detalhes do Ticket, entre no painel do cliente." +
                             "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket." + 
-                            "<br /><br /> <a href='/bet_ticket/"+ dataJSON.ticket_pk + "' class='waves-effect waves-light btn light-green darken-2 text-white modal-trigger hoverable'> Ver Ticket </a>");
+                            "<br /><br /> <a href='/bet_ticket/"+ dataJSON.ticket_pk + "' class='waves-effect waves-light btn text-white see-ticket-after-create hoverable'> Ver Ticket </a>");
                             }
                             console.log(dataJSON.status);
                         }, 'text');//end post
@@ -584,10 +584,10 @@ $(document).ready(function () {
 
                             if(dataJSON.status == 201){
                                 console.log(dataJSON);                                
-                                alertify.alert("Sucesso", "O número do Ticket de Aposta é: <b>" + dataJSON.ticket_pk + "</b>"+
+                                alertify.alert("Sucesso", "Ticket N° <span class='ticket-number-after-create'>" + dataJSON.ticket_pk + "</span>"+
                             "<br /> Para acessar detalhes do Ticket, entre no painel do cliente." +
                             "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket." +
-                            "<br /><br /> <a href='/bet_ticket/"+ dataJSON.ticket_pk + "' class='waves-effect waves-light btn light-green darken-2 text-white modal-trigger hoverable'> Ver Ticket </a>");
+                            "<br /><br /> <a href='/bet_ticket/"+ dataJSON.ticket_pk + "' class='waves-effect waves-light btn text-white see-ticket-after-create hoverable'> Ver Ticket </a>");
                             
                             }
                             console.log(dataJSON.status);
