@@ -9,11 +9,16 @@ body{
 .row .col{
     padding: 0;
 }
+
+.btn{
+    border-radius: 30px;
+}
 /* end Resets */
 
 .round{
     border-radius: 20px;
 }
+
 /* color definitions*/
 .green-ge{
     background-color: #3b9c00 !important;
@@ -315,6 +320,30 @@ span.step-links li.active a{
     font-size: 1.6rem;
 }
 
+.medium-icon{
+    font-size: 2.4rem;
+}
+
+.alertify .ajs-header {
+    font-family: 'Exo 2', sans-serif;
+    color:#ffffff;
+    font-size: 1.4rem;
+    font-weight: bold;
+    background: #4dc767;
+    border-bottom: #eee 1px solid;
+    border-radius: 2px 2px 0 0;
+}
+
+.alertify .ajs-body .ajs-content {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.3rem;
+    padding: 16px 24px 16px 16px;
+}
+
+.alertify .ajs-footer .ajs-buttons .ajs-button.ajs-ok{
+    color: #ffffff;
+    background-color: #8ad863;
+}
 
 @media only screen and (max-width: 992px){
     nav .brand-logo{
