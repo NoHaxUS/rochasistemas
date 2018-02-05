@@ -384,7 +384,13 @@ class BetTicketDetail(TemplateResponseMixin, View):
 	template_name = 'core/ticket_details.html'
 
 	def get(self, request, *args, **kwargs):
-		ticket = get_object_or_404(BetTicket, pk=self.kwargs["pk"])
+		try:
+			ticket = BetTicket.objects.get(pk=self.kwargs["pk"])
+		except BetTicket.DoesNotExist:
+			self.template_name = 'core/ticket_not_found.html'
+			return self.render_to_response(context={})
+
+		#ticket = get_object_or_404(BetTicket, pk=self.kwargs["pk"])
 
 
 		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"

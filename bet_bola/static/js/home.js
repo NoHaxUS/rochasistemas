@@ -710,7 +710,6 @@ $(document).ready(function () {
                 var Url = '/bet_ticket/' + ticket_num;
                 $(this).attr('action', Url);
                 $(this).submit();
-                console.log('HEY');
             }
             
         });

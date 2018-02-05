@@ -11,6 +11,7 @@ body{
 }
 
 .btn{
+    font-family: 'Exo 2', sans-serif;
     border-radius: 30px;
 }
 /* end Resets */
@@ -29,11 +30,12 @@ body{
 .yellow-bet{
     background-color: #f7f00e !important;
 }
-
+.green-text-button{
+    color: #2f9048 !important;
+}
 .blue-button{
     background-color: #1969a2;
 }
-
 
 /* end color definitions*/
 nav .brand-logo{
@@ -279,9 +281,9 @@ nav .brand-logo{
     font-size: 1.6rem;
     color: #7454d8;
     background-color: white;
-    max-width: 90%;
+    max-width: 95%;
     margin: auto;
-    border-radius: 50px;
+    border-radius: 25px;
     padding: 10px;
     font-family: 'Exo 2', sans-serif;
 }
@@ -386,6 +388,13 @@ span.step-links li.active a{
 
 .ticket-details-table thead{
     background-color: #d2efd2;
+}
+
+.ticket_not_found{
+    font-family: 'Exo 2', sans-serif;
+    color:#546921;
+    font-size: 2rem;
+    font-weight: bold;
 }
 
 @media only screen and (max-width: 992px){
