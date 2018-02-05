@@ -32,26 +32,22 @@
         <div class="row main-section">
 
             <div class="col s12 center-align">
-                <div class="delay-msg col s12 l6 hcenter">
-                    <i class="red-text material-icons">info</i> Os resultados são atualizados a cada 12 horas, portanto, resultados incorretos podem ser exibidos
-                    nesse intervalo de tempo.
-                </div>
                 <div class="row">
                     <div class="col s6">
-                        <a class="btn waves-effect waves-light" type="button"
-                        href="/utils/pdf/{{ticket.pk}}" target="blank">Abrir PDF
-                            <i class="material-icons right">picture_as_pdf</i>
-                        </a>
+                        <a class="btn waves-effect waves-light blue-button" type="button" 
+                            href="/utils/pdf/{{ticket.pk}}" target="blank">Abrir PDF
+                            <i class="material-icons right">picture_as_pdf</i></a>
                 </div>
                     <div class="col s6">
-                        <a class="btn waves-effect waves-light"
+                        <a class="btn waves-effect waves-light yellow black-text"
                         onclick="window.location.href='intent://{{print}}#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;'">Imprimir
                             <i class="material-icons right">print</i>
                         </a>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col s12 l10 hcenter white ticket-details">
+                    <div class="col s11 l10 hcenter white ticket-details">
+
                         <div class="row white">
                             <div class="details-header">
                                 <h5>Detalhes do Ticket: {{ticket.pk}}</h5>
@@ -59,35 +55,27 @@
                         </div>
 
                         <div class="row white">
-                            <div class="col s4">
-                                Data de Criação: {{ticket.creation_date}}
-                            </div>
-                            <div class="col s4">
-                                Status do Pagamento: {{ticket.payment.status_payment}} <br>
-                            {% if ticket.payment.payment_date %}
-                                Última Atualização: {{ticket.payment.payment_date}}
-                            {% endif %}
-                            </div>
-                            <div class="col s4">
-                                Status do Ticket: {{ticket.bet_ticket_status}}
-                            </div>
-                        </div>
-                        <div class="divider"></div>
-                        <div class="row purple lighten-5">
-                            <div class="col s4">
-                                Valor apostado: R$ {{valor_apostado}}
-                            </div>
-                            <div class="col s4">
-                                Cota Total: {{ticket.cota_total}}
-                            </div>
-                            <div class="col s4">
-                                Ganho Possível: R$ {{ganho_possivel}}
-                            </div>
-                        </div>
-                        <div class="divider"></div>
-                        <div class="row white">
-                            <div class="col s12 l6 hcenter">
-                                Recompensa entregue ao ganhador? : {{ticket.reward.status_reward}}
+                            <div class="col s12 ticket-details-info">
+                                <div class="row">
+                                    Cliente: 
+                                    {% if ticket.random_user %}
+                                        {{ticket.random_user.first_name}}
+                                    {% else %}
+                                        {{ticket.user.first_name}}
+                                    {% endif %}
+                                </div>
+                                <div class="row">Data de criação: {{ticket.creation_date}}</div>
+                                <div class="row">Status do Pagamento: {{ticket.payment.status_payment}} </div>
+                                <div class="row">
+                                    {% if ticket.payment.payment_date %}
+                                        Última Atualização: {{ticket.payment.payment_date}}
+                                    {% endif %}
+                                </div>
+                                <div class="row"> Status do Ticket: {{ticket.bet_ticket_status}}</div>
+                                <div class="row">Valor apostado: R$ {{valor_apostado}}</div>
+                                <div class="row">Cota Total: {{ticket.cota_total}}</div>
+                                <div class="row">Ganho Possível: R$ {{ ganho_possivel }}</div>
+                                
                             </div>
                         </div>
                         <div class="row white">
@@ -97,30 +85,35 @@
                         </div>
                         <div class="row white">
                             <div class="col s12 l10 hcenter">
-
+                                <table class="striped ticket-details-table">
+                                        <thead>
+                                          <tr>
+                                              <th>Jogo</th>
+                                              <th>Aposta</th>
+                                              <th>Status da Cota</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
                                 {% for cotation in ticket.cotations.all %}
-                                <div class="row">
-                                    <div class="col s4">
-                                        Jogo: {{cotation.game}}
-                                    </div>
-                                    <div class="col s4">
+                                    <tr>
+                                      <td>{{cotation.game}}</td>
+                                        <td>
                                         {{cotation.kind}} <br>
                                         Cota: {{cotation.name}} : {{cotation.value}}
-                                    </div>
-                                    <div class="col s4">
-                                        Status da Cota:
+                                        </td>
+                                        <td>
                                         {% if cotation.winning %}
-                                            Você acertou.
+                                            Acertou
                                         {% elif cotation.winning ==  None %}
-                                            Jogo não aconteceu ainda.
+                                            Ainda não calculada
                                         {% else %}
-                                            Você Perdeu.
+                                            Não acertou
                                         {% endif %}
-                                    </div>
-                                </div>
-                                <div class="divider"></div>
+                                        </td>
+                                    </tr>
                                 {%endfor%}
-                                
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

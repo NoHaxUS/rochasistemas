@@ -31,7 +31,7 @@ body{
 }
 
 .blue-button{
-    background-color: #173875;
+    background-color: #1969a2;
 }
 
 
@@ -202,18 +202,19 @@ nav .brand-logo{
     margin: auto;
     float: none !important;
 }
+.details-header{
+    font-family: 'Exo 2', sans-serif;
+}
 .details-header-games{
+    font-family: 'Exo 2', sans-serif;
     margin-top: 30px !important;
 }
 .ticket-details{
     margin-top: 20px !important;
-    padding: 20px 3px 20px 3px !important;
-    font-size: 1.2rem !important;
+    padding: 20px 5px 20px 5px !important;
+    border-radius: 25px;
 }
-.ticket-details h5{
-    font-style: italic;
-    font-weight: bold;
-}
+
 .change-pass{
     padding: 20px 10px 20px 10px !important;
 }
@@ -324,7 +325,7 @@ span.step-links li.active a{
 .th-championsip-header{
     font-family: 'Exo 2', sans-serif;
     padding: 0;
-    background-color: #19a250;
+    background-color: #1969a2;
     color: #ffffff;
     font-size: 1.6rem;
 }
@@ -367,6 +368,24 @@ span.step-links li.active a{
 
 .ticket-number-after-create{
     font-size: 2rem;
+}
+
+.ticket-details-info .row{
+    font-size: 1.4rem;
+}
+
+
+.ticket-details-table{
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.4rem;
+    padding: 20px;
+}
+.ticket-details-table tbody td {
+    padding: 5px 5px;
+}
+
+.ticket-details-table thead{
+    background-color: #d2efd2;
 }
 
 @media only screen and (max-width: 992px){
