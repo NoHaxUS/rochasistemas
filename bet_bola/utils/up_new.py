@@ -111,6 +111,7 @@ def consuming_game_cotation_api():
             '&include=localTeam,visitorTeam,odds&tz=America/Santarem'
         request = requests.get(next)
         process_json_games_cotations(request.json())
+    processing_cotations_v2()
 
 
 def process_json_games_cotations(json_response):
@@ -208,6 +209,7 @@ def save_odds(game_id, odds, max_cotation_value):
 
 def processing_cotations_v2():
 
+    print("Processando Cotas..")
     games_to_process = Game.objects.annotate(cotations_count=Count('cotations')).filter(
         odds_calculated=True, status_game="FT", odds_processed=False, ft_score__isnull=False, 
         ht_score__isnull=False, cotations_count__gt=0)
@@ -238,11 +240,9 @@ def processing_cotations_v2():
         time_casa_nao_tomara_gols(game, not_calculaded_cotations)
         time_visitante_nao_tomara_gols(game, not_calculaded_cotations)
         time_casa_marca(game, not_calculaded_cotations)
-
-
-
-
+        
         game.update(odds_processed=True)
+    print("Processando Cotas FIM.")
 
 
 def vencedor_encontro(game, all_cotations):
@@ -614,21 +614,6 @@ def time_casa_marca(game, all_cotations):
             cotations.filter('Sim').update(winning=True)
         else:
             cotations.filter('Não').update(winning=True)
-
-
-
-
-
-        
-
-
-
-    
-
-
-
-
-
 
 
 
