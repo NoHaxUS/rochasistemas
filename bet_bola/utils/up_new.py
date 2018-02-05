@@ -1,15 +1,17 @@
 import requests
-from core.models import *
+from core.models import Game, Cotation, Championship
 from user.models import GeneralConfigurations
 import utils.timezone as tzlocal
+import datetime
 from django.db.models import Count
 from django.db.models import Q
+
 
 MARKET_NAME = {
     "Result/Total Goals": "Resultado/Total de Gol(s)",
     "Correct Score 1st Half": "Resultado Exato no Primeiro Tempo",
     "Both Teams To Score": "2 Times Marcam",
-    "3Way Result 1st Half": "Vencedor Primeiro Tempo",
+    "3Way Result 1st Half": "Vencedor do Primeiro Tempo",
     "Total - Away": "Total de Gols do Visitante",
     "Double Chance": "Dupla Chance",
     "Total - Home": "Total de Gols da Casa",
@@ -21,11 +23,10 @@ MARKET_NAME = {
     "Home/Away": "Casa/Visitante",
     "Over/Under": "Total de Gol(s) no Encontro, Acima/Abaixo",
     "Highest Scoring Half": "Etapa com Mais Gol(s)",
-    "Clean Sheet - Home": "Time da Casa Não Tomará Gol(s)",
-    "Clean Sheet - Away": "Time Visitante Não Tomará Gol(s)",
-    "HT/FT Double": "Intervalo/Final de Jogo",
+    "Clean Sheet - Home": "Time da Casa NÃO Tomará Gol(s)",
+    "Clean Sheet - Away": "Time Visitante NÃO Tomará Gol(s)",
     "Results/Both Teams To Score": "Resultado/2 Times Marcam",
-    "Home Team Score a Goal": "Time da casa Marca",
+    "Home Team Score a Goal": "Time da Casa Marca",
     "Win Both Halves": "Vencedor nas Duas Etapas",
     "Exact Goals Number": "Número Exato de Gol(s)",
     "Odd/Even": "Placar Impar/Par",
@@ -94,10 +95,23 @@ def process_json_championship(json_response):
 
 def consuming_game_cotation_api():
 
-    first_date = str(tzlocal.now().year) + "-" + \
-        str(tzlocal.now().month) + "-" + str((tzlocal.now().day) - 1)
-    second_date = str(tzlocal.now().year) + "-" + \
-        str(tzlocal.now().month) + "-" + str((tzlocal.now().day + 8))
+    before_time = tzlocal.now() - datetime.timedelta(days=3)
+
+    before_year = before_time.year
+    before_month = before_time.month
+    before_day = before_time.day
+    
+    after_time = tzlocal.now() + datetime.timedelta(days=7)
+
+    after_year = after_time.year
+    after_month = after_time.month
+    after_day = after_time.day
+
+
+    first_date = str(before_year) + "-" + str(before_month) + "-" + str(before_day)
+    second_date = str(after_year) + "-" +str(after_month) + "-" + str(after_day)
+
+
     print("Atualizando os Games")
     request = requests.get(
         'https://soccer.sportmonks.com/api/v2.0/fixtures/between/' + first_date + '/' + second_date + '?api_token=' + TOKEN + '&include=localTeam,visitorTeam,odds&tz=America/Santarem')
@@ -111,7 +125,9 @@ def consuming_game_cotation_api():
             '&include=localTeam,visitorTeam,odds&tz=America/Santarem'
         request = requests.get(next)
         process_json_games_cotations(request.json())
+    
     processing_cotations_v2()
+    
 
 
 def process_json_games_cotations(json_response):
@@ -131,10 +147,11 @@ def process_json_games_cotations(json_response):
              ht_score=game['scores']['ht_score'],
              ft_score=game['scores']['ft_score'],
              odds_calculated=game['winning_odds_calculated'],
-             start_game_date=datetime.strptime(
+             start_game_date=datetime.datetime.strptime(
             game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
             championship=Championship.objects.get(pk=game["league_id"])).save()
         save_odds(game['id'], game['odds'], max_cotation_value)
+    
 
 
 def get_bet365_from_bookmakers(bookmakers):
@@ -187,6 +204,7 @@ def save_odds(game_id, odds, max_cotation_value):
                     cotation_value = max_cotation_value if float(
                         cotation['value']) > max_cotation_value else float(cotation['value'])
                     cotation_name = renaming_cotations(cotation['label'], " " if cotation['total'] == None else cotation['total']).strip()
+                    
                     if kind_name == 'Double Chance' and cotation['label'] in ['12','1X','X2']:
                         cotation_label = cotation['label']
                         if cotation_label == '1X':
@@ -195,6 +213,7 @@ def save_odds(game_id, odds, max_cotation_value):
                             cotation_name = 'Visitante/Empate'
                         else:
                             cotation_name = 'Casa/Visitante'
+
                     Cotation(name=cotation_name,
                              value=cotation_value,
                              original_value=cotation_value,
@@ -209,14 +228,18 @@ def save_odds(game_id, odds, max_cotation_value):
 
 def processing_cotations_v2():
 
-    print("Processando Cotas..")
+    print("Processando resultados.")
+
     games_to_process = Game.objects.annotate(cotations_count=Count('cotations')).filter(
         odds_calculated=True, status_game="FT", odds_processed=False, ft_score__isnull=False, 
         ht_score__isnull=False, cotations_count__gt=0)
+        
+    print(games_to_process.count(), '-------- \n')
 
     for game in games_to_process:
-        not_calculaded_cotations = game.cotations.filter(winning__isnull=True)
 
+        #not_calculaded_cotations = game.cotations.filter(winning__isnull=True)
+        not_calculaded_cotations = game.cotations
         vencedor_encontro(game, not_calculaded_cotations)
         casa_visitante(game, not_calculaded_cotations)
         dupla_chance(game, not_calculaded_cotations)
@@ -224,7 +247,6 @@ def processing_cotations_v2():
         etapa_com_mais_gol(game, not_calculaded_cotations)
         vencedor_nas_duas_etapas(game, not_calculaded_cotations)
         numero_exato_de_gols(game, not_calculaded_cotations)
-        intervalo_e_final_de_jogo(game, not_calculaded_cotations)
         resultado_e_2_times_marcam(game, not_calculaded_cotations)
         resultado_e_total_de_gols(game, not_calculaded_cotations)
         total_de_gols_impar_par(game, not_calculaded_cotations)
@@ -241,8 +263,8 @@ def processing_cotations_v2():
         time_visitante_nao_tomara_gols(game, not_calculaded_cotations)
         time_casa_marca(game, not_calculaded_cotations)
         
-        game.update(odds_processed=True)
-    print("Processando Cotas FIM.")
+        game.odds_processed=True
+        game.save()
 
 
 def vencedor_encontro(game, all_cotations):
@@ -254,11 +276,11 @@ def vencedor_encontro(game, all_cotations):
         cotations.update(winning=False)
 
         if game.local_team_score > game.visitor_team_score:
-            cotations.filter('1').update(winning=True)			
+            cotations.filter(name='1').update(winning=True)			
         elif game.local_team_score < game.visitor_team_score:			
-            cotations.filter('2').update(winning=True)			
+            cotations.filter(name='2').update(winning=True)			
         else:	
-            cotations.filter('X').update(winning=True)
+            cotations.filter(name='X').update(winning=True)
 
 
 def casa_visitante(game, all_cotations):
@@ -269,9 +291,9 @@ def casa_visitante(game, all_cotations):
         cotations.update(winning=False)
 
         if game.local_team_score > game.visitor_team_score:
-            cotations.filter('1').update(winning=True)		
+            cotations.filter(name='1').update(winning=True)
         elif game.local_team_score < game.visitor_team_score:		
-            cotations.filter('2').update(winning=True)
+            cotations.filter(name='2').update(winning=True)
 
 
 def dupla_chance(game, all_cotations):
@@ -280,19 +302,19 @@ def dupla_chance(game, all_cotations):
 
     if cotations.count() > 0:
         cotations.update(winning=False)
-        casa_empate = cotations.filter('Casa/Empate')
-        casa_visitante = cotations.filter('Casa/Visitante')
-        empate_visitante = cotations.filter('Empate/Visitante')
+        casa_empate = cotations.filter(name='Casa/Empate')
+        casa_visitante = cotations.filter(name='Casa/Visitante')
+        empate_visitante = cotations.filter(name='Empate/Visitante')
     
-    if game.local_team_score > game.visitor_team_score:
-        casa_empate.update(winning=True)
-        casa_visitante.update(winning=True)
-    elif game.local_team_score < game.visitor_team_score:
-        casa_visitante.update(winning=True)
-        empate_visitante.update(winning=True)
-    else:
-        casa_empate.update(winning=True)
-        empate_visitante.update(winning=True)
+        if game.local_team_score > game.visitor_team_score:
+            casa_empate.update(winning=True)
+            casa_visitante.update(winning=True)
+        elif game.local_team_score < game.visitor_team_score:
+            casa_visitante.update(winning=True)
+            empate_visitante.update(winning=True)
+        else:
+            casa_empate.update(winning=True)
+            empate_visitante.update(winning=True)
 
 
 def vencer_e_nao_tomar_gol(game, all_cotations):
@@ -303,10 +325,10 @@ def vencer_e_nao_tomar_gol(game, all_cotations):
         cotations.update(winning=False)
         if game.local_team_score > game.visitor_team_score:
             if game.visitor_team_score == 0:
-                cotations.filter('1').update(winning=True)
+                cotations.filter(name='1').update(winning=True)
         elif game.local_team_score < game.visitor_team_score:
             if game.local_team_score == 0:
-                cotations.filter('2').update(winning=True)   
+                cotations.filter(name='2').update(winning=True)   
 
 
 def etapa_com_mais_gol(game, all_cotations):
@@ -453,7 +475,8 @@ def resultado_e_total_de_gols(game, all_cotations):
 
 def total_de_gols_impar_par(game, all_cotations):
 
-    cotations = all_cotations.filter(kind="Impar/Par") 
+    cotations = all_cotations.filter(kind="Placar Impar/Par")
+
     total_gols = int(game.ft_score.split('-')[0]) + int(game.ft_score.split('-')[1])
            
     if cotations.count() > 0:
@@ -481,14 +504,14 @@ def os_dois_times_marcam(game, all_cotations):
         cotations.update(winning=False)
 
         if game.local_team_score > 0 and game.visitor_team_score > 0:
-            cotations.filter('Sim').update(winning=True)
+            cotations.filter(name='Sim').update(winning=True)
         else:
-            cotations.filter('Não').update(winning=True)
+            cotations.filter(name='Não').update(winning=True)
 
 
 def vencedor_primeiro_tempo(game, all_cotations):
 
-    cotations = all_cotations.filter(kind='Vencedor Primeiro Tempo')
+    cotations = all_cotations.filter(kind='Vencedor do Primeiro Tempo')
 
     if cotations.count() > 0:
         cotations.update(winning=False)
@@ -498,11 +521,11 @@ def vencedor_primeiro_tempo(game, all_cotations):
         visita_placar = int(visita_placar)
 
         if casa_placar > visita_placar:
-            cotations.filter('1').update(winning=True)
+            cotations.filter(name='1').update(winning=True)
         elif casa_placar < visita_placar:
-            cotations.filter('2').update(winning=True)
+            cotations.filter(name='2').update(winning=True)
         else:
-            cotations.filter('X').update(winning=True)
+            cotations.filter(name='X').update(winning=True)
 
 
 def total_gols_visitante(game, all_cotations):
@@ -557,9 +580,9 @@ def visitante_marca_pelo_menos_um_gol(game, all_cotations):
     if cotations.count() > 0:
         cotations.update(winning=False)
         if game.visitor_team_score > 0:
-            cotations.filter('Sim').update(winning=True)
+            cotations.filter(name='Sim').update(winning=True)
         else:
-            cotations.filter('Não').update(winning=True)
+            cotations.filter(name='Não').update(winning=True)
 
 
 
@@ -578,42 +601,39 @@ def total_gols_encontro_acima_abaixo(game, all_cotations):
 
 def time_casa_nao_tomara_gols(game, all_cotations):
 
-    cotations = all_cotations.filter(kind='Time da Casa Não Tomará Gol(s)')
+    cotations = all_cotations.filter(kind='Time da Casa NÃO Tomará Gol(s)')
 
     if cotations.count() > 0:
         cotations.update(winning=False)
 
         if game.visitor_team_score > 0:
-            cotations.filter('Não').update(winning=True)
+            cotations.filter(name='Não').update(winning=True)
         else:
-            cotations.filter('Sim').update(winning=True)
+            cotations.filter(name='Sim').update(winning=True)
 
 
 def time_visitante_nao_tomara_gols(game, all_cotations):
 
-    cotations = all_cotations.filter(kind='Time Visitante Não Tomará Gol(s)')
+    cotations = all_cotations.filter(kind='Time Visitante NÃO Tomará Gol(s)')
 
     if cotations.count() > 0:
         cotations.update(winning=False)
 
         if game.local_team_score > 0:
-            cotations.filter('Não').update(winning=True)
+            cotations.filter(name='Não').update(winning=True)
         else:
-            cotations.filter('Sim').update(winning=True)
+            cotations.filter(name='Sim').update(winning=True)
 
 
 
 def time_casa_marca(game, all_cotations):
 
-    cotations = all_cotations.filter(kind='Time da casa Marca')
+    cotations = all_cotations.filter(kind='Time da Casa Marca')
 
     if cotations.count() > 0:
         cotations.update(winning=False)
 
         if game.local_team_score > 0:
-            cotations.filter('Sim').update(winning=True)
+            cotations.filter(name='Sim').update(winning=True)
         else:
-            cotations.filter('Não').update(winning=True)
-
-
-
+            cotations.filter(name='Não').update(winning=True)
