@@ -204,6 +204,10 @@
                     <a href="/seller/home" class="waves-effect waves-light btn white green-text-button">
                         Painel do Vendedor</a>
                 </li>
+                <li>
+                    <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
+                    Consultar Bilhete</a>
+                </li>
                 {% endif %}
 
                 {% if not is_seller and  not user.is_superuser %}
@@ -251,6 +255,10 @@
                 <li>
                     <a href="/seller/home" class="waves-effect waves-light btn white green-text-button ">
                         Painel do Vendedor</a>
+                </li>
+                <li>
+                    <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
+                        Consultar Bilhete</a>
                 </li>
                 {% endif %}
                 {% if not is_seller and  not user.is_superuser %}
