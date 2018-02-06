@@ -228,7 +228,7 @@ def consuming_game_cotation_api():
         request = requests.get(next)
         process_json_games_cotations(request.json())
     
-    processing_cotations_v2()
+    #processing_cotations_v2()
     
 
 

@@ -46,7 +46,8 @@ COUNTRY_TRANSLATE = {
 	"Portugal":"Portugal",
 	"United Arab Emirates":"Emirados Árabes",
 	"Finland":"Finlândia",
-	"Norway":"Noruega"
+	"Norway":"Noruega",
+	"South America": "América do Sul",
 
 }
 
@@ -133,7 +134,7 @@ class GameChampionship(TemplateResponseMixin, View):
 				
 
 		championship = Championship.objects.get( pk=int(self.kwargs["pk"]) )
-		championship_country = championship.name +" - "+ COUNTRY_TRANSLATE[championship.country]
+		championship_country = championship.name +" - "+ COUNTRY_TRANSLATE.get(championship.country, championship.country)
 		games = Game.objects.able_games().filter(championship=championship)
 	
 		is_seller = None
