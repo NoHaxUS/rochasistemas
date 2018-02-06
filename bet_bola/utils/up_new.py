@@ -95,13 +95,13 @@ def process_json_championship(json_response):
 
 def consuming_game_cotation_api():
 
-    before_time = tzlocal.now() - datetime.timedelta(days=3)
+    before_time = tzlocal.now() - datetime.timedelta(days=20)
 
     before_year = before_time.year
     before_month = before_time.month
     before_day = before_time.day
     
-    after_time = tzlocal.now() + datetime.timedelta(days=7)
+    after_time = tzlocal.now() + datetime.timedelta(days=1)
 
     after_year = after_time.year
     after_month = after_time.month
@@ -239,6 +239,7 @@ def processing_cotations_v2():
     for game in games_to_process:
 
         #not_calculaded_cotations = game.cotations.filter(winning__isnull=True)
+        print("Jogo:" + str(game.name) + "ID: " + str(game.pk))
         not_calculaded_cotations = game.cotations
         vencedor_encontro(game, not_calculaded_cotations)
         casa_visitante(game, not_calculaded_cotations)
@@ -262,7 +263,6 @@ def processing_cotations_v2():
         time_casa_nao_tomara_gols(game, not_calculaded_cotations)
         time_visitante_nao_tomara_gols(game, not_calculaded_cotations)
         time_casa_marca(game, not_calculaded_cotations)
-        
         game.odds_processed=True
         game.save()
 
