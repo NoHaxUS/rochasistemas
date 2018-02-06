@@ -722,7 +722,7 @@ $(document).ready(function () {
             var href = $(e).attr('href');
             if(url_array == href){
 
-                $(e).css('color','#5abf30');
+                $(e).css('color','#2f9048');
             }
 
         });
