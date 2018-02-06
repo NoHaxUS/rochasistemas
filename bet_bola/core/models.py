@@ -202,7 +202,6 @@ class Cotation(models.Model):
 	winning = models.NullBooleanField(verbose_name='Vencedor ?')
 	is_standard = models.BooleanField(default=False, verbose_name='Cota Padrão ?')
 	kind = models.CharField(max_length=100, verbose_name='Tipo')
-	handicap = models.FloatField(blank = True, null = True)
 	total = models.FloatField(blank = True, null = True)
 	objects = GamesManager()
 

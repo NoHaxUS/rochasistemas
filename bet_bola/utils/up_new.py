@@ -33,6 +33,108 @@ MARKET_NAME = {
 }
 
 
+MARKET_NAME_SMALL_TEAMS = {
+
+    "Result/Total Goals": "Resultado/Total de Gol(s)",
+    "Both Teams To Score": "2 Times Marcam",
+    "Total - Away": "Total de Gols do Visitante",
+    "Double Chance": "Dupla Chance",
+    "Total - Home": "Total de Gols da Casa",
+    "Win To Nil": "Vencer e não tomar Gol(s)",
+    "Correct Score": "Resultado Exato",
+    "3Way Result": "Vencedor do Encontro",
+    "Away Team Score a Goal": "Visitante Marca pelo menos Um Gol(s)",
+    "Home/Away": "Casa/Visitante",
+    "Over/Under": "Total de Gol(s) no Encontro, Acima/Abaixo",
+    "Clean Sheet - Home": "Time da Casa NÃO Tomará Gol(s)",
+    "Clean Sheet - Away": "Time Visitante NÃO Tomará Gol(s)",
+    "Results/Both Teams To Score": "Resultado/2 Times Marcam",
+    "Home Team Score a Goal": "Time da Casa Marca",
+    "Exact Goals Number": "Número Exato de Gol(s)",
+    "Odd/Even": "Placar Impar/Par",
+}
+
+"""
+Excludes:
+Acreano
+Alagoano
+Amazonense
+Baiano 1
+Baiano 2
+Brasiliense
+Copa Nordeste
+Capixaba
+Carioca 2
+Catarinense 1
+Cearense 1
+Cearense 2
+Gaucho 1
+Gaucho 2
+Goiano 1
+Maranhense
+Matrogrossense
+Mineiro 1
+Mineiro 2
+Paraense
+Paraibano
+Paranaense 1
+Paranaense 2
+Paulista A2
+Paulista A3
+Pernabucano 1
+Piauiense
+Portiguar
+Rondoniense
+Roraimense
+Sergipano
+Sul Matogrossense
+Tocansinense
+Amapaense
+Brasileiro U20
+Copa Verde
+Sao Paolo Youth Cup
+
+"""
+INVALID_ALL_COTES_CHAMPIONSHIPS = [
+    1288,
+    1289,
+    1290,
+    1291,
+    1292,
+    1293,
+    1294,
+    1295,
+    1298,
+    1299,
+    1300,
+    1301,
+    1302,
+    1303,
+    1304,
+    1305,
+    1306,
+    1307,
+    1308,
+    1309,
+    1310,
+    1311,
+    1312,
+    1314,
+    1315,
+    1316,
+    1317,
+    1318,
+    1319,
+    1320,
+    1321,
+    1322,
+    1323,
+    1324,
+    1385,
+    1386,
+    1456,
+]
+
 def renaming_cotations(string, total):
 
     COTATION_NAME = {
@@ -176,53 +278,33 @@ def save_odds(game_id, odds, max_cotation_value):
             cotations = bookmaker['odds']['data']
 
             for cotation in cotations:
-                if kind_name == '3Way Result' and cotation['label'] in ['1', '2', 'X']:
-                    cotation_value = max_cotation_value if float(
-                        cotation['value']) > max_cotation_value else float(cotation['value'])
-                    Cotation(name=renaming_cotations(cotation['label'], " " if cotation['total'] == None else cotation['total']).strip(),
-                             value=cotation_value,
-                             original_value=cotation_value,
-                             game=game_instance,
-                             is_standard=True,
-                             handicap=cotation['handicap'],
-                             total=cotation['total'],
-                             winning=cotation['winning'],
-                             kind=MARKET_NAME.setdefault(kind_name, kind_name)).save()
-                elif kind_name == 'Result/Total Goals':
-                    cotation_value = max_cotation_value if float(
-                        cotation['value']) > max_cotation_value else float(cotation['value'])
-                    Cotation(name=renaming_cotations(cotation['label'], " ").strip(),
-                             value=cotation_value,
-                             original_value=cotation_value,
-                             game=game_instance,
-                             is_standard=False,
-                             handicap=cotation['handicap'],
-                             total=cotation['total'],
-                             winning=cotation['winning'],
-                             kind=MARKET_NAME.setdefault(kind_name, kind_name)).save()
-                else:
-                    cotation_value = max_cotation_value if float(
-                        cotation['value']) > max_cotation_value else float(cotation['value'])
-                    cotation_name = renaming_cotations(cotation['label'], " " if cotation['total'] == None else cotation['total']).strip()
-                    
-                    if kind_name == 'Double Chance' and cotation['label'] in ['12','1X','X2']:
-                        cotation_label = cotation['label']
-                        if cotation_label == '1X':
-                            cotation_name = 'Casa/Empate'
-                        elif cotation_label == '2X':
-                            cotation_name = 'Visitante/Empate'
-                        else:
-                            cotation_name = 'Casa/Visitante'
 
-                    Cotation(name=cotation_name,
-                             value=cotation_value,
-                             original_value=cotation_value,
-                             game=game_instance,
-                             is_standard=False,
-                             handicap=cotation['handicap'],
-                             total=cotation['total'],
-                             winning=cotation['winning'],
-                             kind=MARKET_NAME.setdefault(kind_name, kind_name)).save()
+                cotation_value = max_cotation_value if float(cotation['value']) > max_cotation_value else float(cotation['value'])
+                cotation_name = renaming_cotations(cotation['label'], " " if cotation['total'] == None else cotation['total']).strip()
+                is_standard=False
+                cotation_label = cotation['label']
+
+                if kind_name == '3Way Result' and cotation['label'] in ['1', '2', 'X']:
+                    is_standard=True
+                if kind_name == 'Result/Total Goals':
+                    cotation_name = renaming_cotations(cotation['label'], " ").strip()
+                if kind_name == 'Double Chance' and cotation['label'] in ['12','1X','X2']:
+                    if cotation_label == '1X':
+                        cotation_name = 'Casa/Empate'
+                    elif cotation_label == '2X':
+                        cotation_name = 'Visitante/Empate'
+                    else:
+                        cotation_name = 'Casa/Visitante'
+
+                Cotation(name=cotation_name,
+                            value=cotation_value,
+                            original_value=cotation_value,
+                            game=game_instance,
+                            is_standard=is_standard,
+                            total=cotation['total'],
+                            winning=cotation['winning'],
+                            kind=MARKET_NAME.setdefault(kind_name, kind_name)).save()
+                            
             processed_markets.append(kind_name)
 
 
