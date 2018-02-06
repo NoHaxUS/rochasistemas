@@ -323,15 +323,15 @@ def processing_cotations_v2():
     print("Processando resultados.")
 
     games_to_process = Game.objects.annotate(cotations_count=Count('cotations')).filter(
-        odds_calculated=True, status_game="FT", odds_processed=False, ft_score__isnull=False, 
-        ht_score__isnull=False, cotations_count__gt=0)
+        status_game="FT", odds_processed=False, ft_score__isnull=False,
+        cotations_count__gt=0).exclude(ft_score='')
         
     print(games_to_process.count(), '\n')
 
     for game in games_to_process:
 
         #not_calculaded_cotations = game.cotations.filter(winning__isnull=True)
-        print("Jogo:" + str(game.name) + "ID: " + str(game.pk))
+        print("Jogo:" + str(game.name) + " ID: " + str(game.pk))
 
         not_calculaded_cotations = game.cotations
         vencedor_encontro(game, not_calculaded_cotations)
@@ -671,7 +671,7 @@ def total_gols_primeiro_tempo_acima_abaixo(game, all_cotations):
 
 def resultado_exato(game, all_cotations):
     cotations = all_cotations.filter(kind='Resultado Exato')
-    
+
     if cotations.count() > 0:
         result_ft = game.ft_score.replace('-',':')
         cotations.update(winning=False)
