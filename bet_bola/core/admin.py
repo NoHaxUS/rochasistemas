@@ -58,7 +58,7 @@ class GameAdmin(admin.ModelAdmin):
 	list_filter = (GamesWithNoFinalResults,)
 	fieldsets = (
 		(None, {
-			'fields': ('name','local_team_score', 'visitor_team_score','ft_score')
+			'fields': ('name','ft_score')
 		}),
 	)
 	list_display = ('name',)

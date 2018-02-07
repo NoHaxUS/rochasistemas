@@ -277,6 +277,11 @@ nav .brand-logo{
     color: #ffffff !important;
 }
 
+.alertify-notifier .ajs-message.ajs-visible{
+    padding: 10px;
+    border-radius: 40px;
+}
+
 .empty_game_set{
     text-align: center;
     font-size: 1.6rem;
