@@ -34,12 +34,22 @@ class BetTicketAdmin(admin.ModelAdmin):
 	search_fields_hint = 'Buscar pelo nome do Vendedor'
 	list_filter = ('bet_ticket_status','payment__who_set_payment_id','payment__status_payment','reward__status_reward')
 	list_display =('pk','user','creation_date','reward','value','cota_total','bet_ticket_status')
-	
+	fieldsets = (
+		(None, {
+			'fields': ('user',)
+		}),
+	)
+
 
 @admin.register(Cotation)
 class CotationAdmin(admin.ModelAdmin):
 	search_fields = ['game_id__name']
 	list_display = ('pk','game','original_value','value')
+	fieldsets = (
+		(None, {
+			'fields': ('name','original_value', 'value','game','is_standard','total')
+		}),
+	)
 
 
 @admin.register(Game)
@@ -51,7 +61,7 @@ class GameAdmin(admin.ModelAdmin):
 			'fields': ('name','local_team_score', 'visitor_team_score','ft_score')
 		}),
 	)
-	list_display = ('pk','name')
+	list_display = ('name',)
 	search_fields_hint = 'Buscar pelo nome do Jogo'
 
 
