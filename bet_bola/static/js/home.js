@@ -425,6 +425,8 @@ $(document).ready(function () {
                 AddBetToTicket(bet_info);            
                 Cookies.set('ticket_cookie', {});
                 RenderTicket();
+                UpdateCotationTotal();
+                $('.ticket-bet-value').trigger('keyup');
                 alertify.notify('Feito');
 
             }, function(){

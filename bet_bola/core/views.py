@@ -249,7 +249,7 @@ class BetView(View):
 
 	def post(self, request, *args, **kwargs):		
 		if int(request.POST['cotation_id']) < 0:			
-			request.session.flush()			
+			request.session['ticket'] = {}		
 			request.session.modified = True
 			return JsonResponse({}, status=204)
 
