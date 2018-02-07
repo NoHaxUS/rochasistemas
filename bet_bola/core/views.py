@@ -484,7 +484,7 @@ class PunterPayment(View):
 class PayedBets(TemplateResponseMixin,View):
 
 	
-	template_name = 'core/list_bets.html'
+	template_name = 'core/list_payed_bets.html'
 
 	def get(self, request):
 		bet_tickets = BetTicket.objects.filter(payment__who_set_payment_id=request.user.id).filter(payment__status_payment='Pago').order_by('-pk')

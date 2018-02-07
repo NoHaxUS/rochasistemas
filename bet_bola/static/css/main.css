@@ -14,6 +14,18 @@ body{
     font-family: 'Exo 2', sans-serif;
     border-radius: 30px;
 }
+
+tbody tr td {
+    text-align: center;
+}
+
+thead tr th {
+    text-align: center;
+}
+
+.bold {
+    font-weight: bold;
+}
 /* end Resets */
 
 .round{

@@ -71,17 +71,17 @@
                                         {{ticket.user.first_name}}
                                     {% endif %}
                                 </div>
-                                <div class="row">Data de criação: {{ticket.creation_date}}</div>
-                                <div class="row">Status do Pagamento: {{ticket.payment.status_payment}} </div>
+                                <div class="row"><span class='bold'>Data de Criação:</span> {{ticket.creation_date}}</div>
+                                <div class="row"><span class='bold'>Status do Pagamento:</span> {{ticket.payment.status_payment}} </div>
                                 <div class="row">
                                     {% if ticket.payment.payment_date %}
-                                        Última Atualização: {{ticket.payment.payment_date}}
+                                    <span class='bold'>Última Atualização:</span> {{ticket.payment.payment_date}}
                                     {% endif %}
                                 </div>
-                                <div class="row"> Status do Ticket: {{ticket.bet_ticket_status}}</div>
-                                <div class="row">Valor apostado: R$ {{valor_apostado}}</div>
-                                <div class="row">Cota Total: {{ticket.cota_total}}</div>
-                                <div class="row">Ganho Possível: R$ {{ ganho_possivel }}</div>
+                                <div class="row"><span class='bold'>Status do Ticket:</span> {{ticket.bet_ticket_status}}</div>
+                                <div class="row"><span class='bold'>Valor apostado:</span> R$ {{valor_apostado}}</div>
+                                <div class="row"><span class='bold'>Cota Total:</span> {{ticket.cota_total}}</div>
+                                <div class="row"><span class='bold'>Ganho Possível:</span> R$ {{ ganho_possivel }}</div>
                                 
                             </div>
                         </div>
@@ -103,7 +103,7 @@
                                         <tbody>
                                 {% for cotation in ticket.cotations.all %}
                                     <tr>
-                                      <td>{{cotation.game}}</td>
+                                      <td><span class='bold'>{{cotation.game}}</span></td>
                                         <td>
                                         {{cotation.kind}} <br>
                                         Cota: {{cotation.name}} : {{cotation.value}}
