@@ -3,11 +3,29 @@ from django.contrib.auth.admin import UserAdmin
 from .models import BetTicket,Cotation,Payment,Game,Championship,Reward
 from user.models import CustomUser
 from django.contrib.auth.models import Group
+from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
 # Register your models here.
 
 
 
 admin.site.unregister(Group)
+
+
+
+class GamesWithNoFinalResults(admin.SimpleListFilter):
+
+	title = _('Jogos sem resultado final')
+	parameter_name = 'games_with_no_final_results'
+
+	def lookups(self, request, model_admin):
+		return (
+			('list_all', _('Jogos sem resultado final')),
+		)
+
+	def queryset(self, request, queryset):
+		if self.value() == 'list_all':
+			return queryset.filter(status_game='FT', ft_score__isnull=True)
 
 
 @admin.register(BetTicket)
@@ -27,6 +45,13 @@ class CotationAdmin(admin.ModelAdmin):
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
 	search_fields = ['name']
+	list_filter = (GamesWithNoFinalResults,)
+	fieldsets = (
+		(None, {
+			'fields': ('name','local_team_score', 'visitor_team_score','ft_score')
+		}),
+	)
+	list_display = ('pk','name')
 	search_fields_hint = 'Buscar pelo nome do Jogo'
 
 

@@ -9,6 +9,9 @@ from django.db.models import Q
 import decimal
 from django.conf import settings
 import utils.timezone as tzlocal
+
+
+
 # Create your models here.
 
 
@@ -142,10 +145,10 @@ class Game(models.Model):
 	championship = models.ForeignKey('Championship',related_name='my_games', on_delete=models.CASCADE,verbose_name='Campeonato')
 	status_game = models.CharField(max_length=80,default=GAME_STATUS[0][1], choices=GAME_STATUS,verbose_name='Status do Jogo')
 	odds_calculated = models.BooleanField()
-	visitor_team_score = models.IntegerField(blank = True, null = True, verbose_name='Placar do Visitante')
 	local_team_score = models.IntegerField(blank = True, null = True, verbose_name='Placar Time de Casa')
+	visitor_team_score = models.IntegerField(blank = True, null = True, verbose_name='Placar do Visitante')
 	ht_score = models.CharField(max_length=80, null=True, verbose_name='Placar até o meio-tempo')
-	ft_score = models.CharField(max_length=80, null=True, verbose_name='Placar no final do Jogo')
+	ft_score = models.CharField(max_length=80, null=True, verbose_name='Placar no final do Jogo', help_text="Placar final Ex: 3-5 (Casa-Visita)")
 	odds_processed = models.BooleanField(default=False)
 
 	objects = GamesManager()

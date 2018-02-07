@@ -4,7 +4,8 @@ from user.models import GeneralConfigurations
 import utils.timezone as tzlocal
 import datetime
 from django.db.models import Count
-from django.db.models import Q
+from django.db.models import F
+
 
 
 MARKET_NAME = {
@@ -240,18 +241,37 @@ def process_json_games_cotations(json_response):
         max_cotation_value = 200
     games_array = json_response.get('data')
     for game in games_array:
-        Game(pk=game['id'],
-             name=game['localTeam']['data']['name'] +
-             " x " + game['visitorTeam']['data']['name'],
-             status_game=game['time']['status'],
-             local_team_score=game['scores']['localteam_score'],
-             visitor_team_score=game['scores']['visitorteam_score'],
-             ht_score=game['scores']['ht_score'],
-             ft_score=game['scores']['ft_score'],
-             odds_calculated=game['winning_odds_calculated'],
-             start_game_date=datetime.datetime.strptime(
-            game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
-            championship=Championship.objects.get(pk=game["league_id"])).save()
+
+   
+
+        if Game.objects.filter(pk=game['id']).exists():
+            ft_score = game['scores']['ft_score']
+            if not ft_score or ft_score == None:
+                ft_score = F('ft_score')
+            Game.objects.filter(pk=game['id']).update(
+                name=game['localTeam']['data']['name'] +
+                " x " + game['visitorTeam']['data']['name'],
+                status_game=game['time']['status'],
+                local_team_score=game['scores']['localteam_score'],
+                visitor_team_score=game['scores']['visitorteam_score'],
+                ht_score=game['scores']['ht_score'],
+                ft_score=ft_score,
+                odds_calculated=game['winning_odds_calculated'],
+                start_game_date=datetime.datetime.strptime(
+                game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"))
+        else:
+            Game.objects.create(pk=game['id'],
+                name=game['localTeam']['data']['name'] +
+                " x " + game['visitorTeam']['data']['name'],
+                status_game=game['time']['status'],
+                local_team_score=game['scores']['localteam_score'],
+                visitor_team_score=game['scores']['visitorteam_score'],
+                ht_score=game['scores']['ht_score'],
+                ft_score=game['scores']['ft_score'],
+                odds_calculated=game['winning_odds_calculated'],
+                start_game_date=datetime.datetime.strptime(
+                game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
+                championship=Championship.objects.get(pk=game["league_id"]))
         save_odds(game['id'], game['odds'], max_cotation_value)
     
 
