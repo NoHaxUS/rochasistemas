@@ -251,9 +251,7 @@ def process_json_games_cotations(json_response):
             Game.objects.filter(pk=game['id']).update(
                 name=game['localTeam']['data']['name'] +
                 " x " + game['visitorTeam']['data']['name'],
-                status_game=game['time']['status'],
-                local_team_score=game['scores']['localteam_score'],
-                visitor_team_score=game['scores']['visitorteam_score'],
+                status_game=game['time']['status'],                
                 ht_score=game['scores']['ht_score'],
                 ft_score=ft_score,
                 odds_calculated=game['winning_odds_calculated'],
@@ -263,9 +261,7 @@ def process_json_games_cotations(json_response):
             Game.objects.create(pk=game['id'],
                 name=game['localTeam']['data']['name'] +
                 " x " + game['visitorTeam']['data']['name'],
-                status_game=game['time']['status'],
-                local_team_score=game['scores']['localteam_score'],
-                visitor_team_score=game['scores']['visitorteam_score'],
+                status_game=game['time']['status'],                
                 ht_score=game['scores']['ht_score'],
                 ft_score=game['scores']['ft_score'],
                 odds_calculated=game['winning_odds_calculated'],
@@ -349,38 +345,39 @@ def processing_cotations_v2():
     print(games_to_process.count(), '\n')
 
     for game in games_to_process:
-
+        local_team_score = int(game.ft_score.split('-')[0])
+        visitor_team_score = int(game.ft_score.split('-')[1])
         #not_calculaded_cotations = game.cotations.filter(winning__isnull=True)
         print("Jogo:" + str(game.name) + " ID: " + str(game.pk))
 
         not_calculaded_cotations = game.cotations
-        vencedor_encontro(game, not_calculaded_cotations)
-        casa_visitante(game, not_calculaded_cotations)
-        dupla_chance(game, not_calculaded_cotations)
-        vencer_e_nao_tomar_gol(game, not_calculaded_cotations)
-        etapa_com_mais_gol(game, not_calculaded_cotations)
-        vencedor_nas_duas_etapas(game, not_calculaded_cotations)
-        numero_exato_de_gols(game, not_calculaded_cotations)
-        resultado_e_2_times_marcam(game, not_calculaded_cotations)
-        resultado_e_total_de_gols(game, not_calculaded_cotations)
-        total_de_gols_impar_par(game, not_calculaded_cotations)
-        resultado_exato_primeiro_tempo(game, not_calculaded_cotations)
-        os_dois_times_marcam(game, not_calculaded_cotations)
-        vencedor_primeiro_tempo(game, not_calculaded_cotations)
-        total_gols_visitante(game, not_calculaded_cotations)
-        total_gols_casa(game, not_calculaded_cotations)
-        total_gols_primeiro_tempo_acima_abaixo(game, not_calculaded_cotations)
-        resultado_exato(game, not_calculaded_cotations)
-        visitante_marca_pelo_menos_um_gol(game, not_calculaded_cotations)
-        total_gols_encontro_acima_abaixo(game, not_calculaded_cotations)
-        time_casa_nao_tomara_gols(game, not_calculaded_cotations)
-        time_visitante_nao_tomara_gols(game, not_calculaded_cotations)
-        time_casa_marca(game, not_calculaded_cotations)
+        vencedor_encontro(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        casa_visitante(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        dupla_chance(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        vencer_e_nao_tomar_gol(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        etapa_com_mais_gol(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        vencedor_nas_duas_etapas(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        numero_exato_de_gols(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        resultado_e_2_times_marcam(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        resultado_e_total_de_gols(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        total_de_gols_impar_par(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        resultado_exato_primeiro_tempo(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        os_dois_times_marcam(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        vencedor_primeiro_tempo(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        total_gols_visitante(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        total_gols_casa(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        total_gols_primeiro_tempo_acima_abaixo(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        resultado_exato(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        visitante_marca_pelo_menos_um_gol(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        total_gols_encontro_acima_abaixo(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        time_casa_nao_tomara_gols(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        time_visitante_nao_tomara_gols(game, not_calculaded_cotations, local_team_score, visitor_team_score)
+        time_casa_marca(game, not_calculaded_cotations, local_team_score, visitor_team_score)
         game.odds_processed=True
         game.save()
 
 
-def vencedor_encontro(game, all_cotations):
+def vencedor_encontro(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Vencedor do Encontro')
     
@@ -388,28 +385,28 @@ def vencedor_encontro(game, all_cotations):
     if cotations.count() > 0:
         cotations.update(winning=False)
 
-        if game.local_team_score > game.visitor_team_score:
+        if local_team_score > visitor_team_score:
             cotations.filter(name='1').update(winning=True)			
-        elif game.local_team_score < game.visitor_team_score:			
+        elif local_team_score < visitor_team_score:			
             cotations.filter(name='2').update(winning=True)			
         else:	
             cotations.filter(name='X').update(winning=True)
 
 
-def casa_visitante(game, all_cotations):
+def casa_visitante(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Casa/Visitante')
     
     if cotations.count() > 0:
         cotations.update(winning=False)
 
-        if game.local_team_score > game.visitor_team_score:
+        if local_team_score > visitor_team_score:
             cotations.filter(name='1').update(winning=True)
-        elif game.local_team_score < game.visitor_team_score:		
+        elif local_team_score < visitor_team_score:		
             cotations.filter(name='2').update(winning=True)
 
 
-def dupla_chance(game, all_cotations):
+def dupla_chance(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Dupla Chance')
 
@@ -419,10 +416,10 @@ def dupla_chance(game, all_cotations):
         casa_visitante = cotations.filter(name='Casa/Visitante')
         empate_visitante = cotations.filter(name='Empate/Visitante')
     
-        if game.local_team_score > game.visitor_team_score:
+        if local_team_score > visitor_team_score:
             casa_empate.update(winning=True)
             casa_visitante.update(winning=True)
-        elif game.local_team_score < game.visitor_team_score:
+        elif local_team_score < visitor_team_score:
             casa_visitante.update(winning=True)
             empate_visitante.update(winning=True)
         else:
@@ -430,21 +427,21 @@ def dupla_chance(game, all_cotations):
             empate_visitante.update(winning=True)
 
 
-def vencer_e_nao_tomar_gol(game, all_cotations):
+def vencer_e_nao_tomar_gol(game, all_cotations,local_team_score,visitor_team_score):
     
     cotations = all_cotations.filter(kind='Vencer e não tomar Gol(s)')
 
     if cotations.count() > 0:
         cotations.update(winning=False)
-        if game.local_team_score > game.visitor_team_score:
-            if game.visitor_team_score == 0:
+        if local_team_score > visitor_team_score:
+            if visitor_team_score == 0:
                 cotations.filter(name='1').update(winning=True)
-        elif game.local_team_score < game.visitor_team_score:
-            if game.local_team_score == 0:
+        elif local_team_score < visitor_team_score:
+            if local_team_score == 0:
                 cotations.filter(name='2').update(winning=True)   
 
 
-def etapa_com_mais_gol(game, all_cotations):
+def etapa_com_mais_gol(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Etapa com Mais Gol(s)')
 
@@ -452,7 +449,7 @@ def etapa_com_mais_gol(game, all_cotations):
     if cotations.count() > 0:
 
         casa_placar_1, visitante_placar_1 = game.ht_score.split('-')
-        casa_placar_2, visitante_placar_2 = game.ft_score.split('-')
+        casa_placar_2, visitante_placar_2 = (local_team_score,visitor_team_score)
         result_1_etapa = int(casa_placar_1) +  int(visitante_placar_1)
         result_2_etapa = ( int(casa_placar_2) + int(visitante_placar_2) ) - result_1_etapa
         cotations.update(winning=False)
@@ -465,7 +462,7 @@ def etapa_com_mais_gol(game, all_cotations):
             cotations.filter(name='X').update(winning=True)                     
 
 
-def vencedor_nas_duas_etapas(game, all_cotations):
+def vencedor_nas_duas_etapas(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Vencedor nas Duas Etapas')
 
@@ -473,7 +470,7 @@ def vencedor_nas_duas_etapas(game, all_cotations):
     if cotations.count() > 0:
 
         casa_placar_1, visitante_placar_1 = game.ht_score.split('-')
-        casa_placar_2, visitante_placar_2 = game.ft_score.split('-')
+        casa_placar_2, visitante_placar_2 = (local_team_score,visitor_team_score)
         result_1_etapa = int(casa_placar_1) - int(visitante_placar_1)
         result_2_etapa = int(casa_placar_2) - int(visitante_placar_2)
         cotations.update(winning=False)
@@ -485,14 +482,14 @@ def vencedor_nas_duas_etapas(game, all_cotations):
             cotations.filter(name='2').update(winning=True)             
 
 
-def numero_exato_de_gols(game, all_cotations):
+def numero_exato_de_gols(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Número Exato de Gol(s)')
 
     
     if cotations.count() > 0:
         
-        casa_placar, visitante_placar = game.ft_score.split('-')
+        casa_placar, visitante_placar = (local_team_score,visitor_team_score)
         result = int(casa_placar) + int(visitante_placar)
         cotations.update(winning=False)
 
@@ -502,14 +499,14 @@ def numero_exato_de_gols(game, all_cotations):
             cotations.filter(name=str(result)).update(winning=True)    
 
 
-def intervalo_e_final_de_jogo(game, all_cotations):
+def intervalo_e_final_de_jogo(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Intervalo/Final de Jogo')
 
     if cotations.count() > 0:
 
         casa_placar_1, visitante_placar_1 = game.ht_score.split('-')
-        casa_placar_2, visitante_placar_2 = game.ft_score.split('-')
+        casa_placar_2, visitante_placar_2 = (local_team_score,visitor_team_score)
         result_1_etapa = int(casa_placar_1) - int(visitante_placar_1)
         result_2_etapa = int(casa_placar_2) - int(visitante_placar_2)
         localTeam = game.name.split('x')[0].strip()
@@ -542,45 +539,45 @@ def intervalo_e_final_de_jogo(game, all_cotations):
                 cotations.filter(name="Empate/Empate").update(winning=True)
 
 
-def resultado_e_2_times_marcam(game, all_cotations):
+def resultado_e_2_times_marcam(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Resultado/2 Times Marcam')
 
     
     if cotations.count() > 0:
 
-        casa_placar, visitante_placar = game.ft_score.split('-')
+        casa_placar, visitante_placar = (local_team_score,visitor_team_score)
         result = int(casa_placar) - int(visitante_placar)
         cotations.update(winning=False)
 
         if result > 0:
-            if game.local_team_score > 0 and game.visitor_team_score > 0:                                   
+            if local_team_score > 0 and visitor_team_score > 0:                                   
                 cotations.filter(name="Casa/Sim").update(winning=True)                          
 
             else:            
                 cotations.filter(name="Casa/Não").update(winning=True)
 
         elif result < 0:
-            if game.local_team_score > 0 and game.visitor_team_score > 0:                                   
+            if local_team_score > 0 and visitor_team_score > 0:                                   
                 cotations.filter(name="Visitante/Sim").update(winning=True)
                 
             else:
                 cotations.filter(name="Visitante/Não").update(winning=True)                         
 
         else:
-            if game.local_team_score > 0 and game.visitor_team_score > 0:                                   
+            if local_team_score > 0 and visitor_team_score > 0:                                   
                 cotations.filter(name="Empate/Sim").update(winning=True)
 
             else:            
                 cotations.filter(name="Empate/Não").update(winning=True)                            
 
 
-def resultado_e_total_de_gols(game, all_cotations):
+def resultado_e_total_de_gols(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind="Resultado/Total de Gol(s)")
 
     if cotations.count() > 0:
-        casa_placar, visitante_placar = game.ft_score.split('-')
+        casa_placar, visitante_placar = (local_team_score,visitor_team_score)
         result = int(casa_placar) - int(visitante_placar)
         total_gols = int(casa_placar) + int(visitante_placar)
         cotations.update(winning=False)
@@ -596,13 +593,13 @@ def resultado_e_total_de_gols(game, all_cotations):
             cotations.filter(name__contains="Empate/Abaixo", total__gt=total_gols).update(winning=True)          
 
 
-def total_de_gols_impar_par(game, all_cotations):
+def total_de_gols_impar_par(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind="Placar Impar/Par")
            
     if cotations.count() > 0:
 
-        total_gols = int(game.ft_score.split('-')[0]) + int(game.ft_score.split('-')[1])
+        total_gols = int((local_team_score,visitor_team_score)[0]) + int((local_team_score,visitor_team_score)[1])
         cotations.update(winning=False)
 
         if total_gols == 0 or total_gols % 2 == 0:
@@ -611,7 +608,7 @@ def total_de_gols_impar_par(game, all_cotations):
             cotations.filter(name="Impar").update(winning=True)
 
 
-def resultado_exato_primeiro_tempo(game, all_cotations):
+def resultado_exato_primeiro_tempo(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Resultado Exato no Primeiro Tempo')
 
@@ -622,20 +619,20 @@ def resultado_exato_primeiro_tempo(game, all_cotations):
         winners.update(winning=True)
 
 
-def os_dois_times_marcam(game, all_cotations):
+def os_dois_times_marcam(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='2 Times Marcam')
 
     if cotations.count() > 0:
         cotations.update(winning=False)
 
-        if game.local_team_score > 0 and game.visitor_team_score > 0:
+        if local_team_score > 0 and visitor_team_score > 0:
             cotations.filter(name='Sim').update(winning=True)
         else:
             cotations.filter(name='Não').update(winning=True)
 
 
-def vencedor_primeiro_tempo(game, all_cotations):
+def vencedor_primeiro_tempo(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Vencedor do Primeiro Tempo')
 
@@ -654,28 +651,28 @@ def vencedor_primeiro_tempo(game, all_cotations):
             cotations.filter(name='X').update(winning=True)
 
 
-def total_gols_visitante(game, all_cotations):
+def total_gols_visitante(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Total de Gols do Visitante')
 
     if cotations.count() > 0:
         cotations.update(winning=False)
-        cotations.filter(name__contains='Acima', total__lt=game.visitor_team_score).update(winning=True)
-        cotations.filter(name__contains='Abaixo', total__gt=game.visitor_team_score).update(winning=True)
+        cotations.filter(name__contains='Acima', total__lt=visitor_team_score).update(winning=True)
+        cotations.filter(name__contains='Abaixo', total__gt=visitor_team_score).update(winning=True)
 
 
-def total_gols_casa(game, all_cotations):
+def total_gols_casa(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Total de Gols da Casa')
 
     if cotations.count() > 0:
         cotations.update(winning=False)
-        cotations.filter(name__contains='Acima', total__lt=game.local_team_score).update(winning=True)
-        cotations.filter(name__contains='Abaixo', total__gt=game.local_team_score).update(winning=True)
+        cotations.filter(name__contains='Acima', total__lt=local_team_score).update(winning=True)
+        cotations.filter(name__contains='Abaixo', total__gt=local_team_score).update(winning=True)
 
 
 
-def total_gols_primeiro_tempo_acima_abaixo(game, all_cotations):
+def total_gols_primeiro_tempo_acima_abaixo(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Total de Gols do Primeiro Tempo, Acima/Abaixo')
 
@@ -689,7 +686,7 @@ def total_gols_primeiro_tempo_acima_abaixo(game, all_cotations):
 
 
 
-def resultado_exato(game, all_cotations):
+def resultado_exato(game, all_cotations,local_team_score,visitor_team_score):
     cotations = all_cotations.filter(kind='Resultado Exato')
 
     if cotations.count() > 0:
@@ -699,67 +696,67 @@ def resultado_exato(game, all_cotations):
         winners.update(winning=True)
 
 
-def visitante_marca_pelo_menos_um_gol(game, all_cotations):
+def visitante_marca_pelo_menos_um_gol(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Visitante Marca pelo menos Um Gol(s)')
 
     if cotations.count() > 0:
         cotations.update(winning=False)
-        if game.visitor_team_score > 0:
+        if visitor_team_score > 0:
             cotations.filter(name='Sim').update(winning=True)
         else:
             cotations.filter(name='Não').update(winning=True)
 
 
 
-def total_gols_encontro_acima_abaixo(game, all_cotations):
+def total_gols_encontro_acima_abaixo(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Total de Gol(s) no Encontro, Acima/Abaixo')
 
     if cotations.count() > 0:
         cotations.update(winning=False)
-        casa_placar, visita_placar = game.ft_score.split('-')
+        casa_placar, visita_placar = (local_team_score,visitor_team_score)
         placar_total = float(casa_placar) + float(visita_placar)
         
         cotations.filter(name__contains='Acima', total__lt=placar_total).update(winning=True)
         cotations.filter(name__contains='Abaixo', total__gt=placar_total).update(winning=True)
 
 
-def time_casa_nao_tomara_gols(game, all_cotations):
+def time_casa_nao_tomara_gols(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Time da Casa NÃO Tomará Gol(s)')
 
     if cotations.count() > 0:
         cotations.update(winning=False)
 
-        if game.visitor_team_score > 0:
+        if visitor_team_score > 0:
             cotations.filter(name='Não').update(winning=True)
         else:
             cotations.filter(name='Sim').update(winning=True)
 
 
-def time_visitante_nao_tomara_gols(game, all_cotations):
+def time_visitante_nao_tomara_gols(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Time Visitante NÃO Tomará Gol(s)')
 
     if cotations.count() > 0:
         cotations.update(winning=False)
 
-        if game.local_team_score > 0:
+        if local_team_score > 0:
             cotations.filter(name='Não').update(winning=True)
         else:
             cotations.filter(name='Sim').update(winning=True)
 
 
 
-def time_casa_marca(game, all_cotations):
+def time_casa_marca(game, all_cotations,local_team_score,visitor_team_score):
 
     cotations = all_cotations.filter(kind='Time da Casa Marca')
 
     if cotations.count() > 0:
         cotations.update(winning=False)
 
-        if game.local_team_score > 0:
+        if local_team_score > 0:
             cotations.filter(name='Sim').update(winning=True)
         else:
             cotations.filter(name='Não').update(winning=True)

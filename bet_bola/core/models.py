@@ -144,23 +144,12 @@ class Game(models.Model):
 	start_game_date = models.DateTimeField(verbose_name='Início da Partida')
 	championship = models.ForeignKey('Championship',related_name='my_games', on_delete=models.CASCADE,verbose_name='Campeonato')
 	status_game = models.CharField(max_length=80,default=GAME_STATUS[0][1], choices=GAME_STATUS,verbose_name='Status do Jogo')
-	odds_calculated = models.BooleanField()
-	local_team_score = models.IntegerField(blank = True, null = True, verbose_name='Placar Time de Casa')
-	visitor_team_score = models.IntegerField(blank = True, null = True, verbose_name='Placar do Visitante')
+	odds_calculated = models.BooleanField()	
 	ht_score = models.CharField(max_length=80, null=True, verbose_name='Placar até o meio-tempo')
 	ft_score = models.CharField(max_length=80, null=True, verbose_name='Placar no final do Jogo', help_text="Placar final Ex: 3-5 (Casa-Visita)")
 	odds_processed = models.BooleanField(default=False)
 
-	objects = GamesManager()
-	
-	
-	def is_able(self):
-		if self.odds_calculated:
-			if self.visitor_team_score is not None and self.local_team_score is not None and self.ht_score is not None and self.ft_score is not None and self.cotations.count() > 0:
-				if len(self.ht_score) >= 3 and len(self.ft_score) >= 3:
-					return True
-
-		return False
+	objects = GamesManager()	
 
 	class Meta:
 		verbose_name = 'Jogo'
