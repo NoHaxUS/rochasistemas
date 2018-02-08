@@ -414,11 +414,12 @@ class BetTicketDetail(TemplateResponseMixin, View):
 			game_date = c.game.start_game_date.strftime('%d/%m/%Y %H:%M')
 			content += "<LEFT>" + game_date + "<BR>"
 			content += "<LEFT>"+ c.kind + "<BR>"
-			content += "<LEFT>" + c.name + " --> " + str(round(c.value, 2)) + "<BR>"			
-			if not c.game.odds_calculated:
+			content += "<LEFT>" + c.name + " --> " + str(round(c.value, 2)) + "<BR>"
+
+			if c.winning == None:
 				content += "<RIGHT> Status: Em Aberto <BR>"
 			else:
-				content += "<RIGHT> Status: " + ("Venceu" if c.winning else "Perdeu") + "<BR>"
+				content += "<RIGHT> Status: " + ("Acertou" if c.winning else "Não acertou") + "<BR>"
 			
 			content += "<CENTER>-------------------------------> <BR>"
 		content += "<CENTER> "+ settings.APP_VERBOSE_NAME

@@ -40,16 +40,15 @@ class PDF(View):
 			pdf.text(4,h,c.game.name)
 			h=h+14
 			pdf.text(4,h, c.game.start_game_date.strftime('%d/%m/%Y %H:%M'))
-			#pdf.text(4,h, c.game.start_game_date.strftime('%d/%m/%Y %H:%M'))
 			h=h+14			
 			pdf.text(4,h,c.kind)
 			h=h+14
-			pdf.text(4,h,c.name)			
+			pdf.text(4,h,"Cota:" + c.name)			
 			pdf.text(190,h,str(c.value))
 			h=h+14
-			if c.game.odds_calculated:
+			if not c.winning == None:
 				pdf.text(4,h,"Status:")			
-				pdf.text(140,h, ("Venceu" if c.winning else "Perdeu"))				
+				pdf.text(170,h, ("Acertou" if c.winning else "Não acertou"))				
 			else:
 				pdf.text(4,h,"Status:")			
 				pdf.text(180,h,"Em Aberto")

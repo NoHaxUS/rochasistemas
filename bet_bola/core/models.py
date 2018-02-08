@@ -72,59 +72,35 @@ class BetTicket(models.Model):
 		self.payment.who_set_payment = Seller.objects.get(pk=user.pk)
 		self.payment.save()
 
+
 	def reward_payment(self, user):
 		self.reward.status_reward = REWARD_STATUS[1][1]
 		self.reward.reward_date = tzlocal.now()
 		self.reward.who_rewarded = Seller.objects.get(pk=user.pk)
 		self.reward.save()
 
+
 	def cota_total(self):
+
 		cota_total = 1
-		
 		for cotation in self.cotations.all():
 			cota_total *= cotation.value
-		
 		return round(cota_total,2)
 
+
 	def update_ticket_status(self):
-		not_winning = False
-		if self.check_ticket_status:			
-			for c in self.cotations.all():
-				if c.winning is not None:
-					if not c.winning:
-						self.bet_ticket_status = BET_TICKET_STATUS[1][1]
-						self.save()
-						not_winning = True
-						return 'Status do ticket atualizado com sucesso. Perdeu'
-				else:
-					self.bet_ticket_status = BET_TICKET_STATUS[0][1]
-					self.save()
-					return 'Ticket aguardando resultado'
-			
-			if not not_winning:
+		
+		if not self.check_if_waiting_results():
+			if self.cotations.filter(winning=False).count() > 0:
+				self.bet_ticket_status = BET_TICKET_STATUS[1][1]
+				self.save()
+			else:
 				self.bet_ticket_status = BET_TICKET_STATUS[2][1]
 				self.save()
-				return 'Status do ticket atualizado com sucesso. Ganhou'
-		else:
-			self.bet_ticket_status = BET_TICKET_STATUS[0][1]
-			self.save()
-			return 'Ticket aguardando resultado'
-		
 			
 
-	def check_ticket_status(self):
-		ticket_finished = True
-
-		for c in self.cotations.all():
-			if not c.game.odds_calculated:
-				ticket_finished = False
-
-		return ticket_finished
-
-	@staticmethod
-	def processing_tickets():
-		for ticket in BetTicket.objects.all():
-			ticket.update_ticket_status()
+	def check_if_waiting_results(self):
+		return self.cotations.filter(winning=None).count() > 0
 
 
 	def __str__(self):

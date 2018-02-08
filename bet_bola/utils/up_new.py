@@ -1,5 +1,5 @@
 import requests
-from core.models import Game, Cotation, Championship
+from core.models import Game, Cotation, Championship, BetTicket
 from user.models import GeneralConfigurations
 import utils.timezone as tzlocal
 import datetime
@@ -230,6 +230,7 @@ def consuming_game_cotation_api():
         process_json_games_cotations(request.json())
     
     processing_cotations_v2()
+    process_tickets()
     
 
 
@@ -333,6 +334,11 @@ def save_odds(game_id, odds, max_cotation_value):
                             
             processed_markets.append(kind_name)
 
+
+def process_tickets():
+    tickets_to_process = BetTicket.objects.filter(bet_ticket_status='Aguardando Resultados')
+    for ticket in tickets_to_process:
+        ticket.update_ticket_status()
 
 def processing_cotations_v2():
 
