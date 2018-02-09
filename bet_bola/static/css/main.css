@@ -13,6 +13,13 @@ body{
 .btn{
     font-family: 'Exo 2', sans-serif;
     border-radius: 30px;
+    letter-spacing: 0.2px;
+}
+
+nav ul a.btn{
+    margin-left: 0px;
+    padding-left: 24px;
+    padding-right: 24px;
 }
 
 tbody tr td {
@@ -255,6 +262,7 @@ nav .brand-logo{
     font-family: 'Exo 2', sans-serif;
     font-size: 1.6rem;
     text-transform: capitalize;
+    margin-right: 15px;
 }
 
 .more_cotations_button{
@@ -345,9 +353,14 @@ span.step-links li.active a{
 .th-championsip-header{
     font-family: 'Exo 2', sans-serif;
     padding: 0;
-    background-color: #5198cc;
+    background-color: #467ba2;
     color: #ffffff;
     font-size: 1.6rem;
+}
+
+.download-instructions{
+    font-family: 'Exo 2', sans-serif;
+    font-size: 1.2rem;
 }
 
 .medium-icon{

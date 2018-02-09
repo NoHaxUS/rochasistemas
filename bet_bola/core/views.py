@@ -507,3 +507,11 @@ class PayedBets(TemplateResponseMixin,View):
 
 		return self.render_to_response({'bet_tickets':context, 'page_range':page_range})	
 
+
+
+class AppDownload(View, TemplateResponseMixin):
+
+	template_name = 'core/app_download.html'
+
+	def get(self, request):
+		return self.render_to_response({})

@@ -34,4 +34,5 @@ urlpatterns = [
     path('seller/punter_payment/', views.PunterPayment.as_view(), name='punter_payment'),
     path('config/', views.GeneralConf.as_view(), name='general_config'),
     path('reset_revenue/', views.ResetRevenue.as_view(), name='reset_revenue'),
+    path('app/', views.AppDownload.as_view(), name='app_download'),
 ]
