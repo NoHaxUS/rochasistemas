@@ -40,12 +40,6 @@ thead tr th {
 }
 
 /* color definitions*/
-.green-ge{
-    background-color: #3b9c00 !important;
-}
-.green-bb{
-    background-color: #377517 !important;
-}
 .yellow-bet{
     background-color: #f7f00e !important;
 }
@@ -55,8 +49,13 @@ thead tr th {
 .blue-button{
     background-color: #1969a2;
 }
-
 /* end color definitions*/
+
+
+.main-nav {
+    background-color: #3b9c00;
+}
+
 nav .brand-logo{
     font-family: 'Exo 2', sans-serif;
     padding: 0 15px;
@@ -130,6 +129,7 @@ nav .brand-logo{
 /* suvnav */
 .subnav{
     height: 16px;
+    background-color: #377517;
 }
 .main-section{
     margin-top: 10px;
@@ -426,6 +426,13 @@ span.step-links li.active a{
     color:#546921;
     font-size: 2rem;
     font-weight: bold;
+}
+
+.base-footer{
+    margin-top: 50px;
+    padding: 0px;
+    font-family: 'Exo 2', sans-serif;
+    background-color: #467ba2;
 }
 
 @media only screen and (max-width: 992px){
