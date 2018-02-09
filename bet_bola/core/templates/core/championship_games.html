@@ -1,12 +1,10 @@
-{% extends './base.html' %}
+{% extends './base_game_list.html' %}
+
 {% load filters %}
-{% block content%}
-<div class="col s12 l8">                
-    <!-- Bets collection-->
+
+{% block content %}
+<div class="col s12 l8">
     <div class="games-table-container">
-
-        
-
         <table class="bordered highlight white centered games-table hoverable">                         
             <thead>
                 <tr>
@@ -24,7 +22,6 @@
                     <th>MAIS</th>
                     </tr>
             </thead>
-
             <tbody>                                                                                                            
                     {% for game in games|order_by:"start_game_date" %}    
                         {% if game.cotations.all.count > 0 %}                                
@@ -56,4 +53,4 @@
         </table>
     </div>                    
 </div>                                
-{%endblock%}                
+{% endblock %}

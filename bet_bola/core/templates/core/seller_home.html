@@ -1,215 +1,182 @@
-<!DOCTYPE html>
-<html lang="en">    
-    {% load static %}
-<head>
-    {% include 'core/head.html' %}
-</head>
+{% extends './base_main.html' %}
 
-<body>
+{% block modals %}
+<!-- Pay Bet -->
+<div id="pay-bet" class="modal">
+    <div class="modal-content">
+            <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
 
-    <!-- Pay Bet -->
-    <div id="pay-bet" class="modal">
-        <div class="modal-content">
-                <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
+        <h5 class="center-align">Pagar Ganhador</h5>
+        <div class="divider"></div>
 
-            <h5 class="center-align">Pagar Ganhador</h5>
-            <div class="divider"></div>
-
-            <div class="row">
-                <form id="pay-punter-form" method="POST" class="col s12">{% csrf_token %}
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <i class="material-icons prefix">event_note</i>
-                      <input name="ticket" id="icon_prefix" type="number" class="validate ticket-pay-input">
-                      <label for="icon_prefix"># Ticket</label>
-                    </div>
-                    <div class="row">
-                        <div class="col s12">
-                            <button class="btn waves-effect waves-light right seller-pay-bet" type="submit">Pagar</button>
-                        </div>
-                    </div>
-                  </div>
-                </form>
-              </div>
-
-        </div>
-    </div>
-    <!-- end Pay Bet -->
-
-
-    <!-- Validate Bet -->
-    <div id="validate-bet" class="modal">
-        <div class="modal-content">
-                <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
-
-            <h5 class="center-align">Validar Ticket</h5>
-            <div class="divider"></div>
-
-            <div class="row">
-                <form method="POST" id="validate-ticket-form" class="col s12">{% csrf_token %}
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <i class="material-icons prefix">event_note</i>
-                      <input name="ticket" id="icon_prefix" type="number" class="validate ticket-number-input" autocomplete="off" autofocus>
-                      <label for="icon_prefix"># Ticket</label>
-                    </div>
-                    <div class="row">
-                        <div class="col s12">
-                            <button class="btn waves-effect waves-light right seller-validate-bet" type="submit">Validar</button>
-                        </div>
-                    </div>
-                  </div>
-                </form>
-              </div>
-
-        </div>
-    </div>
-    <!-- end Validate Bet -->
-
-
-    <nav>
-            <div class="nav-wrapper green-ge">
-                {% include 'core/header_info.html' %}
-
-                <ul class="right hide-on-med-and-down">
-                    {% if user.is_anonymous %}
-                    <li>
-                        <a href="#modal-login" class="waves-effect waves-light btn white green-text-button modal-trigger">
-                            Login</a>
-    
-                    </li>
-    
-                    <li>
-                        <a href="#modal-register" class="waves-effect waves-light btn white green-text-button modal-trigger">
-                            Cadastre-se</a>
-                    </li>
-    
-                    <li>
-                        <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
-                            Consultar Bilhete</a>
-                    </li>
-                    {% else %}
-                    <li class="user-logged-name">Olá, {{user}} - Faturamento: R$ {{faturamento}}</li>
-                    <li>
-                        <a href="/" class="waves-effect waves-light btn white green-text-button ">
-                            Voltar</a>
-                    </li>
-                    <li>
-                        <a href="/user/logout" class="waves-effect waves-light btn white green-text-button ">
-                            logout</a>
-                    </li>
-                    {% endif %}
-    
-                </ul>
-                <ul class="side-nav" id="mobile-menu">
-
-                        {% if user.is_anonymous %}
-                        <li>
-                            <a href="#modal-login" class="waves-effect waves-light btn white green-text-button modal-trigger">
-                                Login</a>
-        
-                        </li>
-        
-                        <li>
-                            <a href="#modal-register" class="waves-effect waves-light btn white green-text-button modal-trigger">
-                                Cadastre-se</a>
-                        </li>
-        
-                        <li>
-                            <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
-                                Consultar Bilhete</a>
-                        </li>
-                        {% else %}
-                        <li class="user-logged-name user-logged-mobile">Olá, {{user}} <br> Faturamento: R$ {{faturamento}}</li>
-                        <li>
-                            <a href="/" class="waves-effect waves-light btn white green-text-button ">
-                                Voltar</a>
-                        </li>
-                        <li>
-                            <a href="/user/logout" class="waves-effect waves-light btn white green-text-button ">
-                                logout</a>
-                        </li>
-                        {% endif %}
-    
-                </ul>
-    
-            </div>
-        </nav>
-
-    <main>
-        <div class="col s12 center-align">
-            <div class="subnav green-bb">
-                <span class="right white-text time"></span>
-            </div>
-        </div>
         <div class="row">
-            <div class="col s12 center-align hide-on-large-only">
-                <ul class="collapsible" data-collapsible="accordion">
-
-                    <li>
-                        <div class="collapsible-header collapsible-header-mobile">
-                            <i class="material-icons">play_circle_outline</i>Menu</div>
-                        <div class="collapsible-body white">
-                            <ul class="championship-list">
-
-                                <li class="center-align">
-                                    <a href="#validate-bet" class="modal-trigger">Validar Aposta</a>
-                                </li>
-                                <li class="center-align">
-                                    <a href="#pay-bet" class="modal-trigger">Pagar Ganhador</a>
-                                </li>
-                                <li class="center-align">
-                                    <a href="{% url 'core:payed_bets' %}" >Apostas pagas por min</a>
-                                </li>
-                                <li class="center-align">
-                                    <a href="/user/home/" >Apostas criadas por min</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                </ul>
-
-                <!-- Mobile menus -->
-            </div>
-            <!-- row -->
-            <div class="row main-section">
-                <div class="col s6 hide-on-med-and-down white hoverable hcenter seller-menu">
-
-                    <!-- Championship List Menu-->
-                    <div class="championship-header blue-c white-text center-align">
-                        Menu
+            <form id="pay-punter-form" method="POST" class="col s12">{% csrf_token %}
+                <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">event_note</i>
+                    <input name="ticket" id="icon_prefix" type="number" class="validate ticket-pay-input">
+                    <label for="icon_prefix"># Ticket</label>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <button class="btn waves-effect waves-light right seller-pay-bet" type="submit">Pagar</button>
                     </div>
+                </div>
+                </div>
+            </form>
+            </div>
+    </div>
+</div>
+<!-- end Pay Bet -->
+
+<!-- Validate Bet -->
+<div id="validate-bet" class="modal">
+    <div class="modal-content">
+            <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
+
+        <h5 class="center-align">Validar Ticket</h5>
+        <div class="divider"></div>
+
+        <div class="row">
+            <form method="POST" id="validate-ticket-form" class="col s12">{% csrf_token %}
+                <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">event_note</i>
+                    <input name="ticket" id="icon_prefix" type="number" class="validate ticket-number-input" autocomplete="off" autofocus>
+                    <label for="icon_prefix"># Ticket</label>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <button class="btn waves-effect waves-light right seller-validate-bet" type="submit">Validar</button>
+                    </div>
+                </div>
+                </div>
+            </form>
+            </div>
+    </div>
+</div>
+<!-- end Validate Bet -->
+{% endblock %}
+
+{% block nav_links_desktop %}
+
+<ul class="right hide-on-med-and-down">
+    {% if user.is_anonymous %}
+    <li>
+        <a href="#modal-login" class="waves-effect waves-light btn white green-text-button modal-trigger">
+            Login</a>
+    </li>
+    <li>
+        <a href="#modal-register" class="waves-effect waves-light btn white green-text-button modal-trigger">
+            Cadastre-se</a>
+    </li>
+    <li>
+        <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
+            Consultar Bilhete</a>
+    </li>
+    {% else %}
+    <li class="user-logged-name">Olá, {{user}} - Faturamento: R$ {{faturamento}}</li>
+    <li>
+        <a href="/" class="waves-effect waves-light btn white green-text-button ">
+            Voltar</a>
+    </li>
+    <li>
+        <a href="/user/logout" class="waves-effect waves-light btn white green-text-button ">
+            logout</a>
+    </li>
+    {% endif %}
+</ul>
+{% endblock %}
+
+{% block nav_links_mobile %}
+<ul class="side-nav" id="mobile-menu">
+    {% if user.is_anonymous %}
+    <li>
+        <a href="#modal-login" class="waves-effect waves-light btn white green-text-button modal-trigger">
+            Login</a>
+    </li>
+    <li>
+        <a href="#modal-register" class="waves-effect waves-light btn white green-text-button modal-trigger">
+            Cadastre-se</a>
+    </li>
+    <li>
+        <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
+            Consultar Bilhete</a>
+    </li>
+    {% else %}
+    <li class="user-logged-name user-logged-mobile">Olá, {{user}} <br> Faturamento: R$ {{faturamento}}</li>
+    <li>
+        <a href="/" class="waves-effect waves-light btn white green-text-button ">
+            Voltar</a>
+    </li>
+    <li>
+        <a href="/user/logout" class="waves-effect waves-light btn white green-text-button ">
+            logout</a>
+    </li>
+    {% endif %}
+
+</ul>
+{% endblock %}
+
+
+{% block mobile_menus %}
+<div class="col s12 center-align hide-on-large-only">
+        <ul class="collapsible" data-collapsible="accordion">
+            <li>
+                <div class="collapsible-header collapsible-header-mobile">
+                    <i class="material-icons">play_circle_outline</i>Menu</div>
+                <div class="collapsible-body white">
                     <ul class="championship-list">
-                        <li class="center-align valign-wrapper">
-                            <!-- <i class="material-icons">chevron_right</i> -->
+
+                        <li class="center-align">
                             <a href="#validate-bet" class="modal-trigger">Validar Aposta</a>
                         </li>
                         <li class="center-align">
                             <a href="#pay-bet" class="modal-trigger">Pagar Ganhador</a>
                         </li>
                         <li class="center-align">
-                            <a href="{% url 'core:payed_bets' %}" >Apostas Pagas por min</a>
+                            <a href="{% url 'core:payed_bets' %}" >Apostas pagas por min</a>
                         </li>
                         <li class="center-align">
-                            <a href="/user/home/" >Apostas Criadas por min</a>
+                            <a href="/user/home/" >Apostas criadas por min</a>
                         </li>
                     </ul>
-                    
                 </div>
-                
-            </div>
-    </main>
+            </li>
+        </ul>
+    </div>
+{% endblock %}
 
-    {% include 'core/general_js.html' %}
+{% block left_section_desktop %}
+{% endblock %}
 
-    <script>
+{% block content %}
+<div class="col s6 hide-on-med-and-down white hoverable hcenter seller-menu">
+    <div class="championship-header blue-c white-text center-align">
+        Menu
+    </div>
+    <ul class="championship-list">
+        <li class="center-align valign-wrapper">
+            <a href="#validate-bet" class="modal-trigger">Validar Aposta</a>
+        </li>
+        <li class="center-align">
+            <a href="#pay-bet" class="modal-trigger">Pagar Ganhador</a>
+        </li>
+        <li class="center-align">
+            <a href="{% url 'core:payed_bets' %}" >Apostas Pagas por min</a>
+        </li>
+        <li class="center-align">
+            <a href="/user/home/" >Apostas Criadas por min</a>
+        </li>
+    </ul>
+</div>
+
+<script>
     $(document).ready(function(){
-
         $('.collapsible').collapsible('open', 0);
-        
     });
-    </script>
+</script>
+{% endblock %}
 
-</body>
-
-</html>
+{% block right_section_desktop %}
+{% endblock %}

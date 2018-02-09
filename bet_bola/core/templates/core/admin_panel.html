@@ -1,0 +1,142 @@
+{% extends './base_main.html' %}
+
+{% block modals %}
+<!-- Mass Cotation Modifications -->
+<div id="reduce-cotations" class="modal">
+    <div class="modal-content">
+        <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
+
+        <h5 class="center-align">Modificar Cotas em Massa</h5>
+        <div class="divider"></div>
+
+        <div class="row">
+            <form class="col s12" id="reduce-cotations-form">{% csrf_token %}
+                <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">transform</i>
+                    <input name="percent" id="icon_prefix" type="number" class="validate percent-reduction" autocomplete="off" autofocus>
+                    <label for="icon_prefix">Setar para X % do valor original (1-100)</label>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <button class="btn waves-effect waves-light right btn-reduce-cotations">Reduzir</button>
+                    </div>
+                </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- end Mass Cotation Modifications  -->
+    
+<!-- Reset Revenues -->
+<div id="reset-revenue" class="modal">
+    <div class="modal-content">
+            <a href="#" class="modal-close"><i class="material-icons right">close</i></a>
+
+        <h5 class="center-align">Zerar Faturamento</h5>
+        <div class="divider"></div>
+
+        <div class="row">
+            <form class="col s12" id="reset-revenue-form">{% csrf_token %}
+                <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">face</i>
+                    <input name="percent" id="icon_prefix" type="number" class="validate reset-revenue" autocomplete="off" autofocus>
+                    <label for="icon_prefix">Digite a ID do Vendedor</label>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <button class="btn waves-effect waves-light right btn-reset-revenue">Zerar</button>
+                    </div>
+                </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- end Reset Revenues   -->
+{% endblock %}
+
+{% block nav_links_desktop %}
+<ul class="right hide-on-med-and-down">
+    {% if user.is_anonymous %}
+    <li>
+        <a href="#modal-login" class="waves-effect waves-light btn white green-text-button modal-trigger">
+            Login</a>
+    </li>
+    {% else %}
+    <li class="user-logged-name">Olá, {{user}}</li>
+    <li>
+        <a href="/admin/" class="waves-effect waves-light btn white green-text-button ">
+            Voltar</a>
+    </li>
+    <li>
+        <a href="/user/logout" class="waves-effect waves-light btn white green-text-button ">
+            logout</a>
+    </li>
+    {% endif %}
+</ul>
+{% endblock %}
+
+{% block nav_links_mobile %}
+<ul class="side-nav" id="mobile-menu">
+    <li>
+        <a href="#modal-login" class="waves-effect waves-light btn white green-text-button modal-trigger">
+            Login</a>
+    </li>
+    <li>
+        <a href="#modal-register" class="waves-effect waves-light btn white green-text-button">
+            Cadastre-se</a>
+    </li>
+    <li>
+        <a href="consultar.html" class="waves-effect waves-light btn white green-text-button">
+            Consultar Bilhete</a>
+    </li>
+</ul>
+{% endblock %}
+
+
+{% block mobile_menus %}
+<div class="col s12 center-align hide-on-large-only">
+    <ul class="collapsible" data-collapsible="accordion">
+        <li>
+            <div class="collapsible-header">
+                <i class="material-icons">assistant_photo</i>Menu</div>
+            <div class="collapsible-body white">
+                <ul class="championship-list">
+
+                    <li class="center-align">
+                        <a href="#reduce-cotations" class="modal-trigger">Modificar Cotas em Massa</a>
+                    </li>
+                    <li class="center-align">
+                        <a href="#reset-revenue" class="modal-trigger">Zerar Faturamento do Vendedor</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row main-section">
+    <div class="col s6 hide-on-med-and-down white hoverable hcenter seller-menu">
+        <div class="championship-header blue-c white-text center-align">Menu</div>
+        <ul class="championship-list">
+            <li class="center-align valign-wrapper">
+                <a href="#reduce-cotations" class="modal-trigger">Modificar Cotas em Massa</a>
+            </li>
+            <li class="center-align valign-wrapper">
+                <a href="#reset-revenue" class="modal-trigger">Zerar Faturamento do Vendedor</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $('.collapsible').collapsible('open', 0);
+    });
+</script>
+{% endblock %}
