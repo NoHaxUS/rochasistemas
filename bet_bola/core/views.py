@@ -384,7 +384,7 @@ class ResetSellerRevenue(View):
 
 
 class GeneralConf(TemplateResponseMixin, View):
-	template_name = 'core/admin_conf.html'
+	template_name = 'core/admin_panel.html'
 
 	def get(self, request, *args, **kwargs):
 		if not request.user.is_superuser:

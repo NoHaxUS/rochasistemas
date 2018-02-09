@@ -464,7 +464,7 @@ $(document).ready(function () {
 
                     alertify.confirm('Confirmação','Confirmar aposta?', function(){
 
-                        $.post('/bet_ticket/', {'ticket_value': ticket_value} , function(data, status, rq){
+                        $.post('/ticket/', {'ticket_value': ticket_value} , function(data, status, rq){
                             
                             var dataJSON = jQuery.parseJSON(data);
 
@@ -502,7 +502,7 @@ $(document).ready(function () {
                                 alertify.alert("Sucesso", "Ticket N° <span class='ticket-number-after-create'>" + dataJSON.ticket_pk + "</span>"+
                             "<br /> Para acessar detalhes do Ticket, entre no painel do cliente." +
                             "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket." + 
-                            "<br /><br /> <a href='/bet_ticket/"+ dataJSON.ticket_pk + "' class='waves-effect waves-light btn text-white see-ticket-after-create hoverable'> Ver Ticket </a>");
+                            "<br /><br /> <a href='/ticket/"+ dataJSON.ticket_pk + "' class='waves-effect waves-light btn text-white see-ticket-after-create hoverable'> Ver Ticket </a>");
                             }
                             console.log(dataJSON.status);
                         }, 'text');//end post
@@ -553,7 +553,7 @@ $(document).ready(function () {
             }else{
                 if(ticket_value != ''){                                                               
                         alertify.confirm('Confirmação','Confirmar aposta?', function(){                        
-                        $.post('/bet_ticket/', {'ticket_value': ticket_value, 'nome':nome, 'telefone':telefone} , function(data, status, rq){
+                        $.post('/ticket/', {'ticket_value': ticket_value, 'nome':nome, 'telefone':telefone} , function(data, status, rq){
                             
                             var dataJSON = jQuery.parseJSON(data);
 
@@ -589,7 +589,7 @@ $(document).ready(function () {
                                 alertify.alert("Sucesso", "Ticket N° <span class='ticket-number-after-create'>" + dataJSON.ticket_pk + "</span>"+
                             "<br /> Para acessar detalhes do Ticket, entre no painel do cliente." +
                             "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket." +
-                            "<br /><br /> <a href='/bet_ticket/"+ dataJSON.ticket_pk + "' class='waves-effect waves-light btn text-white see-ticket-after-create hoverable'> Ver Ticket </a>");
+                            "<br /><br /> <a href='/ticket/"+ dataJSON.ticket_pk + "' class='waves-effect waves-light btn text-white see-ticket-after-create hoverable'> Ver Ticket </a>");
                             
                             }
                             console.log(dataJSON.status);
@@ -709,11 +709,10 @@ $(document).ready(function () {
             if (ticket_num == '') {
                 alertify.alert('Erro', 'Você deve informar o número do ticket.');
             }else{
-                var Url = '/bet_ticket/' + ticket_num;
+                var Url = '/ticket/' + ticket_num;
                 $(this).attr('action', Url);
                 $(this).submit();
             }
-            
         });
     /** END CONSULTAR COTAS **/
     

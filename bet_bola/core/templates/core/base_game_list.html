@@ -201,7 +201,7 @@
         <li class="user-logged-name">Olá, {{user}}</li>
         {% if is_seller %}
         <li>
-            <a href="{% url 'core:core_seller_home' %}" class="waves-effect waves-light btn white green-text-button">
+            <a href="{% url 'user:user_seller_home' %}" class="waves-effect waves-light btn white green-text-button">
                 Painel do Vendedor</a>
         </li>
         <li>
@@ -210,7 +210,7 @@
         </li>
         {% endif %} {% if not is_seller and not user.is_superuser %}
         <li>
-            <a href="{% url 'user:user_home' %}" class="waves-effect waves-light btn white green-text-button">
+            <a href="{% url 'user:user_punter_home' %}" class="waves-effect waves-light btn white green-text-button">
                 Painel do Cliente</a>
         </li>
         <li>
@@ -257,7 +257,7 @@
         <li class="user-logged-name user-logged-mobile">Olá, {{user}}</li>
         {% if is_seller %}
         <li>
-            <a href="/seller/home" class="waves-effect waves-light btn white green-text-button ">
+            <a href="{% url 'user:user_seller_home' %}" class="waves-effect waves-light btn white green-text-button ">
                 Painel do Vendedor</a>
         </li>
         <li>
@@ -266,7 +266,7 @@
         </li>
         {% endif %} {% if not is_seller and not user.is_superuser %}
         <li>
-            <a href="/user/home" class="waves-effect waves-light btn white green-text-button ">
+            <a href="{% url 'user:user_punter_home' %}" class="waves-effect waves-light btn white green-text-button ">
                 Painel do Cliente</a>
         </li>
         <li>
@@ -281,12 +281,12 @@
         {% endif %}
     
         <li>
-            <a href="/user/logout" class="waves-effect waves-light btn white green-text-button ">
+            <a href="{% url 'user:user_logout' %}" class="waves-effect waves-light btn white green-text-button ">
                 logout</a>
         </li>
         {% endif %}
         <li>
-            <a href="/app/" class="waves-effect waves-light btn">
+            <a href="{% url 'core:core_app_download' %}" class="waves-effect waves-light btn">
                 <i class="material-icons left">android</i>app</a>
         </li>
     </ul>
@@ -303,10 +303,10 @@
                 <div class="collapsible-body white">
                     <ul class="championship-list championship-list-mobile">
                         <li>
-                            <a href="{% url 'core:home' %}" class="">Jogos de Hoje</a>
+                            <a href="{% url 'core:core_home' %}" class="">Jogos de Hoje</a>
                         </li>
                         <li>
-                            <a href="{% url 'core:tomorrow_games' %}" class="">Jogos de Amanhã</a>
+                            <a href="{% url 'core:core_tomorrow_games' %}" class="">Jogos de Amanhã</a>
                         </li>
                     </ul>
     
@@ -321,7 +321,7 @@
                                 <ul class='ul-championship-title'>
                                     {%for championship in championships%} {% if championship.country == country%}
                                     <li class="center-align">
-                                        <a href="{% url 'core:game_championship' pk=championship.pk%}" class="championship-li">{{ championship }}</a>
+                                        <a href="{% url 'core:core_championship_get' pk=championship.pk %}" class="championship-li">{{ championship }}</a>
                                     </li>
                                     {%endif%} {%endfor%}
                                 </ul>
@@ -401,10 +401,10 @@
             </div>
             <ul class="championship-list">
                 <li class="center-align">
-                    <a href="{% url 'core:home' %}" class="">Jogos de Hoje</a>
+                    <a href="{% url 'core:core_home' %}" class="">Jogos de Hoje</a>
                 </li>
                 <li class="center-align">
-                    <a href="{% url 'core:tomorrow_games' %}" class="">Jogos de Amanhã</a>
+                    <a href="{% url 'core:core_tomorrow_games' %}" class="">Jogos de Amanhã</a>
                 </li>
             </ul>
             <ul class="collapsible ul-collapsible" data-collapsible="accordion">
@@ -418,7 +418,7 @@
                         <ul class='ul-championship-title'>
                             {%for championship in championships%} {% if championship.country == country%}
                             <li class="center-align">
-                                <a href="{% url 'core:game_championship' pk=championship.pk%}" class="championship-li">{{ championship }}</a>
+                                <a href="{% url 'core:core_championship_get' pk=championship.pk%}" class="championship-li">{{ championship }}</a>
                             </li>
                             {%endif%} {%endfor%}
                         </ul>

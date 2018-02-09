@@ -21,7 +21,7 @@ import json
 
 class PunterHome(View, TemplateResponseMixin):
 
-    template_name = 'user/user_home.html'
+    template_name = 'user/punter_home.html'
 
     def get(self, request, *args, **kwargs):
 
@@ -91,31 +91,27 @@ class SellerPayPunter(View):
 
 class SellerPayedBets(View, TemplateResponseMixin):
 
-	template_name = 'core/list_payed_bets.html'
+	template_name = 'user/seller_payed_bets.html'
 
 	def get(self, request):
 		bet_tickets = BetTicket.objects.filter(payment__who_set_payment_id=request.user.id).filter(payment__status_payment='Pago').order_by('-pk')
 
 		paginator = Paginator(bet_tickets, 10)        
 		page = request.GET.get('page')
-
 		context = paginator.get_page(page)
-
-		index = context.number - 1  # edited to something easier without index
-		# This value is maximum index of your pages, so the last page - 1
+		index = context.number - 1
 		max_index = len(paginator.page_range)
-		# You want a range of 7, so lets calculate where to slice the list
 		start_index = index - 3 if index >= 3 else 0
 		end_index = index + 3 if index <= max_index - 3 else max_index
-		# Get our new page range. In the latest versions of Django page_range returns 
-		# an iterator. Thus pass it to list, to make our slice possible again.
+
 		page_range = list(paginator.page_range)[start_index:end_index]		
 
 		return self.render_to_response({'bet_tickets':context, 'page_range':page_range})	
 
 
 class SellerHome(TemplateResponseMixin, View):
-	template_name = 'core/seller_home.html'		
+    
+	template_name = 'user/seller_home.html'
 
 	def get(self, request, *args, **kwargs):
 
@@ -125,7 +121,6 @@ class SellerHome(TemplateResponseMixin, View):
 		for ticket in tickets_revenue:
 			revenue_total += ticket.value
 
-		
 		context = {'faturamento': revenue_total}
 		return self.render_to_response(context)
 
@@ -198,7 +193,7 @@ class UserLogout(View):
     
     def get(self, request, *args, **kwargs):
         logout(request)
-        response = redirect('core:home')
+        response = redirect('core:core_home')
         response.delete_cookie('ticket_cookie')
         return response
 
