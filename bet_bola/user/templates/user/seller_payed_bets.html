@@ -1,4 +1,4 @@
-{% extends './base_main.html' %}
+{% extends 'core/base_main.html' %}
 
 {% block modals %}
 {% endblock %}
@@ -22,14 +22,14 @@
     <li class="user-logged-name">Olá, {{user}}</li>
     {% if is_seller %}
     <li>
-        <a href="/seller/home" class="waves-effect waves-light btn white green-text-button ">
+        <a href="{% url 'user:user_seller_home' %}" class="waves-effect waves-light btn white green-text-button ">
             Painel do Vendedor</a>
     </li>
     {% endif %}
 
     {% if not is_seller and  not user.is_superuser %}
     <li>
-        <a href="/seller/home" class="waves-effect waves-light btn white green-text-button ">
+        <a href="{% url 'user:user_seller_home' %}" class="waves-effect waves-light btn white green-text-button ">
             Painel do Vendedor</a>
     </li>
     {% endif %}
@@ -42,7 +42,7 @@
     {% endif %}
 
     <li>
-        <a href="/user/logout" class="waves-effect waves-light btn white green-text-button ">
+        <a href="{% url 'user:user_logout' %}" class="waves-effect waves-light btn white green-text-button ">
             logout</a>
     </li>
     {% endif %}
@@ -69,13 +69,13 @@
     <li class="user-logged-name user-logged-mobile">Olá, {{user}}</li>
     {% if is_seller %}
     <li>
-        <a href="/seller/home" class="waves-effect waves-light btn white green-text-button ">
+        <a href="{% url 'user:user_seller_home' %}" class="waves-effect waves-light btn white green-text-button ">
             Painel do Vendedor</a>
     </li>
     {% endif %}
     {% if not is_seller and  not user.is_superuser %}
     <li>
-        <a href="/seller/home" class="waves-effect waves-light btn white green-text-button ">
+        <a href="{% url 'user:user_seller_home' %}" class="waves-effect waves-light btn white green-text-button ">
             Voltar</a>
     </li>
     {% endif %}
@@ -88,7 +88,7 @@
     {% endif %}
 
     <li>
-        <a href="/user/logout" class="waves-effect waves-light btn white green-text-button ">
+        <a href="{% url 'user:user_logout' %}" class="waves-effect waves-light btn white green-text-button ">
             logout</a>
     </li>
     {% endif %}
@@ -125,7 +125,7 @@
                         {{ ticket.payment.status_payment }}
                     </td>
                     <td>
-                        <a href="/bet_ticket/{{ ticket.pk }}"><i class="medium-icon material-icons">open_in_new</i> </a>
+                        <a href="{% url 'core:core_ticket_get' pk=ticket.pk %}"><i class="medium-icon material-icons">open_in_new</i> </a>
                         </td>
                 </tr>
                 {% empty %}

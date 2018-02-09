@@ -1,4 +1,4 @@
-{% extends './base_main.html' %}
+{% extends 'core/base_main.html' %}
 
 {% block modals %}
 <!-- Pay Bet -->
@@ -135,10 +135,10 @@
                             <a href="#pay-bet" class="modal-trigger">Pagar Ganhador</a>
                         </li>
                         <li class="center-align">
-                            <a href="{% url 'core:payed_bets' %}" >Apostas pagas por min</a>
+                            <a href="{% url 'user:user_seller_payed_bets' %}" >Apostas pagas por min</a>
                         </li>
                         <li class="center-align">
-                            <a href="/user/home/" >Apostas criadas por min</a>
+                            <a href="{% url 'user:user_punter_home' %}" >Apostas criadas por min</a>
                         </li>
                     </ul>
                 </div>
@@ -163,10 +163,10 @@
             <a href="#pay-bet" class="modal-trigger">Pagar Ganhador</a>
         </li>
         <li class="center-align">
-            <a href="{% url 'core:payed_bets' %}" >Apostas Pagas por min</a>
+            <a href="{% url 'user:user_seller_payed_bets' %}" >Apostas Pagas por min</a>
         </li>
         <li class="center-align">
-            <a href="/user/home/" >Apostas Criadas por min</a>
+            <a href="{% url 'user:user_punter_home' %}" >Apostas Criadas por min</a>
         </li>
     </ul>
 </div>
