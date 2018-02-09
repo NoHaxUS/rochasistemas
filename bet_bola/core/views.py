@@ -53,8 +53,8 @@ COUNTRY_TRANSLATE = {
 
 
 class Home(TemplateResponseMixin, View):
-	template_name = 'core/index.html'
 
+	template_name = 'core/index.html'
 
 	def get(self, request, *args, **kwargs):
 		championships = list()
@@ -65,16 +65,13 @@ class Home(TemplateResponseMixin, View):
 			if i.my_games.able_games().count() > 0:
 				championships.append(i)
 				if i.my_games.today_able_games().count() > 0:
-
 					game_set = Game.objects.today_able_games().filter(championship=i)
-					
 					dict_championship_games[i] = game_set
 
 				if i.country not in country:					
 					country.append(i.country)
 
 		is_seller = None
-
 		if request.user.is_authenticated:
 			try:
 				seller = Seller.objects.get(pk=int(request.user.pk))
@@ -88,8 +85,8 @@ class Home(TemplateResponseMixin, View):
 		return self.render_to_response(context)
 
 class TomorrowGames(Home):
-	template_name = 'core/index.html'
 
+	template_name = 'core/index.html'
 
 	def get(self, request, *args, **kwargs):
 		championships = list()
@@ -119,6 +116,7 @@ class TomorrowGames(Home):
 
 
 class GameChampionship(TemplateResponseMixin, View):
+
 	template_name = 'core/championship_games.html'
 
 	def get(self, request, *args, **kwargs):
@@ -132,7 +130,6 @@ class GameChampionship(TemplateResponseMixin, View):
 				if i.country not in country:					
 					country.append(i.country)
 				
-
 		championship = Championship.objects.get( pk=int(self.kwargs["pk"]) )
 		championship_country = championship.name +" - "+ COUNTRY_TRANSLATE.get(championship.country, championship.country)
 		games = Game.objects.able_games().filter(championship=championship)
@@ -148,75 +145,6 @@ class GameChampionship(TemplateResponseMixin, View):
 		context = {'games': games ,'championships': championships, 'is_seller':is_seller,'countries':country,'countries_dict':COUNTRY_TRANSLATE,'championship_country':championship_country }
 		
 		return self.render_to_response(context)
-
-
-class GeneralConf(TemplateResponseMixin, View):
-	template_name = 'core/admin_conf.html'
-
-	def get(self, request, *args, **kwargs):
-		if not request.user.is_superuser:
-			return redirect(to='/')
-		context = {}
-		return self.render_to_response(context)
-
-
-class SellerHome(TemplateResponseMixin, View):
-	template_name = 'core/seller_home.html'		
-
-	def get(self, request, *args, **kwargs):
-
-		tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=request.user.pk, payment__seller_was_rewarded=False)
-		revenue_total = 0
-
-		for ticket in tickets_revenue:
-			revenue_total += ticket.value
-
-		
-		context = {'faturamento': revenue_total}
-		return self.render_to_response(context)
-
-
-class ResetRevenue(View):
-
-
-	def get(self, request, *args, **kwargs):
-
-		if not request.user.is_superuser:
-			return JsonResponse({'status': 400},json_dumps_params={'ensure_ascii': False})
-
-		seller_id = int(request.GET['seller_id'])
-
-		tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=seller_id, payment__seller_was_rewarded=False)
-		revenue_total = 0
-
-		for ticket in tickets_revenue:
-			revenue_total += ticket.value
-	
-		try:
-			seller = Seller.objects.get(pk=seller_id)
-			
-			dict_response = {'nome': seller.full_name(), 'cpf': seller.cpf, 
-				'telefone': seller.cellphone,'faturamento': revenue_total, 'status': 200}
-			
-			return JsonResponse(dict_response,json_dumps_params={'ensure_ascii': False})
-
-
-		except Seller.DoesNotExist:
-			return JsonResponse({'status': 404},json_dumps_params={'ensure_ascii': False})
-
-
-	def post(self, request, *args, **kwargs):
-		seller_id = int(request.POST['seller_id'])
-		payments = Payment.objects.filter(who_set_payment_id=seller_id, seller_was_rewarded=False)
-
-		for payment in payments:
-			payment.seller_was_rewarded = True
-			payment.save()
-
-		return JsonResponse({'status': 200},json_dumps_params={'ensure_ascii': False})
-
-
-
 
 
 class CotationsView(View):
@@ -240,8 +168,6 @@ class CotationsView(View):
 			cotations_serialized[cotation_market] = serializers.serialize("json", cotations_by_kind[cotation_market] )
 
 		data = json.dumps(cotations_serialized)
-		#print(data)
-
 		return HttpResponse( data, content_type='application/json' )
 
 
@@ -295,7 +221,6 @@ class CreateTicketView(View):
 			if request.POST.get('ticket_value') == '':
 				return JsonResponse({'status':400})
 			
-
 			ticket_bet_value = round(float( request.POST.get('ticket_value') ), 2)
 
 			client_name = request.POST.get('nome')
@@ -321,7 +246,6 @@ class CreateTicketView(View):
 
 			if ticket_bet_value <= 0:
 				return JsonResponse({'status':400})
-
 	
 			ticket = BetTicket(
 				user=CustomUser.objects.get(pk=request.user.pk),
@@ -330,8 +254,6 @@ class CreateTicketView(View):
 				payment=Payment.objects.create(payment_date=None), 
 				reward=Reward.objects.create(reward_date=None),				
 				)
-
-
 				
 			cotation_sum = 1
 			game_cotations = []
@@ -345,8 +267,6 @@ class CreateTicketView(View):
 					cotation_sum *= game_contation.value
 				except Cotation.DoesNotExist:
 					return JsonResponse({'status':400})
-
-
 
 			ticket_reward_value = round(cotation_sum * ticket_bet_value ,2)
 			if float(ticket_reward_value) > float(max_reward_to_pay):
@@ -379,7 +299,7 @@ class CreateTicketView(View):
 			
 
 
-class BetTicketDetail(TemplateResponseMixin, View):
+class TicketDetail(TemplateResponseMixin, View):
 
 
 	template_name = 'core/ticket_details.html'
@@ -391,9 +311,6 @@ class BetTicketDetail(TemplateResponseMixin, View):
 			self.template_name = 'core/ticket_not_found.html'
 			return self.render_to_response(context={})
 
-		#ticket = get_object_or_404(BetTicket, pk=self.kwargs["pk"])
-
-
 		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
 		if ticket.random_user:
 			content += "<CENTER> CLIENTE: " + ticket.random_user.first_name + "<BR>"
@@ -404,10 +321,9 @@ class BetTicketDetail(TemplateResponseMixin, View):
 		
 		content += "<CENTER> DATA: " + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
 		content += "<BR><BR>"
-
+		
 		content += "<LEFT> APOSTAS <BR>"
 		content += "<LEFT>-------------------------------> <BR>"
-
 
 		for c in ticket.cotations.all():
 			content += "<LEFT>" + c.game.name + "<BR>"
@@ -423,90 +339,58 @@ class BetTicketDetail(TemplateResponseMixin, View):
 			
 			content += "<CENTER>-------------------------------> <BR>"
 		content += "<CENTER> "+ settings.APP_VERBOSE_NAME
-		
 		content = urllib.parse.urlparse(content).geturl()
-
 		context = {'ticket': ticket, 'print': content, 'valor_apostado': "%.2f" % ticket.value, 'ganho_possivel': "%.2f" % ticket.reward.value}
 
 		return self.render_to_response(context)	
 
 
-class ValidateTicket(View):
+class ResetSellerRevenue(View):
 
+	def get(self, request, *args, **kwargs):
 
-	def post(self, request):
-		if not request.POST['ticket']:
-			return JsonResponse({'status': 400})
+		if not request.user.is_superuser:
+			return JsonResponse({'status': 400},json_dumps_params={'ensure_ascii': False})
 
-		if request.user.has_perm('core.can_validate_payment'):
-			pk = int(request.POST['ticket'])
-			ticket_queryset = BetTicket.objects.filter(pk=pk)
-			if ticket_queryset.exists():
-				can_validate = True
-				for cotation in ticket_queryset.first().cotations.all():
-					if cotation.game.start_game_date < tzlocal.now():
-						can_validate = False
-				if can_validate:
-					ticket_queryset.first().ticket_valid(request.user)
-					return JsonResponse({'status': 200})
-				else:
-					return JsonResponse({'status': 403})
-			else:			
-				return JsonResponse({'status': 404})
-		else:
-			return JsonResponse({'status': 400})
+		seller_id = int(request.GET['seller_id'])
 
+		tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=seller_id, payment__seller_was_rewarded=False)
+		revenue_total = 0
 
-class PunterPayment(View):
-
-
-	def post(self, request):
-		if not request.POST['ticket']:
-			return JsonResponse({'status': 400})
-
-		if request.user.has_perm('core.can_reward'):
-			pk = int(request.POST['ticket'])
-			ticket_queryset = BetTicket.objects.filter(pk=pk)
-			if ticket_queryset.exists():
-				
-				ticket = ticket_queryset.first()
-				if ticket.bet_ticket_status == 'Venceu.':
-					ticket.reward_payment(request.user)
-					return JsonResponse({'status': 200})
-				else:
-					return JsonResponse({'status': 401})
-
-			else:
-				return JsonResponse({'status': 404})
-		else:
-			return JsonResponse({'status': 400})	
-
-
-class PayedBets(TemplateResponseMixin,View):
-
+		for ticket in tickets_revenue:
+			revenue_total += ticket.value
 	
-	template_name = 'core/list_payed_bets.html'
+		try:
+			seller = Seller.objects.get(pk=seller_id)
+			
+			dict_response = {'nome': seller.full_name(), 'cpf': seller.cpf, 
+				'telefone': seller.cellphone,'faturamento': revenue_total, 'status': 200}
+			
+			return JsonResponse(dict_response,json_dumps_params={'ensure_ascii': False})
 
-	def get(self, request):
-		bet_tickets = BetTicket.objects.filter(payment__who_set_payment_id=request.user.id).filter(payment__status_payment='Pago').order_by('-pk')
+		except Seller.DoesNotExist:
+			return JsonResponse({'status': 404},json_dumps_params={'ensure_ascii': False})
 
-		paginator = Paginator(bet_tickets, 10)        
-		page = request.GET.get('page')
 
-		context = paginator.get_page(page)
+	def post(self, request, *args, **kwargs):
+		seller_id = int(request.POST['seller_id'])
+		payments = Payment.objects.filter(who_set_payment_id=seller_id, seller_was_rewarded=False)
 
-		index = context.number - 1  # edited to something easier without index
-		# This value is maximum index of your pages, so the last page - 1
-		max_index = len(paginator.page_range)
-		# You want a range of 7, so lets calculate where to slice the list
-		start_index = index - 3 if index >= 3 else 0
-		end_index = index + 3 if index <= max_index - 3 else max_index
-		# Get our new page range. In the latest versions of Django page_range returns 
-		# an iterator. Thus pass it to list, to make our slice possible again.
-		page_range = list(paginator.page_range)[start_index:end_index]		
+		for payment in payments:
+			payment.seller_was_rewarded = True
+			payment.save()
 
-		return self.render_to_response({'bet_tickets':context, 'page_range':page_range})	
+		return JsonResponse({'status': 200},json_dumps_params={'ensure_ascii': False})
 
+
+class GeneralConf(TemplateResponseMixin, View):
+	template_name = 'core/admin_conf.html'
+
+	def get(self, request, *args, **kwargs):
+		if not request.user.is_superuser:
+			return redirect(to='/')
+		context = {}
+		return self.render_to_response(context)
 
 
 class AppDownload(View, TemplateResponseMixin):

@@ -19,69 +19,144 @@ import json
 
 
 
-class PunterHome(TemplateResponseMixin, View):
+class PunterHome(View, TemplateResponseMixin):
+
     template_name = 'user/user_home.html'
 
     def get(self, request, *args, **kwargs):
 
         bet_tickets = BetTicket.objects.filter(user=request.user).order_by('-pk')
         change_password_form = PasswordChangeForm(request.user)
-        
         paginator = Paginator(bet_tickets, 10)        
         page = request.GET.get('page')
-
         context = paginator.get_page(page)
-        
-        index = context.number - 1  # edited to something easier without index
-        # This value is maximum index of your pages, so the last page - 1
+        index = context.number - 1  
         max_index = len(paginator.page_range)
-        # You want a range of 7, so lets calculate where to slice the list
         start_index = index - 3 if index >= 3 else 0
         end_index = index + 3 if index <= max_index - 3 else max_index
-        # Get our new page range. In the latest versions of Django page_range returns 
-        # an iterator. Thus pass it to list, to make our slice possible again.
         page_range = list(paginator.page_range)[start_index:end_index]
-
-
         return self.render_to_response({'bet_tickets': context,'change_password_form': change_password_form, 'page_range':page_range})
 
 
-class PunterCreate(View):
+
+class SellerValidateTicket(View):
+
+	def post(self, request):
+
+		if not request.POST['ticket']:
+			return JsonResponse({'status': 400})
+
+		if request.user.has_perm('core.can_validate_payment'):
+			pk = int(request.POST['ticket'])
+			ticket_queryset = BetTicket.objects.filter(pk=pk)
+			if ticket_queryset.exists():
+				can_validate = True
+				for cotation in ticket_queryset.first().cotations.all():
+					if cotation.game.start_game_date < tzlocal.now():
+						can_validate = False
+				if can_validate:
+					ticket_queryset.first().ticket_valid(request.user)
+					return JsonResponse({'status': 200})
+				else:
+					return JsonResponse({'status': 403})
+			else:			
+				return JsonResponse({'status': 404})
+		else:
+			return JsonResponse({'status': 400})
+
+
+class SellerPayPunter(View):
+
+	def post(self, request):
+		if not request.POST['ticket']:
+			return JsonResponse({'status': 400})
+
+		if request.user.has_perm('core.can_reward'):
+			pk = int(request.POST['ticket'])
+			ticket_queryset = BetTicket.objects.filter(pk=pk)
+			if ticket_queryset.exists():
+				
+				ticket = ticket_queryset.first()
+				if ticket.bet_ticket_status == 'Venceu.':
+					ticket.reward_payment(request.user)
+					return JsonResponse({'status': 200})
+				else:
+					return JsonResponse({'status': 401})
+			else:
+				return JsonResponse({'status': 404})
+		else:
+			return JsonResponse({'status': 400})	
+
+
+
+class SellerPayedBets(View, TemplateResponseMixin):
+
+	template_name = 'core/list_payed_bets.html'
+
+	def get(self, request):
+		bet_tickets = BetTicket.objects.filter(payment__who_set_payment_id=request.user.id).filter(payment__status_payment='Pago').order_by('-pk')
+
+		paginator = Paginator(bet_tickets, 10)        
+		page = request.GET.get('page')
+
+		context = paginator.get_page(page)
+
+		index = context.number - 1  # edited to something easier without index
+		# This value is maximum index of your pages, so the last page - 1
+		max_index = len(paginator.page_range)
+		# You want a range of 7, so lets calculate where to slice the list
+		start_index = index - 3 if index >= 3 else 0
+		end_index = index + 3 if index <= max_index - 3 else max_index
+		# Get our new page range. In the latest versions of Django page_range returns 
+		# an iterator. Thus pass it to list, to make our slice possible again.
+		page_range = list(paginator.page_range)[start_index:end_index]		
+
+		return self.render_to_response({'bet_tickets':context, 'page_range':page_range})	
+
+
+class SellerHome(TemplateResponseMixin, View):
+	template_name = 'core/seller_home.html'		
+
+	def get(self, request, *args, **kwargs):
+
+		tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=request.user.pk, payment__seller_was_rewarded=False)
+		revenue_total = 0
+
+		for ticket in tickets_revenue:
+			revenue_total += ticket.value
+
+		
+		context = {'faturamento': revenue_total}
+		return self.render_to_response(context)
+
+
+class PunterRegister(View):
 
     def post(self, request):
         print(request.POST)
 
         errors = {'errors':False, 'data': []}
-
-
         if not request.POST['full_name']:
             errors['errors'] = True
             errors['data'].append('O nome é obrigatório')
-
-
         elif not request.POST['login']:
             errors['errors'] = True
             errors['data'].append('O login é obrigatório')
-
         elif not request.POST['password']:
             errors['errors'] = True
             errors['data'].append('A senha é obrigatória')
-
         elif not request.POST['cellphone']:
             errors['errors'] = True
             errors['data'].append('O Telefone é obrigatório')
-
         if request.POST['login']:
             if Punter.objects.filter(username=request.POST['login']).exists():
                 errors['errors'] = True
                 errors['data'].append('Esse login já está em uso, desculpe.')
-
         if request.POST['email']:
             if Punter.objects.filter(email=request.POST['email']).exists():
                 errors['errors'] = True
                 errors['data'].append('Esse email já está em uso, desculpe.')
 
-        
         if errors['errors']:
             return HttpResponse(json.dumps(errors, ensure_ascii=False), content_type="application/json", status=406)
         else:
@@ -99,7 +174,7 @@ class PunterCreate(View):
                 return HttpResponse("User Created")
 
 
-class Login(View):
+class UserLogin(View):
 
     def post(self, request):
         username = request.POST['username']
@@ -116,7 +191,7 @@ class Login(View):
             return HttpResponseRedirect('/#/login_error')
 
 
-class Logout(View):
+class UserLogout(View):
     """
     Provides users the ability to logout
     """
@@ -128,7 +203,7 @@ class Logout(View):
         return response
 
 
-class PasswordChange(View):
+class UserPasswordChange(View):
     """
     Provides users change password
     """

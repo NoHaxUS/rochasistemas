@@ -1,6 +1,5 @@
 {% extends './base_main.html' %}
 {% load filters %}
-{% load templatetags %}
 
 {% block modals %}
 <!-- More Cotations -->
@@ -201,7 +200,7 @@
         <li class="user-logged-name">Olá, {{user}}</li>
         {% if is_seller %}
         <li>
-            <a href="/seller/home" class="waves-effect waves-light btn white green-text-button">
+            <a href="{% url 'core:core_seller_home' %}" class="waves-effect waves-light btn white green-text-button">
                 Painel do Vendedor</a>
         </li>
         <li>
@@ -210,7 +209,7 @@
         </li>
         {% endif %} {% if not is_seller and not user.is_superuser %}
         <li>
-            <a href="/user/home" class="waves-effect waves-light btn white green-text-button">
+            <a href="{% url 'user:user_home' %}" class="waves-effect waves-light btn white green-text-button">
                 Painel do Cliente</a>
         </li>
         <li>
@@ -225,13 +224,13 @@
         {% endif %}
     
         <li>
-            <a href="/user/logout" class="waves-effect waves-light btn white green-text-button">
+            <a href="{% url 'user:user_logout' %}" class="waves-effect waves-light btn white green-text-button">
                 Logout</a>
         </li>
     
         {% endif %}
         <li>
-            <a href="/app/" class="waves-effect waves-light btn">
+            <a href="{% url 'core:core_app_download' %}" class="waves-effect waves-light btn">
                 <i class="material-icons left">android</i>app</a>
         </li>
     </ul>
