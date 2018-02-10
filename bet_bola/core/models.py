@@ -8,6 +8,10 @@ from django.utils import timezone
 from django.db.models import Q
 import decimal
 from django.conf import settings
+import utils.timezone as tzlocal
+
+
+
 # Create your models here.
 
 
@@ -55,7 +59,7 @@ class BetTicket(models.Model):
 	user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', on_delete=models.PROTECT, verbose_name='Apostador')
 	random_user = models.ForeignKey('user.RandomUser',null=True, on_delete=models.SET_NULL, verbose_name='Cliente')
 	cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
-	creation_date = models.DateTimeField(auto_now_add=True, verbose_name='Data da aposta')	
+	creation_date = models.DateTimeField(verbose_name='Data da aposta')	
 	reward = models.ForeignKey('Reward', null=True,on_delete=models.PROTECT, verbose_name='Recompensa')
 	payment = models.OneToOneField('Payment', null=True,on_delete=models.PROTECT, verbose_name='Pagamento')
 	value = models.FloatField(verbose_name='Apostado')
@@ -64,61 +68,39 @@ class BetTicket(models.Model):
 
 	def ticket_valid(self, user):
 		self.payment.status_payment = PAYMENT_STATUS[1][1]
+		self.payment.payment_date = tzlocal.now()
 		self.payment.who_set_payment = Seller.objects.get(pk=user.pk)
 		self.payment.save()
 
+
 	def reward_payment(self, user):
 		self.reward.status_reward = REWARD_STATUS[1][1]
+		self.reward.reward_date = tzlocal.now()
 		self.reward.who_rewarded = Seller.objects.get(pk=user.pk)
 		self.reward.save()
 
+
 	def cota_total(self):
+
 		cota_total = 1
-		
 		for cotation in self.cotations.all():
 			cota_total *= cotation.value
-		
 		return round(cota_total,2)
 
+
 	def update_ticket_status(self):
-		not_winning = False
-		if self.check_ticket_status:			
-			for c in self.cotations.all():
-				if c.winning is not None:
-					if not c.winning:
-						self.bet_ticket_status = BET_TICKET_STATUS[1][1]
-						self.save()
-						not_winning = True
-						return 'Status do ticket atualizado com sucesso. You Lost'
-				else:
-					self.bet_ticket_status = BET_TICKET_STATUS[0][1]
-					self.save()
-					return 'Ticket aguardando resultado'
-			
-			if not not_winning:
+		
+		if not self.check_if_waiting_results():
+			if self.cotations.filter(winning=False).count() > 0:
+				self.bet_ticket_status = BET_TICKET_STATUS[1][1]
+				self.save()
+			else:
 				self.bet_ticket_status = BET_TICKET_STATUS[2][1]
 				self.save()
-				return 'Status do ticket atualizado com sucesso. You Won'
-		else:
-			self.bet_ticket_status = BET_TICKET_STATUS[0][1]
-			self.save()
-			return 'Ticket aguardando resultado'
-		
 			
 
-	def check_ticket_status(self):
-		ticket_finished = True
-
-		for c in self.cotations.all():
-			if not c.game.odds_calculated:
-				ticket_finished = False
-
-		return ticket_finished
-
-	@staticmethod
-	def processing_tickets():
-		for ticket in BetTicket.objects.all():
-			ticket.update_ticket_status()
+	def check_if_waiting_results(self):
+		return self.cotations.filter(winning=None).count() > 0
 
 
 	def __str__(self):
@@ -138,21 +120,12 @@ class Game(models.Model):
 	start_game_date = models.DateTimeField(verbose_name='Início da Partida')
 	championship = models.ForeignKey('Championship',related_name='my_games', on_delete=models.CASCADE,verbose_name='Campeonato')
 	status_game = models.CharField(max_length=80,default=GAME_STATUS[0][1], choices=GAME_STATUS,verbose_name='Status do Jogo')
-	odds_calculated = models.BooleanField()
-	visitor_team_score = models.IntegerField(blank = True, null = True, verbose_name='Placar do Visitante')
-	local_team_score = models.IntegerField(blank = True, null = True, verbose_name='Placar Time de Casa')
+	odds_calculated = models.BooleanField()	
 	ht_score = models.CharField(max_length=80, null=True, verbose_name='Placar até o meio-tempo')
-	ft_score = models.CharField(max_length=80, null=True, verbose_name='Placar no final do Jogo')	
-	objects = GamesManager()
-	
-	
-	def is_able(self):
-		if self.odds_calculated:
-			if self.visitor_team_score is not None and self.local_team_score is not None and self.ht_score is not None and self.ft_score is not None and self.cotations.count() > 0:
-				if len(self.ht_score) >= 3 and len(self.ft_score) >= 3:
-					return True
+	ft_score = models.CharField(max_length=80, null=True, verbose_name='Placar no final do Jogo', help_text="Placar final Ex: 3-5 (Casa-Visita)")
+	odds_processed = models.BooleanField(default=False)
 
-		return False
+	objects = GamesManager()	
 
 	class Meta:
 		verbose_name = 'Jogo'
@@ -177,7 +150,7 @@ class Championship(models.Model):
 
 class Reward(models.Model):
 	who_rewarded = models.ForeignKey('user.Seller', null=True, on_delete=models.PROTECT)
-	reward_date = models.DateTimeField(null=True, auto_now=True)
+	reward_date = models.DateTimeField(null=True)
 	value = models.FloatField(default=0)
 	status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1])
 
@@ -197,9 +170,14 @@ class Cotation(models.Model):
 	winning = models.NullBooleanField(verbose_name='Vencedor ?')
 	is_standard = models.BooleanField(default=False, verbose_name='Cota Padrão ?')
 	kind = models.CharField(max_length=100, verbose_name='Tipo')
-	handicap = models.FloatField(blank = True, null = True)
 	total = models.FloatField(blank = True, null = True)
-	objects = GamesManager()								
+	objects = GamesManager()
+
+
+	def save(self):
+		if not Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).exists():
+			super().save()
+					
 
 
 	class Meta:
@@ -213,7 +191,7 @@ class Cotation(models.Model):
 class Payment(models.Model):
 	who_set_payment = models.ForeignKey('user.Seller', null=True, on_delete=models.PROTECT)
 	status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1])
-	payment_date = models.DateTimeField(null=True, auto_now=True)
+	payment_date = models.DateTimeField(null=True)
 	seller_was_rewarded = models.BooleanField(default=False)
 
 

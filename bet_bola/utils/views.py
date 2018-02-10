@@ -3,49 +3,10 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.template.loader import get_template
 from django.views.generic import View
 from django.utils import timezone
-from datetime import datetime
-from io import BytesIO
 from core.models import BetTicket,Cotation
+from django.conf import settings
 from fpdf import FPDF
 import urllib
-
-class printTicket(View):
-	def get(self, request, *args, **kwargs):
-
-		ticket = get_object_or_404(BetTicket, pk=self.kwargs["pk"])
-		date = timezone.localtime(ticket.creation_date).strftime('%d/%m/%Y %H:%M')
-
-		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
-		content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
-
-		if ticket.payment.who_set_payment != None:
-			content += "<CENTER> COLABORADOR: " + ticket.payment.who_set_payment.first_name
-
-		content += "<CENTER> DATA: " + date
-		content += "<BR><BR>"
-
-		content += "<LEFT> APOSTAS <BR>"
-		content += "<CENTER>----------------------------------------------- <BR>"
-
-		for c in ticket.cotations.all():
-			content += "<LEFT>" + c.game.name + "<BR>"
-			game_date = timezone.localtime(c.gamestart_game_date).strftime('%d/%m/%Y %H:%M')
-			content += "<LEFT>" + game_date + "<BR>"
-			content += "<LEFT>"+ c.kind + "<BR>"
-			content += "<LEFT>" + c.name + " --> " + str(c.value) + "<BR>"
-
-			if c.game.odds_calculated:
-				content += "<RIGHT> Status: Fechado - " + ("Venceu" if c.winning else "Perdeu") + "<BR>"
-			else:
-				content += "<RIGHT> Status: Em Aberto"				
-			
-			content += "<CENTER> ----------------------------------------------- <BR>"
-			content += "<CENTER> BET BOLA"
-
-		return render(request, "ticket.html", {'content': content})
-
-
-
 
 
 class PDF(View):
@@ -54,40 +15,40 @@ class PDF(View):
 		response = HttpResponse(content_type='application/pdf')
 		response['Content-Disposition'] = 'inline; filename="ticket.pdf"'
 
-		date = 'DATA: ' + timezone.localtime(ticket.creation_date).strftime('%d/%m/%Y %H:%M')
+		date = 'DATA: ' + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
 
 		pdf = FPDF('P', 'mm', (231, 297 + ticket.cotations.count() * 84))
 		pdf.add_page()
 		pdf.add_font('DejaVu', '', 'DejaVuSansCondensed.ttf', uni=True)		
-		pdf.set_font('DejaVu','',30)		
-		#pdf.set_text_color(105,105,105)
+		pdf.set_font('DejaVu','',30)
 		string = 'TICKET:' + str(ticket.pk)
-		pdf.text(76,12, string)		
-		string = 'CLIENTE: ' + ticket.user.first_name								
-		pdf.text(76,24,string)									
-		pdf.text(76,36, date)
-		if ticket.payment.who_set_payment != None:
-			string = 'COLABORADOR: ' +  ticket.payment.who_set_payment.first_name
-			#string = "COLABORADOR PABLO"
-			pdf.text(76,48,string)
-		pdf.text(4,76,'APOSTAS')		
-		pdf.text(0, 82,'--------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
-		h = 86
+		pdf.text(65,12, string)
+		if ticket.random_user:
+			string = 'CLIENTE: ' + ticket.random_user.first_name
+		else:
+			string = 'CLIENTE: ' + ticket.user.first_name							
+		pdf.text(65,24,string)									
+		pdf.text(65,36, date)
+		pdf.text(65,48, "APOSTA: R$" + str(ticket.value) )
+		pdf.text(65,60, "GANHO POSSÍVEL: R$" + str(ticket.reward.value) )
+		pdf.text(4,100,'APOSTAS')		
+		pdf.text(0, 105,'--------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
+		h = 110
 		
 		for c in ticket.cotations.all():
 			h=h+8
 			pdf.text(4,h,c.game.name)
 			h=h+14
-			pdf.text(4,h, timezone.localtime(c.game.start_game_date).strftime('%d/%m/%Y %H:%M'))
+			pdf.text(4,h, c.game.start_game_date.strftime('%d/%m/%Y %H:%M'))
 			h=h+14			
 			pdf.text(4,h,c.kind)
 			h=h+14
-			pdf.text(4,h,c.name)			
+			pdf.text(4,h,"Cota:" + c.name)			
 			pdf.text(190,h,str(c.value))
 			h=h+14
-			if c.game.odds_calculated:
+			if not c.winning == None:
 				pdf.text(4,h,"Status:")			
-				pdf.text(140,h,"Fechado - " + ("Venceu" if c.winning else "Perdeu"))				
+				pdf.text(170,h, ("Acertou" if c.winning else "Não acertou"))				
 			else:
 				pdf.text(4,h,"Status:")			
 				pdf.text(180,h,"Em Aberto")
@@ -95,7 +56,7 @@ class PDF(View):
 			h=h+14
 			pdf.text(0,h,'---------------------------------------------------------------------------------------------------------------------------------------------------------')			
 
-		pdf.text(92,h+20,'Bet Bola')
+		pdf.text(70,h+20, settings.APP_VERBOSE_NAME)
 		buffer = pdf.output(dest='S').encode('latin-1')
 
 		response.write(buffer)

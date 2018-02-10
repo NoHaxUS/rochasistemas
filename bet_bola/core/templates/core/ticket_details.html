@@ -1,140 +1,120 @@
-<!DOCTYPE html>
-<html lang="en">
-    {% load static %}
-<head>
-    {% include 'core/head.html' %}
-</head>
+{% extends './base_main.html' %}
 
-<body>
+{% block modals %}
+{% endblock %}
 
-    <nav>
-        <div class="nav-wrapper green-ge">
-            {% include 'core/header_info.html' %}
+{% block nav_links_desktop %}
+<ul class="right hide-on-med-and-down">
+    <li>
+        <a href="/" class="waves-effect waves-light btn white green-text-button modal-trigger hoverable">
+            Voltar</a>
+    </li>
+</ul>
+{% endblock %}
 
-            <ul class="side-nav" id="mobile-menu">
+{% block nav_links_mobile %}
+<ul class="side-nav" id="mobile-menu">
+    <li>
+        <a href="/" class="waves-effect waves-light btn white green-text-button round">Voltar</a>
+    </li>
+</ul>
+{% endblock %}
 
-                <li>
-                    <a href="/" class="waves-effect waves-light btn white grey-text text-darken-4 round">Voltar</a>
-                </li>
 
-            </ul>
+{% block mobile_menus %}
+{% endblock %}
 
+{% block left_section_desktop %}
+{% endblock %}
+
+{% block content %}
+<div class="col s12 center-align">
+    <div class="row">
+        <div class="col s6">
+            <a class="btn waves-effect waves-light blue-button" type="button" 
+                href="/utils/pdf/{{ticket.pk}}" target="blank">Abrir PDF
+                <i class="material-icons right">picture_as_pdf</i>
+            </a>
+    </div>
+        <div class="col s6">
+            <a class="btn waves-effect waves-light yellow black-text"
+            onclick="window.location.href='intent://{{print}}#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;'">Imprimir
+                <i class="material-icons right">print</i>
+            </a>
         </div>
-    </nav>
-
-    <main>
-        <div class="col s12 center-align">
-            <div class="subnav green-bb">
-                <span class="right white-text time"></span>
+    </div>
+    <div class="row">
+        <div class="col s11 l10 hcenter white ticket-details">
+            <div class="row white">
+                <div class="details-header">
+                    <h5>Detalhes do Ticket: {{ticket.pk}}</h5>
+                </div>
             </div>
-        </div>
-
-        <div class="row main-section">
-
-            <div class="col s12 center-align">
-                <div class="delay-msg col s12 l6 hcenter">
-                    <i class="red-text material-icons">info</i> Os resultados são atualizados a cada 24 horas, portanto, resultados incorretos podem ser exibidos
-                    nesse intervalo de tempo.
-                </div>
-                <div class="row">
-                    <div class="col s6">
-                        <a class="btn waves-effect waves-light" type="button"
-                        href="/utils/pdf/{{ticket.pk}}" target="blank">Abrir PDF
-                            <i class="material-icons right">picture_as_pdf</i>
-                        </a>
-                </div>
-                    <div class="col s6">
-                        <a class="btn waves-effect waves-light"
-                        onclick="window.location.href='intent://{{print}}#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;'">Imprimir
-                            <i class="material-icons right">print</i>
-                        </a>
+            <div class="row white">
+                <div class="col s12 ticket-details-info">
+                    <div class="row">
+                        <span class='bold'>Cliente: </span>
+                        {% if ticket.random_user %}
+                            {{ticket.random_user.first_name}}
+                        {% else %}
+                            {{ticket.user.first_name}}
+                        {% endif %}
                     </div>
+                    <div class="row"><span class='bold'>Data de Criação:</span> {{ticket.creation_date}}</div>
+                    <div class="row"><span class='bold'>Status do Pagamento:</span> {{ticket.payment.status_payment}} </div>
+                    <div class="row">
+                        {% if ticket.payment.payment_date %}
+                        <span class='bold'>Última Atualização:</span> {{ticket.payment.payment_date}}
+                        {% endif %}
+                    </div>
+                    <div class="row"><span class='bold'>Status do Ticket:</span> {{ticket.bet_ticket_status}}</div>
+                    <div class="row"><span class='bold'>Valor apostado:</span> R$ {{valor_apostado}}</div>
+                    <div class="row"><span class='bold'>Cota Total:</span> {{ticket.cota_total}}</div>
+                    <div class="row"><span class='bold'>Ganho Possível:</span> R$ {{ ganho_possivel }}</div>
                 </div>
-                <div class="row">
-                    <div class="col s12 l10 hcenter white ticket-details">
-                        <div class="row white">
-                            <div class="details-header">
-                                <h5>Detalhes do Ticket: {{ticket.pk}}</h5>
-                            </div>
-                        </div>
-
-                        <div class="row white">
-                            <div class="col s4">
-                                Data de Criação: {{ticket.creation_date}}
-                            </div>
-                            <div class="col s4">
-                                Status do Pagamento: {{ticket.payment.status_payment}} <br>
-                            {% if ticket.payment.payment_date %}
-                                Última Atualização: {{ticket.payment.payment_date}}
+            </div>
+            <div class="row white">
+                <div class="details-header-games">
+                    <h5>Jogos apostados</h5>                                
+                </div>
+            </div>
+            <div class="row white">
+                <div class="col s12 l10 hcenter">
+                    <table class="striped ticket-details-table">
+                            <thead>
+                                <tr>
+                                    <th>Jogo</th>
+                                    <th>Aposta</th>
+                                    <th>Status da Cota</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                        {% for cotation in ticket.cotations.all %}
+                        <tr>
+                            <td><span class='bold'>{{cotation.game}}</span></td>
+                            <td>
+                            {{cotation.kind}} <br>
+                            Cota: {{cotation.name}} : {{cotation.value}}
+                            </td>
+                            <td>
+                            {% if cotation.winning %}
+                                Acertou
+                            {% elif cotation.winning ==  None %}
+                                Em Aberto
+                            {% else %}
+                                Não acertou
                             {% endif %}
-                            </div>
-                            <div class="col s4">
-                                Status do Ticket: {{ticket.bet_ticket_status}}
-                            </div>
-                        </div>
-                        <div class="divider"></div>
-                        <div class="row purple lighten-5">
-                            <div class="col s4">
-                                Valor apostado: R$ {{valor_apostado}}
-                            </div>
-                            <div class="col s4">
-                                Cota Total: {{ticket.cota_total}}
-                            </div>
-                            <div class="col s4">
-                                Ganho Possível: R$ {{ganho_possivel}}
-                            </div>
-                        </div>
-                        <div class="divider"></div>
-                        <div class="row white">
-                            <div class="col s12 l6 hcenter">
-                                Recompensa entregue ao ganhador? : {{ticket.reward.status_reward}}
-                            </div>
-                        </div>
-                        <div class="row white">
-                            <div class="details-header-games">
-                                <h5>Jogos apostados</h5>                                
-                            </div>
-                        </div>
-                        <div class="row white">
-                            <div class="col s12 l10 hcenter">
-
-                                {% for cotation in ticket.cotations.all %}
-                                <div class="row">
-                                    <div class="col s4">
-                                        Jogo: {{cotation.game}}
-                                    </div>
-                                    <div class="col s4">
-                                        {{cotation.kind}} <br>
-                                        Cota: {{cotation.name}} : {{cotation.value}}
-                                    </div>
-                                    <div class="col s4">
-                                        Status da Cota:
-                                        {% if cotation.winning %}
-                                            Você acertou.
-                                        {% elif cotation.winning ==  None %}
-                                            Jogo não aconteceu ainda.
-                                        {% else %}
-                                            Você Perdeu.
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <div class="divider"></div>
-                                {%endfor%}
-                                
-                            </div>
-                        </div>
-                    </div>
+                            </td>
+                        </tr>
+                        {%endfor%}
+                        </tbody>
+                    </table>
                 </div>
-
             </div>
-
-
-
         </div>
-    </main>
+    </div>
+</div>
+{% endblock %}
 
-    {% include 'core/general_js.html' %}
-
-</body>
-
-</html>
+{% block right_section_desktop %}
+{% endblock %}

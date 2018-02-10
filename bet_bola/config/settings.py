@@ -26,10 +26,9 @@ SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-MAX_REWARD = 4000.00
-MIN_BET_PER_TICKET = 2
+ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
-ALLOWED_HOSTS = ['bet-bola.herokuapp.com','localhost']
+APP_VERBOSE_NAME = 'Plataforma Bet'
 
 
 # Application definition
@@ -83,6 +82,17 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
+DATABASES_ = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'db_sortebrasil',
+        'USER': 'user_sortebrasil',
+        'PASSWORD': 'jCwF8PkS6NUkBRYw',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -93,6 +103,7 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
 
 
 
@@ -120,22 +131,17 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'America/Sao_Paulo'
+TIME_ZONE = 'UTC'
+TIME_ZONE_LOCAL = 'America/Sao_Paulo'
 
 USE_I18N = True
-
 USE_L10N = True
+USE_TZ = False
 
-USE_TZ = True
-
-
-#database configuration from env
-#db_from_env = dj_database_url.config(conn_max_age=500)
-#DATABASES['default'].update(db_from_env)
 
 #statis files
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
+STATIC_ROOT = '/home/mushzinho/webapps/static_sortebrasil'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")

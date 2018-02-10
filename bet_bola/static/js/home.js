@@ -1,15 +1,6 @@
 $(document).ready(function () {
 
 
-    var myVar = setInterval(function(){ myTimer() }, 1000);
-
-    function myTimer() {
-        var d = new Date();
-        var t = d.toLocaleTimeString();
-        var data = d.toLocaleDateString();
-        $('.time').html(t + ' '+ data);
-    }
-
     /** FUNCTION DEFINITIONS **/
         function getCookie(name) {
             var cookieValue = null;
@@ -89,14 +80,14 @@ $(document).ready(function () {
                 alert_msg = 'Confirma a validação do ticket? \n Essa ação não pode ser desfeita.'
                 alertify.confirm('Confirmação', alert_msg,
                     function () {
-                        $.post('/seller/validate_ticket/', send_data, function(data, status, rq){
+                        $.post('/user/seller/validate_ticket/', send_data, function(data, status, rq){
                             data = jQuery.parseJSON(data);
 
                             if(data['status'] == 200){
-                                alertify.success('Ticket Validado.');
+                                alertify.success('Ticket Validado');
                             }
                             if(data['status'] == 404){
-                                alertify.error('Ticket não encontrado.');
+                                alertify.error('Ticket não encontrado');
                             }
                             if(data['status'] == 403){
                                 alertify.alert('Erro', 'Esse ticket não pode mais ser validado, pois um de seus jogos já começou ou terminou.');
@@ -207,7 +198,7 @@ $(document).ready(function () {
                 ).show();
                 },
                 complete: function(jqXR, textStatus){
-                    alertify.notify("Cotas alteradas com sucesso.");
+                    alertify.notify("Cotas alteradas com sucesso");
                     load.close();
                 }
             });
@@ -229,12 +220,12 @@ $(document).ready(function () {
                 alertify.confirm('Confirmação', alert_msg,
                     function () {
                         
-                        $.post('/seller/punter_payment/', send_data, function(data, status, rq){
+                        $.post('/user/seller/punter_payment/', send_data, function(data, status, rq){
                             
                             data = jQuery.parseJSON(data);
 
                             if(data.status == 200){
-                                alertify.success("O Apostador foi pago com sucesso.");
+                                alertify.success("O Apostador foi pago com sucesso");
                             }
 
                             if(data.status == 401){
@@ -374,7 +365,7 @@ $(document).ready(function () {
             ticket = Cookies.getJSON('ticket_cookie');
     
             game_id_to_delete = $(this).siblings().first().text().trim();
-    
+
             delete ticket[game_id_to_delete];
             Cookies.set('ticket_cookie', ticket);
             RenderTicket();
@@ -417,8 +408,32 @@ $(document).ready(function () {
             AddBetToTicket(bet_info);
     
         });
-    /** AO CLICAR EM UMA COTA **/
 
+    /** AO CLICAR EM UMA COTA **/
+        $('.btn-bet-undo').on('click', function(){                                
+
+            alertify.confirm('Limpar apostas', 'Deseja mesmo limpar as apostas ?', function(){
+                bet_info = {
+                    'game_id': -1,
+                    'game_name': '-1',
+                    'cotation_id': -1,
+                    'cotation_name': '-1',
+                    'cotation_value': '1',
+                    'cotation_kind' : '-1'
+                }            
+    
+                AddBetToTicket(bet_info);            
+                Cookies.set('ticket_cookie', {});
+                RenderTicket();
+                UpdateCotationTotal();
+                $('.ticket-bet-value').trigger('keyup');
+                alertify.notify('Feito');
+
+            }, function(){
+                alertify.notify('Cancelado');
+            });
+ 
+        });
 
     /** SUBMETER TICKET DE APOSTA **/
         $('.btn-bet-submit').on('click', function(){
@@ -433,14 +448,14 @@ $(document).ready(function () {
             }
 
             if (ticket_value <= 0){
-                alertify.error("Você deve apostar um valor maior que 0.");
+                alertify.error("Você deve apostar um valor maior que 0");
                 return ;
             }
 
             console.log(ticket_value);
 
             if(ticket == '{}'){
-                alertify.error("Nenhuma cota selecionada nessa sessão.");
+                alertify.error("Nenhuma cota selecionada nessa sessão");
                 COTATION_TOTAL = 0;
                 RenderTicket();
                 UpdateCotationTotal();
@@ -449,7 +464,7 @@ $(document).ready(function () {
 
                     alertify.confirm('Confirmação','Confirmar aposta?', function(){
 
-                        $.post('/bet_ticket/', {'ticket_value': ticket_value} , function(data, status, rq){
+                        $.post('/ticket/', {'ticket_value': ticket_value} , function(data, status, rq){
                             
                             var dataJSON = jQuery.parseJSON(data);
 
@@ -484,9 +499,10 @@ $(document).ready(function () {
 
                             if(dataJSON.status == 201){
                                 console.log(dataJSON);
-                                alertify.alert("Sucesso", "O número do Ticket de Aposta é: <b>" + dataJSON.ticket_pk + "</b>"+
+                                alertify.alert("Sucesso", "Ticket N° <span class='ticket-number-after-create'>" + dataJSON.ticket_pk + "</span>"+
                             "<br /> Para acessar detalhes do Ticket, entre no painel do cliente." +
-                            "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket.");
+                            "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket." + 
+                            "<br /><br /> <a href='/ticket/"+ dataJSON.ticket_pk + "' class='waves-effect waves-light btn text-white see-ticket-after-create hoverable'> Ver Ticket </a>");
                             }
                             console.log(dataJSON.status);
                         }, 'text');//end post
@@ -537,7 +553,7 @@ $(document).ready(function () {
             }else{
                 if(ticket_value != ''){                                                               
                         alertify.confirm('Confirmação','Confirmar aposta?', function(){                        
-                        $.post('/bet_ticket/', {'ticket_value': ticket_value, 'nome':nome, 'telefone':telefone} , function(data, status, rq){
+                        $.post('/ticket/', {'ticket_value': ticket_value, 'nome':nome, 'telefone':telefone} , function(data, status, rq){
                             
                             var dataJSON = jQuery.parseJSON(data);
 
@@ -570,9 +586,11 @@ $(document).ready(function () {
 
                             if(dataJSON.status == 201){
                                 console.log(dataJSON);                                
-                                alertify.alert("Sucesso", "O número do Ticket de Aposta é: <b>" + dataJSON.ticket_pk + "</b>"+
+                                alertify.alert("Sucesso", "Ticket N° <span class='ticket-number-after-create'>" + dataJSON.ticket_pk + "</span>"+
                             "<br /> Para acessar detalhes do Ticket, entre no painel do cliente." +
-                            "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket.");
+                            "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket." +
+                            "<br /><br /> <a href='/ticket/"+ dataJSON.ticket_pk + "' class='waves-effect waves-light btn text-white see-ticket-after-create hoverable'> Ver Ticket </a>");
+                            
                             }
                             console.log(dataJSON.status);
                         }, 'text');//end post
@@ -593,12 +611,13 @@ $(document).ready(function () {
 
         $('.more_cotations_button').on('click', function(e){
 
+            $('.more_cotation_progress').show();
+
             $('#more-cotations').modal('open');
 
             var game_id = $(this).siblings().first().children('.table-game-id').text().trim();
             var game_name = $(this).siblings().first().children('.table-game-name').text().trim();
-            //var game_start_date = $(this).siblings().first().children('.table-game-start-date').text().trim();
-        
+
             $('.more_cotation_header').text(game_name);
 
             var game_data = '<tr>' +
@@ -606,7 +625,6 @@ $(document).ready(function () {
                 '<td class="hide more-game-name">'+ game_name +'</td>' +
             '</tr>';
 
-            //console.log(game_data);
             $('.more-table tbody').empty().append(game_data);
 
             $.get('/cotations/'+ game_id, function(data, status, rq){
@@ -616,8 +634,6 @@ $(document).ready(function () {
                 var full_html = '';
 
                 for( key in dataJSON){
-
-                    //console.log("Market: " + key);
 
                     full_html += '<tr>' +
                     '<td class="cotation-market-label">'+ key + '</td>' +
@@ -642,6 +658,7 @@ $(document).ready(function () {
                 }//for
 
                 $('.more-table tbody').append(full_html);
+                $('.more_cotation_progress').hide();
 
 
                 //console.log(dataJSON);
@@ -692,12 +709,10 @@ $(document).ready(function () {
             if (ticket_num == '') {
                 alertify.alert('Erro', 'Você deve informar o número do ticket.');
             }else{
-                var Url = '/bet_ticket/' + ticket_num;
+                var Url = '/ticket/' + ticket_num;
                 $(this).attr('action', Url);
                 $(this).submit();
-                console.log('HEY');
             }
-            
         });
     /** END CONSULTAR COTAS **/
     
@@ -708,7 +723,7 @@ $(document).ready(function () {
             var href = $(e).attr('href');
             if(url_array == href){
 
-                $(e).css('color','#1027c7');
+                $(e).css('color','#2f9048');
             }
 
         });

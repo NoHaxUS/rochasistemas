@@ -2,31 +2,67 @@
 body{
     font-family: 'Roboto', sans-serif;
     background-color: #d3dcbec9;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
 }
+main {
+    flex: 1 0 auto;
+  }
+  
 .row{
     margin-bottom: 0;
 }
 .row .col{
     padding: 0;
 }
+
+.btn{
+    font-family: 'Exo 2', sans-serif;
+    border-radius: 30px;
+    letter-spacing: 0.2px;
+}
+
+nav ul a.btn{
+    margin-left: 0px;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+tbody tr td {
+    text-align: center;
+}
+
+thead tr th {
+    text-align: center;
+}
+
+.bold {
+    font-weight: bold;
+}
 /* end Resets */
 
 .round{
     border-radius: 20px;
 }
+
 /* color definitions*/
-.green-ge{
-    background-color: #3b9c00 !important;
-}
-.green-bb{
-    background-color: #377517 !important;
-}
 .yellow-bet{
     background-color: #f7f00e !important;
 }
-
-
+.green-text-button{
+    color: #2f9048 !important;
+}
+.blue-button{
+    background-color: #1969a2;
+}
 /* end color definitions*/
+
+
+.main-nav {
+    background-color: #3b9c00;
+}
+
 nav .brand-logo{
     font-family: 'Exo 2', sans-serif;
     padding: 0 15px;
@@ -71,21 +107,26 @@ nav .brand-logo{
 }
 
 .championship-main-header{
-    max-width: 90%;
-    background-color:#29a750 !important;
-    border-radius: 50px;
     font-size: 1.4rem;
-    margin: auto;
+    color: #1e9c2d;
 }
 
 .championship-color{
     background-color: #2d9639;
 }
+
+.championship-list-mobile{
+    margin-bottom: 20px;
+}
+.bet-ticket-value-row{
+    margin-top: 20px;
+}
 .championship-list li a{
-    font-size: 1.4rem;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.5rem;
     display: inline-block;
     width: 100%;
-    color: #0c143a;
+    color: #000000;
 }
 .championship-list li a:hover{
     text-decoration: underline;
@@ -94,7 +135,8 @@ nav .brand-logo{
 
 /* suvnav */
 .subnav{
-    height: 22px;
+    height: 16px;
+    background-color: #377517;
 }
 .main-section{
     margin-top: 10px;
@@ -113,7 +155,6 @@ nav .brand-logo{
 
 .cotation:hover{
     cursor: pointer;
-    font-weight: bold;
 }
 
 /*
@@ -159,7 +200,7 @@ nav .brand-logo{
 .side-nav{
     background-color: #39B54A;
 }
-.collapsible-header{
+.collapsible-header-mobile{
     font-family: 'Exo 2', sans-serif;
     background-color: #39B54A;
     color: #ffffff;
@@ -189,18 +230,20 @@ nav .brand-logo{
     margin: auto;
     float: none !important;
 }
+.details-header{
+    font-family: 'Exo 2', sans-serif;
+}
 .details-header-games{
+    font-family: 'Exo 2', sans-serif;
     margin-top: 30px !important;
 }
 .ticket-details{
     margin-top: 20px !important;
-    padding: 20px 3px 20px 3px !important;
-    font-size: 1.2rem !important;
+    padding: 20px 5px 20px 5px !important;
+    border-radius: 25px;
+    margin-bottom: 25px;
 }
-.ticket-details h5{
-    font-style: italic;
-    font-weight: bold;
-}
+
 .change-pass{
     padding: 20px 10px 20px 10px !important;
 }
@@ -226,6 +269,7 @@ nav .brand-logo{
     font-family: 'Exo 2', sans-serif;
     font-size: 1.6rem;
     text-transform: capitalize;
+    margin-right: 15px;
 }
 
 .more_cotations_button{
@@ -245,16 +289,173 @@ nav .brand-logo{
     font-size: 1.5rem;
 }
 .table-game-name{
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     color: #1027c7;
 }
 
 .user-logged-mobile{
     text-align: center;
 }
+
 .ajs-message{
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Exo 2', sans-serif;
     text-transform: uppercase;
-    background-color: #34b876 !important;
+    background-color: #458e43 !important;
     color: #ffffff !important;
 }
+
+.alertify-notifier .ajs-message.ajs-visible{
+    padding: 10px;
+    border-radius: 40px;
+}
+
+.empty_game_set{
+    text-align: center;
+    font-size: 1.6rem;
+    color: #000000;
+    background-color: white;
+    max-width: 95%;
+    margin: auto;
+    border-radius: 25px;
+    padding: 10px;
+    font-family: 'Exo 2', sans-serif;
+}
+
+span.step-links li.active a{ 
+    background-color: #3b9c00;
+}
+
+.main-logo{
+    margin-top: 5px;
+}
+
+.bet-buttons{
+    margin-bottom: 20px;
+}
+
+.championship-collapse-header{
+    background-color: #ffffff;
+    padding: 0.5rem;
+    color: #0e0909;
+    font-size: 1.4rem;
+}
+.championship-collapse-body{
+    padding: 20px 20px;
+    font-size: 1.5rem;
+}
+
+.ul-collapsible{
+    margin-bottom: 0;
+}
+
+.championship-li{
+    color: #0e0909;
+}
+
+.th-championship{
+    padding: 10px 5px;
+    font-weight: 500;
+}
+
+.th-championsip-header{
+    font-family: 'Exo 2', sans-serif;
+    padding: 0;
+    background-color: #467ba2;
+    color: #ffffff;
+    font-size: 1.6rem;
+}
+
+.download-instructions{
+    font-family: 'Exo 2', sans-serif;
+    font-size: 1.2rem;
+}
+
+.medium-icon{
+    font-size: 2.4rem;
+}
+
+.alertify .ajs-header {
+    font-family: 'Exo 2', sans-serif;
+    color:#ffffff;
+    font-size: 1.4rem;
+    font-weight: bold;
+    background: #4dc767;
+    border-bottom: #eee 1px solid;
+    border-radius: 2px 2px 0 0;
+}
+
+.alertify .ajs-body .ajs-content {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.3rem;
+    padding: 16px 24px 16px 16px;
+}
+
+.alertify .ajs-footer .ajs-buttons .ajs-button.ajs-ok{
+    color: #ffffff;
+    background-color: #8ad863;
+}
+
+.ul-championship-title li a:hover{
+    text-decoration: underline;
+}
+
+.see-ticket-after-create{
+    font-family: 'Roboto', sans-serif;
+    display: block;
+    margin: 0 auto;
+    background-color: #173875;
+}
+
+.ticket-number-after-create{
+    font-size: 2rem;
+}
+
+.ticket-details-info .row{
+    font-size: 1.4rem;
+}
+
+
+.ticket-details-table{
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.4rem;
+    padding: 20px;
+}
+.ticket-details-table tbody td {
+    padding: 5px 5px;
+}
+
+.ticket-details-table thead{
+    background-color: #d2efd2;
+}
+
+.ticket_not_found{
+    font-family: 'Exo 2', sans-serif;
+    color:#546921;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.base-footer{
+    margin-top: 50px;
+    padding: 0px;
+    font-family: 'Exo 2', sans-serif;
+    background-color: #467ba2;
+}
+
+@media only screen and (max-width: 992px){
+    nav .brand-logo{
+        padding: 0px;
+        font-size: 1.8rem;
+    }
+
+    .modal {
+        width: 98%;
+        max-height: 85%;
+    }
+    .more_cotation_header-h4{
+        font-size: 1.8rem;
+    }
+}
+
+
+    

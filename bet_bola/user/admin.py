@@ -11,7 +11,7 @@ class PunterAdmin(admin.ModelAdmin):
 
 	fieldsets = (
 		(None, {
-			'fields': ('first_name','last_name','username','password','email','date_joined')
+			'fields': ('first_name','last_name','username','password','email','cellphone')
 		}),
 		)
 
@@ -25,7 +25,7 @@ class SellerAdmin(admin.ModelAdmin):
 			'fields': ('first_name','last_name','cpf','username','password','email','cellphone')
 		}),
 	)
-	list_display =('pk','username','full_name')
+	list_display =('pk','username','full_name','actual_revenue')
 
 
 @admin.register(GeneralConfigurations)

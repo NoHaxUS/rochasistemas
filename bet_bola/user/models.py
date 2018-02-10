@@ -31,6 +31,18 @@ class Seller(CustomUser):
 		return self.first_name + ' ' + self.last_name
 	full_name.short_description = 'Nome Completo'
 
+	def actual_revenue(self):
+		from core.models import BetTicket
+		tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=self.pk, payment__seller_was_rewarded=False)
+		
+		revenue_total = 0
+		for ticket in tickets_revenue:
+			revenue_total += ticket.value
+		to_string = str(revenue_total)
+
+		return "R$ " + to_string
+	actual_revenue.short_description = 'Faturamento Total'
+
 	def is_seller(self):
 		return True
 
@@ -69,10 +81,10 @@ class Punter(CustomUser):
 
 class GeneralConfigurations(models.Model):
 
-	max_cotation_value = models.FloatField(null=True, verbose_name="Valor Máximo das Cotas")
+	max_cotation_value = models.FloatField(default=200, verbose_name="Valor Máximo das Cotas")
 	min_number_of_choices_per_bet = models.IntegerField(default=1, verbose_name="Número mínimo de escolhas por Aposta")
-	max_reward_to_pay = models.FloatField(null=True, verbose_name="Valor máximo pago pela Banca")
-	min_bet_value = models.FloatField(null=True, verbose_name="Valor mínimo da aposta")	
+	max_reward_to_pay = models.FloatField(default=50000, verbose_name="Valor máximo pago pela Banca")
+	min_bet_value = models.FloatField(default=1, verbose_name="Valor mínimo da aposta")	
 
 	def __str__(self):
 		return "Configuração Atual"

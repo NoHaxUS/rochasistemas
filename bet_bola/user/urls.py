@@ -20,9 +20,13 @@ from . import views
 app_name = 'user'
 
 urlpatterns = [
-    path('home/', views.PunterHome.as_view(), name='home'),
-    path('register/', views.PunterCreate.as_view(), name='punter_create_a'),
-    path('login/', views.Login.as_view(), name='punter_login'),
-    path('logout/',views.Logout.as_view(), name='punter_logout'),
-    path('change_password/',views.PasswordChange.as_view(), name='change_password'),
+    path('punter/home/', views.PunterHome.as_view(), name='user_punter_home'),
+    path('punter/register/', views.PunterRegister.as_view(), name='user_punter_register'),
+    path('seller/home/', views.SellerHome.as_view(), name='user_seller_home'),
+    path('seller/payed_bets/', views.SellerPayedBets.as_view(), name='user_seller_payed_bets'),
+    path('seller/validate_ticket/', views.SellerValidateTicket.as_view(), name='user_seller_validate_ticket'),
+    path('seller/punter_payment/', views.SellerPayPunter.as_view(), name='user_seller_punter_payment'),
+    path('change_password/',views.UserPasswordChange.as_view(), name='user_change_password'),
+    path('login/', views.UserLogin.as_view(), name='user_login'),
+    path('logout/',views.UserLogout.as_view(), name='user_logout'),
 ]
