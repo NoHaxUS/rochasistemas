@@ -364,7 +364,7 @@ class ResetSellerRevenue(View):
 			seller = Seller.objects.get(pk=seller_id)
 			
 			dict_response = {'nome': seller.full_name(), 'cpf': seller.cpf, 
-				'telefone': seller.cellphone,'faturamento': revenue_total, 'status': 200}
+				'telefone': seller.cellphone,'faturamento': "%.2f" % revenue_total, 'status': 200}
 			
 			return JsonResponse(dict_response,json_dumps_params={'ensure_ascii': False})
 
