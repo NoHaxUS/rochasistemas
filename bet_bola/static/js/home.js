@@ -86,6 +86,10 @@ $(document).ready(function () {
                             if(data['status'] == 200){
                                 alertify.success('Ticket Validado');
                             }
+                            
+                            if(data['status'] == 406){
+                                alertify.success('Ticket já Validado.');
+                            }
                             if(data['status'] == 404){
                                 alertify.error('Ticket não encontrado');
                             }
@@ -126,7 +130,7 @@ $(document).ready(function () {
                     var confirm_text = 'Nome: ' + r.nome + '<br>' +
                     'CPF:' + r.cpf + '<br>' +
                     'Telefone: '+ r.telefone + '<br>' +
-                    'Faturamento Atual: ' + r.faturamento + '<br>';
+                    'Faturamento Atual: R$ ' + r.faturamento + '<br>';
 
                     alertify.confirm("Confirme os dados", confirm_text, function(){
                         
@@ -192,7 +196,7 @@ $(document).ready(function () {
                     '</div>' +
                     '</div>'+
                     '<div class="right">' +
-                    'Processando... operação demorada, não faça isso o tempo todo.' +
+                    'Processando... Não saia da página...' +
                     '</div>'
                 
                 ).show();
