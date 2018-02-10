@@ -2,7 +2,14 @@
 body{
     font-family: 'Roboto', sans-serif;
     background-color: #d3dcbec9;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
 }
+main {
+    flex: 1 0 auto;
+  }
+  
 .row{
     margin-bottom: 0;
 }

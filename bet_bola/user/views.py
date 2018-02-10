@@ -12,11 +12,9 @@ from .models import Punter
 from core.models import Game, Championship, BetTicket
 from user.models import Punter
 from datetime import datetime
-#from django.contrib.auth.models import User
 from user.models import CustomUser
 import json
-# Create your views here.
-
+import utils.timezone as tzlocal
 
 
 class PunterHome(View, TemplateResponseMixin):

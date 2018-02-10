@@ -80,7 +80,7 @@ $(document).ready(function () {
                 alert_msg = 'Confirma a validação do ticket? \n Essa ação não pode ser desfeita.'
                 alertify.confirm('Confirmação', alert_msg,
                     function () {
-                        $.post('/seller/validate_ticket/', send_data, function(data, status, rq){
+                        $.post('/user/seller/validate_ticket/', send_data, function(data, status, rq){
                             data = jQuery.parseJSON(data);
 
                             if(data['status'] == 200){
@@ -220,7 +220,7 @@ $(document).ready(function () {
                 alertify.confirm('Confirmação', alert_msg,
                     function () {
                         
-                        $.post('/seller/punter_payment/', send_data, function(data, status, rq){
+                        $.post('/user/seller/punter_payment/', send_data, function(data, status, rq){
                             
                             data = jQuery.parseJSON(data);
 
