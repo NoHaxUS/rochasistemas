@@ -321,17 +321,18 @@ def save_odds(game_id, odds, max_cotation_value):
                         cotation_name = 'Visitante/Empate'
                     else:
                         cotation_name = 'Casa/Visitante'
-
-                print(kind_name)
-                print(cotation_name)
-                print(cotation['total'])
-
+                
+                cotation_total = cotation['total']
+                if not cotation_total == None:
+                    if len(cotation_total.split(',')) > 1:
+                        continue
+                    
                 Cotation(name=cotation_name,
                             value=cotation_value,
                             original_value=cotation_value,
                             game=game_instance,
                             is_standard=is_standard,
-                            total=cotation['total'].split(',')[0],
+                            total=cotation_total,
                             winning=cotation['winning'],
                             kind=MARKET_NAME.setdefault(kind_name, kind_name)).save()
                             
