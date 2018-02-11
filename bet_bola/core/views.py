@@ -72,7 +72,7 @@ class Home(TemplateResponseMixin, View):
 						game_set = Game.objects.today_able_games().filter(championship=i)
 						dict_championship_games[i] = game_set
 		
-					country_has_games = True
+				country_has_games = True
 		
 			if country_has_games:					
 				country.append(c)
