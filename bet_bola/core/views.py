@@ -19,35 +19,35 @@ import urllib
 import utils.timezone as tzlocal
 
 COUNTRY_TRANSLATE = {
-	"Austria":"Áustria",
+	"Brazil":"Brasil",
 	"England":"Inglaterra",
-	"Turkey":"Turquia",
-	"Germany":"Alemanha",
-	"Poland":"Polônia",
+	"Spain":"Espanha",
 	"France":"França",
+	"Germany":"Alemanha",
+	"Europe":"Europa",
+	"South America": "América do Sul",
+	"International":"Internacional",
+	"Italy":"Itália",
+	"Portugal":"Portugal",
+	"Belgium":"Bélgica",
+	"USA":"Estados Unidos",
+	"Turkey":"Turquia",
+	"Netherlands":"Holanda",
+	"Russia":"Russia",
+	"Austria":"Áustria",
+	"Poland":"Polônia",
 	"Angola":"Ângola",
 	"Albania":"Albânia",
 	"Croatia":"Croácia",
-	"Italy":"Itália",
 	"Sweden":"Suécia",
-	"Spain":"Espanha",
 	"Malta":"Malta",
-	"Brazil":"Brasil",
 	"Saudi Arabia":"Arábia Saudita",
 	"Israel":"Israel",
 	"Denmark":"Dinamarca",
-	"Russia":"Russia",
 	"Hong Kong":"Hong Kong",
-	"International":"Internacional",
-	"Belgium":"Bélgica",
-	"USA":"Estados Unidos",
-	"Europe":"Europa",
-	"Netherlands":"Holanda",
-	"Portugal":"Portugal",
 	"United Arab Emirates":"Emirados Árabes",
 	"Finland":"Finlândia",
 	"Norway":"Noruega",
-	"South America": "América do Sul",
 
 }
 
@@ -61,15 +61,21 @@ class Home(TemplateResponseMixin, View):
 		country = list()
 		dict_championship_games = {}
 		
-		for i in Championship.objects.all():
-			if i.my_games.able_games().count() > 0:
-				championships.append(i)
-				if i.my_games.today_able_games().count() > 0:
-					game_set = Game.objects.today_able_games().filter(championship=i)
-					dict_championship_games[i] = game_set
+		for c in COUNTRY_TRANSLATE.keys():
+			
+			country_has_games = False
 
-				if i.country not in country:					
-					country.append(i.country)
+			for i in Championship.objects.filter(country=c):
+				if i.my_games.able_games().count() > 0:
+					championships.append(i)
+					if i.my_games.today_able_games().count() > 0:
+						game_set = Game.objects.today_able_games().filter(championship=i)
+						dict_championship_games[i] = game_set
+		
+					country_has_games = True
+		
+			if country_has_games:					
+				country.append(c)
 
 		is_seller = None
 		if request.user.is_authenticated:
@@ -93,13 +99,20 @@ class TomorrowGames(Home):
 		country = list()
 		dict_championship_games = {}
 		
-		for i in Championship.objects.all():
-			if i.my_games.able_games().count() > 0:
-				championships.append(i)
-				if i.my_games.tomorrow_able_games().count() > 0:
-					dict_championship_games[i] = Game.objects.tomorrow_able_games().filter(championship=i)				
-				if i.country not in country:					
-					country.append(i.country)
+		for c in COUNTRY_TRANSLATE.keys():
+			
+			country_has_games = False
+
+			for i in Championship.objects.filter(country=c):
+				if i.my_games.able_games().count() > 0:
+					championships.append(i)
+					if i.my_games.tomorrow_able_games().count() > 0:
+						dict_championship_games[i] = Game.objects.tomorrow_able_games().filter(championship=i)				
+				
+				country_has_games = True
+
+			if country_has_games:					
+				country.append(c)
 
 		is_seller = None
 		if request.user.is_authenticated:
@@ -124,11 +137,14 @@ class GameChampionship(TemplateResponseMixin, View):
 		championships = list()
 		country = list()
 		
+
 		for i in Championship.objects.all():
 			if i.my_games.able_games().count() > 0:
 				championships.append(i)
-				if i.country not in country:					
-					country.append(i.country)
+		
+		for c in COUNTRY_TRANSLATE.keys():								
+			if Championship.objects.filter(country=c):
+				country.append(c)
 				
 		championship = Championship.objects.get( pk=int(self.kwargs["pk"]) )
 		championship_country = championship.name +" - "+ COUNTRY_TRANSLATE.get(championship.country, championship.country)
