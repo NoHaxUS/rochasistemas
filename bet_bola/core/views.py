@@ -72,7 +72,7 @@ class Home(TemplateResponseMixin, View):
 						game_set = Game.objects.today_able_games().filter(championship=i)
 						dict_championship_games[i] = game_set
 		
-				country_has_games = True
+					country_has_games = True
 		
 			if country_has_games:					
 				country.append(c)
@@ -109,7 +109,7 @@ class TomorrowGames(Home):
 					if i.my_games.tomorrow_able_games().count() > 0:
 						dict_championship_games[i] = Game.objects.tomorrow_able_games().filter(championship=i)				
 				
-				country_has_games = True
+					country_has_games = True
 
 			if country_has_games:					
 				country.append(c)
@@ -144,7 +144,8 @@ class GameChampionship(TemplateResponseMixin, View):
 		
 		for c in COUNTRY_TRANSLATE.keys():								
 			if Championship.objects.filter(country=c):
-				country.append(c)
+				if c in [c.country for c in championships]:
+					country.append(c)
 				
 		championship = Championship.objects.get( pk=int(self.kwargs["pk"]) )
 		championship_country = championship.name +" - "+ COUNTRY_TRANSLATE.get(championship.country, championship.country)
