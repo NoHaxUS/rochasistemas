@@ -779,5 +779,22 @@ $(document).ready(function () {
         });
 
 });
+
+$( window ).scroll(function(){
+    var top = (document.documentElement && document.documentElement.scrollTop) || 
+    document.body.scrollTop;
+
+    if (top > 500){
+        $('#back-to-top').show();
+    }
+    else{
+        $('#back-to-top').hide();   
+    }
     
-    
+});
+
+$('#back-to-top').each(function(){
+    $(this).click(function(){ 
+        $('html,body').animate({ scrollTop: 0 }, 'slow');
+    });
+});
