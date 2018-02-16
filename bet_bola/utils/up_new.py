@@ -7,7 +7,7 @@ from django.db.models import Count
 from django.db.models import F
 
 
-
+"""
 MARKET_NAME = {
     "Result/Total Goals": "Resultado/Total de Gol(s)",
     "Correct Score 1st Half": "Resultado Exato no Primeiro Tempo",
@@ -32,27 +32,51 @@ MARKET_NAME = {
     "Exact Goals Number": "Número Exato de Gol(s)",
     "Odd/Even": "Placar Impar/Par",
 }
-
+"""
+MARKET_ID = {
+    976334: "Resultado/Total de Gol(s)",
+    975916: "Resultado Exato no Primeiro Tempo",
+    976105: "2 Times Marcam",
+    37: "Vencedor do Primeiro Tempo",
+    976204: "Total de Gols do Visitante",
+    975918: "Dupla Chance",
+    976198: "Total de Gols da Casa",
+    38: "Total de Gols do Primeiro Tempo, Acima/Abaixo",
+    976236: "Vencer e não tomar Gol(s)",
+    975909: "Resultado Exato",
+    1: "Vencedor do Encontro",
+    976360: "Visitante Marca pelo menos Um Gol(s)",
+    10: "Casa/Visitante",
+    12: "Total de Gol(s) no Encontro, Acima/Abaixo",
+    976144: "Etapa com Mais Gol(s)",
+    976096: "Time da Casa NÃO Tomará Gol(s)",
+    8594683: "Time Visitante NÃO Tomará Gol(s)",
+    976316: "Resultado/2 Times Marcam",
+    976348: "Time da Casa Marca",
+    976193: "Vencedor nas Duas Etapas",
+    976241: "Número Exato de Gol(s)",
+    975930: "Placar Impar/Par",
+    }
 
 MARKET_NAME_SMALL_TEAMS = {
 
-    "Result/Total Goals": "Resultado/Total de Gol(s)",
-    "Both Teams To Score": "2 Times Marcam",
-    "Total - Away": "Total de Gols do Visitante",
-    "Double Chance": "Dupla Chance",
-    "Total - Home": "Total de Gols da Casa",
-    "Win To Nil": "Vencer e não tomar Gol(s)",
-    "Correct Score": "Resultado Exato",
-    "3Way Result": "Vencedor do Encontro",
-    "Away Team Score a Goal": "Visitante Marca pelo menos Um Gol(s)",
-    "Home/Away": "Casa/Visitante",
-    "Over/Under": "Total de Gol(s) no Encontro, Acima/Abaixo",
-    "Clean Sheet - Home": "Time da Casa NÃO Tomará Gol(s)",
-    "Clean Sheet - Away": "Time Visitante NÃO Tomará Gol(s)",
-    "Results/Both Teams To Score": "Resultado/2 Times Marcam",
-    "Home Team Score a Goal": "Time da Casa Marca",
-    "Exact Goals Number": "Número Exato de Gol(s)",
-    "Odd/Even": "Placar Impar/Par",
+    976334: "Resultado/Total de Gol(s)",
+    976105: "2 Times Marcam",
+    976204: "Total de Gols do Visitante",
+    975918: "Dupla Chance",
+    976198: "Total de Gols da Casa",
+    976236: "Vencer e não tomar Gol(s)",
+    975909: "Resultado Exato",
+    1: "Vencedor do Encontro",
+    976360: "Visitante Marca pelo menos Um Gol(s)",
+    10: "Casa/Visitante",
+    12: "Total de Gol(s) no Encontro, Acima/Abaixo",
+    976096: "Time da Casa NÃO Tomará Gol(s)",
+    8594683: "Time Visitante NÃO Tomará Gol(s)",
+    976316: "Resultado/2 Times Marcam",
+    976348: "Time da Casa Marca",
+    976241: "Número Exato de Gol(s)",
+    975930: "Placar Impar/Par",
 }
 
 """
@@ -283,9 +307,9 @@ def get_bet365_from_bookmakers(bookmakers):
 
 def can_save_this_market(kind_name, championship_id, processed_markets):
     if championship_id in INVALID_ALL_COTES_CHAMPIONSHIPS:
-        if kind_name in MARKET_NAME_SMALL_TEAMS.keys() and kind_name not in processed_markets:
+        if kind_name in MARKET_NAME_SMALL_TEAMS.values() and kind_name not in processed_markets:
             return True
-    elif kind_name in MARKET_NAME.keys() and kind_name not in processed_markets:
+    elif kind_name in MARKET_ID.values() and kind_name not in processed_markets:
         return True
     return False
 
@@ -296,8 +320,8 @@ def save_odds(game_id, odds, max_cotation_value):
     championship_id = game_instance.championship_id
     processed_markets = []
 
-    for market in odds_array:
-        kind_name = market['name']
+    for market in odds_array:        
+        kind_name = MARKET_ID.setdefault(market['id'], market['name'])
         if can_save_this_market(kind_name, championship_id, processed_markets):
             bookmakers = market['bookmaker']['data']
             bookmaker = get_bet365_from_bookmakers(bookmakers)
@@ -310,11 +334,11 @@ def save_odds(game_id, odds, max_cotation_value):
                 is_standard=False
                 cotation_label = cotation['label']
 
-                if kind_name == '3Way Result' and cotation['label'] in ['1', '2', 'X']:
+                if kind_name == 'Vencedor do Encontro' and cotation['label'] in ['1', '2', 'X']:
                     is_standard=True
-                if kind_name == 'Result/Total Goals':
+                if kind_name == 'Resultado/Total de Gol(s)':
                     cotation_name = renaming_cotations(cotation['label'], " ").strip()
-                if kind_name == 'Double Chance' and cotation['label'] in ['12','1X','X2']:
+                if kind_name == 'Dupla Chance' and cotation['label'] in ['12','1X','X2']:
                     if cotation_label == '1X':
                         cotation_name = 'Casa/Empate'
                     elif cotation_label == '2X':
@@ -334,7 +358,7 @@ def save_odds(game_id, odds, max_cotation_value):
                             is_standard=is_standard,
                             total=cotation_total,
                             winning=cotation['winning'],
-                            kind=MARKET_NAME.setdefault(kind_name, kind_name)).save()
+                            kind=MARKET_ID.setdefault(market['id'], kind_name)).save()
                             
             processed_markets.append(kind_name)
 
