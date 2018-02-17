@@ -306,11 +306,14 @@ def get_bet365_from_bookmakers(bookmakers):
 
 
 def can_save_this_market(kind_name, championship_id, processed_markets):
-    if championship_id in INVALID_ALL_COTES_CHAMPIONSHIPS:
-        if kind_name in MARKET_NAME_SMALL_TEAMS.values() and kind_name not in processed_markets:
-            return True
-    elif kind_name in MARKET_ID.values() and kind_name not in processed_markets:
-        return True
+    if kind_name in MARKET_ID.values():
+
+        if championship_id in INVALID_ALL_COTES_CHAMPIONSHIPS:
+            if kind_name in MARKET_NAME_SMALL_TEAMS.values() and kind_name not in processed_markets:                
+                return True
+        elif kind_name not in processed_markets:
+            return True    
+
     return False
 
 def save_odds(game_id, odds, max_cotation_value):
@@ -321,8 +324,9 @@ def save_odds(game_id, odds, max_cotation_value):
     processed_markets = []
 
     for market in odds_array:        
-        kind_name = MARKET_ID.setdefault(market['id'], market['name'])
+        kind_name = MARKET_ID.get(market['id'], market['name'])
         if can_save_this_market(kind_name, championship_id, processed_markets):
+            print(kind_name)
             bookmakers = market['bookmaker']['data']
             bookmaker = get_bet365_from_bookmakers(bookmakers)
             cotations = bookmaker['odds']['data']
@@ -338,13 +342,6 @@ def save_odds(game_id, odds, max_cotation_value):
                     is_standard=True
                 if kind_name == 'Resultado/Total de Gol(s)':
                     cotation_name = renaming_cotations(cotation['label'], " ").strip()
-                if kind_name == 'Dupla Chance' and cotation['label'] in ['12','1X','X2']:
-                    if cotation_label == '1X':
-                        cotation_name = 'Casa/Empate'
-                    elif cotation_label == '2X':
-                        cotation_name = 'Visitante/Empate'
-                    else:
-                        cotation_name = 'Casa/Visitante'
                 
                 cotation_total = cotation['total']
                 if not cotation_total == None:
@@ -358,7 +355,7 @@ def save_odds(game_id, odds, max_cotation_value):
                             is_standard=is_standard,
                             total=cotation_total,
                             winning=cotation['winning'],
-                            kind=MARKET_ID.setdefault(market['id'], kind_name)).save()
+                            kind=MARKET_ID.get(market['id'], kind_name)).save()
                             
             processed_markets.append(kind_name)
 
