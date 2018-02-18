@@ -137,7 +137,8 @@ class Game(models.Model):
 
 class Championship(models.Model):
 	name = models.CharField(max_length=80, verbose_name='Nome', help_text='Campeonato')
-	country = models.CharField(max_length=45, verbose_name='País')
+	country = models.ForeignKey('Country', related_name='my_championships', on_delete=models.CASCADE, verbose_name='Pais')
+	priority = models.IntegerField(default=1)
 
 	def __str__(self):
 		return self.name
@@ -147,6 +148,9 @@ class Championship(models.Model):
 		verbose_name_plural = 'Campeonatos'
 
 
+class Country(models.Model):
+	name = models.CharField(max_length=45, verbose_name='País')
+	priority = models.IntegerField(default=1)
 
 class Reward(models.Model):
 	who_rewarded = models.ForeignKey('user.Seller', null=True, on_delete=models.PROTECT)

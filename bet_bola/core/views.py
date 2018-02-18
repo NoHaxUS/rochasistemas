@@ -9,7 +9,7 @@ from django.views.generic.list import ListView
 from django.views.generic.base import TemplateResponseMixin
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Cotation,BetTicket,Game,Championship,Payment,Reward
+from .models import Cotation,BetTicket,Game,Championship,Payment,Reward,Country
 from user.models import Punter,Seller
 from django.core import serializers
 from django.conf import settings
@@ -58,24 +58,16 @@ class Home(TemplateResponseMixin, View):
 
 	def get(self, request, *args, **kwargs):
 		championships = list()
-		country = list()
+		country = Country.objects.order_by('-priority')
 		dict_championship_games = {}
-		
-		for c in COUNTRY_TRANSLATE.keys():
-			
-			country_has_games = False
-
-			for i in Championship.objects.filter(country=c):
-				if i.my_games.able_games().count() > 0:
-					championships.append(i)
-					if i.my_games.today_able_games().count() > 0:
-						game_set = Game.objects.today_able_games().filter(championship=i)
-						dict_championship_games[i] = game_set
-		
-					country_has_games = True
-		
-			if country_has_games:					
-				country.append(c)
+	
+		for i in Championship.objects.order_by('-country__priority', '-priority'):			
+			if i.my_games.able_games().count() > 0:
+				championships.append(i)
+				if i.my_games.today_able_games().count() > 0:
+					game_set = Game.objects.today_able_games().filter(championship=i)
+					dict_championship_games[i] = game_set
+					
 
 		is_seller = None
 		if request.user.is_authenticated:
@@ -96,23 +88,16 @@ class TomorrowGames(Home):
 
 	def get(self, request, *args, **kwargs):
 		championships = list()
-		country = list()
+		country = Country.objects.order_by('-priority')
 		dict_championship_games = {}
 		
-		for c in COUNTRY_TRANSLATE.keys():
-			
-			country_has_games = False
 
-			for i in Championship.objects.filter(country=c):
-				if i.my_games.able_games().count() > 0:
-					championships.append(i)
-					if i.my_games.tomorrow_able_games().count() > 0:
-						dict_championship_games[i] = Game.objects.tomorrow_able_games().filter(championship=i)				
-				
-					country_has_games = True
-
-			if country_has_games:					
-				country.append(c)
+		for i in Championship.objects.order_by('-country__priority','-priority'):
+			if i.my_games.able_games().count() > 0:
+				championships.append(i)
+				if i.my_games.tomorrow_able_games().count() > 0:
+					dict_championship_games[i] = Game.objects.tomorrow_able_games().filter(championship=i)				
+									
 
 		is_seller = None
 		if request.user.is_authenticated:
@@ -135,20 +120,16 @@ class GameChampionship(TemplateResponseMixin, View):
 	def get(self, request, *args, **kwargs):
 		
 		championships = list()
-		country = list()
+		country = Country.objects.order_by('-priority')
 		
 
-		for i in Championship.objects.all():
+		for i in Championship.objects.order_by('-country__priority','-priority'):
 			if i.my_games.able_games().count() > 0:
 				championships.append(i)
-		
-		for c in COUNTRY_TRANSLATE.keys():								
-			if Championship.objects.filter(country=c):
-				if c in [c.country for c in championships]:
-					country.append(c)
+				
 				
 		championship = Championship.objects.get( pk=int(self.kwargs["pk"]) )
-		championship_country = championship.name +" - "+ COUNTRY_TRANSLATE.get(championship.country, championship.country)
+		championship_country = championship.name +" - "+ COUNTRY_TRANSLATE.get(championship.country.name, championship.country.name)
 		games = Game.objects.able_games().filter(championship=championship)
 	
 		is_seller = None

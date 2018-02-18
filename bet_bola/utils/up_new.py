@@ -1,5 +1,5 @@
 import requests
-from core.models import Game, Cotation, Championship, BetTicket
+from core.models import Game, Cotation, Championship, BetTicket, Country
 from user.models import GeneralConfigurations
 import utils.timezone as tzlocal
 import datetime
@@ -213,9 +213,18 @@ def process_json_championship(json_response):
 
     championship_array = json_response.get('data')
     if championship_array:
-        for championship in championship_array:
-            Championship(pk=championship['id'], name=championship['name'],
-                         country=championship['country']['data']['name']).save()
+        for championship in championship_array:                                    
+            id_country = championship['country']['data']['id']
+
+            if not Country.objects.filter(pk=id_country).exists():                
+                country = Country.objects.create(pk=championship['country']['data']['id'],name=championship['country']['data']['name'])
+            else:
+                country = Country.objects.get(pk=id_country)
+
+            if not Championship.objects.filter(pk=championship['id']).exists():
+                Championship(pk=championship['id'], name=championship['name'],
+                             country=country).save()
+
     else:
         print("O array de campeonatos retornou vazio.")
 
@@ -325,8 +334,7 @@ def save_odds(game_id, odds, max_cotation_value):
 
     for market in odds_array:        
         kind_name = MARKET_ID.get(market['id'], market['name'])
-        if can_save_this_market(kind_name, championship_id, processed_markets):
-            print(kind_name)
+        if can_save_this_market(kind_name, championship_id, processed_markets):            
             bookmakers = market['bookmaker']['data']
             bookmaker = get_bet365_from_bookmakers(bookmakers)
             cotations = bookmaker['odds']['data']
