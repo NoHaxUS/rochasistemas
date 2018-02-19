@@ -8,8 +8,7 @@ class CustomUser(AbstractUser):
 	def __str__(self):
 		return self.first_name
 
-	email = models.EmailField(null=True,verbose_name='E-mail')
-
+	email = models.EmailField(null=True, verbose_name='E-mail')
 
 
 class RandomUser(models.Model):
@@ -34,8 +33,8 @@ class Seller(CustomUser):
 	def actual_revenue(self):
 		from core.models import BetTicket
 		tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=self.pk, payment__seller_was_rewarded=False)
-		
 		revenue_total = 0
+
 		for ticket in tickets_revenue:
 			revenue_total += ticket.value
 		to_string = str(revenue_total)
@@ -46,22 +45,23 @@ class Seller(CustomUser):
 	def is_seller(self):
 		return True
 
-
 	def save(self, *args, **kwargs):
 		self.clean()
 		self.set_password(self.password)  # password encryption
 		super(Seller, self).save()
 
-		payment_permission = Permission.objects.get(
-			codename='can_validate_payment')
-		reward_permission = Permission.objects.get(codename='can_reward')
-		self.user_permissions.add(payment_permission)
-		self.user_permissions.add(reward_permission)
+		be_seller_permission = Permission.objects.get(
+			codename='be_seller')
+		self.user_permissions.add(be_seller_permission)
+
 
 	class Meta:
 		verbose_name = 'Vendedor'
 		verbose_name_plural = 'Vendedores'
 
+		permissions = (
+			('be_seller', 'Be a seller, permission.'),
+		)
 
 class Punter(CustomUser):
 

@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.urls import reverse
+from django.urls import reverse_lazy
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.views import View
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.edit import CreateView, FormView
-from django.contrib import messages
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from .models import Punter
 from core.models import Game, Championship, BetTicket
 from user.models import Punter
@@ -130,9 +130,12 @@ class SellerCreatedBets(View, TemplateResponseMixin):
         return self.render_to_response({'bet_tickets':context, 'page_range':page_range})	
 
 
-class SellerHome(TemplateResponseMixin, View):
+class SellerHome(PermissionRequiredMixin, TemplateResponseMixin, View):
     
     template_name = 'user/seller_home.html'
+    permission_required = 'be_seller'
+    login_url = reverse_lazy('core:core_home')
+    raise_exception = True
 
     def get(self, request, *args, **kwargs):
 
