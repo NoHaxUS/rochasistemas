@@ -24,6 +24,7 @@ urlpatterns = [
     path('punter/register/', views.PunterRegister.as_view(), name='user_punter_register'),
     path('seller/home/', views.SellerHome.as_view(), name='user_seller_home'),
     path('seller/payed_bets/', views.SellerPayedBets.as_view(), name='user_seller_payed_bets'),
+    path('seller/created_bets/', views.SellerCreatedBets.as_view(), name='user_seller_created_bets'),
     path('seller/validate_ticket/', views.SellerValidateTicket.as_view(), name='user_seller_validate_ticket'),
     path('seller/punter_payment/', views.SellerPayPunter.as_view(), name='user_seller_punter_payment'),
     path('change_password/',views.UserPasswordChange.as_view(), name='user_change_password'),

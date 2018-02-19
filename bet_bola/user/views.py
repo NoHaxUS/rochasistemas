@@ -110,6 +110,26 @@ class SellerPayedBets(View, TemplateResponseMixin):
         return self.render_to_response({'bet_tickets':context, 'page_range':page_range})	
 
 
+class SellerCreatedBets(View, TemplateResponseMixin):
+
+    template_name = 'user/seller_created_bets.html'
+
+    def get(self, request):
+        bet_tickets = BetTicket.objects.filter(user=request.user.id).order_by('-pk')
+
+        paginator = Paginator(bet_tickets, 10)        
+        page = request.GET.get('page')
+        context = paginator.get_page(page)
+        index = context.number - 1
+        max_index = len(paginator.page_range)
+        start_index = index - 3 if index >= 3 else 0
+        end_index = index + 3 if index <= max_index - 3 else max_index
+
+        page_range = list(paginator.page_range)[start_index:end_index]		
+
+        return self.render_to_response({'bet_tickets':context, 'page_range':page_range})	
+
+
 class SellerHome(TemplateResponseMixin, View):
     
     template_name = 'user/seller_home.html'

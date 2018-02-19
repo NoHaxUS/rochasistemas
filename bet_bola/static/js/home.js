@@ -732,13 +732,12 @@ $(document).ready(function () {
 
         });
 
-        
-
+    
         $('#user_register_form').on('submit', function(e){
             e.preventDefault();
             var send_data = $(this).serialize();
 
-            $.post('/user/register/', send_data, function(data, status, rq){
+            $.post('/user/punter/register/', send_data, function(data, status, rq){
                 console.log(rq.status);
 
                 alertify.alert("Sucesso","Cadastrado com sucesso, você será logado automaticamente. Boas apostas :)")
