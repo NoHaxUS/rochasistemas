@@ -38,34 +38,28 @@
 
 {% block nav_links_desktop %}
 <ul class="right hide-on-med-and-down">
-    {% if user.is_anonymous %}
-    <li>
-        <a href="#modal-login" class="waves-effect waves-light btn white green-text-button modal-trigger">
-            Login</a>
-    </li>
-    <li>
-        <a href="#modal-register" class="waves-effect waves-light btn white green-text-button modal-trigger">
-            Cadastre-se</a>
-    </li>
-    <li>
-        <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
-            Consultar Bilhete</a>
-    </li>
-    {% else %}
     <li class="user-logged-name">Olá, {{user}}</li>
     <li>
-        <a href="{% url 'user:user_logout' %}" class="waves-effect waves-light btn white green-text-button ">
-            logout</a>
+        <a href="{% url 'core:core_home' %}" class="waves-effect waves-light btn white green-text-button">
+            Início</a>
     </li>
-    {% endif %}
+    <li>
+        <a href="{% url 'user:user_logout' %}" class="waves-effect waves-light btn white green-text-button">
+            Logout</a>
+    </li>
 </ul>
 {% endblock %}
 
 {% block nav_links_mobile %}
 <ul class="side-nav" id="mobile-menu">
+    <li class="user-logged-name user-logged-mobile">Olá, {{user}}</li>
     <li>
-        <a href="{% url 'core:core_home' %}" class="waves-effect waves-light btn white green-text-button modal-trigger">
-            Voltar</a>
+        <a href="{% url 'core:core_home' %}" class="waves-effect waves-light btn white green-text-button">
+            Início</a>
+    </li>
+    <li>
+        <a href="{% url 'user:user_logout' %}" class="waves-effect waves-light btn white green-text-button">
+            Logout</a>
     </li>
 </ul>
 {% endblock %}

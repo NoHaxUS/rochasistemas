@@ -1,0 +1,63 @@
+#header{
+    background-color: #3b9c00;
+    color: #ffffff;
+}
+
+#branding h1, #branding h1 a:link, #branding h1 a:visited {
+    color: #ffffff;
+}
+
+
+th.row  a {
+    font-family: 25px;
+}
+
+.module{
+    margin-bottom: 0px;
+}
+
+.module caption{
+    background: #47a94a;
+}
+td, th{
+    font-size: 1.1rem;
+    padding: 12px;
+    line-height: normal;
+}
+
+div.breadcrumbs{
+    background: #3e8a3d;
+}
+.object-tools{
+    margin-top: -53px;
+}
+
+a:link, a:visited{
+    color: #000000;
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button{
+    background: #159275;
+}
+
+.object-tools a.addlink {
+    background-image: url(../img/tooltag-add.svg);
+}
+
+.object-tools a.viewsitelink, .object-tools a.golink, .object-tools a.addlink {
+    background-repeat: no-repeat;
+    background-position: right 7px center;
+    padding-right: 26px;
+}
+
+.object-tools a:link, .object-tools a:visited {
+    display: block;
+    float: left;
+    padding: 3px 12px;
+    background: #0d7110;
+    font-weight: 400;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+}
