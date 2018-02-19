@@ -6,8 +6,8 @@
 {% block nav_links_desktop %}
 <ul class="right hide-on-med-and-down">
     <li>
-        <a href="/" class="waves-effect waves-light btn white green-text-button modal-trigger hoverable">
-            Voltar</a>
+        <a href="{% url 'core:core_home' %}" class="waves-effect waves-light btn white green-text-button modal-trigger hoverable">
+            Início</a>
     </li>
 </ul>
 {% endblock %}
@@ -15,7 +15,8 @@
 {% block nav_links_mobile %}
 <ul class="side-nav" id="mobile-menu">
     <li>
-        <a href="/" class="waves-effect waves-light btn white green-text-button round">Voltar</a>
+        <a href="{% url 'core:core_home' %}" class="waves-effect waves-light btn white green-text-button round">
+            Início</a>
     </li>
 </ul>
 {% endblock %}

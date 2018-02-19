@@ -62,26 +62,26 @@
 <ul class="right hide-on-med-and-down">
     <li class="user-logged-name">Olá, {{user}}</li>
     <li>
-        <a href="/admin/" class="waves-effect waves-light btn white green-text-button ">
-            Voltar</a>
+        <a href="/admin/" class="waves-effect waves-light btn white green-text-button">
+            Administração</a>
     </li>
     <li>
-        <a href="/user/logout" class="waves-effect waves-light btn white green-text-button ">
-            logout</a>
+        <a href="{% url 'user:user_logout' %}" class="waves-effect waves-light btn white green-text-button">
+            Logout</a>
     </li>
 </ul>
 {% endblock %}
 
 {% block nav_links_mobile %}
 <ul class="side-nav" id="mobile-menu">
-    <li class="user-logged-name">Olá, {{user}}</li>
+    <li class="user-logged-name user-logged-mobile">Olá, {{user}}</li>
     <li>
         <a href="/admin/" class="waves-effect waves-light btn white green-text-button ">
-            Voltar</a>
+            Administração</a>
     </li>
     <li>
-        <a href="/user/logout" class="waves-effect waves-light btn white green-text-button ">
-            logout</a>
+        <a href="{% url 'user:user_logout' %}" class="waves-effect waves-light btn white green-text-button">
+            Logout</a>
     </li>
 </ul>
 {% endblock %}

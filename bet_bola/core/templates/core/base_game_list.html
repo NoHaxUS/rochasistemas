@@ -208,7 +208,8 @@
             <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
                 Consultar Bilhete</a>
         </li>
-        {% endif %} {% if not is_seller and not user.is_superuser %}
+        {% endif %}
+        {% if not is_seller and not user.is_superuser %}
         <li>
             <a href="{% url 'user:user_punter_home' %}" class="waves-effect waves-light btn white green-text-button">
                 Painel do Cliente</a>
@@ -217,18 +218,17 @@
             <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
                 Consultar Bilhete</a>
         </li>
-        {% endif %} {% if user.is_superuser %}
+        {% endif %} 
+        {% if user.is_superuser %}
         <li>
             <a href="/admin/" class="waves-effect waves-light btn white green-text-button">
                 Administração</a>
         </li>
         {% endif %}
-    
         <li>
             <a href="{% url 'user:user_logout' %}" class="waves-effect waves-light btn white green-text-button">
                 Logout</a>
         </li>
-    
         {% endif %}
         <li>
             <a href="{% url 'core:core_app_download' %}" class="waves-effect waves-light btn">
