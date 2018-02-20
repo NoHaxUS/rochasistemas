@@ -37,7 +37,10 @@ class PunterHome(View, TemplateResponseMixin):
 
 
 
-class SellerValidateTicket(View):
+class SellerValidateTicket(PermissionRequiredMixin, View):
+
+    permission_required = 'user.be_seller'
+    login_url = reverse_lazy('core:core_home')
 
     def post(self, request):
 
@@ -66,7 +69,11 @@ class SellerValidateTicket(View):
             return JsonResponse({'status': 400})
 
 
-class SellerPayPunter(View):
+class SellerPayPunter(PermissionRequiredMixin, View):
+
+
+    permission_required = 'user.be_seller'
+    login_url = reverse_lazy('core:core_home')
 
     def post(self, request):
         if not request.POST['ticket']:
@@ -90,9 +97,11 @@ class SellerPayPunter(View):
 
 
 
-class SellerPayedBets(View, TemplateResponseMixin):
+class SellerPayedBets(PermissionRequiredMixin, TemplateResponseMixin, View):
 
     template_name = 'user/seller_payed_bets.html'
+    permission_required = 'user.be_seller'
+    login_url = reverse_lazy('core:core_home')
 
     def get(self, request):
         bet_tickets = BetTicket.objects.filter(payment__who_set_payment_id=request.user.id).filter(payment__status_payment='Pago').order_by('-pk')
@@ -110,9 +119,11 @@ class SellerPayedBets(View, TemplateResponseMixin):
         return self.render_to_response({'bet_tickets':context, 'page_range':page_range})	
 
 
-class SellerCreatedBets(View, TemplateResponseMixin):
+class SellerCreatedBets(PermissionRequiredMixin, TemplateResponseMixin, View):
 
     template_name = 'user/seller_created_bets.html'
+    permission_required = 'user.be_seller'
+    login_url = reverse_lazy('core:core_home')
 
     def get(self, request):
         bet_tickets = BetTicket.objects.filter(user=request.user.id).order_by('-pk')
@@ -133,9 +144,8 @@ class SellerCreatedBets(View, TemplateResponseMixin):
 class SellerHome(PermissionRequiredMixin, TemplateResponseMixin, View):
     
     template_name = 'user/seller_home.html'
-    permission_required = 'be_seller'
+    permission_required = 'user.be_seller'
     login_url = reverse_lazy('core:core_home')
-    raise_exception = True
 
     def get(self, request, *args, **kwargs):
 
