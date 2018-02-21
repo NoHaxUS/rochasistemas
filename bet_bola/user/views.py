@@ -1,20 +1,17 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
-from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm
 from django.views import View
 from django.views.generic.base import TemplateResponseMixin
-from django.views.generic.edit import CreateView, FormView
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from .models import Punter
-from core.models import Game, Championship, BetTicket
+from core.models import BetTicket
 from user.models import Punter
-from datetime import datetime
 from user.models import CustomUser
-import json
 import utils.timezone as tzlocal
+import json
 
 
 class PunterHome(View, TemplateResponseMixin):
