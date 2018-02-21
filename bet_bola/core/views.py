@@ -14,9 +14,11 @@ from user.models import Punter,Seller
 from django.core import serializers
 from django.conf import settings
 from user.models import CustomUser, RandomUser
+from collections import OrderedDict
+import utils.timezone as tzlocal
+from utils.utils import no_repetition_list
 import json
 import urllib
-import utils.timezone as tzlocal
 
 COUNTRY_TRANSLATE = {
 	"Brazil":"Brasil",
@@ -57,29 +59,26 @@ class Home(TemplateResponseMixin, View):
 	template_name = 'core/index.html'
 
 	def get(self, request, *args, **kwargs):
-		championships = list()
-		country = Country.objects.order_by('-priority')
-		dict_championship_games = {}
+
+		championships = []
+		countries = []
+		championship_games = {}
 	
-		for i in Championship.objects.order_by('-country__priority', '-priority'):			
-			if i.my_games.able_games().count() > 0:
-				championships.append(i)
-				if i.my_games.today_able_games().count() > 0:
-					game_set = Game.objects.today_able_games().filter(championship=i)
-					dict_championship_games[i] = game_set
+		for championship in Championship.objects.all().order_by('-country__priority', '-priority'):
+			my_games = championship.my_games.able_games()
+			if my_games.count() > 0:
+				championships.append(championship)
+				countries.append(championship.country)
+				my_games_today = my_games.today_able_games()
+
+				if my_games_today.count() > 0:
+					games = my_games_today.filter(championship=championship)
+					championship_games[championship] = games
 					
-
-		is_seller = None
-		if request.user.is_authenticated:
-			try:
-				seller = Seller.objects.get(pk=int(request.user.pk))
-				is_seller = seller.is_seller()
-			except Seller.DoesNotExist:
-				is_seller = False
-
-		context = {'dict_championship_games': dict_championship_games ,'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
+		countries = no_repetition_list(countries)
+		context = {'dict_championship_games': championship_games ,'championships': championships,
+		'countries':countries, 'countries_dict':COUNTRY_TRANSLATE}
 		
-
 		return self.render_to_response(context)
 
 class TomorrowGames(Home):
@@ -87,28 +86,21 @@ class TomorrowGames(Home):
 	template_name = 'core/index.html'
 
 	def get(self, request, *args, **kwargs):
-		championships = list()
-		country = Country.objects.order_by('-priority')
-		dict_championship_games = {}
+
+		championships = []
+		countries = []
+		championship_games = {}
 		
-
-		for i in Championship.objects.order_by('-country__priority','-priority'):
-			if i.my_games.able_games().count() > 0:
-				championships.append(i)
-				if i.my_games.tomorrow_able_games().count() > 0:
-					dict_championship_games[i] = Game.objects.tomorrow_able_games().filter(championship=i)				
-									
-
-		is_seller = None
-		if request.user.is_authenticated:
-			try:
-				seller = Seller.objects.get(pk=int(request.user.pk))
-				is_seller = seller.is_seller()
-			except Seller.DoesNotExist:
-				is_seller = False
-
-		context = {'dict_championship_games': dict_championship_games ,'championships': championships, 'is_seller':is_seller,'countries':country, 'countries_dict':COUNTRY_TRANSLATE}
+		for championship in Championship.objects.all().order_by('-country__priority','-priority'):
+			if championship.my_games.able_games().count() > 0:
+				championships.append(championship)
+				countries.append(championship.country)
+				if championship.my_games.tomorrow_able_games().count() > 0:
+					championship_games[championship] = Game.objects.tomorrow_able_games().filter(championship=championship)		
 		
+		countries = no_repetition_list(countries)
+		context = {'dict_championship_games': championship_games ,'championships': championships,
+		'countries':countries, 'countries_dict':COUNTRY_TRANSLATE}
 
 		return self.render_to_response(context)
 
@@ -119,28 +111,24 @@ class GameChampionship(TemplateResponseMixin, View):
 
 	def get(self, request, *args, **kwargs):
 		
-		championships = list()
-		country = Country.objects.order_by('-priority')
+		championships = []
+		countries = []
 		
 
-		for i in Championship.objects.order_by('-country__priority','-priority'):
-			if i.my_games.able_games().count() > 0:
-				championships.append(i)
+		for championship in Championship.objects.order_by('-country__priority','-priority'):
+			if championship.my_games.able_games().count() > 0:
+				championships.append(championship)
+				countries.append(championship.country)
 				
 				
-		championship = Championship.objects.get( pk=int(self.kwargs["pk"]) )
+		championship = Championship.objects.get( pk=self.kwargs["pk"] )
 		championship_country = championship.name +" - "+ COUNTRY_TRANSLATE.get(championship.country.name, championship.country.name)
 		games = Game.objects.able_games().filter(championship=championship)
-	
-		is_seller = None
-		if request.user.is_authenticated:
-			try:
-				seller = Seller.objects.get(pk=int(request.user.pk))
-				is_seller = seller.is_seller()
-			except Seller.DoesNotExist:
-				is_seller = False
 
-		context = {'games': games ,'championships': championships, 'is_seller':is_seller,'countries':country,'countries_dict':COUNTRY_TRANSLATE,'championship_country':championship_country }
+		countries = no_repetition_list(countries)
+
+		context = {'games': games ,'championships': championships,
+		'countries':countries, 'countries_dict':COUNTRY_TRANSLATE,'championship_country':championship_country }
 		
 		return self.render_to_response(context)
 

@@ -1,7 +1,7 @@
 import pytz
 from datetime import datetime
-import functools
 from django.conf import settings
+import functools
 
 @functools.lru_cache()
 def get_timezone():

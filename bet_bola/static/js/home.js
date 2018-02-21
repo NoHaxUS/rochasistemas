@@ -40,17 +40,6 @@ $(document).ready(function () {
         
     /** END GENERAL INITIALIZATIONS **/
 
-    /** ERROR MESSAGES**/
-    var type = window.location.hash.substr(1);
-    if(type == '/login_error'){
-        alertify.alert("Erro", "Login ou senha incorretos.")
-    }
-
-    if(type == '/login_ok'){
-        alertify.alert("Sucesso", "Você foi logado.")
-    }
-    /* END ERROR MESSAGES */
-    
 
     /** MATERIALIZE COMPONENTS INITIALIZATIONS **/
         $(".button-collapse").sideNav();
@@ -777,23 +766,47 @@ $(document).ready(function () {
             });
         });
 
+
+        $('#form-core-login').on('submit', function(e){
+            e.preventDefault();
+            var form = $(this);
+            var send_data = form.serialize();
+
+            $.post(form.attr('data-action'),
+            send_data, 
+            (response, status, rq)=>{
+                if (response.success){
+                    
+                    alertify.alert('Sucesso', response.message, ()=>{
+                        window.location = '/';
+                    });
+                }else{
+                    alertify.alert('Erro', response.message );
+                }
+            },
+            'json'
+            );
+        });
+
+
+        $( window ).scroll(function(){
+            var top = (document.documentElement && document.documentElement.scrollTop) || 
+            document.body.scrollTop;
+        
+            if (top > 500){
+                $('#back-to-top').show();
+            }
+            else{
+                $('#back-to-top').hide();   
+            }
+            
+        });
+        
+        $('#back-to-top').each(function(){
+            $(this).click(function(){ 
+                $('html,body').animate({ scrollTop: 0 }, 'slow');
+            });
+        });
+
 });
 
-$( window ).scroll(function(){
-    var top = (document.documentElement && document.documentElement.scrollTop) || 
-    document.body.scrollTop;
-
-    if (top > 500){
-        $('#back-to-top').show();
-    }
-    else{
-        $('#back-to-top').hide();   
-    }
-    
-});
-
-$('#back-to-top').each(function(){
-    $(this).click(function(){ 
-        $('html,body').animate({ scrollTop: 0 }, 'slow');
-    });
-});

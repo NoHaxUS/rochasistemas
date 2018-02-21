@@ -43,7 +43,7 @@
             </a>
             <h4>Login</h4>
             <div class="row">
-                <form class="col s12" action="/user/login/" method="POST">
+                <form class="col s12" id="form-core-login" data-action="{% url 'user:user_login' %}">
                     {% csrf_token %}
                     <div class="row">
                         <div class="input-field col s12">
@@ -199,7 +199,7 @@
         </li>
         {% else %}
         <li class="user-logged-name">Olá, {{user}}</li>
-        {% if is_seller %}
+        {% if perms.user.be_seller %}
         <li>
             <a href="{% url 'user:user_seller_home' %}" class="waves-effect waves-light btn white green-text-button">
                 Painel do Vendedor</a>
@@ -209,7 +209,7 @@
                 Consultar Bilhete</a>
         </li>
         {% endif %}
-        {% if not is_seller and not user.is_superuser %}
+        {% if not perms.user.be_seller and not user.is_superuser %}
         <li>
             <a href="{% url 'user:user_punter_home' %}" class="waves-effect waves-light btn white green-text-button">
                 Painel do Cliente</a>

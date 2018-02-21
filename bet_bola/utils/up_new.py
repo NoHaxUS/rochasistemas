@@ -118,6 +118,7 @@ Amapaense
 Brasileiro U20
 Copa Verde
 Sao Paolo Youth Cup
+Panamenho
 
 """
 INVALID_ALL_COTES_CHAMPIONSHIPS = [
@@ -158,6 +159,8 @@ INVALID_ALL_COTES_CHAMPIONSHIPS = [
     1385,
     1386,
     1456,
+    1345,
+    357,
 ]
 
 def renaming_cotations(string, total):
@@ -231,7 +234,7 @@ def process_json_championship(json_response):
 
 def consuming_game_cotation_api():
 
-    before_time = tzlocal.now() - datetime.timedelta(days=2)
+    before_time = tzlocal.now() - datetime.timedelta(days=7)
 
     before_year = before_time.year
     before_month = before_time.month

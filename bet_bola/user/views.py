@@ -6,17 +6,22 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from django.contrib.auth.forms import PasswordChangeForm
 from django.views import View
 from django.views.generic.base import TemplateResponseMixin
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from core.models import BetTicket
 from user.models import Punter
 from user.models import CustomUser
 import utils.timezone as tzlocal
+from utils.response import UnicodeJsonResponse
+
 import json
 
 
-class PunterHome(View, TemplateResponseMixin):
+
+class PunterHome(LoginRequiredMixin, TemplateResponseMixin, View):
 
     template_name = 'user/punter_home.html'
+    login_url = reverse_lazy('core:core_home')
 
     def get(self, request, *args, **kwargs):
 
@@ -37,62 +42,55 @@ class PunterHome(View, TemplateResponseMixin):
 class SellerValidateTicket(PermissionRequiredMixin, View):
 
     permission_required = 'user.be_seller'
-    login_url = reverse_lazy('core:core_home')
+    raise_exception = True
 
     def post(self, request):
 
         if not request.POST['ticket']:
             return JsonResponse({'status': 400})
 
-        if request.user.has_perm('core.can_validate_payment'):
-            pk = int(request.POST['ticket'])
-            ticket_queryset = BetTicket.objects.filter(pk=pk)
-            if ticket_queryset.exists():
-                can_validate = True
-                for cotation in ticket_queryset.first().cotations.all():
-                    if cotation.game.start_game_date < tzlocal.now():
-                        can_validate = False
-                if can_validate:
-                    if ticket_queryset.first().payment.status_payment == 'Pago':
-                        return JsonResponse({'status': 406})
-                    else:
-                        ticket_queryset.first().ticket_valid(request.user)
-                        return JsonResponse({'status': 200})
+        pk = int(request.POST['ticket'])
+        ticket_queryset = BetTicket.objects.filter(pk=pk)
+        if ticket_queryset.exists():
+            can_validate = True
+            for cotation in ticket_queryset.first().cotations.all():
+                if cotation.game.start_game_date < tzlocal.now():
+                    can_validate = False
+            if can_validate:
+                if ticket_queryset.first().payment.status_payment == 'Pago':
+                    return JsonResponse({'status': 406})
                 else:
-                    return JsonResponse({'status': 403})
-            else:			
-                return JsonResponse({'status': 404})
-        else:
-            return JsonResponse({'status': 400})
+                    ticket_queryset.first().ticket_valid(request.user)
+                    return JsonResponse({'status': 200})
+            else:
+                return JsonResponse({'status': 403})
+        else:			
+            return JsonResponse({'status': 404})
 
 
 class SellerPayPunter(PermissionRequiredMixin, View):
 
 
     permission_required = 'user.be_seller'
-    login_url = reverse_lazy('core:core_home')
+    raise_exception = True
 
     def post(self, request):
+
         if not request.POST['ticket']:
             return JsonResponse({'status': 400})
 
-        if request.user.has_perm('core.can_reward'):
-            pk = int(request.POST['ticket'])
-            ticket_queryset = BetTicket.objects.filter(pk=pk)
-            if ticket_queryset.exists():
-                
-                ticket = ticket_queryset.first()
-                if ticket.bet_ticket_status == 'Venceu':
-                    ticket.reward_payment(request.user)
-                    return JsonResponse({'status': 200})
-                else:
-                    return JsonResponse({'status': 401})
+        pk = int(request.POST['ticket'])
+        ticket_queryset = BetTicket.objects.filter(pk=pk)
+        if ticket_queryset.exists():
+            
+            ticket = ticket_queryset.first()
+            if ticket.bet_ticket_status == 'Venceu':
+                ticket.reward_payment(request.user)
+                return JsonResponse({'status': 200})
             else:
-                return JsonResponse({'status': 404})
+                return JsonResponse({'status': 401})
         else:
-            return JsonResponse({'status': 400})	
-
-
+            return JsonResponse({'status': 404})
 
 class SellerPayedBets(PermissionRequiredMixin, TemplateResponseMixin, View):
 
@@ -138,7 +136,7 @@ class SellerCreatedBets(PermissionRequiredMixin, TemplateResponseMixin, View):
         return self.render_to_response({'bet_tickets':context, 'page_range':page_range})	
 
 
-class SellerHome(PermissionRequiredMixin, TemplateResponseMixin, View):
+class SellerHome(LoginRequiredMixin, PermissionRequiredMixin, TemplateResponseMixin, View):
     
     template_name = 'user/seller_home.html'
     permission_required = 'user.be_seller'
@@ -159,7 +157,6 @@ class SellerHome(PermissionRequiredMixin, TemplateResponseMixin, View):
 class PunterRegister(View):
 
     def post(self, request):
-        print(request.POST)
 
         errors = {'errors':False, 'data': []}
         if not request.POST['full_name']:
@@ -208,13 +205,17 @@ class UserLogin(View):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            if(request.user.pk in [user.pk for user in Punter.objects.all()]):
-                return HttpResponseRedirect('/#/login_ok')
-            else:
-                #return redirect('core:seller_home')
-                return HttpResponseRedirect('/#/login_ok')
+            data = {
+                'success':True,
+                'message':'Logado com sucesso'
+            }
+            return UnicodeJsonResponse(data)
         else:
-            return HttpResponseRedirect('/#/login_error')
+            data = {
+                'success':False,
+                'message':'Login ou senha inválidos'
+            }
+            return UnicodeJsonResponse(data)
 
 
 class UserLogout(View):
