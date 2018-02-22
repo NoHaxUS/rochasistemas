@@ -235,7 +235,11 @@ class CreateTicketView(View):
 		if not request.user.is_authenticated:
 			data['success'] =  False
 			data['action'] = 'log_in'
-
+		
+		if request.user.is_superuser:
+			data['success'] =  False
+			data['message'] =  """Desculpe. Contas administradoras
+			não são apropriadas para criarem apostas. <br /> Use contas normais ou conta de vendedor."""
 
 		if client_name and cellphone:
 			if len(client_name) > 40 or len(cellphone) > 14:

@@ -199,7 +199,7 @@
         </li>
         {% else %}
         <li class="user-logged-name">Olá, {{user}}</li>
-        {% if perms.user.be_seller %}
+        {% if perms.user.be_seller and not user.is_superuser %}
         <li>
             <a href="{% url 'user:user_seller_home' %}" class="waves-effect waves-light btn white green-text-button">
                 Painel do Vendedor</a>
@@ -223,6 +223,10 @@
         <li>
             <a href="/admin/" class="waves-effect waves-light btn white green-text-button">
                 Administração</a>
+        </li>
+        <li>
+            <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
+                Consultar Bilhete</a>
         </li>
         {% endif %}
         <li>
@@ -255,7 +259,7 @@
         </li>
         {% else %}
         <li class="user-logged-name user-logged-mobile">Olá, {{user}}</li>
-        {% if perms.user.be_seller %}
+        {% if perms.user.be_seller and not user.is_superuser %}
         <li>
             <a href="{% url 'user:user_seller_home' %}" class="waves-effect waves-light btn white green-text-button ">
                 Painel do Vendedor</a>
@@ -273,13 +277,17 @@
             <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
                 Consultar Bilhete</a>
         </li>
-        {% endif %} {% if user.is_superuser %}
+        {% endif %} 
+        {% if user.is_superuser %}
         <li>
             <a href="/admin/" class="waves-effect waves-light btn white green-text-button ">
                 Administração</a>
         </li>
+        <li>
+            <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
+                Consultar Bilhete</a>
+        </li>
         {% endif %}
-    
         <li>
             <a href="{% url 'user:user_logout' %}" class="waves-effect waves-light btn white green-text-button ">
                 logout</a>
@@ -361,7 +369,7 @@
                                         <span class="award-value">R$ 0.00</span>
                                     </div>
                                 </div>
-                                {% if perms.user.be_seller %}
+                                {% if perms.user.be_seller and not user.is_superuser %}
                                 <div class="row">
                                     <div class="col s12 center-align">
                                         <button class="btn waves-effect waves-light btn-bet-submit-seller blue-button" type="button" desktop="True">Apostar
@@ -461,7 +469,7 @@
                         <span class="award-value">R$ 0.00</span>
                     </div>
                 </div>
-                {% if perms.user.be_seller %}
+                {% if perms.user.be_seller and not user.is_superuser %}
                 <div class="row bet-buttons">
                     <div class="col s12 center-align ">
                         <button class="btn waves-effect waves-light btn-bet-submit-seller blue-button" type="button" desktop="True">Apostar

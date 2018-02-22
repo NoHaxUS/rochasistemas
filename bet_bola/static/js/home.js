@@ -428,146 +428,113 @@ $(document).ready(function () {
  
         });
 
-    /** SUBMETER TICKET DE APOSTA **/
-        $('.btn-bet-submit').on('click', function(){
-            var ticket = Cookies.get('ticket_cookie');
+    $('.btn-bet-submit').on('click', function(){
+        var ticket = Cookies.get('ticket_cookie');
 
 
-            if($(this).attr('desktop') == 'True'){
-                ticket_value = $('.ticket-bet-value-desktop').val();
-            }else{
-                ticket_value = $('.ticket-bet-value-mobile').val();
-            }
+        if($(this).attr('desktop') == 'True'){
+            ticket_value = $('.ticket-bet-value-desktop').val();
+        }else{
+            ticket_value = $('.ticket-bet-value-mobile').val();
+        }
 
-            if (ticket_value <= 0){
-                alertify.error("Você deve apostar um valor maior que 0");
-                return ;
-            }
+        if (ticket_value <= 0){
+            alertify.error("Você deve apostar um valor maior que 0");
+            return ;
+        }
 
-            console.log(ticket_value);
+        console.log(ticket_value);
 
-            if(ticket == '{}'){
-                alertify.error("Nenhuma cota selecionada nessa sessão");
-                COTATION_TOTAL = 0;
-                RenderTicket();
-                UpdateCotationTotal();
-            }else{
-                if(ticket_value != ''){
+        if(ticket == '{}'){
+            alertify.error("Nenhuma cota selecionada nessa sessão");
+            COTATION_TOTAL = 0;
+            RenderTicket();
+            UpdateCotationTotal();
+        }else{
+            if(ticket_value != ''){
 
-                    alertify.confirm('Confirmação','Confirmar aposta?', function(){
+                alertify.confirm('Confirmação','Confirmar aposta?', function(){
 
-                        $.post('/ticket/',
-                        {'ticket_value': ticket_value},
-                        (data, status, rq)=>{
-                            if(data.success){
-                                alertify.alert("Sucesso", data.message);
-                            }else{
-                                if(data.action == 'log_in'){
-                                    $('#modal-login').modal('open');
-                                }else{
-                                    alertify.alert("Erro", data.message);
-                                }
-                            }
-                        }, 'json');
-                    }, function(){
-                        alertify.error('Cancelado');
-                    });
-                }else{
-                    alertify.error("Informe o valor da sua aposta");
-                }
-            }
-        });
-
-    /** END SUBMETER TICKET DE APOSTA **/
-
-    /** SUBMETER TICKET DE APOSTA **/
-        $('.btn-bet-submit-seller').on('click', function(){            
-            $('#modal-random-user').modal('open');
-        });
-
-        $('.user-random').on('click', function(){      
-
-            $('#modal-random-user').modal('close');
-
-            var nome = $('.nome').val();
-            var telefone = $('.telefone').val();
-            var ticket = Cookies.get('ticket_cookie');  
-
-            if($(this).attr('desktop') == 'True'){
-                ticket_value = $('.ticket-bet-value-desktop').val();
-            }else{
-                //console.log('False');
-                ticket_value = $('.ticket-bet-value-mobile').val();                
-            }   
-
-            if (ticket_value <= 0){
-                alertify.error("Você deve apostar um valor maior que 0.");
-                return ;
-            }
-
-            console.log(ticket_value);
-
-            if(ticket == '{}'){
-                alertify.error("Nenhuma cota selecionada nessa sessão.");
-                COTATION_TOTAL = 0;
-                RenderTicket();
-                UpdateCotationTotal();
-            }else{
-                if(ticket_value != ''){                                                               
-                        alertify.confirm('Confirmação','Confirmar aposta?', function(){                        
-                        $.post('/ticket/', {'ticket_value': ticket_value, 'nome':nome, 'telefone':telefone} , function(data, status, rq){
-                            
-                            var dataJSON = jQuery.parseJSON(data);
-
-                            if(dataJSON.status == 401){
+                    $.post('/ticket/',
+                    {'ticket_value': ticket_value},
+                    (data, status, rq)=>{
+                        if(data.success){
+                            alertify.alert("Sucesso", data.message);
+                        }else{
+                            if(data.action == 'log_in'){
                                 $('#modal-login').modal('open');
+                            }else{
+                                alertify.alert("Erro", data.message);
                             }
-                            if(dataJSON.status == 403){
-                                alertify.error("Selecione cotas antes de apostar.");
-                            }
-                            if(dataJSON.status == 400){
-                                alertify.alert("Erro", "Erro ao tentar processar essa requisição. \n Por favor avise-nos pelo email: pabllobeg@gmail.com");
-                            }
-
-                            if(dataJSON.status == 410){
-                                alertify.error("A aposta mínima é: R$ " + dataJSON.min_bet_value);
-                            }
-
-                            if(dataJSON.status == 406){
-                                alertify.alert("Erro", "Prezado cliente, gostariamos de lhe informar que não aceitamos apostas com recompensa maior que R$" +  dataJSON.max_reward_to_pay);
-                            }
-
-                            if(dataJSON.status == 417){
-                                alertify.alert("Erro", "Prezado cliente, você deve apostar em pelo menos "+ dataJSON.min_number_of_choices_per_bet + " jogos.");
-                            }
-
-                            if(dataJSON.status == 409){
-                                alertify.alert("Erro", "Desculpe, um dos jogos selecionados por você já começou, atualize a página.");
-                            }
+                        }
+                    }, 'json');
+                }, function(){
+                    alertify.error('Cancelado');
+                });
+            }else{
+                alertify.error("Informe o valor da sua aposta");
+            }
+        }
+    });
 
 
-                            if(dataJSON.status == 201){
-                                console.log(dataJSON);                                
-                                alertify.alert("Sucesso", "Ticket N° <span class='ticket-number-after-create'>" + dataJSON.ticket_pk + "</span>"+
-                            "<br /> Para acessar detalhes do Ticket, entre no painel do cliente." +
-                            "<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket." +
-                            "<br /><br /> <a href='/ticket/"+ dataJSON.ticket_pk + "' class='waves-effect waves-light btn text-white see-ticket-after-create hoverable'> Ver Ticket </a>");
-                            
+    $('.btn-bet-submit-seller').on('click', function(){            
+        $('#modal-random-user').modal('open');
+    });
+
+    $('.user-random').on('click', function(){      
+
+        $('#modal-random-user').modal('close');
+
+        var nome = $('.nome').val();
+        var telefone = $('.telefone').val();
+        var ticket = Cookies.get('ticket_cookie');  
+
+        if($(this).attr('desktop') == 'True'){
+            ticket_value = $('.ticket-bet-value-desktop').val();
+        }else{
+            ticket_value = $('.ticket-bet-value-mobile').val();                
+        }   
+
+        if (ticket_value <= 0){
+            alertify.error("Você deve apostar um valor maior que 0");
+            return ;
+        }
+
+        console.log(ticket_value);
+
+        if(ticket == '{}'){
+            alertify.error("Nenhuma cota selecionada nessa sessão");
+            COTATION_TOTAL = 0;
+            RenderTicket();
+            UpdateCotationTotal();
+        }else{
+            if(ticket_value != ''){                                                               
+                    alertify.confirm('Confirmação','Confirmar aposta?', function(){                        
+                    $.post('/ticket/',
+                    {'ticket_value': ticket_value, 'nome':nome, 'telefone':telefone},
+                    (data, status, rq)=>{
+                        
+                        if(data.success){
+                            alertify.alert("Sucesso", data.message);
+                        }else{
+                            if(data.action == 'log_in'){
+                                $('#modal-login').modal('open');
+                            }else{
+                                alertify.alert("Erro", data.message);
                             }
-                            console.log(dataJSON.status);
-                        }, 'text');//end post
-                    },function(){
-                        alertify.error('Cancelado.');
-                    });
-                    
-                }else{
-                    alertify.error("Informe o valor da sua aposta.");
-                }
-            }//end else
+                        }
+                    }, 'json');
+                },function(){
+                    alertify.error('Cancelado');
+                });
+                
+            }else{
+                alertify.error("Informe o valor da sua aposta");
+            }
+        }
 
-        });
-
-    /** END SUBMETER TICKET DE APOSTA **/
+    });
 
     /** BOTÂO MAIS COTAÇÔES **/
 
@@ -606,7 +573,6 @@ $(document).ready(function () {
                     var array_cotations_length = array_cotations.length;
 
                     for (var i = 0; i < array_cotations_length; i++) {
-                        //console.log( array_cotations[i].fields.name );
                         
                         full_html += '<tr>' +
                         '<td class="hide">'+ array_cotations[i].pk + '</td>' +
