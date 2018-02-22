@@ -17,8 +17,12 @@ from user.models import CustomUser, RandomUser
 from collections import OrderedDict
 import utils.timezone as tzlocal
 from utils.utils import no_repetition_list
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from utils.response import UnicodeJsonResponse
+from django.urls import reverse_lazy
 import json
 import urllib
+
 
 COUNTRY_TRANSLATE = {
 	"Brazil":"Brasil",
@@ -50,6 +54,14 @@ COUNTRY_TRANSLATE = {
 	"United Arab Emirates":"Emirados Árabes",
 	"Finland":"Finlândia",
 	"Norway":"Noruega",
+	"Greece":"Grécia",
+	"Switzerland": "Suíça",
+	"Mexico":"México",
+	"Ecuador":"Equador",
+	"Scotland":"Escócia",
+	"Iceland":"Islândia",
+	"Saudi Arabia": "Arábia Saudita",
+	"India":"Índia",
 
 }
 
@@ -136,10 +148,9 @@ class GameChampionship(TemplateResponseMixin, View):
 class CotationsView(View):
 	
 	def get(self, request, *args, **kwargs):
-		gameid = self.kwargs['gameid']
-		
-		cotations_by_kind = {}
 
+		gameid = self.kwargs['gameid']
+		cotations_by_kind = {}
 		cotations_of_game = Cotation.objects.filter(game_id=gameid, is_standard=False)
 	
 		for cotation in cotations_of_game:
@@ -196,93 +207,120 @@ class BetView(View):
 
 class CreateTicketView(View):
 
+	login_url = reverse_lazy('core:core_home')
 
 	def post(self, request, *args, **kwargs):
 		
+		from user.models import GeneralConfigurations
+		try:
+			general_config = GeneralConfigurations.objects.get(pk=1)
 
-		if request.user.is_authenticated:
-			if 'ticket' not in request.session:
-				return JsonResponse({'status':403})
+			max_reward_to_pay = general_config.max_reward_to_pay
+			min_number_of_choices_per_bet = general_config.min_number_of_choices_per_bet
+			min_bet_value = general_config.min_bet_value
 
-			if request.POST.get('ticket_value') == '':
-				return JsonResponse({'status':400})
-			
-			ticket_bet_value = round(float( request.POST.get('ticket_value') ), 2)
+		except GeneralConfigurations.DoesNotExist:
+			max_reward_to_pay = 50000
+			min_number_of_choices_per_bet = 1
+			min_bet_value = 1
 
-			client_name = request.POST.get('nome')
-			cellphone = request.POST.get('telefone')
+		data = {
+			'success': True
+		}
 
-			from user.models import GeneralConfigurations
-			
-			try:
-				
-				general_config = GeneralConfigurations.objects.get(pk=1)
-				max_reward_to_pay = general_config.max_reward_to_pay
-				min_number_of_choices_per_bet = general_config.min_number_of_choices_per_bet
-				min_bet_value = general_config.min_bet_value
+		ticket_value = request.POST.get('ticket_value', None)
+		client_name = request.POST.get('nome', None)
+		cellphone = request.POST.get('telefone', None)
+		
+		if not request.user.is_authenticated:
+			data['success'] =  False
+			data['action'] = 'log_in'
 
-			except GeneralConfigurations.DoesNotExist:
-				max_reward_to_pay = 50000
-				min_number_of_choices_per_bet = 1
-				min_bet_value = 1
-					
 
+		if client_name and cellphone:
+			if len(client_name) > 40 or len(cellphone) > 14:
+				data['success'] =  False
+				data['message'] =  "Erro. O nome do cliente precisa ser menor que 40 digitos e o telefone menor que 14"
+
+		if ticket_value == None:
+			data['success'] =  False
+			data['message'] =  "Valor da aposta inválido."
+		else:
+			ticket_bet_value = round( float(ticket_value ), 2)
+		
 			if ticket_bet_value < min_bet_value:
-				return JsonResponse({'status':410, 'min_bet_value': min_bet_value})
+				data['success'] =  False
+				data['message'] =  "A aposta mínima é: R$ " + str(round(min_bet_value, 2))
 
-			if ticket_bet_value <= 0:
-				return JsonResponse({'status':400})
+		if 'ticket' not in request.session:
+			data['success'] =  False
+			data['message'] =  "Selecionar Cotas antes de apostas."
+
+		if ticket_bet_value <= 0:
+			data['success'] =  False
+			data['message'] =  "Valor da aposta inválido."
+
 	
+		cotation_sum = 1
+		game_cotations = []
+		for game_id in request.session['ticket']:
+			game_contation = None
+			try:
+				game_contation = Cotation.objects.get(pk=int(request.session['ticket'][game_id]))
+				if game_contation.game.start_game_date < tzlocal.now():
+					data['success'] =  False
+					data['message'] =  "Desculpe, o jogo:" + game_contation.game.name + " já começou, remova-o"
+					break
+				game_cotations.append(game_contation)
+				cotation_sum *= game_contation.value
+			except Cotation.DoesNotExist:
+				data['success'] =  False
+				data['message'] =  "Erro, uma das cotas enviadas não existe."
+				break
+
+
+		ticket_reward_value = round(cotation_sum * ticket_bet_value, 2)
+
+		if float(ticket_reward_value) > float(max_reward_to_pay):
+			data['success'] =  False
+			data['message'] =  "Desculpe. <br /> Valor máximo da recompensa: R$" + str(round(max_reward_to_pay, 2))
+
+		if len(game_cotations) < min_number_of_choices_per_bet:
+			data['success'] =  False
+			data['message'] =  "Desculpe. Aposte em pelo menos " + str(min_number_of_choices_per_bet) + " jogos."
+
+
+		if data['success'] == True:
 			ticket = BetTicket(
 				user=CustomUser.objects.get(pk=request.user.pk),
 				value=ticket_bet_value,
 				creation_date = tzlocal.now(),
 				payment=Payment.objects.create(payment_date=None), 
-				reward=Reward.objects.create(reward_date=None),				
-				)
-				
-			cotation_sum = 1
-			game_cotations = []
-			for game_id in request.session['ticket']:
-				game_contation = None
-				try:
-					game_contation = Cotation.objects.get(pk=int(request.session['ticket'][game_id]))
-					if game_contation.game.start_game_date < tzlocal.now():
-						return JsonResponse({'status':409})
-					game_cotations.append(game_contation)
-					cotation_sum *= game_contation.value
-				except Cotation.DoesNotExist:
-					return JsonResponse({'status':400})
+				reward=Reward.objects.create(reward_date=None)
+			)
 
-			ticket_reward_value = round(cotation_sum * ticket_bet_value ,2)
-			if float(ticket_reward_value) > float(max_reward_to_pay):
-				return JsonResponse({'status':406, 'max_reward_to_pay': max_reward_to_pay}) # NOT ACEPTED
-
-			elif len(game_cotations) < min_number_of_choices_per_bet:
-				return JsonResponse({'status':417, 'min_number_of_choices_per_bet': min_number_of_choices_per_bet}) # EXPECTATION FAILED
-			else:
+			if not request.user.has_perm('user.be_seller'):
+				ticket.random_user=None
 				ticket.save()
-				if not client_name and not cellphone:
-					random_user = None
-					ticket.random_user=random_user
-					ticket.save()
-				else:
-					if len(client_name) > 40 or len(cellphone) > 14:
-						return JsonResponse({'status':400})
-					else:						
-						random_user = RandomUser.objects.create(first_name=client_name, cellphone=cellphone)
-						ticket.random_user=random_user
-						ticket.save()
-						ticket.ticket_valid(request.user)
-				for game in game_cotations:
-					ticket.cotations.add( game )
-				ticket.reward.value = ticket_reward_value
-				ticket.reward.save()
-				return JsonResponse({'ticket_pk': ticket.pk ,'status':201})
+			else:
+				ticket.random_user=RandomUser.objects.create(first_name=client_name, cellphone=cellphone)
+				ticket.save()
+				ticket.ticket_valid(request.user)
 
-		else:
-			return JsonResponse({'status':401})
-			
+			for game in game_cotations:
+				ticket.cotations.add(game)
+			ticket.reward.value = ticket_reward_value
+			ticket.reward.save()
+
+			data['message'] = """
+				Ticket N° <span class='ticket-number-after-create'>""" +  str(ticket.pk) + """</span>
+                <br /> Para acessar detalhes do Ticket, entre no painel do cliente
+            	<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket
+                <br /><br />
+				<a href='/ticket/""" + str(ticket.pk) + """' class='waves-effect waves-light btn text-white see-ticket-after-create hoverable'> Ver Ticket </a>
+			"""
+
+		return UnicodeJsonResponse(data)
 
 
 class TicketDetail(TemplateResponseMixin, View):
@@ -311,17 +349,17 @@ class TicketDetail(TemplateResponseMixin, View):
 		content += "<LEFT> APOSTAS <BR>"
 		content += "<LEFT>-------------------------------> <BR>"
 
-		for c in ticket.cotations.all():
-			content += "<LEFT>" + c.game.name + "<BR>"
-			game_date = c.game.start_game_date.strftime('%d/%m/%Y %H:%M')
+		for cotation in ticket.cotations.all():
+			content += "<LEFT>" + cotation.game.name + "<BR>"
+			game_date = cotation.game.start_game_date.strftime('%d/%m/%Y %H:%M')
 			content += "<LEFT>" + game_date + "<BR>"
-			content += "<LEFT>"+ c.kind + "<BR>"
-			content += "<LEFT>" + c.name + " --> " + str(round(c.value, 2)) + "<BR>"
+			content += "<LEFT>"+ cotation.kind + "<BR>"
+			content += "<LEFT>" + cotation.name + " --> " + str(round(cotation.value, 2)) + "<BR>"
 
-			if c.winning == None:
+			if cotation.winning == None:
 				content += "<RIGHT> Status: Em Aberto <BR>"
 			else:
-				content += "<RIGHT> Status: " + ("Acertou" if c.winning else "Não acertou") + "<BR>"
+				content += "<RIGHT> Status: " + ("Acertou" if cotation.winning else "Não acertou") + "<BR>"
 			
 			content += "<CENTER>-------------------------------> <BR>"
 		content += "<CENTER> "+ settings.APP_VERBOSE_NAME

@@ -240,8 +240,6 @@ class UserPasswordChange(View):
         if request.user.is_authenticated:
             actual_pass = request.POST['actual_pass']
             new_pass = request.POST['new_pass']
-
-            print(request.user)
             
             if request.user.check_password(actual_pass):
                 request.user.set_password(new_pass)

@@ -235,7 +235,7 @@ def process_json_championship(json_response):
 
 def consuming_game_cotation_api():
 
-    before_time = tzlocal.now() - datetime.timedelta(days=7)
+    before_time = tzlocal.now() - datetime.timedelta(days=1)
 
     before_year = before_time.year
     before_month = before_time.month

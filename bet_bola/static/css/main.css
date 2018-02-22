@@ -442,6 +442,10 @@ span.step-links li.active a{
     background-color: #467ba2;
 }
 
+#ticket-details-actions{
+    margin-top: 20px;
+}
+
 @media only screen and (max-width: 992px){
     nav .brand-logo{
         padding: 0px;
