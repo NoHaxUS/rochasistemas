@@ -161,6 +161,7 @@ INVALID_ALL_COTES_CHAMPIONSHIPS = [
     1456,
     1345,
     357,
+    642,
 ]
 
 def renaming_cotations(string, total):
