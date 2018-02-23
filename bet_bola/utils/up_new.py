@@ -182,9 +182,9 @@ def renaming_cotations(string, total):
         "more" : "Mais de"
     }
 
-    for i in COTATION_NAME.keys():
-        if i in string:
-            string = string.replace(i, COTATION_NAME[i])
+    for key_cotation in COTATION_NAME.keys():
+        if key_cotation in string:
+            string = string.replace(key_cotation, COTATION_NAME[key_cotation])
             string = string + " " + total
     return string
 

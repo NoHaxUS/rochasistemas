@@ -178,11 +178,11 @@ class Cotation(models.Model):
 	objects = GamesManager()
 
 
-	def save(self):
-		if not Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).exists():
-			super().save()
-					
 
+	def save(self):
+		if not Cotation.objects.filter(name=self.name, kind=self.kind, 
+			game=self.game).exists() and not self.is_excluded_cotation(self.name, self.kind):
+			super().save()
 
 	class Meta:
 		verbose_name = 'Cota'
@@ -190,6 +190,41 @@ class Cotation(models.Model):
 
 	def __str__(self):
 		return str(self.value)
+
+	def is_excluded_cotation(self, cotation_name, cotation_kind):
+
+		is_excluded = False
+
+		if cotation_kind == 'Total de Gols do Primeiro Tempo, Acima/Abaixo':
+
+			excluded_cotations = [
+				'Abaixo 3.5',
+				'Abaixo 2.5',
+				'Abaixo 4',
+				'Abaixo 3',
+			]
+
+			if cotation_name in excluded_cotations:
+				is_excluded = True
+		else:
+
+			excluded_cotations = [
+				'Acima 0.5', 
+				'Abaixo 5.5',
+				'Abaixo 6.5',
+				'Abaixo 4.5',
+				'Abaixo 7.5',
+				'Abaixo 5',
+				'Abaixo 6',
+				'Abaixo 4',
+				'Abaixo 7',
+			]
+
+			if cotation_name in excluded_cotations:
+				is_excluded = True
+
+
+		return is_excluded
 
 
 class Payment(models.Model):
