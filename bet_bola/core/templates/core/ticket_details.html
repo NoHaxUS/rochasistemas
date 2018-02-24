@@ -94,7 +94,10 @@
                             <tbody>
                         {% for cotation in ticket.cotations.all %}
                         <tr>
-                            <td><span class='bold'>{{cotation.game}}</span></td>
+                            <td>
+                                <span class='bold'>{{cotation.game}}</span> <br>
+                                <span>{{cotation.game.start_game_date}}</span>
+                            </td>
                             <td>
                             {{cotation.kind}} <br>
                             Cota: {{cotation.name}} : {{cotation.value}}
