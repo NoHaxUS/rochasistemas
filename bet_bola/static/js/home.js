@@ -544,8 +544,8 @@ $(document).ready(function () {
 
             $('#more-cotations').modal('open');
 
-            var game_id = $(this).siblings().first().children('.table-game-id').text().trim();
-            var game_name = $(this).siblings().first().children('.table-game-name').text().trim();
+            var game_id = $(this).parent().siblings().first().children('.table-game-id').text().trim();
+            var game_name = $(this).parent().siblings().first().children('.table-game-name').text().trim();
 
             $('.more_cotation_header').text(game_name);
 

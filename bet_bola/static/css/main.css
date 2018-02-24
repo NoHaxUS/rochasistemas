@@ -142,7 +142,8 @@ nav .brand-logo{
     margin-top: 10px;
 }
 .games-table-container{
-    padding: 2px 12px 0px 12px;
+    margin: 2px 12px 0px 12px;
+    background-color: #ffffff;
 }
 
 .time{
@@ -157,19 +158,6 @@ nav .brand-logo{
     cursor: pointer;
 }
 
-/*
-.cotation:hover{
-    height: 30px;
-    width: 30px;
-    line-height: 0.5;
-    border: solid 1px #000000;
-    padding: 5px;
-    border-radius: 20px;
-    cursor: pointer;
-    color: #0e0909;
-    font-weight: bold;
-}
-*/
 
 .more-cotation:hover{
     cursor: pointer;
@@ -447,6 +435,30 @@ span.step-links li.active a{
 }
 
 @media only screen and (max-width: 992px){
+
+    .more_cotations_button{
+        width: 70%;
+        margin: auto;
+        height: 100%;
+        display: block;
+        background-color: #7349b5;
+        border-radius: 30px;
+        padding: 4px 4px;
+        color:#ffffff;
+        font-weight: bold;
+    }
+
+    .cotation{
+        width: 70%;
+        margin: auto;
+        height: 100%;
+        display: block;
+        background-color: #7349b5;
+        border-radius: 30px;
+        padding: 4px 4px;
+        color:#ffffff;
+        font-weight: bold;
+    }
 
 
     nav .brand-logo{
