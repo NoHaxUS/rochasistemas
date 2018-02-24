@@ -532,7 +532,7 @@ $(document).ready(function () {
                         
                         full_html += '<tr>' +
                         '<td class="hide">'+ array_cotations[i].pk + '</td>' +
-                        '<td>'+ array_cotations[i].fields.name + '</td>' +
+                        '<td class="more-cotation-name">'+ array_cotations[i].fields.name + '</td>' +
                         '<td class="more-cotation">'+ array_cotations[i].fields.value +'</td>' +
                         '<td class="more-cotation-kind hide">' + array_cotations[i].fields.kind + '</td>' +
                          '</tr>';

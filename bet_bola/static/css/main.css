@@ -158,13 +158,6 @@ nav .brand-logo{
     cursor: pointer;
 }
 
-
-.more-cotation:hover{
-    cursor: pointer;
-    color: #0e0909;
-    font-weight: bold;
-}
-
 .bet-award{
     font-size: 1.5rem;
 }
@@ -449,6 +442,24 @@ span.step-links li.active a{
     color:#ffffff;
     font-weight: bold;
     margin-top: 6px;
+}
+
+.more-cotation{
+    cursor: pointer;
+    width: 60%;
+    margin: auto;
+    height: 100%;
+    display: block;
+    background-color: #919ad4;
+    border-radius: 30px;
+    padding: 8px 0px;
+    color:#ffffff;
+    font-weight: bold;
+    margin-top: 6px;
+}
+
+.more-cotation-name{
+    font-family: 'Exo 2', sans-serif;
 }
 
 .cotation{
