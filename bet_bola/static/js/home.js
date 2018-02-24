@@ -1,14 +1,11 @@
 $(document).ready(function () {
 
-
-    /** FUNCTION DEFINITIONS **/
         function getCookie(name) {
             var cookieValue = null;
             if (document.cookie && document.cookie !== '') {
                 var cookies = document.cookie.split(';');
                 for (var i = 0; i < cookies.length; i++) {
                     var cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
                     if (cookie.substring(0, name.length + 1) === (name + '=')) {
                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                         break;
@@ -22,11 +19,7 @@ $(document).ready(function () {
             // these HTTP methods do not require CSRF protection
             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
         }
-    /** END FUNCTION DEFINITIONS **/
 
-
-
-    /** GENERAL INITIALIZATIONS **/
         var csrftoken = getCookie('csrftoken');
 
         if (Cookies.get('ticket_cookie') == undefined) {
@@ -38,16 +31,9 @@ $(document).ready(function () {
 
         $("#cellphone_register").mask("(99)99999-999?9");
         
-    /** END GENERAL INITIALIZATIONS **/
-
-
-    /** MATERIALIZE COMPONENTS INITIALIZATIONS **/
         $(".button-collapse").sideNav();
         $('.modal').modal();
-    /** MATERIALIZE COMPONENTS INITIALIZATIONS **/
 
-    /** AJAX SETUP **/
-        //Ajax Setup
          $.ajaxSetup({
               beforeSend: function (xhr, settings) {
                 if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -55,9 +41,7 @@ $(document).ready(function () {
                   }
             }
         });
-    /** END AJAX SETUP  **/
-    
-    /** SETAR COMO PAGO UM TICKET **/
+
         $('#validate-ticket-form').on('submit', function (e) {
             e.preventDefault();
             var send_data = $(this).serialize();
@@ -96,9 +80,7 @@ $(document).ready(function () {
                     });
             }
         });
-    /** END SETAR COMO PAGO UM TICKET **/
 
-    /** Zerar Faturamento **/
     $("#reset-revenue-form").on('submit', function(e){
         e.preventDefault();
 
@@ -153,10 +135,7 @@ $(document).ready(function () {
         }
 
     });
-    /** End Zerar Faturamento **/
 
-    
-    /** REDUZIR COTAS EM MASSA **/
     $("#reduce-cotations-form").on('submit', function(e){
         e.preventDefault();
         var percent = $('.percent-reduction').val();
@@ -199,8 +178,7 @@ $(document).ready(function () {
         }
 
     });
-    /** REDUZIR COTAS EM MASSA **/
-    /** MARCAR COMO RECOMPENSA PAGA AO GANHADOR **/
+
         $('#pay-punter-form').on('submit', function (e) {
             e.preventDefault();
             var send_data = $(this).serialize();
@@ -239,10 +217,7 @@ $(document).ready(function () {
                     });
             }
         });
-    /** END MARCAR RECOMPENSA PAGA AO GANHADOR **/
-    
 
-    /** ATUALIZAR VALOR DE TOTAL DAS COTAS **/
     
         function UpdateCotationTotal(){
             ticket = Cookies.getJSON('ticket_cookie');
@@ -259,10 +234,7 @@ $(document).ready(function () {
             COTATION_TOTAL = parseFloat( total.toFixed(2) );
 
         }
-    /** END ATUALIZAR VALOR DE TOTAL DAS COTAS **/
-    
 
-    /** ADICIONAR APOSTA AO TICKET **/
         function AddBetToTicket(bet_info) {
 
             var ticket = Cookies.getJSON('ticket_cookie'); // {}
@@ -280,13 +252,9 @@ $(document).ready(function () {
             var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
             updateRewardTotal(ticket_bet_value);
             RenderTicket();
-            //$('.ticket-bet-value').trigger('keyup');
-            //$('.ticket-bet-value-mobile').trigger('keyup');
-        }
-    /** END ADICIONAR APOSTA AO TICKET **/
-    
 
-    /** REDERIZAR LISTA TICKETS ATUALZIADA **/
+        }
+
         function RenderTicket() {
     
             ticket = Cookies.getJSON('ticket_cookie');
@@ -295,7 +263,6 @@ $(document).ready(function () {
     
             for (var key in ticket) {
     
-                //new bet html
                 var bet_html = '<div class="divider"></div>' +
                     '<li class="center-align bet">' +
                     '<div class="game-id hide">'+
@@ -322,8 +289,6 @@ $(document).ready(function () {
             }
     
         }
-        /** END REDERIZAR LISTA TICKETS ATUALZIADA **/
-    
     
         function updateRewardTotal(ticket_bet_value){
     
@@ -335,7 +300,7 @@ $(document).ready(function () {
             }
         };
        
-    /** ATUALIZAR VALOR DA APOSTA AO TECLAR **/
+
         $('.ticket-bet-value-mobile').keyup(function(data){
     
             var ticket_bet_value = parseFloat($(this).val());
@@ -351,9 +316,7 @@ $(document).ready(function () {
             updateRewardTotal(ticket_bet_value);
 
         });
-     /** END ATUALIZAR VALOR DA APOSTA AO TECLAR **/
 
-     /** DELETAR COTA  **/
         $(document).on("click",'.bet-delete', function(){
             ticket = Cookies.getJSON('ticket_cookie');
     
@@ -364,7 +327,6 @@ $(document).ready(function () {
             RenderTicket();
             UpdateCotationTotal();
             $('.ticket-bet-value').trigger('keyup');
-            //console.debug(Cookies.getJSON('ticket_cookie'));
 
             $.ajax({
                 url: '/bet/' + game_id_to_delete,
@@ -375,14 +337,11 @@ $(document).ready(function () {
             });
 
         });
-     /** END DELETAR COTA **/   
 
-     /** AO CLICAR EM UMA COTA **/
         $('.cotation').click(function (e) {
     
             var game_id = $(this).parent().siblings().first().children('.table-game-id').text().trim();
             var game_name = $(this).parent().siblings().first().children('.table-game-name').text().trim();
-            //var game_start_date = $(this).parent().siblings().first().children('.table-game-start-date').text().trim();
             var cotation_id = $(this).siblings().first().text();
             var cotation_name = $(this).siblings().eq(1).text().trim();
             var cotation_value = $(this).text().trim();
@@ -402,7 +361,6 @@ $(document).ready(function () {
     
         });
 
-    /** AO CLICAR EM UMA COTA **/
         $('.btn-bet-undo').on('click', function(){                                
 
             alertify.confirm('Limpar apostas', 'Deseja mesmo limpar as apostas ?', function(){
@@ -536,8 +494,6 @@ $(document).ready(function () {
 
     });
 
-    /** BOTÂO MAIS COTAÇÔES **/
-
         $('.more_cotations_button').on('click', function(e){
 
             $('.more_cotation_progress').show();
@@ -583,36 +539,26 @@ $(document).ready(function () {
 
                     }
                     
-                }//for
+                }
 
                 $('.more-table tbody').append(full_html);
                 $('.more_cotation_progress').hide();
 
-
-                //console.log(dataJSON);
-                //console.log(rq.status);
-                
             }, 'text');
                 
         });
-    /** END BOTÃO MAIS COTAÇOES **/
-
-
-    /** AO CLICAR EM UMA COTA DO MENU MAIS COTAS **/
 
         $(document).on('click', '.more-cotation',function(){
             var first_tr = $(this).parent().parent().children().first();
             var game_id = first_tr.children('.more-game-id').text().trim();
             var game_name = first_tr.children('.more-game-name').text().trim();
-            //var game_start_date = first_tr.children('.more-game-start-date').text().trim();
             var cotation_id = $(this).siblings().eq(0).text();
             var cotation_name = $(this).siblings().eq(1).text();
             var cotation_value = $(this).text().trim();
             var cotation_kind = $(this).siblings().eq(2).text();
             console.log(cotation_kind);
 
-            //console.debug(cotation_id);
-
+   
             bet_info = {
                 'game_id': game_id,
                 'game_name': game_name,
@@ -628,9 +574,7 @@ $(document).ready(function () {
 
         });
 
-    /** AO CLICAR EM UMA COTA DO MENU MAIS COTAS **/
 
-    /** CONSULTAR TICKET **/
         $('#check-ticket-form').on('submit', function(){
             
             var ticket_num = $('.check-ticket-input').val();
@@ -642,8 +586,6 @@ $(document).ready(function () {
                 $(this).submit();
             }
         });
-    /** END CONSULTAR COTAS **/
-    
 
         $('ul.championship-list li a').each(function(i,e){
             
@@ -688,8 +630,6 @@ $(document).ready(function () {
             var send_data = $(this).serialize();
 
             $.post('/user/change_password/', send_data, function(data, status, rq){
-                //console.log(data);
-                //data = jQuery.parseJSON(data);
                 
                 if (data.status == 200){
                     alertify.alert("Sucesso", "Senha alterada com sucesso.");
