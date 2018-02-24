@@ -165,6 +165,7 @@ class CotationsView(View):
 			cotations_serialized[cotation_market] = serializers.serialize("json", cotations_by_kind[cotation_market] )
 
 		data = json.dumps(cotations_serialized)
+		
 		return HttpResponse( data, content_type='application/json' )
 
 
@@ -377,30 +378,32 @@ class ResetSellerRevenue(View):
 
 	def get(self, request, *args, **kwargs):
 
-		if not request.user.is_superuser:
-			return JsonResponse({'status': 400},json_dumps_params={'ensure_ascii': False})
-
-		seller_id = int(request.GET['seller_id'])
-
-		tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=seller_id, payment__seller_was_rewarded=False)
-		revenue_total = 0
-
-		for ticket in tickets_revenue:
-			revenue_total += ticket.value
+		if request.user.is_superuser:
 	
-		try:
-			seller = Seller.objects.get(pk=seller_id)
-			
-			dict_response = {'nome': seller.full_name(), 'cpf': seller.cpf, 
-				'telefone': seller.cellphone,'faturamento': "%.2f" % revenue_total, 'status': 200}
-			
-			return JsonResponse(dict_response,json_dumps_params={'ensure_ascii': False})
+			seller_id = int(request.GET['seller_id'])
+			tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=seller_id, payment__seller_was_rewarded=False)
+			revenue_total = 0
 
-		except Seller.DoesNotExist:
-			return JsonResponse({'status': 404},json_dumps_params={'ensure_ascii': False})
+			for ticket in tickets_revenue:
+				revenue_total += ticket.value
+		
+			try:
+				seller = Seller.objects.get(pk=seller_id)
+				
+				dict_response = {'nome': seller.full_name(), 'cpf': seller.cpf, 
+					'telefone': seller.cellphone,'faturamento': "%.2f" % revenue_total, 'status': 200}
+				
+				return JsonResponse(dict_response,json_dumps_params={'ensure_ascii': False})
+
+			except Seller.DoesNotExist:
+				return JsonResponse({'status': 404},json_dumps_params={'ensure_ascii': False})
+
+		else:
+			return JsonResponse({'status': 400},json_dumps_params={'ensure_ascii': False})
 
 
 	def post(self, request, *args, **kwargs):
+		
 		seller_id = int(request.POST['seller_id'])
 		payments = Payment.objects.filter(who_set_payment_id=seller_id, seller_was_rewarded=False)
 
