@@ -129,7 +129,7 @@ nav .brand-logo{
     color: #000000;
 }
 .championship-list li a:hover{
-    text-decoration: underline;
+    font-style: italic;
 }
 /* end championship */
 
@@ -384,7 +384,7 @@ span.step-links li.active a{
 }
 
 .ul-championship-title li a:hover{
-    text-decoration: underline;
+    font-style: italic;
 }
 
 .see-ticket-after-create{
@@ -434,14 +434,57 @@ span.step-links li.active a{
     margin-top: 20px;
 }
 
+.game-item-wrapper{
+    margin: 15px 0px;
+}
+
+.more_cotations_button{
+    width: 70%;
+    margin: auto;
+    height: 100%;
+    display: block;
+    background-color: #85cc88;
+    border-radius: 30px;
+    padding: 8px 0px;
+    color:#ffffff;
+    font-weight: bold;
+    margin-top: 6px;
+}
+
+.cotation{
+    width: 70%;
+    margin: auto;
+    height: 100%;
+    display: block;
+    background-color: #919ad4;
+    border-radius: 30px;
+    padding: 8px 0px;
+    color:#ffffff;
+    font-weight: bold;
+    margin-top: 6px;
+}
+
+.home-away-header{
+    font-size: 1.2rem;
+    padding: 1px 0px !important;
+}
+
 @media only screen and (max-width: 992px){
+
+    .game-item-wrapper{
+        margin: 10px 20px;
+    }
+
+    .cotation-itens-wrapper{
+        margin-top: 6px;
+    }
 
     .more_cotations_button{
         width: 70%;
         margin: auto;
         height: 100%;
         display: block;
-        background-color: #7349b5;
+        background-color: #85cc88;
         border-radius: 30px;
         padding: 4px 4px;
         color:#ffffff;
@@ -453,7 +496,7 @@ span.step-links li.active a{
         margin: auto;
         height: 100%;
         display: block;
-        background-color: #7349b5;
+        background-color: #919ad4;
         border-radius: 30px;
         padding: 4px 4px;
         color:#ffffff;

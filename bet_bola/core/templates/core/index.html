@@ -12,47 +12,47 @@
             </div>
         </div>
         <div class="row">
-           
-            <div class="col s12 l4 center-align">
-                Casa x Visitante
-            </div>
+            <div class="col s12 l8 center-align home-away-header">Casa x Visitante</div>
             <div class="cotations-desc-wrapper-desktop hide-on-med-and-down">
-                <div class="col s3 l2 center-align">Casa</div>
-                <div class="col s3 l2 center-align">Visitante</div>
-                <div class="col s3 l2 center-align">Empate</div>
-                <div class="col s3 l2 center-align">Mais</div>
+                <div class="col s3 l1 center-align home-away-header">Casa</div>
+                <div class="col s3 l1 center-align home-away-header">Visitante</div>
+                <div class="col s3 l1 center-align home-away-header">Empate</div>
+                <div class="col s3 l1 center-align home-away-header">Mais</div>
             </div>
         </div>
         <div class="divider"></div>
-        {% for game in dict_championship_games|get_item:championship%}                                    
-            {% if game.cotations.all.count > 0 %}  
-            <div class="row">
-                <div class="col s12 l4 center-align">
-                    <div class="hide table-game-id">{{game.pk}}</div>
-                    <div class="table-game-name">{{game.name}}</div>
-                    <div class="table-game-start-date">{{game.start_game_date}}</div>
-                </div>
+        {% for game in dict_championship_games|get_item:championship %}
+            <div class="game-item-wrapper">                      
+                {% if game.cotations.all.count > 0 %}
+                <div class="row">
+                    <div class="col s12 l8 center-align">
+                        <div class="hide table-game-id">{{game.pk}}</div>
+                        <div class="table-game-name">{{game.name}}</div>
+                        <div class="table-game-start-date">{{game.start_game_date}}</div>
+                    </div>
 
-                <div class="cotations-desc-wrapper-mobile hide-on-large-only">
-                    <div class="col s3 l2 center-align">Casa</div>
-                    <div class="col s3 l2 center-align">Visitante</div>
-                    <div class="col s3 l2 center-align">Empate</div>
-                    <div class="col s3 l2 center-align">Mais</div>
+                    <div class="cotations-desc-wrapper-mobile hide-on-large-only">
+                        <div class="col s3 l2 center-align">Casa</div>
+                        <div class="col s3 l2 center-align">Visitante</div>
+                        <div class="col s3 l2 center-align">Empate</div>
+                        <div class="col s3 l2 center-align">Mais</div>
+                    </div>
+                
+                    {% for cotation in game.cotations.all|standard_cotations_order_by:"name" %}
+                    <div class="col s3 l1 center-align">
+                        <span class="hide cotation_pk">{{cotation.pk}}</span>
+                        <span class="hide cotation_name">{{cotation.name}}</span>
+                        <span class="cotation">{{cotation.value}}</span>
+                        <span class="hide cotation_kind">{{cotation.kind}}</span>
+                    </div>
+                    {% endfor %}
+                    <div class="col s3 l1 center-align">
+                        <span class="more_cotations_button">+</span>
+                    </div>
                 </div>
-
-                {% for cotation in game.cotations.all|standard_cotations_order_by:"name"%}  
-                <div class="col s3 l2 center-align">
-                    <span class="hide cotation_pk">{{cotation.pk}}</span>
-                    <span class="hide cotation_name">{{cotation.name}}</span>
-                    <span class="cotation">{{cotation.value}}</span>
-                    <span class="hide cotation_kind">{{cotation.kind}}</span>
-                </div>
-                {% endfor %}
-                <div class="col s3 l2 center-align">
-                    <span class="more_cotations_button">+</span>
-                </div>
+                {% endif %}
             </div>
-            {% endif %}
+            <div class="divider"></div>
         {% endfor %}
     {% empty %}
     <div class="games-table-container">

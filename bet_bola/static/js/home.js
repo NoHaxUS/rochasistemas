@@ -651,7 +651,8 @@ $(document).ready(function () {
             var href = $(e).attr('href');
             if(url_array == href){
 
-                $(e).css('color','#2f9048');
+                $(e).css('color','#85cc88');
+                $(e).css('font-weight','bold');
             }
 
         });
