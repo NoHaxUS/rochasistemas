@@ -233,7 +233,6 @@ def process_json_championship(json_response):
                     country = Country.objects.create(pk=championship['country']['data']['id'], name=championship['country']['data']['name'])
                 else:
                     country = Country.objects.get(pk=id_country)
-                #if not Championship.objects.filter(pk=championship['id']).exists():
                 Championship(pk=championship['id'], name=championship['name'],
                                 country=country).save()
     else:
@@ -287,34 +286,36 @@ def process_json_games_cotations(json_response):
     games_array = json_response.get('data')
     for game in games_array:
 
-   
-
-        if Game.objects.filter(pk=game['id']).exists():
-            ft_score = game['scores']['ft_score']
-            if not ft_score or ft_score == None:
-                ft_score = F('ft_score')
-            Game.objects.filter(pk=game['id']).update(
-                name=game['localTeam']['data']['name'] +
-                " x " + game['visitorTeam']['data']['name'],
-                status_game=game['time']['status'],                
-                ht_score=game['scores']['ht_score'],
-                ft_score=ft_score,
-                odds_calculated=game['winning_odds_calculated'],
-                start_game_date=datetime.datetime.strptime(
-                game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"))
+        not_allowed_championships = [1386, 1315] 
+        if game["league_id"] in not_allowed_championships:
+            continue
         else:
-            Game.objects.create(pk=game['id'],
-                name=game['localTeam']['data']['name'] +
-                " x " + game['visitorTeam']['data']['name'],
-                status_game=game['time']['status'],                
-                ht_score=game['scores']['ht_score'],
-                ft_score=game['scores']['ft_score'],
-                odds_calculated=game['winning_odds_calculated'],
-                start_game_date=datetime.datetime.strptime(
-                game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
-                championship=Championship.objects.get(pk=game["league_id"]))
-        save_odds(game['id'], game['odds'], max_cotation_value)
-    
+            if Game.objects.filter(pk=game['id']).exists():
+                ft_score = game['scores']['ft_score']
+                if not ft_score or ft_score == None:
+                    ft_score = F('ft_score')
+                Game.objects.filter(pk=game['id']).update(
+                    name=game['localTeam']['data']['name'] +
+                    " x " + game['visitorTeam']['data']['name'],
+                    status_game=game['time']['status'],                
+                    ht_score=game['scores']['ht_score'],
+                    ft_score=ft_score,
+                    odds_calculated=game['winning_odds_calculated'],
+                    start_game_date=datetime.datetime.strptime(
+                    game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"))
+            else:
+                Game.objects.create(pk=game['id'],
+                    name=game['localTeam']['data']['name'] +
+                    " x " + game['visitorTeam']['data']['name'],
+                    status_game=game['time']['status'],                
+                    ht_score=game['scores']['ht_score'],
+                    ft_score=game['scores']['ft_score'],
+                    odds_calculated=game['winning_odds_calculated'],
+                    start_game_date=datetime.datetime.strptime(
+                    game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
+                    championship=Championship.objects.get(pk=game["league_id"]))
+            save_odds(game['id'], game['odds'], max_cotation_value)
+        
 
 
 def get_bet365_from_bookmakers(bookmakers):
