@@ -304,7 +304,6 @@
 {% block mobile_menus %}
 <div class="col s12 center-align hide-on-large-only">
         <ul class="collapsible" data-collapsible="accordion">
-    
             <li>
                 <div class="collapsible-header collapsible-header-mobile">
                     <i class="material-icons">play_circle_outline</i>CAMPEONATOS</div>
@@ -402,39 +401,38 @@
 {% endblock %}
 
 {% block left_section_desktop %}
-<div class="row main-section">
-        <div class="col s2 hide-on-med-and-down white hoverable">
-            <div class="section-header white-text center-align">
-                CAMPEONATOS
+<div class="col s2 hide-on-med-and-down white hoverable">
+    <div class="section-header white-text center-align">
+        CAMPEONATOS
+    </div>
+    <ul class="championship-list">
+        <li class="center-align">
+            <a href="{% url 'core:core_home' %}" class="">Jogos de Hoje</a>
+        </li>
+        <li class="center-align">
+            <a href="{% url 'core:core_tomorrow_games' %}" class="">Jogos de Amanhã</a>
+        </li>
+    </ul>
+    <ul class="collapsible ul-collapsible" data-collapsible="accordion">
+        {% for country in countries%}
+        <li>
+            <div class="collapsible-header championship-collapse-header">
+                <i class="large material-icons green-text-button">chevron_right</i>
+                {{countries_dict|get_item:country.name}}
             </div>
-            <ul class="championship-list">
-                <li class="center-align">
-                    <a href="{% url 'core:core_home' %}" class="">Jogos de Hoje</a>
-                </li>
-                <li class="center-align">
-                    <a href="{% url 'core:core_tomorrow_games' %}" class="">Jogos de Amanhã</a>
-                </li>
-            </ul>
-            <ul class="collapsible ul-collapsible" data-collapsible="accordion">
-                {% for country in countries%}
-                <li>
-                    <div class="collapsible-header championship-collapse-header">
-                        <i class="large material-icons green-text-button">chevron_right</i>
-                        {{countries_dict|get_item:country.name}}
-                    </div>
-                    <div class="collapsible-body championship-collapse-body">
-                        <ul class='ul-championship-title'>
-                            {%for championship in championships%} {% if championship.country.name == country.name%}
-                            <li class="center-align">
-                                <a href="{% url 'core:core_championship_get' pk=championship.pk%}" class="championship-li">{{ championship }}</a>
-                            </li>
-                            {%endif%} {%endfor%}
-                        </ul>
-                    </div>
-                </li>
-                {%endfor%}
-            </ul>
-        </div>    
+            <div class="collapsible-body championship-collapse-body">
+                <ul class='ul-championship-title'>
+                    {%for championship in championships%} {% if championship.country.name == country.name%}
+                    <li class="center-align">
+                        <a href="{% url 'core:core_championship_get' pk=championship.pk%}" class="championship-li">{{ championship }}</a>
+                    </li>
+                    {%endif%} {%endfor%}
+                </ul>
+            </div>
+        </li>
+        {%endfor%}
+    </ul>
+</div>
 {% endblock %}
 
 {% block content %}                          
@@ -443,9 +441,8 @@
 {% block right_section_desktop %}
 <div class="col s2 hide-on-med-and-down hoverable white">
     <div class="section-header white-text center-align">
-        TICKET
-</div>
-    <!-- TICKET LIST -->
+        TICKET 
+    </div>
     <ul class="ticket-list">
     </ul>
     <div class="make-bet">
