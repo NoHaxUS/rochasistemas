@@ -1,23 +1,15 @@
-from django.shortcuts import render,reverse,redirect,get_object_or_404
-from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.views import View
-from django.contrib.auth.forms import AuthenticationForm
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.contrib.auth import authenticate, login, logout
-from django.views.generic.edit import CreateView
-from django.views.generic.list import ListView
+from django.core.paginator import Paginator
 from django.views.generic.base import TemplateResponseMixin
 from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Cotation,BetTicket,Game,Championship,Payment,Reward,Country
-from user.models import Punter,Seller
+from user.models import Seller
 from django.core import serializers
 from django.conf import settings
 from user.models import CustomUser, RandomUser
-from collections import OrderedDict
 import utils.timezone as tzlocal
 from utils.utils import no_repetition_list
-from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from utils.response import UnicodeJsonResponse
 from django.urls import reverse_lazy
 import json
@@ -419,9 +411,8 @@ class GeneralConf(TemplateResponseMixin, View):
 
 	def get(self, request, *args, **kwargs):
 		if not request.user.is_superuser:
-			return redirect(to='/')
-		context = {}
-		return self.render_to_response(context)
+			return redirect('core:core_home')
+		return self.render_to_response({})
 
 
 class AppDownload(View, TemplateResponseMixin):

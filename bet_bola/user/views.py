@@ -13,9 +13,7 @@ from user.models import Punter
 from user.models import CustomUser
 import utils.timezone as tzlocal
 from utils.response import UnicodeJsonResponse
-
 import json
-
 
 
 class PunterHome(LoginRequiredMixin, TemplateResponseMixin, View):
