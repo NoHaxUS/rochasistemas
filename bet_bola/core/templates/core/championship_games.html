@@ -5,52 +5,54 @@
 {% block content %}
 <div class="col s12 l8">
     <div class="games-table-container">
-        <table class="bordered highlight white centered games-table hoverable">                         
-            <thead>
-                <tr>
-                    <th colspan="5" class="th-championsip-header">
-                        <div class="center-align">
-                            {{ championship_country }}
-                        </div>
-                    </th>
-                </tr>                               
-                    <tr>
-                    <th>CASA x VISITANTE</th>
-                    <th>1</th>
-                    <th>2</th>
-                    <th>X</th>
-                    <th>MAIS</th>
-                    </tr>
-            </thead>
-            <tbody>                                                                                                            
-                    {% for game in games|order_by:"start_game_date" %}    
-                        {% if game.cotations.all.count > 0 %}                                
-                        <tr>
-                            <td>
-                                <div class="hide table-game-id">{{game.pk}}</div>
-                                <div class="table-game-name">
-                                    {{game.name}}
-                                </div>
-                                <div class="table-game-start-date">
-                                    {{game.start_game_date}}
-                                </div>
-                            </td>
-                            {% for cotation in game.cotations.all|standard_cotations_order_by:"name"%}                                    
-                            <td>
-                                <span class="hide cotation_pk">{{cotation.pk}}</span>
-                                <span class="hide cotation_name">{{cotation.name}}</span>
-                                <span class="cotation">{{cotation.value}}</span>
-                                <span class="hide cotation_kind">{{cotation.kind}}</span>
-                            </td>
-                            {% endfor %}
-                            <td class="more_cotations_button">
-                                <i class="small material-icons">add</i>
-                            </td>
-                        </tr>
-                        {% endif %}
-                    {% endfor %}                                
-            </tbody>                            
-        </table>
-    </div>                    
+        <div class="th-championsip-header row">                          
+            <div class="center-align col s12">
+                {{ championship_country }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12 l8 center-align home-away-header">Casa x Visitante</div>
+            <div class="cotations-desc-wrapper-desktop hide-on-med-and-down">
+                <div class="col s3 l1 center-align home-away-header">Casa</div>
+                <div class="col s3 l1 center-align home-away-header">Visitante</div>
+                <div class="col s3 l1 center-align home-away-header">Empate</div>
+                <div class="col s3 l1 center-align home-away-header">Mais</div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        {% for game in games|order_by:"start_game_date" %}
+            <div class="game-item-wrapper">                      
+                {% if game.cotations.all.count > 0 %}
+                <div class="row">
+                    <div class="col s12 l8 center-align">
+                        <div class="hide table-game-id">{{game.pk}}</div>
+                        <div class="table-game-name">{{game.name}}</div>
+                        <div class="table-game-start-date">{{game.start_game_date}}</div>
+                    </div>
+
+                    <div class="cotations-desc-wrapper-mobile hide-on-large-only">
+                        <div class="col s3 l2 center-align">Casa</div>
+                        <div class="col s3 l2 center-align">Visitante</div>
+                        <div class="col s3 l2 center-align">Empate</div>
+                        <div class="col s3 l2 center-align">Mais</div>
+                    </div>
+                
+                    {% for cotation in game.cotations.all|standard_cotations_order_by:"name" %}
+                    <div class="col s3 l1 center-align">
+                        <span class="hide cotation_pk">{{cotation.pk}}</span>
+                        <span class="hide cotation_name">{{cotation.name}}</span>
+                        <span class="cotation">{{cotation.value}}</span>
+                        <span class="hide cotation_kind">{{cotation.kind}}</span>
+                    </div>
+                    {% endfor %}
+                    <div class="col s3 l1 center-align">
+                        <span class="more_cotations_button">+</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="divider"></div>
+        {% endfor %}
+    </div>                 
 </div>                                
 {% endblock %}

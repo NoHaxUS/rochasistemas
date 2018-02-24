@@ -5,7 +5,7 @@
 {% block content %}
 <div class="col s12 l8">
     <div class="games-table-container">                          
-    {% for championship in dict_championship_games.keys %}
+        {% for championship in dict_championship_games.keys %}
         <div class="th-championsip-header row">                          
             <div class="center-align col s12">
                 {{championship.name}} - {{countries_dict|get_item:championship.country.name}}
@@ -54,14 +54,14 @@
             </div>
             <div class="divider"></div>
         {% endfor %}
-    {% empty %}
-    <div class="games-table-container">
-        <div class="empty_game_set center-align">
-            <div class="row"><i class="medium-icon material-icons">insert_emoticon</i></div>
-                <div class="row">No momento não há jogos para a opção selecionada</div>
-        </div>
-    </div>             
-    {%endfor%}
+        {% empty %}
+        <div class="games-table-container">
+            <div class="empty_game_set center-align">
+                <div class="row"><i class="medium-icon material-icons">insert_emoticon</i></div>
+                    <div class="row">No momento não há jogos para a opção selecionada</div>
+            </div>
+        </div>             
+        {% endfor %}
     </div>
 </div>                                
 {% endblock %}
