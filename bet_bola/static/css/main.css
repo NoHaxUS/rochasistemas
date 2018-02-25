@@ -280,12 +280,12 @@ nav .brand-logo{
 
 .ajs-message{
     font-family: 'Exo 2', sans-serif;
-    text-transform: uppercase;
     background-color: #458e43 !important;
     color: #ffffff !important;
 }
 
 .alertify-notifier .ajs-message.ajs-visible{
+    width: 170px;
     padding: 10px;
     border-radius: 40px;
 }
