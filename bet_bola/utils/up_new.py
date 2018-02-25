@@ -364,7 +364,7 @@ def save_odds(game_id, odds, max_cotation_value):
             continue
         else:
 
-            market = Market(name=kind_name).save()
+            market_instance = Market(name=kind_name).save()
 
             if can_save_this_market(kind_name, championship_id, processed_markets):            
                 bookmakers = market['bookmaker']['data']
@@ -377,9 +377,9 @@ def save_odds(game_id, odds, max_cotation_value):
                     cotation_name = renaming_cotations(cotation['label'], " " if cotation['total'] == None else cotation['total']).strip()
                     is_standard=False
 
-                    if market.pk == 1:
+                    if market_instance.pk == 1:
                         is_standard=True
-                    if market.pk == '?????':
+                    if market_instance.pk == 976334:
                         cotation_name = renaming_cotations(cotation['label'], " ").strip()
                     
                     cotation_total = cotation['total']
@@ -497,9 +497,9 @@ def dupla_chance(game, all_cotations,local_team_score,visitor_team_score):
 
     if cotations.count() > 0:
         cotations.update(winning=False)
-        casa_empate = cotations.filter(name='Casa/Empate')
-        casa_visitante = cotations.filter(name='Casa/Visitante')
-        empate_visitante = cotations.filter(name='Empate/Visitante')
+        casa_empate = cotations.filter(name='1X')
+        casa_visitante = cotations.filter(name='12')
+        empate_visitante = cotations.filter(name='X2')
     
         if local_team_score > visitor_team_score:
             casa_empate.update(winning=True)
