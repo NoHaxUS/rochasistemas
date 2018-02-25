@@ -11,235 +11,242 @@ from django.conf import settings
 import utils.timezone as tzlocal
 
 
-
-# Create your models here.
-
-
-BET_TICKET_STATUS = (
-		('Aguardando Resultados', 'Aguardando Resultados'),
-		('Não Venceu', 'Não Venceu'),
-		('Venceu', 'Venceu'),
-	)
-
-REWARD_STATUS = (
-		('Aguardando Resultados', 'Aguardando Resultados'),
-		('O apostador foi pago', 'O apostador foi pago'),
-		('Esse ticket não venceu', 'Esse ticket não venceu'),
-		('Venceu, Aguardando pagamento', 'Venceu, Aguardando pagamento'),
-	)
-
-GAME_STATUS = (
-		('NS', 'Não Iniciado'),
-		('LIVE','Ao Vivo'),
-		('HT', 'Meio Tempo'),
-		('FT', 'Tempo Total')	,	
-		('ET', 'Tempo Extra'),
-		('PEN_LIVE', 'Penaltis'),
-		('AET', 'Terminou após tempo extra'),
-		('BREAK', 'Esperando tempo extra'),
-		('FT_PEN', 'Tempo total após os penaltis'),
-		('CANCL', 'Cancelado'),
-		('POSTP', 'Adiado'),
-		('INT', 'Interrompindo'),
-		('ABAN', 'Abandonado'),
-		('SUSP', 'Suspendido'),
-		('AWARDED', 'Premiado'),
-		('DELAYED', 'Atrasado'),
-		('TBA', 'A ser anunciado'),
-		('WO', 'WO'),
-	)
-
-
-PAYMENT_STATUS = (
-		('Aguardando Pagamento do Ticket', 'Aguardando Pagamento do Ticket'),
-		('Pago', 'Pago'),
-	)
-
 class BetTicket(models.Model):
-	user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', on_delete=models.PROTECT, verbose_name='Apostador')
-	random_user = models.ForeignKey('user.RandomUser',null=True, on_delete=models.SET_NULL, verbose_name='Cliente')
-	cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
-	creation_date = models.DateTimeField(verbose_name='Data da aposta')	
-	reward = models.ForeignKey('Reward', null=True,on_delete=models.PROTECT, verbose_name='Recompensa')
-	payment = models.OneToOneField('Payment', null=True,on_delete=models.PROTECT, verbose_name='Pagamento')
-	value = models.FloatField(verbose_name='Apostado')
-	bet_ticket_status = models.CharField(max_length=80, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][1],verbose_name='Status')
+
+    BET_TICKET_STATUS = (
+        ('Aguardando Resultados', 'Aguardando Resultados'),
+        ('Não Venceu', 'Não Venceu'),
+        ('Venceu', 'Venceu'),
+    )
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets',null=True, on_delete=models.SET_NULL, verbose_name='Apostador')
+    random_user = models.ForeignKey('user.RandomUser', null=True, on_delete=models.SET_NULL, verbose_name='Cliente')
+    cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
+    creation_date = models.DateTimeField(verbose_name='Data da aposta')	
+    reward = models.ForeignKey('Reward', null=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
+    payment = models.OneToOneField('Payment', null=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
+    value = models.FloatField(verbose_name='Valor Apostado')
+    bet_ticket_status = models.CharField(max_length=80, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][1],verbose_name='Status')
 
 
-	def ticket_valid(self, user):
-		self.payment.status_payment = PAYMENT_STATUS[1][1]
-		self.payment.payment_date = tzlocal.now()
-		self.payment.who_set_payment = Seller.objects.get(pk=user.pk)
-		self.payment.save()
+    def __str__(self):
+        return str(self.pk)
 
 
-	def reward_payment(self, user):
-		self.reward.status_reward = REWARD_STATUS[1][1]
-		self.reward.reward_date = tzlocal.now()
-		self.reward.who_rewarded = Seller.objects.get(pk=user.pk)
-		self.reward.save()
+    class Meta:
+        verbose_name = 'Ticket'
+        verbose_name_plural = 'Tickets'
+        permissions = (
+            ('can_validate_payment', "Can validate user ticket"),
+            ('can_reward', "Can reward a user"),
+        )
+
+    def validate_ticket(self, user):
+        self.payment.status_payment = Payment.PAYMENT_STATUS[1][1]
+        self.payment.payment_date = tzlocal.now()
+        self.payment.who_set_payment = Seller.objects.get(pk=user.pk)
+        self.payment.save()
 
 
-	def cota_total(self):
-
-		cota_total = 1
-		for cotation in self.cotations.all():
-			cota_total *= cotation.value
-		return round(cota_total,2)
-
-
-	def update_ticket_status(self):
-		
-		if not self.check_if_waiting_results():
-			if self.cotations.filter(winning=False).count() > 0:
-				self.bet_ticket_status = BET_TICKET_STATUS[1][1]
-				self.save()
-			else:
-				self.bet_ticket_status = BET_TICKET_STATUS[2][1]
-				self.save()
-			
-
-	def check_if_waiting_results(self):
-		return self.cotations.filter(winning=None).count() > 0
+    def reward_ticket(self, user):
+        self.reward.status_reward = Payment.REWARD_STATUS[1][1]
+        self.reward.reward_date = tzlocal.now()
+        self.reward.who_rewarded = Seller.objects.get(pk=user.pk)
+        self.reward.save()
 
 
-	def __str__(self):
-		return str(self.pk)
+    def cotation_sum(self):
+        cotation_sum = 1
+        for cotation in self.cotations.all():
+            cotation_sum *= cotation.value
+        return round(cotation_sum,2)
 
-	class Meta:
-		verbose_name = 'Ticket'
-		verbose_name_plural = 'Tickets'
-		permissions = (
-				('can_validate_payment', "Can validate user ticket"),
-				('can_reward', "Can reward a user"),
-			)
+
+    def update_ticket_status(self):
+        
+        if not self.check_if_waiting_results():
+            if self.cotations.filter(winning=False).count() > 0:
+                self.bet_ticket_status = BET_TICKET_STATUS[1][1]
+                self.save()
+            else:
+                self.bet_ticket_status = BET_TICKET_STATUS[2][1]
+                self.save()
+            
+
+    def check_if_waiting_results(self):
+        return self.cotations.filter(winning=None).count() > 0
+
 
 
 class Game(models.Model):
-	name = models.CharField(max_length=80, verbose_name='Nome do Jogo')	
-	start_game_date = models.DateTimeField(verbose_name='Início da Partida')
-	championship = models.ForeignKey('Championship',related_name='my_games', on_delete=models.CASCADE,verbose_name='Campeonato')
-	status_game = models.CharField(max_length=80,default=GAME_STATUS[0][1], choices=GAME_STATUS,verbose_name='Status do Jogo')
-	odds_calculated = models.BooleanField()	
-	ht_score = models.CharField(max_length=80, null=True, verbose_name='Placar até o meio-tempo')
-	ft_score = models.CharField(max_length=80, null=True, verbose_name='Placar no final do Jogo', help_text="Placar final Ex: 3-5 (Casa-Visita)")
-	odds_processed = models.BooleanField(default=False)
 
-	objects = GamesManager()	
+    GAME_STATUS = (
+        ('NS', 'Não Iniciado'),
+        ('LIVE','Ao Vivo'),
+        ('HT', 'Meio Tempo'),
+        ('FT', 'Tempo Total')	,	
+        ('ET', 'Tempo Extra'),
+        ('PEN_LIVE', 'Penaltis'),
+        ('AET', 'Terminou após tempo extra'),
+        ('BREAK', 'Esperando tempo extra'),
+        ('FT_PEN', 'Tempo total após os penaltis'),
+        ('CANCL', 'Cancelado'),
+        ('POSTP', 'Adiado'),
+        ('INT', 'Interrompindo'),
+        ('ABAN', 'Abandonado'),
+        ('SUSP', 'Suspendido'),
+        ('AWARDED', 'Premiado'),
+        ('DELAYED', 'Atrasado'),
+        ('TBA', 'A ser anunciado'),
+        ('WO', 'WO'),
+    )
 
-	class Meta:
-		verbose_name = 'Jogo'
-		verbose_name_plural = 'Jogos'
+    name = models.CharField(max_length=80, verbose_name='Nome do Jogo')	
+    start_game_date = models.DateTimeField(verbose_name='Início da Partida')
+    championship = models.ForeignKey('Championship',related_name='my_games',null=True, on_delete=models.SET_NULL,verbose_name='Campeonato')
+    status_game = models.CharField(max_length=80,default=GAME_STATUS[0][1], choices=GAME_STATUS,verbose_name='Status do Jogo')
+    odds_calculated = models.BooleanField()	
+    ht_score = models.CharField(max_length=80, null=True, verbose_name='Placar até o meio-tempo')
+    ft_score = models.CharField(max_length=80, null=True, verbose_name='Placar no final do Jogo', help_text="Placar final Ex: 3-5 (Casa-Visita)")
+    odds_processed = models.BooleanField(default=False)
 
-	def __str__(self):
-		return self.name	
+    objects = GamesManager()	
+
+    class Meta:
+        verbose_name = 'Jogo'
+        verbose_name_plural = 'Jogos'
+
+
+    def __str__(self):
+        return self.name	
 
 
 class Championship(models.Model):
-	name = models.CharField(max_length=80, verbose_name='Nome', help_text='Campeonato')
-	country = models.ForeignKey('Country', related_name='my_championships', on_delete=models.CASCADE, verbose_name='Pais')
-	priority = models.IntegerField(default=1)
 
-	def __str__(self):
-		return self.name
+    name = models.CharField(max_length=80, verbose_name='Nome', help_text='Campeonato')
+    country = models.ForeignKey('Country', related_name='my_championships',null=True, on_delete=models.SET_NULL, verbose_name='Pais')
+    priority = models.IntegerField(default=1)
 
-	class Meta:
-		verbose_name = 'Campeonato'
-		verbose_name_plural = 'Campeonatos'
+    def __str__(self):
+        return self.name
+
+
+    class Meta:
+        verbose_name = 'Campeonato'
+        verbose_name_plural = 'Campeonatos'
 
 
 class Country(models.Model):
-	name = models.CharField(max_length=45, verbose_name='País')
-	priority = models.IntegerField(default=1)
+
+    name = models.CharField(max_length=45, verbose_name='País')
+    priority = models.IntegerField(default=1)
 
 class Reward(models.Model):
-	who_rewarded = models.ForeignKey('user.Seller', null=True, on_delete=models.PROTECT)
-	reward_date = models.DateTimeField(null=True)
-	value = models.FloatField(default=0)
-	status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1])
 
-	def __str__(self):
-		return str(self.value)
+    REWARD_STATUS = (
+        ('Aguardando Resultados', 'Aguardando Resultados'),
+        ('O apostador foi pago', 'O apostador foi pago'),
+        ('Esse ticket não venceu', 'Esse ticket não venceu'),
+        ('Venceu, Aguardando pagamento', 'Venceu, Aguardando pagamento'),
+    )
 
-	class Meta:
-		verbose_name = 'Recompensa'
-		verbose_name_plural = 'Recompensas'
+    who_rewarded = models.ForeignKey('user.Seller', null=True, on_delete=models.SET_NULL)
+    reward_date = models.DateTimeField(null=True)
+    value = models.FloatField(default=0)
+    status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1])
+
+    def __str__(self):
+        return str(self.value)
+
+    class Meta:
+        verbose_name = 'Recompensa'
+        verbose_name_plural = 'Recompensas'
+
+class Market(models.Model):
+
+    name = models.CharField(max_length=100, verbose_name='Tipo de Aposta')
+
+    def __str__(self):
+        return str(self.name)
+
+    class Meta:
+        verbose_name = 'Tipo de Aposta'
+        verbose_name_plural = 'Tipo de Aposta'
 
 
 class Cotation(models.Model):
-	name = models.CharField(max_length=80, verbose_name='Nome da Cota')
-	original_value = models.FloatField(default=0,verbose_name='Valor Original')
-	value = models.FloatField(default=0, verbose_name='Valor Modificado')
-	game = models.ForeignKey('Game', related_name='cotations', on_delete=models.CASCADE, verbose_name='Jogo')	
-	winning = models.NullBooleanField(verbose_name='Vencedor ?')
-	is_standard = models.BooleanField(default=False, verbose_name='Cota Padrão ?')
-	kind = models.CharField(max_length=100, verbose_name='Tipo')
-	total = models.FloatField(blank = True, null = True)
-	objects = GamesManager()
+
+    name = models.CharField(max_length=80, verbose_name='Nome da Cota')
+    original_value = models.FloatField(default=0,verbose_name='Valor Original')
+    value = models.FloatField(default=0, verbose_name='Valor Modificado')
+    game = models.ForeignKey('Game', related_name='cotations', null=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
+    winning = models.NullBooleanField(verbose_name='Vencedor ?')
+    is_standard = models.BooleanField(default=False, verbose_name='Cota Padrão ?')
+    kind = models.ForeignKey(Market, related_name='cotations',null=True, on_delete=models.SET_NULL, verbose_name='Jogo')
+    total = models.FloatField(blank=True, null=True)
+    objects = GamesManager()
+
+    def __str__(self):
+        return str(self.value)
 
 
-
-	def save(self):
-		if not Cotation.objects.filter(name=self.name, kind=self.kind, 
-			game=self.game).exists() and not self.is_excluded_cotation(self.name, self.kind):
-			super().save()
-
-	class Meta:
-		verbose_name = 'Cota'
-		verbose_name_plural = 'Cotas'
-
-	def __str__(self):
-		return str(self.value)
-
-	def is_excluded_cotation(self, cotation_name, cotation_kind):
-
-		is_excluded = False
-
-		if cotation_kind == 'Total de Gols do Primeiro Tempo, Acima/Abaixo':
-
-			excluded_cotations = [
-				'Abaixo 3.5',
-				'Abaixo 2.5',
-				'Abaixo 4',
-				'Abaixo 3',
-			]
-
-			if cotation_name in excluded_cotations:
-				is_excluded = True
-		else:
-
-			excluded_cotations = [
-				'Acima 0.5', 
-				'Abaixo 5.5',
-				'Abaixo 6.5',
-				'Abaixo 4.5',
-				'Abaixo 7.5',
-				'Abaixo 5',
-				'Abaixo 6',
-				'Abaixo 4',
-				'Abaixo 7',
-			]
-
-			if cotation_name in excluded_cotations:
-				is_excluded = True
+    class Meta:
+        verbose_name = 'Cota'
+        verbose_name_plural = 'Cotas'
 
 
-		return is_excluded
+    def save(self):
+        if not Cotation.objects.filter(name=self.name, kind=self.kind, 
+            game=self.game).exists() and not self.is_excluded_cotation(self.name, self.kind):
+            super().save()
+
+
+    def is_excluded_cotation(self, cotation_name, cotation_kind):
+
+        is_excluded = False
+        if cotation_kind == 'Total de Gols do Primeiro Tempo, Acima/Abaixo':
+            excluded_cotations = [
+                'Abaixo 3.5',
+                'Abaixo 2.5',
+                'Abaixo 4',
+                'Abaixo 3',
+            ]
+            if cotation_name in excluded_cotations:
+                is_excluded = True
+        else:
+            excluded_cotations = [
+                'Acima 0.5', 
+                'Abaixo 5.5',
+                'Abaixo 6.5',
+                'Abaixo 4.5',
+                'Abaixo 7.5',
+                'Abaixo 5',
+                'Abaixo 6',
+                'Abaixo 4',
+                'Abaixo 7',
+            ]
+            if cotation_name in excluded_cotations:
+                is_excluded = True
+        return is_excluded
 
 
 class Payment(models.Model):
-	who_set_payment = models.ForeignKey('user.Seller', null=True, on_delete=models.PROTECT)
-	status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1])
-	payment_date = models.DateTimeField(null=True)
-	seller_was_rewarded = models.BooleanField(default=False)
+
+    PAYMENT_STATUS = (
+        ('Aguardando Pagamento do Ticket', 'Aguardando Pagamento do Ticket'),
+        ('Pago', 'Pago'),
+    )
+
+    who_set_payment = models.ForeignKey('user.Seller', null=True, on_delete=models.SET_NULL)
+    status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1])
+    payment_date = models.DateTimeField(null=True)
+    seller_was_rewarded = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.status_payment
 
 
-	def __str__(self):
-		return self.status_payment
-
-
-
-	class Meta:
-		verbose_name = 'Pagamento'
-		verbose_name_plural = 'Pagamentos'
+    class Meta:
+        verbose_name = 'Pagamento'
+        verbose_name_plural = 'Pagamentos'
 
