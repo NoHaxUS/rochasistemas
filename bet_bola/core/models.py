@@ -66,10 +66,10 @@ class BetTicket(models.Model):
         
         if not self.check_if_waiting_results():
             if self.cotations.filter(winning=False).count() > 0:
-                self.bet_ticket_status = BET_TICKET_STATUS[1][1]
+                self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[1][1]
                 self.save()
             else:
-                self.bet_ticket_status = BET_TICKET_STATUS[2][1]
+                self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[2][1]
                 self.save()
             
 
@@ -201,10 +201,11 @@ class Cotation(models.Model):
             super().save()
 
 
-    def is_excluded_cotation(self, cotation_name, cotation_kind):
+    def is_excluded_cotation(self, cotation_name, kind):
 
         is_excluded = False
-        if cotation_kind == 'Total de Gols do Primeiro Tempo, Acima/Abaixo':
+
+        if kind.pk == 38:
             excluded_cotations = [
                 'Abaixo 3.5',
                 'Abaixo 2.5',
@@ -213,7 +214,8 @@ class Cotation(models.Model):
             ]
             if cotation_name in excluded_cotations:
                 is_excluded = True
-        else:
+
+        if kind.pk == 12:
             excluded_cotations = [
                 'Acima 0.5', 
                 'Abaixo 5.5',
@@ -227,6 +229,23 @@ class Cotation(models.Model):
             ]
             if cotation_name in excluded_cotations:
                 is_excluded = True
+
+        if kind.pk == 976204:
+            excluded_cotations = [
+                'Abaixo 3',
+                'Abaixo 2',
+            ]
+            if cotation_name in excluded_cotations:
+                is_excluded = True
+
+        if kind.pk == 976198:
+            excluded_cotations = [
+                'Abaixo 3',
+                'Abaixo 2',
+            ]
+            if cotation_name in excluded_cotations:
+                is_excluded = True
+
         return is_excluded
 
 

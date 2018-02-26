@@ -42,7 +42,7 @@ class PDF(View):
             h=h+14
             pdf.text(4,h, c.game.start_game_date.strftime('%d/%m/%Y %H:%M'))
             h=h+14			
-            pdf.text(4,h,c.kind)
+            pdf.text(4,h,c.kind.name)
             h=h+14
             pdf.text(4,h,"Cota:" + c.name)			
             pdf.text(190,h,str(c.value))
