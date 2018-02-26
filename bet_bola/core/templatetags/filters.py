@@ -7,10 +7,15 @@ register = template.Library()
 @register.filter(name='standard_cotations_order_by')
 def standard_cotations_order_by(queryset):
 
-    standard_cotations = queryset.filter(is_standard=True)
+    standard_cotations = queryset.filter(is_standard=True).order_by('name')
+    
     if standard_cotations:
-        cote = [standard_cotations.get('1'), standard_cotations.get('X'), standard_cotations.get('2')]
-        return cote
+        cotations_ordered = []
+        cotations_ordered.append(standard_cotations[0])
+        cotations_ordered.append(standard_cotations[2])
+        cotations_ordered.append(standard_cotations[1])
+        
+        return cotations_ordered
     else:
         return standard_cotations
 
