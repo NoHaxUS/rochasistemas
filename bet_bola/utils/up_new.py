@@ -171,7 +171,7 @@ INVALID_ALL_COTES_CHAMPIONSHIPS = [
     642,
 ]
 
-def renaming_cotations(string, total):
+def renaming_cotations(string):
 
     COTATION_NAME = {
         "Under": "Abaixo",
@@ -192,7 +192,6 @@ def renaming_cotations(string, total):
     for key_cotation in COTATION_NAME.keys():
         if key_cotation in string:
             string = string.replace(key_cotation, COTATION_NAME[key_cotation])
-            string = string + " " + total
     return string
 
 
@@ -377,14 +376,14 @@ def save_odds(game_id, odds, max_cotation_value):
                 for cotation in cotations:
 
                     cotation_value = max_cotation_value if float(cotation['value']) > max_cotation_value else float(cotation['value'])
-                    cotation_name = renaming_cotations(cotation['label'], " " if cotation['total'] == None else cotation['total']).strip()
+                    cotation_name_renamed = renaming_cotations(cotation['label'])
+                    total_or_empty = " " if cotation['total'] == None else cotation['total'].strip()
+                    cotation_name = cotation_name_renamed +" "+ total_or_empty
                     is_standard=False
 
                     if market_instance.pk == 1:
                         is_standard=True
-                    if market_instance.pk == 976334:
-                        cotation_name = renaming_cotations(cotation['label'], " ").strip()
-                    
+
                     cotation_total = cotation['total']
 
                     if not cotation_total == None:

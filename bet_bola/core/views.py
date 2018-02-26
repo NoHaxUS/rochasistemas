@@ -157,7 +157,7 @@ class CotationsView(View):
 			cotations_serialized[cotation_market] = serializers.serialize("json", cotations_by_kind[cotation_market] )
 
 		data = json.dumps(cotations_serialized)
-		
+		#return UnicodeJsonResponse(data, safe=False)
 		return HttpResponse( data, content_type='application/json' )
 
 
