@@ -1,12 +1,12 @@
 from django.db.models.query import QuerySet
 from django.db.models import Q
 from django.db.models import Count
+from django.db import models
 import utils.timezone as tzlocal
 from django.utils import timezone
 
 
 class GamesQuerySet(QuerySet):
-
 
 	def able_games(self):
 		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(Q(status_game="NS") | Q(status_game="POSTP")).filter(start_game_date__gt=tzlocal.now())
@@ -18,7 +18,6 @@ class GamesQuerySet(QuerySet):
 		return self.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0).filter(Q(status_game="NS") | Q(status_game="POSTP")).filter(start_game_date__date=tzlocal.now().date() + timezone.timedelta(days=1) )
 
 GamesManager = GamesQuerySet.as_manager
-
 
 class CotationsQuerySet(QuerySet):
 

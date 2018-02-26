@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import datetime
-from .manager import GamesManager,CotationsManager
+from .manager import GamesManager, CotationsManager
 from user.models import Seller
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -162,12 +162,16 @@ class Reward(models.Model):
         verbose_name = 'Recompensa'
         verbose_name_plural = 'Recompensas'
 
+
 class Market(models.Model):
 
     name = models.CharField(max_length=100, verbose_name='Tipo de Aposta')
-
+    
     def __str__(self):
         return str(self.name)
+    
+    def natural_key(self):
+        return self.name
 
     class Meta:
         verbose_name = 'Tipo de Aposta'

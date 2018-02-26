@@ -479,6 +479,18 @@ span.step-links li.active a{
     padding: 1px 0px !important;
 }
 
+.more_cotation_header-h4{
+    font-size: 2rem;
+}
+
+#back-to-top {
+    display: none;
+    position: fixed;
+    z-index: 99;
+    bottom: 15px;
+    right: 15px;
+  }
+
 @media only screen and (max-width: 992px){
 
     .game-item-wrapper{
@@ -528,11 +540,5 @@ span.step-links li.active a{
     }
 }
 
-#back-to-top {
-  display: none;
-  position: fixed;
-  z-index: 99;
-  bottom: 15px;
-  right: 15px;
-}
+
     
