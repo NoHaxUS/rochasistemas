@@ -182,7 +182,7 @@ class Cotation(models.Model):
     game = models.ForeignKey('Game', related_name='cotations', null=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
     winning = models.NullBooleanField(verbose_name='Vencedor ?')
     is_standard = models.BooleanField(default=False, verbose_name='Cota Padrão ?')
-    kind = models.ForeignKey(Market, related_name='cotations',null=True, on_delete=models.SET_NULL, verbose_name='Jogo')
+    kind = models.ForeignKey(Market, related_name='cotations', null=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
     total = models.FloatField(blank=True, null=True)
     objects = GamesManager()
 

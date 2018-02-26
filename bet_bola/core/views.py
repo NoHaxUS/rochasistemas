@@ -146,11 +146,11 @@ class CotationsView(View):
 		cotations_of_game = Cotation.objects.filter(game_id=gameid, is_standard=False)
 	
 		for cotation in cotations_of_game:
-			if cotation.kind not in cotations_by_kind:
-				cotations_by_kind[cotation.kind] = []
-				cotations_by_kind[cotation.kind].append(cotation)
+			if cotation.kind.name not in cotations_by_kind:
+				cotations_by_kind[cotation.kind.name] = []
+				cotations_by_kind[cotation.kind.name].append(cotation)
 			else:
-				cotations_by_kind[cotation.kind].append(cotation)
+				cotations_by_kind[cotation.kind.name].append(cotation)
 		
 		cotations_serialized = {}
 		for cotation_market in cotations_by_kind:
@@ -302,7 +302,7 @@ class CreateTicketView(View):
 			else:
 				ticket.random_user=RandomUser.objects.create(first_name=client_name, cellphone=cellphone)
 				ticket.save()
-				ticket.ticket_valid(request.user)
+				ticket.validate_ticket(request.user)
 
 			for game in game_cotations:
 				ticket.cotations.add(game)

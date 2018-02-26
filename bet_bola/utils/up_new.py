@@ -363,8 +363,11 @@ def save_odds(game_id, odds, max_cotation_value):
         if not kind_name:
             continue
         else:
-
-            market_instance = Market(name=kind_name).save()
+            
+            if not Market.objects.filter(pk=int(market['id'])).exists():
+                market_instance = Market.objects.create(pk=int(market['id']), name=kind_name)
+            else:
+                market_instance = Market.objects.get(pk=int(market['id']))
 
             if can_save_this_market(kind_name, championship_id, processed_markets):            
                 bookmakers = market['bookmaker']['data']
@@ -396,7 +399,7 @@ def save_odds(game_id, odds, max_cotation_value):
                             is_standard=is_standard,
                             total=cotation_total,
                             winning=cotation['winning'],
-                            kind=market
+                            kind=market_instance
                         ).save()        
                 processed_markets.append(kind_name)
 

@@ -19,7 +19,6 @@ main {
 
 .btn{
     font-family: 'Exo 2', sans-serif;
-    border-radius: 30px;
     letter-spacing: 0.2px;
 }
 
@@ -43,7 +42,7 @@ thead tr th {
 /* end Resets */
 
 .round{
-    border-radius: 20px;
+    border-radius: 30px;
 }
 
 /* color definitions*/

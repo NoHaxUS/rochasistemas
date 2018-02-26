@@ -83,7 +83,7 @@ class SellerPayPunter(PermissionRequiredMixin, View):
             
             ticket = ticket_queryset.first()
             if ticket.bet_ticket_status == 'Venceu':
-                ticket.reward_payment(request.user)
+                ticket.reward_ticket(request.user)
                 return JsonResponse({'status': 200})
             else:
                 return JsonResponse({'status': 401})
