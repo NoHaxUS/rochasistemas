@@ -288,6 +288,20 @@ class Cotation(models.Model):
             if cotation_name in excluded_cotations:
                 is_excluded = True
 
+        elif kind.pk == 47:
+            excluded_cotations = [
+                'Abaixo 3',
+                'Abaixo 4',
+                'Abaixo 5',
+                'Abaixo 3.5',
+                'Abaixo 4.5',
+                'Abaixo 5.5',
+                
+            ]
+            if cotation_name in excluded_cotations:
+                is_excluded = True
+
+
         elif kind.pk == 63:
             excluded_cotations = [
                 '12',
