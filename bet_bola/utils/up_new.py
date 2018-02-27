@@ -375,11 +375,14 @@ def save_odds(game_id, odds, max_cotation_value):
                 for cotation in cotations:
 
                     cotation_value = max_cotation_value if float(cotation['value']) > max_cotation_value else float(cotation['value'])
-                    cotation_name_renamed = renaming_cotations(cotation['label'])
-                    total_or_empty = " " if cotation['total'] == None else cotation['total'].strip()
-                    cotation_name = cotation_name_renamed +" "+ total_or_empty
-                    is_standard=False
+                    cotation_name_renamed = renaming_cotations(cotation['label']).strip()
+                    total_or_none = None if cotation['total'] == None else cotation['total'].strip()
+                    if total_or_none:
+                        cotation_name = cotation_name_renamed +" "+ total_or_none
+                    else:
+                        cotation_name = cotation_name_renamed
 
+                    is_standard=False
                     if market_instance.pk == 1:
                         is_standard=True
 

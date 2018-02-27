@@ -211,10 +211,14 @@ class Cotation(models.Model):
 
         if kind.pk == 38:
             excluded_cotations = [
-                'Abaixo 3.5',
                 'Abaixo 2.5',
-                'Abaixo 4',
+                'Abaixo 3.5',
+                'Abaixo 4.5',
+                'Abaixo 5.5',
+                'Abaixo 2',
                 'Abaixo 3',
+                'Abaixo 4',
+                'Abaixo 5',
             ]
             if cotation_name in excluded_cotations:
                 is_excluded = True
@@ -226,10 +230,12 @@ class Cotation(models.Model):
                 'Abaixo 6.5',
                 'Abaixo 4.5',
                 'Abaixo 7.5',
+                'Abaixo 8.5',
                 'Abaixo 5',
                 'Abaixo 6',
                 'Abaixo 4',
                 'Abaixo 7',
+                'Abaixo 8',
                 'Acima 2.0',
                 'Abaixo 2.0',
                 'Acima 2.25',
@@ -255,25 +261,34 @@ class Cotation(models.Model):
 
         elif kind.pk == 976204:
             excluded_cotations = [
-                'Abaixo 3',
                 'Abaixo 2',
-                'Abaixo 3.5',
+                'Abaixo 3',
+                'Abaixo 4',
+                'Abaixo 5',
                 'Abaixo 2.5',
+                'Abaixo 3.5',
+                'Abaixo 4.5',
+                'Abaixo 5.5',
             ]
             if cotation_name in excluded_cotations:
                 is_excluded = True
 
         elif kind.pk == 976198:
             excluded_cotations = [
-                'Abaixo 3',
                 'Abaixo 2',
-                'Abaixo 3.5',
+                'Abaixo 3',
+                'Abaixo 4',
+                'Abaixo 5',
                 'Abaixo 2.5',
+                'Abaixo 3.5',
+                'Abaixo 4.5',
+                'Abaixo 5.5',
+                
             ]
             if cotation_name in excluded_cotations:
                 is_excluded = True
 
-        elif kind.name == 'Dupla Chance':
+        elif kind.pk == 63:
             excluded_cotations = [
                 '12',
             ]
