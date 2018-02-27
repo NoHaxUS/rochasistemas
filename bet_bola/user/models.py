@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User, Permission, AbstractUser, BaseUserManager
+from guardian.shortcuts import assign_perm
 # Create your models here.
 
 
@@ -24,6 +25,8 @@ class Seller(CustomUser):
 	cpf = models.CharField(max_length=11, verbose_name='CPF')
 	address = models.CharField(max_length=75, verbose_name='Endereço')
 	cellphone = models.CharField(max_length=14, verbose_name='Celular')
+	can_sell_ilimited = models.BooleanField(default=True)
+	credit_limit = models.FloatField(default=0, verbose_name='Limite de Venda')
 
 
 	def full_name(self):
@@ -54,6 +57,9 @@ class Seller(CustomUser):
 			codename='be_seller')
 		self.user_permissions.add(be_seller_permission)
 
+		for user in CustomUser.objects.filter(is_superuser=True):
+			assign_perm('set_credit_limit',user,self)			
+
 
 	class Meta:
 		verbose_name = 'Vendedor'
@@ -61,6 +67,7 @@ class Seller(CustomUser):
 
 		permissions = (
 			('be_seller', 'Be a seller, permission.'),
+			('set_credit_limit', 'Set the credit limit value'),
 		)
 
 class Punter(CustomUser):
@@ -76,6 +83,35 @@ class Punter(CustomUser):
 	class Meta:
 		verbose_name = 'Apostador'
 		verbose_name_plural = 'Apostadores'
+
+
+class Manager(CustomUser):
+	
+	cellphone = models.CharField(max_length=14, verbose_name='Celular')
+	credit_limit_to_add = models.FloatField(default=0)
+
+	def tranfer_credit_limit(self,seller,value):
+		if self.has_perm('set_credit_limit',seller):
+			if value < self.credit_limit_to_add:
+				seller.limit += value
+				self.credit_limit_to_add -= value
+				return 'Valor adicionado com sucesso'
+			else:
+				return 'Crédito insuficiente'
+
+		return 'Você não tem permissão'
+
+	def add_set_limit_permission(self,seller):
+		assign_perm('set_credit_limit',self,seller)
+
+	def save(self, *args, **kwargs):
+		self.clean()
+		self.set_password(self.password)  # password encryption
+		super(Manager, self).save()
+
+	class Meta:
+		verbose_name = 'Gerente'
+		verbose_name_plural = 'Gerentes'
 
 
 

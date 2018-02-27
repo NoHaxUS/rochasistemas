@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Punter, Seller, GeneralConfigurations
+from guardian.admin import GuardedModelAdmin
+from .models import Punter, Seller, GeneralConfigurations, Manager
 # Register your models here.
 
 
@@ -16,7 +17,7 @@ class PunterAdmin(admin.ModelAdmin):
 		)
 
 @admin.register(Seller)
-class SellerAdmin(admin.ModelAdmin):
+class SellerAdmin(GuardedModelAdmin):
 	search_fields = ['first_name']
 	search_fields_hint = 'Buscar pelo nome'
 
@@ -32,4 +33,14 @@ class SellerAdmin(admin.ModelAdmin):
 class GeneralConfigurationsAdmin(admin.ModelAdmin):
 	pass
 
+@admin.register(Manager)
+class ManagerAdmin(admin.ModelAdmin):
+	search_fields = ['first_name']
+	search_fields_hint = 'Buscar pelo nome'
+
+	fieldsets = (
+		(None, {
+			'fields': ('first_name','last_name','username','password','email','cellphone')
+		}),
+		)	
 
