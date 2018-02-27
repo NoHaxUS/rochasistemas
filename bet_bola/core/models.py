@@ -230,7 +230,12 @@ class Cotation(models.Model):
                 'Abaixo 6',
                 'Abaixo 4',
                 'Abaixo 7',
+                'Acima 2.0',
+                'Abaixo 2.0',
+                'Acima 2.25',
+                'Abaixo 2.25',               
             ]
+            
             if cotation_name in excluded_cotations:
                 is_excluded = True
 
@@ -238,6 +243,8 @@ class Cotation(models.Model):
             excluded_cotations = [
                 'Abaixo 3',
                 'Abaixo 2',
+                'Abaixo 3.5',
+                'Abaixo 2.5',
             ]
             if cotation_name in excluded_cotations:
                 is_excluded = True
@@ -246,12 +253,20 @@ class Cotation(models.Model):
             excluded_cotations = [
                 'Abaixo 3',
                 'Abaixo 2',
+                'Abaixo 3.5',
+                'Abaixo 2.5',
+            ]
+            if cotation_name in excluded_cotations:
+                is_excluded = True
+
+        if kind.pk == 63:
+            excluded_cotations = [
+                '12',
             ]
             if cotation_name in excluded_cotations:
                 is_excluded = True
 
         return is_excluded
-
 
 class Payment(models.Model):
 
