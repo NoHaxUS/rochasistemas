@@ -362,7 +362,6 @@ def save_odds(game_id, odds, max_cotation_value):
         if not kind_name:
             continue
         else:
-            
             if not Market.objects.filter(pk=int(market['id'])).exists():
                 market_instance = Market.objects.create(pk=int(market['id']), name=kind_name)
             else:

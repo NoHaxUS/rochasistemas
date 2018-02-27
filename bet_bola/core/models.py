@@ -219,7 +219,7 @@ class Cotation(models.Model):
             if cotation_name in excluded_cotations:
                 is_excluded = True
 
-        if kind.pk == 12:
+        elif kind.pk == 12:
             excluded_cotations = [
                 'Acima 0.5', 
                 'Abaixo 5.5',
@@ -234,14 +234,26 @@ class Cotation(models.Model):
                 'Abaixo 2.0',
                 'Acima 2.25',
                 'Abaixo 2.25',
+                'Acima 3.25',
+                'Abaixo 3.25',
+                'Acima 4.25',
+                'Abaixo 4.25',
+                'Acima 5.25',
+                'Abaixo 5.25',
                 'Acima 2.75',
-                'Abaixo 2.75',          
+                'Abaixo 2.75',
+                'Acima 3.75',
+                'Abaixo 3.75',
+                'Acima 4.75',
+                'Abaixo 4.75',
+                'Acima 5.75',
+                'Abaixo 5.75',
             ]
             
             if cotation_name in excluded_cotations:
                 is_excluded = True
 
-        if kind.pk == 976204:
+        elif kind.pk == 976204:
             excluded_cotations = [
                 'Abaixo 3',
                 'Abaixo 2',
@@ -251,7 +263,7 @@ class Cotation(models.Model):
             if cotation_name in excluded_cotations:
                 is_excluded = True
 
-        if kind.pk == 976198:
+        elif kind.pk == 976198:
             excluded_cotations = [
                 'Abaixo 3',
                 'Abaixo 2',
@@ -261,10 +273,11 @@ class Cotation(models.Model):
             if cotation_name in excluded_cotations:
                 is_excluded = True
 
-        if kind.pk == 63:
+        elif kind.name == 'Dupla Chance':
             excluded_cotations = [
                 '12',
             ]
+            
             if cotation_name in excluded_cotations:
                 is_excluded = True
 
