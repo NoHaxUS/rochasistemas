@@ -233,7 +233,9 @@ class Cotation(models.Model):
                 'Acima 2.0',
                 'Abaixo 2.0',
                 'Acima 2.25',
-                'Abaixo 2.25',               
+                'Abaixo 2.25',
+                'Acima 2.75',
+                'Abaixo 2.75',          
             ]
             
             if cotation_name in excluded_cotations:
