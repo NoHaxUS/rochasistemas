@@ -42,10 +42,17 @@ class BetTicket(models.Model):
         )
 
     def validate_ticket(self, user):
+        if not user.seller.can_sell_ilimited:
+            if self.value > user.seller.credit_limit:                
+                return False
+            user.seller.credit_limit -= self.value 
+            user.seller.save()
+
         self.payment.status_payment = Payment.PAYMENT_STATUS[1][1]
         self.payment.payment_date = tzlocal.now()
         self.payment.who_set_payment = Seller.objects.get(pk=user.pk)
         self.payment.save()
+        return True
 
 
     def reward_ticket(self, user):

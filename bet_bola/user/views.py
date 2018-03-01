@@ -58,8 +58,10 @@ class SellerValidateTicket(PermissionRequiredMixin, View):
                 if ticket_queryset.first().payment.status_payment == 'Pago':
                     return JsonResponse({'status': 406})
                 else:
-                    ticket_queryset.first().validate_ticket(request.user)
+                    if not ticket_queryset.first().validate_ticket(request.user):
+                        return JsonResponse({'status': 405})
                     return JsonResponse({'status': 200})
+
             else:
                 return JsonResponse({'status': 403})
         else:			

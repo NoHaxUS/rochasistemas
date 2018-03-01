@@ -63,6 +63,9 @@ $(document).ready(function () {
                             if(data['status'] == 406){
                                 alertify.success('Ticket já Validado.');
                             }
+                            if(data['status'] == 405){
+                                alertify.alert('Desculpe. Vendedor não possui limite de credito para efetuar a aposta.');
+                            }
                             if(data['status'] == 404){
                                 alertify.error('Ticket não encontrado');
                             }

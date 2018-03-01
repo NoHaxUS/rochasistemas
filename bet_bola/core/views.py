@@ -286,7 +286,7 @@ class CreateTicketView(View):
 			data['message'] =  "Desculpe. Aposte em pelo menos " + str(min_number_of_choices_per_bet) + " jogos."
 
 
-		if data['success'] == True:
+		if data['success']:
 			ticket = BetTicket(
 				user=CustomUser.objects.get(pk=request.user.pk),
 				value=ticket_bet_value,
@@ -301,8 +301,11 @@ class CreateTicketView(View):
 			else:
 				ticket.random_user=RandomUser.objects.create(first_name=client_name, cellphone=cellphone)
 				ticket.save()
-				ticket.validate_ticket(request.user)
-
+				if not ticket.validate_ticket(request.user):
+					data['success'] =  False
+					data['message'] =  "Desculpe. Vendedor não possui limite de credito para efetuar a aposta."
+					return UnicodeJsonResponse(data)
+			
 			for game in game_cotations:
 				ticket.cotations.add(game)
 			ticket.reward.value = ticket_reward_value
