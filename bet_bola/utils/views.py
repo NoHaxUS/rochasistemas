@@ -74,11 +74,12 @@ class PercentualReductionCotation(View):
             if request.user.is_superuser:
                 Cotation.objects.update(value=F('original_value') * percentual)
                 Cotation.objects.update(value=Case(When(value__lt=1,then=1.01),default=F('value')))
+                return HttpResponse("Percentual Alterado.")
             else:
                 return HttpResponse("Você não tem permissão para isso baby.")
 
         else:
             return HttpResponse("Não está Logado.")
 
-        return HttpResponse("Percentual Alterado.")
+        
 
