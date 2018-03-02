@@ -48,17 +48,15 @@ class Seller(CustomUser):
 	def is_seller(self):
 		return True
 
-	def save(self, *args, **kwargs):
+	def save(self, *args, **kwargs):	
 		self.clean()
-		self.set_password(self.password)  # password encryption
+		if not self.has_usable_password():	
+			self.set_password(self.password)  # password encryption
 		super(Seller, self).save()
 
 		be_seller_permission = Permission.objects.get(
 			codename='be_seller')
-		self.user_permissions.add(be_seller_permission)
-
-		for user in CustomUser.objects.filter(is_superuser=True):
-			assign_perm('set_credit_limit',user,self)			
+		self.user_permissions.add(be_seller_permission)		
 
 
 	class Meta:
@@ -77,7 +75,8 @@ class Punter(CustomUser):
 
 	def save(self, *args, **kwargs):
 		self.clean()
-		self.set_password(self.password)  # password encryption
+		if not self.has_usable_password():	
+			self.set_password(self.password)  # password encryption
 		super(Punter, self).save()
 
 	class Meta:
@@ -85,33 +84,39 @@ class Punter(CustomUser):
 		verbose_name_plural = 'Apostadores'
 
 
-class Manager(CustomUser):
-	
-	cellphone = models.CharField(max_length=14, verbose_name='Celular')
+class Manager(Seller):
+		
 	credit_limit_to_add = models.FloatField(default=0)
 
-	def tranfer_credit_limit(self,seller,value):
+	def transfer_credit_limit(self,seller,value):
 		if self.has_perm('set_credit_limit',seller):
-			if value < self.credit_limit_to_add:
-				seller.limit += value
+			if value <= self.credit_limit_to_add:
+				seller.credit_limit += value
 				self.credit_limit_to_add -= value
+				self.save()
+				seller.save()
+							
 				return 'Valor adicionado com sucesso'
 			else:
-				return 'Crédito insuficiente'
+				return 'Voce possui créditos insuficientes para essa transfarencia'
 
-		return 'Você não tem permissão'
+		return 'Você não tem permissão para adicionar credito a esse usuario'
 
 	def add_set_limit_permission(self,seller):
 		assign_perm('set_credit_limit',self,seller)
 
-	def save(self, *args, **kwargs):
-		self.clean()
-		self.set_password(self.password)  # password encryption
+	def save(self, *args, **kwargs):			
 		super(Manager, self).save()
+		be_manager_permission = Permission.objects.get(
+				codename='be_manager')
+		self.user_permissions.add(be_manager_permission)
 
 	class Meta:
 		verbose_name = 'Gerente'
 		verbose_name_plural = 'Gerentes'
+		permissions = (								
+				('be_manager', 'Be a manager, permission.'),
+			)
 
 
 

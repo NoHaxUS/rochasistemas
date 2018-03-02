@@ -8,9 +8,9 @@ from django.views import View
 from django.views.generic.base import TemplateResponseMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from guardian.shortcuts import get_objects_for_user
 from core.models import BetTicket
-from user.models import Punter
-from user.models import CustomUser
+from user.models import Punter, CustomUser, Seller, Manager
 import utils.timezone as tzlocal
 from utils.response import UnicodeJsonResponse
 import json
@@ -35,6 +35,25 @@ class PunterHome(LoginRequiredMixin, TemplateResponseMixin, View):
         page_range = list(paginator.page_range)[start_index:end_index]
         return self.render_to_response({'bet_tickets': context,'change_password_form': change_password_form, 'page_range':page_range})
 
+
+class ManagerHome(PermissionRequiredMixin, TemplateResponseMixin, View):
+
+    permission_required = 'user.be_seller'
+    template_name = 'user/manager_home.html'
+    raise_exception = True
+
+    def get(self, request, *args, **kwargs):
+
+        sellers = get_objects_for_user(request.user, 'user.set_credit_limit').order_by('-pk')       
+        paginator = Paginator(sellers, 10)        
+        page = request.GET.get('page')
+        context = paginator.get_page(page)
+        index = context.number - 1  
+        max_index = len(paginator.page_range)
+        start_index = index - 3 if index >= 3 else 0
+        end_index = index + 3 if index <= max_index - 3 else max_index
+        page_range = list(paginator.page_range)[start_index:end_index]
+        return self.render_to_response({'sellers': context, 'page_range':page_range})
 
 
 class SellerValidateTicket(PermissionRequiredMixin, View):
@@ -196,6 +215,18 @@ class PunterRegister(View):
                 login(request, user)
                 return HttpResponse("User Created")
 
+
+class ManagerTransferCredit(PermissionRequiredMixin, View):
+
+    permission_required = 'user.be_manager'
+    raise_exception = True
+
+    def post(self, request):              
+        manager = Manager.objects.get(pk=request.user.pk)        
+        seller = Seller.objects.get(pk=request.POST['seller'])        
+        valor = float(request.POST['valor'])
+        message = manager.transfer_credit_limit(seller,valor)        
+        return UnicodeJsonResponse({'message':message})
 
 class UserLogin(View):
 

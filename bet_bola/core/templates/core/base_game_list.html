@@ -199,6 +199,12 @@
         </li>
         {% else %}
         <li class="user-logged-name">Olá, {{user}}</li>
+        {% if perms.user.be_manager and not user.is_superuser %}
+        <li>
+            <a href="{% url 'user:user_manager_home' %}" class="waves-effect waves-light btn white green-text-button">
+                Painel do Gerente</a>
+        </li>        
+        {% endif %} 
         {% if perms.user.be_seller and not user.is_superuser %}
         <li>
             <a href="{% url 'user:user_seller_home' %}" class="waves-effect waves-light btn white green-text-button">
@@ -209,6 +215,7 @@
                 Consultar Bilhete</a>
         </li>
         {% endif %}
+        
         {% if not perms.user.be_seller and not user.is_superuser %}
         <li>
             <a href="{% url 'user:user_punter_home' %}" class="waves-effect waves-light btn white green-text-button">

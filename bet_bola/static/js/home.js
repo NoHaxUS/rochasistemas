@@ -84,6 +84,7 @@ $(document).ready(function () {
             }
         });
 
+
     $("#reset-revenue-form").on('submit', function(e){
         e.preventDefault();
 
@@ -221,7 +222,36 @@ $(document).ready(function () {
             }
         });
 
-    
+    $('.modal-credit').click(function (e) {
+        seller_id = $(this).attr('data-id');
+        $('#seller_id').val(seller_id);
+        $('#modal-manager-credit').modal('open');
+    });
+
+    $('#modal-add-credit').on('submit', function (e) {                        
+            e.preventDefault();
+            var send_data = $(this).serialize();            
+            if ($('#valor_credito').val() == '' || parseInt($('#valor_credito').val()) <= 0) {
+                alertify.alert('Erro', 'Você deve inserir um valor valido positivo.')
+            } else {
+                alert_msg = "Deseja confirmar essa transfarencia?"
+                alertify.confirm('Confirmação', alert_msg,
+                    function () {
+                        
+                        $.post('/user/manager/credit_transfer', send_data, function(data, status, rq){
+                            
+                            data = jQuery.parseJSON(data);
+
+                            alertify.confirm(data.message, function(){ location.reload() });
+                        }, 'text');
+        
+                    },
+                    function () {
+                        alertify.error('Cancelado');
+                    });
+            }            
+        });
+
         function UpdateCotationTotal(){
             ticket = Cookies.getJSON('ticket_cookie');
             var total = 1;
