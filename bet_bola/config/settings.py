@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
-APP_VERBOSE_NAME = 'Bet'
+APP_VERBOSE_NAME = 'Netmania Sports'
 
 
 # Application definition
@@ -82,18 +82,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES_ = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'db_sortebrasil',
-        'USER': 'user_sortebrasil',
-        'PASSWORD': 'jCwF8PkS6NUkBRYw',
+        'NAME': 'db_netmaniasports',
+        'USER': 'user_netmaniasports',
+        'PASSWORD': 'NKjduA3BdKG46DdH',
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
 
-DATABASES = {
+DATABASES_ = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'bet_bola',
@@ -141,7 +141,7 @@ USE_TZ = False
 
 #statis files
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = '/home/mushzinho/webapps/static_sortebrasil'
+STATIC_ROOT = '/home/mushzinho/webapps/static_netmaniasports'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
