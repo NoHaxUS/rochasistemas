@@ -491,7 +491,18 @@ span.step-links li.active a{
     right: 15px;
   }
 
+.main-logo{
+    margin-top: 6px;
+    margin-left: 10px;
+}
+
 @media only screen and (max-width: 992px){
+
+    .main-logo{
+        margin-top: 4px;
+        margin-left: 14px;
+    }
+    
 
     .game-item-wrapper{
         margin: 10px 20px;
