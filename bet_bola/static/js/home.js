@@ -593,7 +593,7 @@ $(document).ready(function () {
             var href = $(e).attr('href');
             if(url_array == href){
 
-                $(e).css('color','#2f9048');
+                $(e).css('color','#d04a16');
                 $(e).css('font-weight','bold');
             }
 
