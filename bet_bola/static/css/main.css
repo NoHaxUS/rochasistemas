@@ -132,6 +132,10 @@ nav .brand-logo{
 }
 /* end championship */
 
+.slider-wrapper{
+    padding: 0px 12px;
+}
+
 /* suvnav */
 .subnav{
     height: 16px;

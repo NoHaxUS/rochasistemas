@@ -28,6 +28,13 @@ $(document).ready(function () {
         RenderTicket();
         UpdateCotationTotal();
 
+        $('.carousel.carousel-slider').carousel(
+            {
+                fullWidth: true,
+                duration:30
+            }
+        );
+
 
         $("#cellphone_register").mask("(99)99999-999?9");
         
