@@ -28,6 +28,13 @@ $(document).ready(function () {
         RenderTicket();
         UpdateCotationTotal();
 
+        $('.carousel.carousel-slider').carousel(
+            {
+                fullWidth: true,
+                duration:30
+            }
+        );
+
 
         $("#cellphone_register").mask("(99)99999-999?9");
         
@@ -593,7 +600,7 @@ $(document).ready(function () {
             var href = $(e).attr('href');
             if(url_array == href){
 
-                $(e).css('color','#2f9048');
+                $(e).css('color','#d04a16');
                 $(e).css('font-weight','bold');
             }
 
