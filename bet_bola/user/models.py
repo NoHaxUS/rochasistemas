@@ -5,6 +5,7 @@ from guardian.shortcuts import assign_perm
 
 
 class CustomUser(AbstractUser):
+	cellphone = models.CharField(max_length=14, verbose_name='Celular')
 
 	def __str__(self):
 		return self.first_name
@@ -24,7 +25,6 @@ class RandomUser(models.Model):
 class Seller(CustomUser):
 	cpf = models.CharField(max_length=11, verbose_name='CPF')
 	address = models.CharField(max_length=75, verbose_name='Endereço')
-	cellphone = models.CharField(max_length=14, verbose_name='Celular')
 	can_sell_ilimited = models.BooleanField(default=True)
 	credit_limit = models.FloatField(default=0, verbose_name='Limite de Venda')
 
@@ -68,10 +68,7 @@ class Seller(CustomUser):
 			('set_credit_limit', 'Set the credit limit value'),
 		)
 
-class Punter(CustomUser):
-
-	cellphone = models.CharField(max_length=14, verbose_name='Celular')
-
+class Punter(CustomUser):	
 
 	def save(self, *args, **kwargs):
 		self.clean()
@@ -84,7 +81,7 @@ class Punter(CustomUser):
 		verbose_name_plural = 'Apostadores'
 
 
-class Manager(Seller):
+class Manager(CustomUser):
 		
 	credit_limit_to_add = models.FloatField(default=0)
 
@@ -105,8 +102,13 @@ class Manager(Seller):
 	def add_set_limit_permission(self,seller):
 		assign_perm('set_credit_limit',self,seller)
 
-	def save(self, *args, **kwargs):			
+	def save(self, *args, **kwargs):					
+		if not self.has_usable_password():	
+			self.set_password(self.password)  # password encryption
+
 		super(Manager, self).save()
+		self.clean()			
+
 		be_manager_permission = Permission.objects.get(
 				codename='be_manager')
 		self.user_permissions.add(be_manager_permission)

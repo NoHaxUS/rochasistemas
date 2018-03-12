@@ -38,7 +38,7 @@ class PunterHome(LoginRequiredMixin, TemplateResponseMixin, View):
 
 class ManagerHome(PermissionRequiredMixin, TemplateResponseMixin, View):
 
-    permission_required = 'user.be_seller'
+    permission_required = 'user.be_manager'
     template_name = 'user/manager_home.html'
     raise_exception = True
 

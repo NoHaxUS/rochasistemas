@@ -216,7 +216,7 @@
         </li>
         {% endif %}
         
-        {% if not perms.user.be_seller and not user.is_superuser %}
+        {% if not perms.user.be_seller and not user.is_superuser and not perms.user.be_manager %}
         <li>
             <a href="{% url 'user:user_punter_home' %}" class="waves-effect waves-light btn white green-text-button">
                 Painel do Cliente</a>
@@ -275,7 +275,7 @@
             <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
                 Consultar Bilhete</a>
         </li>
-        {% endif %} {% if not perms.user.be_seller and not user.is_superuser %}
+        {% endif %} {% if not perms.user.be_seller and not user.is_superuser and not perms.user.be_manager %}
         <li>
             <a href="{% url 'user:user_punter_home' %}" class="waves-effect waves-light btn white green-text-button ">
                 Painel do Cliente</a>
