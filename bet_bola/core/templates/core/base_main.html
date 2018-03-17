@@ -25,9 +25,9 @@
     
     <nav>
         <div class="nav-wrapper main-nav">
-            <img class="main-logo" src="{% static 'img/logo.png' %}" alt="Logo">
+            <a href="{% url 'core:core_home' %}" class="brand-logo white-text">{% app_name %}</a>
             <a href="#" data-activates="mobile-menu" class="button-collapse"><i class="material-icons">menu</i></a>
-
+            
             {% block nav_links_desktop %}
             {% endblock %}
 
