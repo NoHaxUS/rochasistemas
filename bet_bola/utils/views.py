@@ -57,9 +57,9 @@ class PDF(View):
             h=h+14
             pdf.text(0,h,'---------------------------------------------------------------------------------------------------------------------------------------------------------')			
 
-        pdf.text(70,h+20, settings.APP_VERBOSE_NAME)
+        pdf.text(70,h+20, settings.APP_VERBOSE_NAME + "<BR>")
+        pdf.text(70,h+36, "<CENTER> Prazo para Resgate do Prêmio: 48 horas.")
         buffer = pdf.output(dest='S').encode('latin-1')
-
         response.write(buffer)
         return response
 

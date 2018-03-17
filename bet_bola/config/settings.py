@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
-APP_VERBOSE_NAME = 'Gols Bets'
+APP_VERBOSE_NAME = 'Minas Bet'
 
 
 # Application definition
@@ -85,9 +85,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'db_golsbets',
-        'USER': 'user_golsbets',
-        'PASSWORD': 'jfH6muJqe9kBzeuF',
+        'NAME': 'db_minasbet',
+        'USER': 'user_minasbet',
+        'PASSWORD': '98xjEnLyq4b4RDMA',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -141,7 +141,7 @@ USE_TZ = False
 
 #statis files
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = '/home/mushzinho/webapps/static_golsbets'
+STATIC_ROOT = '/home/mushzinho/webapps/static_minasbet'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
