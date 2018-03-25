@@ -29,6 +29,7 @@ urlpatterns = [
     path('seller/punter_payment/', views.SellerPayPunter.as_view(), name='user_seller_punter_payment'),
     path('manager/home/', views.ManagerHome.as_view(), name='user_manager_home'),
     path('manager/credit_transfer', views.ManagerTransferCredit.as_view(), name='user_manager_credit_transfer'),
+    path('config/manager_permissions', views.ManagerPermissions.as_view(), name='manager_permissions'),
     path('change_password/',views.UserPasswordChange.as_view(), name='user_change_password'),
     path('login/', views.UserLogin.as_view(), name='user_login'),
     path('logout/',views.UserLogout.as_view(), name='user_logout'),

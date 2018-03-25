@@ -227,6 +227,7 @@ $(document).ready(function () {
         $('#seller_id').val(seller_id);
         $('#modal-manager-credit').modal('open');
     });
+    
 
     $('#modal-add-credit').on('submit', function (e) {                        
             e.preventDefault();
@@ -239,6 +240,39 @@ $(document).ready(function () {
                     function () {
                         
                         $.post('/user/manager/credit_transfer', send_data, function(data, status, rq){
+                            
+                            data = jQuery.parseJSON(data);
+
+                            alertify.confirm(data.message, function(){ location.reload() });
+                        }, 'text');
+        
+                    },
+                    function () {
+                        alertify.error('Cancelado');
+                    });
+            }            
+        });
+
+    $('.modal-permission').click(function (e) {
+        gerente_id = $(this).attr('data-id');
+        $('#gerente_id').val(gerente_id);
+        $('#modal-manager-permissions').modal('open');
+    });
+
+    $('#modal-add-permissions').on('submit', function (e) {                        
+            e.preventDefault();
+            var send_data = $(this).serialize(); 
+            if( isNaN($('#vendedor_id').val()) ){
+                alertify.alert('Erro', 'O ID deve ser um numero inteiro.')
+            }
+            else if ($('#vendedor_id').val() == '' || parseInt($('#vendedor_id').val()) <= 0) {
+                alertify.alert('Erro', 'Você deve inserir um id valido.')
+            } else {
+                alert_msg = "Deseja adicionar essa permissão?"
+                alertify.confirm('Confirmação', alert_msg,
+                    function () {
+                        
+                        $.post('/user/config/manager_permissions', send_data, function(data, status, rq){
                             
                             data = jQuery.parseJSON(data);
 

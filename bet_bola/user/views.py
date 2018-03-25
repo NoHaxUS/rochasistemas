@@ -53,7 +53,10 @@ class ManagerHome(PermissionRequiredMixin, TemplateResponseMixin, View):
         start_index = index - 3 if index >= 3 else 0
         end_index = index + 3 if index <= max_index - 3 else max_index
         page_range = list(paginator.page_range)[start_index:end_index]
-        return self.render_to_response({'sellers': context, 'page_range':page_range})
+
+        management_list = ['Vendedor']
+
+        return self.render_to_response({'sellers': context, 'page_range':page_range, 'management_list':management_list})
 
 
 class SellerValidateTicket(PermissionRequiredMixin, View):
@@ -227,6 +230,41 @@ class ManagerTransferCredit(PermissionRequiredMixin, View):
         valor = float(request.POST['valor'])
         message = manager.transfer_credit_limit(seller,valor)        
         return UnicodeJsonResponse({'message':message})
+
+
+class ManagerPermissions(LoginRequiredMixin, PermissionRequiredMixin, TemplateResponseMixin, View):
+    template_name = 'user/manager_permissions.html'
+    permission_required = 'user.is_superuser'
+    login_url = reverse_lazy('core:core_home')
+
+    def get(self, request, *args, **kwargs):
+
+        managers = Manager.objects.all()       
+        paginator = Paginator(managers, 10)        
+        page = request.GET.get('page')
+        context = paginator.get_page(page)
+        index = context.number - 1  
+        max_index = len(paginator.page_range)
+        start_index = index - 3 if index >= 3 else 0
+        end_index = index + 3 if index <= max_index - 3 else max_index
+        page_range = list(paginator.page_range)[start_index:end_index]
+
+        management_list = ['Gerente']
+
+        return self.render_to_response({'gerentes': context, 'page_range':page_range, 'management_list':management_list})
+
+    def post(self, request):              
+        manager = Manager.objects.get(pk=request.POST['gerente'])   
+
+        if not Seller.objects.filter(pk=request.POST['vendedor']).exists():
+            return UnicodeJsonResponse({'message':'Esse ID de vendedor não existe'})
+
+        seller = Seller.objects.get(pk=request.POST['vendedor'])
+        manager.add_set_limit_permission(seller)        
+        message = 'Permissão de adicionar credito ao vendedor ' + seller.first_name + ' foi concedida ao gerente ' + manager.first_name
+        
+        return UnicodeJsonResponse({'message':message})
+
 
 class UserLogin(View):
 

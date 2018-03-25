@@ -99,7 +99,7 @@ class Manager(CustomUser):
 
 		return 'Você não tem permissão para adicionar credito a esse usuario'
 
-	def add_set_limit_permission(self,seller):
+	def add_set_limit_permission(self,seller):		
 		assign_perm('set_credit_limit',self,seller)
 
 	def save(self, *args, **kwargs):					

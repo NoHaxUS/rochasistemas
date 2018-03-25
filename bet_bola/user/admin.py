@@ -34,7 +34,7 @@ class GeneralConfigurationsAdmin(admin.ModelAdmin):
 	pass
 
 @admin.register(Manager)
-class ManagerAdmin(admin.ModelAdmin):
+class ManagerAdmin(GuardedModelAdmin):
 	search_fields = ['first_name']
 	search_fields_hint = 'Buscar pelo nome'
 
