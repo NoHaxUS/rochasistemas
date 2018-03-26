@@ -235,7 +235,7 @@ $(document).ready(function () {
             if ($('#valor_credito').val() == '' || parseInt($('#valor_credito').val()) <= 0) {
                 alertify.alert('Erro', 'Você deve inserir um valor valido positivo.')
             } else {
-                alert_msg = "Deseja confirmar essa transfarencia?"
+                alert_msg = "confirma transfarência?"
                 alertify.confirm('Confirmação', alert_msg,
                     function () {
                         
@@ -253,31 +253,29 @@ $(document).ready(function () {
             }            
         });
 
-    $('.modal-permission').click(function (e) {
-        gerente_id = $(this).attr('data-id');
-        $('#gerente_id').val(gerente_id);
-        $('#modal-manager-permissions').modal('open');
+
+    $('.btn-manage').click(function(){
+        manager_id = $(this).attr('data-id');
+        $('.gerente_id').val(manager_id);
     });
 
-    $('#modal-add-permissions').on('submit', function (e) {                        
+    $('#form-add-permissions').on('submit', function (e) {                        
             e.preventDefault();
             var send_data = $(this).serialize(); 
-            if( isNaN($('#vendedor_id').val()) ){
+            if( isNaN($('.vendedor_id_add').val()) ){
                 alertify.alert('Erro', 'O ID deve ser um numero inteiro.')
             }
-            else if ($('#vendedor_id').val() == '' || parseInt($('#vendedor_id').val()) <= 0) {
+            else if ($('.vendedor_id_add').val() == '' || parseInt($('.vendedor_id_add').val()) <= 0) {
                 alertify.alert('Erro', 'Você deve inserir um id valido.')
             } else {
                 alert_msg = "Deseja adicionar essa permissão?"
                 alertify.confirm('Confirmação', alert_msg,
                     function () {
                         
-                        $.post('/user/config/manager_permissions', send_data, function(data, status, rq){
-                            
-                            data = jQuery.parseJSON(data);
+                        $.post('/user/config/manager_permissions', send_data, function(response, status, rq){
 
-                            alertify.confirm(data.message, function(){ location.reload() });
-                        }, 'text');
+                            alertify.alert(response.message, function(){ location.reload() });
+                        }, 'json');
         
                     },
                     function () {
@@ -287,13 +285,13 @@ $(document).ready(function () {
         });
 
 
-        $('#modal-remove-permissions').on('submit', function (e) {                
+        $('#form-remove-permissions').on('submit', function (e) {          
             e.preventDefault();
             var send_data = $(this).serialize(); 
-            if( isNaN($('#vendedor_id').val()) ){
+            if( isNaN($('.vendedor_id_remove').val()) ){
                 alertify.alert('Erro', 'O ID deve ser um numero inteiro.')
             }
-            else if ($('#vendedor_id').val() == '' || parseInt($('#vendedor_id').val()) <= 0) {
+            else if ($('.vendedor_id_remove').val() == '' || parseInt($('.vendedor_id_remove').val()) <= 0) {
                 alertify.alert('Erro', 'Você deve inserir um id valido.')
             } else {
                 alert_msg = "Deseja remover vendedor?"
@@ -305,7 +303,7 @@ $(document).ready(function () {
                             type: 'DELETE',
                             data: send_data
                         }).done(function(response){
-                            alertify.confirm(response.message, function(){ location.reload() });
+                            alertify.alert(response.message, function(){ location.reload() });
                         });
         
                     },

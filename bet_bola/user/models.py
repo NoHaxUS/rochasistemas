@@ -83,21 +83,21 @@ class Punter(CustomUser):
 
 class Manager(CustomUser):
 		
-	credit_limit_to_add = models.FloatField(default=0)
+	credit_limit_to_add = models.FloatField(default=0, verbose_name="Crédito")
 
 	def transfer_credit_limit(self,seller,value):
-		if self.has_perm('set_credit_limit',seller):
+		if self.has_perm('set_credit_limit', seller):
 			if value <= self.credit_limit_to_add:
 				seller.credit_limit += value
 				self.credit_limit_to_add -= value
 				self.save()
 				seller.save()
 							
-				return 'Valor adicionado com sucesso'
+				return 'Valor adicionado com sucesso.'
 			else:
-				return 'Voce possui créditos insuficientes para essa transfarencia'
+				return 'Voce possui créditos suficientes para essa transfarência.'
 
-		return 'Você não tem permissão para adicionar credito a esse usuario'
+		return 'Você não tem permissão para adicionar credito a esse usuário.'
 
 	def add_set_limit_permission(self,seller):		
 		assign_perm('set_credit_limit',self,seller)

@@ -3,19 +3,19 @@
 {% block modals %}
 
 <!-- Adicioanar Vendedor -->
-<div id="modal-manager-permissions" class="modal">
+<div id="modal-add-permissions" class="modal">
     <div class="modal-content">
         <a href="#" class="modal-close">
             <i class="material-icons right">close</i>
         </a>
         <h4>Adicionar Vendedor</h4>
         <div class="row">
-            <form id="modal-add-permissions" method="POST">
+            <form id="form-add-permissions" method="POST">
                 {% csrf_token %}                 
                 <div class="row">
                     <div class="input-field col s12">                                                
-                        <input name="vendedor" id="vendedor_id" type="text" class="validate" tabindex="2">
-                        <input name="gerente" type="hidden" id="gerente_id" />
+                        <input name="vendedor" class="vendedor_id_add" type="text" class="validate" tabindex="1" autocomplete="off">
+                        <input name="gerente" type="hidden" class="gerente_id" />
                         <label for="id">ID Vendedor</label>
                     </div>
                 </div>
@@ -31,25 +31,25 @@
 <!-- Adicioanar Vendedor -->
 
 <!-- Remover Vendedor -->
-<div id="modal-remove-permissions-modal" class="modal">
+<div id="modal-remove-permissions" class="modal">
     <div class="modal-content">
         <a href="#" class="modal-close">
             <i class="material-icons right">close</i>
         </a>
         <h4>Remover Vendedor</h4>
         <div class="row">
-            <form id="modal-remove-permissions" method="POST">
+            <form id="form-remove-permissions" method="POST">
                 {% csrf_token %}                 
                 <div class="row">
                     <div class="input-field col s12">                                                
-                        <input name="vendedor" id="vendedor_id" type="text" class="validate" tabindex="2">
-                        <input name="gerente" type="hidden" id="gerente_id" />
+                        <input name="vendedor" class="vendedor_id_remove" type="text" class="validate" tabindex="1" autocomplete="off">
+                        <input name="gerente" type="hidden" class="gerente_id" />
                         <label for="id">ID Vendedor</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col s12">
-                        <button class="btn waves-effect waves-light right" type="submit" tabindex="3">Adicionar</button>
+                        <button class="btn waves-effect waves-light right" type="submit" tabindex="3">Remover</button>
                     </div>
                 </div>
             </form>
@@ -133,9 +133,7 @@
             <table class="bordered highlight white centered games-table hoverable">
                 <thead>
                     <tr>
-                        <th>ID Gerente</th>
-                        <th>Nome</th>
-                        <th>Telefone</th>                        
+                        <th>Nome</th>                    
                         <th>Saldo</th>    
                         <th>Adicionar/Remover Vendedor</th>  
                     </tr>
@@ -144,22 +142,18 @@
                     {% for gerente in gerentes %}
                     <tr>
                         <td>
-                            # {{ gerente.pk }}
-                        </td>
-                        <td>
                             {{ gerente.first_name }}
-                        </td>
-                        <td>
-                            {{ gerente.cellphone }}
-                        </td>                        
+                        </td>                      
                         <td>
                             {{ gerente.credit_limit_to_add }}
                         </td>
                         <td>
-                        <button class="btn btn-primary modal-permission" 
-                            data-toggle="modal" data-id="{{ gerente.pk }}">Adicionar</button>
-                        <button class="btn btn-primary modal-permission red" 
-                                data-toggle="modal" data-id="{{ gerente.pk }}">Remover</button>
+                        <a href="#modal-add-permissions" class="btn btn-primary modal-trigger btn-manage" 
+                            data-toggle="modal" data-id="{{ gerente.pk }}">Adicionar</a>
+
+                        <a href="#modal-remove-permissions" class="btn btn-primary modal-trigger btn-manage red" 
+                                data-toggle="modal" data-id="{{ gerente.pk }}">Remover</a>
+                        <a href="{% url 'user:user_get_seller_by_manager' gerente.pk %}" class="btn btn-primary">Vendedores</a>
                         </td>
                     </tr>
                     {% endfor %}

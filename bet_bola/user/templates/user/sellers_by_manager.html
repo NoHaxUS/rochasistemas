@@ -1,42 +1,14 @@
 {% extends 'core/base_main.html' %}
 
 {% block modals %}
-
-<!-- Modal Password Change -->
-<div id="modal-manager-credit" class="modal">
-    <div class="modal-content">
-        <a href="#" class="modal-close">
-            <i class="material-icons right">close</i>
-        </a>
-        <h4>Adicionar Credito</h4>
-        <div class="row">
-            <form id="modal-add-credit" method="POST">
-                {% csrf_token %}                 
-                <div class="row">
-                    <div class="input-field col s12">                                                
-                        <input name="valor" id="valor_credito" type="text" class="validate" tabindex="2">
-                        <input name="seller" type="hidden" id="seller_id" />
-                        <label for="valor">Valor</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col s12">
-                        <button class="btn waves-effect waves-light right" type="submit" tabindex="3">Adicionar</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-<!-- end Password Change -->
 {% endblock %}
 
 {% block nav_links_desktop %}
 <ul class="right hide-on-med-and-down">
-    <li class="user-logged-name">Olá, {{user}} - Saldo: R$ {{request.user.manager.credit_limit_to_add}}</li>
+    <li class="user-logged-name">Olá, {{user}}</li>
     <li>
-        <a href="{% url 'core:core_home' %}" class="waves-effect waves-light btn white green-text-button">
-            Início</a>
+        <a href="{% url 'user:manager_permissions' %}" class="waves-effect waves-light btn white green-text-button">
+            Voltar</a>
     </li>
     <li>
         <a href="{% url 'user:user_logout' %}" class="waves-effect waves-light btn white green-text-button">
@@ -49,8 +21,8 @@
 <ul class="side-nav" id="mobile-menu">
     <li class="user-logged-name">Olá, {{user}} - Saldo: R$ {{user.manager.credit_limit_to_add}}</li>
     <li>
-        <a href="{% url 'core:core_home' %}" class="waves-effect waves-light btn white green-text-button">
-            Início</a>
+        <a href="{% url 'user:manager_permissions' %}" class="waves-effect waves-light btn white green-text-button">
+            Voltar</a>
     </li>
     <li>
         <a href="{% url 'user:user_logout' %}" class="waves-effect waves-light btn white green-text-button">
@@ -102,14 +74,17 @@
             <table class="bordered highlight white centered games-table hoverable">
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Nome</th>
                         <th>Saldo</th>
-                        <th>Faturamento</th>
-                        <th>Adicionar Credito</th>                      
+                        <th>Faturamento</th>                   
                     </tr>
                 </thead>
                 <tbody>
                     {% for seller in sellers %}
+                        <td>
+                                {{ seller.pk }}
+                        </td>
                         <td>
                             {{ seller.first_name }}
                         </td>
@@ -118,9 +93,6 @@
                         </td>
                         <td>
                             {{ seller.actual_revenue }}
-                        </td>
-                        <td>
-                            <a class="btn btn-primary modal-credit" data-toggle="modal" data-id="{{ seller.pk }}">ADD</button>
                         </td>
                     </tr>
                     {% endfor %}

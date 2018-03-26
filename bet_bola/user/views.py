@@ -36,15 +36,19 @@ class PunterHome(LoginRequiredMixin, TemplateResponseMixin, View):
         return self.render_to_response({'bet_tickets': context,'change_password_form': change_password_form, 'page_range':page_range})
 
 
-class ManagerHome(PermissionRequiredMixin, TemplateResponseMixin, View):
+class GetSellersByManager(PermissionRequiredMixin, TemplateResponseMixin, View):
 
-    permission_required = 'user.be_manager'
-    template_name = 'user/manager_home.html'
+    permission_required = 'user.is_superuser'
+    template_name = 'user/sellers_by_manager.html'
     raise_exception = True
 
     def get(self, request, *args, **kwargs):
 
-        sellers = get_objects_for_user(request.user, 'user.set_credit_limit').order_by('-pk')       
+        manager_id =  kwargs['manager_id']
+        
+        manager = CustomUser.objects.get(pk=manager_id)
+        sellers = get_objects_for_user(manager, 'user.set_credit_limit').order_by('-pk')
+
         paginator = Paginator(sellers, 10)        
         page = request.GET.get('page')
         context = paginator.get_page(page)
@@ -54,9 +58,31 @@ class ManagerHome(PermissionRequiredMixin, TemplateResponseMixin, View):
         end_index = index + 3 if index <= max_index - 3 else max_index
         page_range = list(paginator.page_range)[start_index:end_index]
 
-        management_list = ['Vendedor']
+        return self.render_to_response({'sellers': context, 'page_range':page_range})
 
-        return self.render_to_response({'sellers': context, 'page_range':page_range, 'management_list':management_list})
+
+
+
+class ManagerHome(PermissionRequiredMixin, TemplateResponseMixin, View):
+
+    permission_required = 'user.be_manager'
+    template_name = 'user/manager_home.html'
+    raise_exception = True
+
+    def get(self, request, *args, **kwargs):
+
+        sellers = get_objects_for_user(request.user, 'user.set_credit_limit').order_by('-pk')   
+
+        paginator = Paginator(sellers, 10)        
+        page = request.GET.get('page')
+        context = paginator.get_page(page)
+        index = context.number - 1  
+        max_index = len(paginator.page_range)
+        start_index = index - 3 if index >= 3 else 0
+        end_index = index + 3 if index <= max_index - 3 else max_index
+        page_range = list(paginator.page_range)[start_index:end_index]
+
+        return self.render_to_response({'sellers': context, 'page_range':page_range })
 
 
 class SellerValidateTicket(PermissionRequiredMixin, View):
@@ -249,9 +275,7 @@ class ManagerPermissions(LoginRequiredMixin, PermissionRequiredMixin, TemplateRe
         end_index = index + 3 if index <= max_index - 3 else max_index
         page_range = list(paginator.page_range)[start_index:end_index]
 
-        management_list = ['Gerente']
-
-        return self.render_to_response({'gerentes': context, 'page_range':page_range, 'management_list':management_list})
+        return self.render_to_response({'gerentes': context, 'page_range':page_range})
 
     def post(self, request):            
         manager = Manager.objects.get(pk=request.POST['gerente'])   
@@ -268,12 +292,17 @@ class ManagerPermissions(LoginRequiredMixin, PermissionRequiredMixin, TemplateRe
 
     def delete(self, request):
 
-        manager = Manager.objects.get(pk=request.POST['gerente'])   
+        from django.http import QueryDict
+        delete = QueryDict(request.body)
 
-        if not Seller.objects.filter(pk=request.POST['vendedor']).exists():
+        print(delete)
+
+        manager = Manager.objects.get(pk=delete['gerente'])   
+
+        if not Seller.objects.filter(pk=delete['vendedor']).exists():
             return UnicodeJsonResponse({'message':'Esse ID de vendedor não existe'})
 
-        seller = Seller.objects.get(pk=request.POST['vendedor'])
+        seller = Seller.objects.get(pk=delete['vendedor'])
         manager.remove_set_limit_permission(seller)        
         message = 'Permissão de adicionar credito ao vendedor ' + seller.first_name + ' foi removida do gerente ' + manager.first_name
         
