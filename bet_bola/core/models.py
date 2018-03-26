@@ -42,7 +42,7 @@ class BetTicket(models.Model):
         )
 
     def validate_ticket(self, user):
-        if not user.seller.can_sell_ilimited:
+        if user.seller.can_sell_ilimited:
             if self.value > user.seller.credit_limit:                
                 return False
             user.seller.credit_limit -= self.value 

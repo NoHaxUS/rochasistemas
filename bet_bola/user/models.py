@@ -32,7 +32,7 @@ class Seller(CustomUser):
 	def full_name(self):
 		return self.first_name + ' ' + self.last_name
 	full_name.short_description = 'Nome Completo'
-
+	
 	def actual_revenue(self):
 		from core.models import BetTicket
 		tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=self.pk, payment__seller_was_rewarded=False)

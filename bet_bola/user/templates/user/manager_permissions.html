@@ -106,6 +106,7 @@
                         <th>ID gerente</th>
                         <th>Nome</th>
                         <th>Telefone</th>                        
+                        <th>Saldo</th>    
                         <th>Adicionar Permissão</th>  
                     </tr>
                 </thead>
@@ -121,6 +122,9 @@
                         <td>
                             {{ gerente.cellphone }}
                         </td>                        
+                        <td>
+                            {{ gerente.credit_limit_to_add }}
+                        </td>
                         <td>
                             <a class="btn btn-primary modal-permission" data-toggle="modal" data-id="{{ gerente.pk }}">ADD</button>
                         </td>

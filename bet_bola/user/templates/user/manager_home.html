@@ -70,7 +70,7 @@
                 <ul class="championship-list">
 
                     <li class="center-align">
-                        <a href="#" class="">Vendedores</a>
+                        <a href="#" class="">Meus Vendedores</a>
                     </li>                    
                 </ul>
             </div>
@@ -107,7 +107,8 @@
                         <th>Nome</th>
                         <th>Telefone</th>
                         <th>Saldo de Crédito</th>
-                        <th>Adicionar Credito</th>  
+                        <th>Faturamento</th>
+                        <th>Adicionar Credito</th>                          
                     </tr>
                 </thead>
                 <tbody>
@@ -124,6 +125,9 @@
                         </td>
                         <td>
                             {{ seller.credit_limit }}
+                        </td>
+                        <td>
+                            {{ seller.actual_revenue }}
                         </td>
                         <td>
                             <a class="btn btn-primary modal-credit" data-toggle="modal" data-id="{{ seller.pk }}">ADD</button>
