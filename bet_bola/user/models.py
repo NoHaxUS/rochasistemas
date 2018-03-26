@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User, Permission, AbstractUser, BaseUserManager
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, remove_perm
 # Create your models here.
 
 
@@ -101,6 +101,9 @@ class Manager(CustomUser):
 
 	def add_set_limit_permission(self,seller):		
 		assign_perm('set_credit_limit',self,seller)
+
+	def remove_set_limit_permission(self, seller):
+		remove_perm('set_credit_limit',self,seller)
 
 	def save(self, *args, **kwargs):					
 		if not self.has_usable_password():	

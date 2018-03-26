@@ -224,11 +224,11 @@ class ManagerTransferCredit(PermissionRequiredMixin, View):
     permission_required = 'user.be_manager'
     raise_exception = True
 
-    def post(self, request):              
+    def post(self, request):       
         manager = Manager.objects.get(pk=request.user.pk)        
         seller = Seller.objects.get(pk=request.POST['seller'])        
         valor = float(request.POST['valor'])
-        message = manager.transfer_credit_limit(seller,valor)        
+        message = manager.transfer_credit_limit(seller,valor)     
         return UnicodeJsonResponse({'message':message})
 
 
@@ -253,7 +253,7 @@ class ManagerPermissions(LoginRequiredMixin, PermissionRequiredMixin, TemplateRe
 
         return self.render_to_response({'gerentes': context, 'page_range':page_range, 'management_list':management_list})
 
-    def post(self, request):              
+    def post(self, request):            
         manager = Manager.objects.get(pk=request.POST['gerente'])   
 
         if not Seller.objects.filter(pk=request.POST['vendedor']).exists():
@@ -264,6 +264,23 @@ class ManagerPermissions(LoginRequiredMixin, PermissionRequiredMixin, TemplateRe
         message = 'Permissão de adicionar credito ao vendedor ' + seller.first_name + ' foi concedida ao gerente ' + manager.first_name
         
         return UnicodeJsonResponse({'message':message})
+
+
+    def delete(self, request):
+
+        manager = Manager.objects.get(pk=request.POST['gerente'])   
+
+        if not Seller.objects.filter(pk=request.POST['vendedor']).exists():
+            return UnicodeJsonResponse({'message':'Esse ID de vendedor não existe'})
+
+        seller = Seller.objects.get(pk=request.POST['vendedor'])
+        manager.remove_set_limit_permission(seller)        
+        message = 'Permissão de adicionar credito ao vendedor ' + seller.first_name + ' foi removida do gerente ' + manager.first_name
+        
+        return UnicodeJsonResponse({'message':message})
+
+
+
 
 
 class UserLogin(View):

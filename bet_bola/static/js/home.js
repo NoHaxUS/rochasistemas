@@ -286,6 +286,35 @@ $(document).ready(function () {
             }            
         });
 
+
+        $('#modal-remove-permissions').on('submit', function (e) {                
+            e.preventDefault();
+            var send_data = $(this).serialize(); 
+            if( isNaN($('#vendedor_id').val()) ){
+                alertify.alert('Erro', 'O ID deve ser um numero inteiro.')
+            }
+            else if ($('#vendedor_id').val() == '' || parseInt($('#vendedor_id').val()) <= 0) {
+                alertify.alert('Erro', 'Você deve inserir um id valido.')
+            } else {
+                alert_msg = "Deseja remover vendedor?"
+                alertify.confirm('Confirmação', alert_msg,
+                    function () {
+                        
+                        $.ajax({
+                            url: '/user/config/manager_permissions',
+                            type: 'DELETE',
+                            data: send_data
+                        }).done(function(response){
+                            alertify.confirm(response.message, function(){ location.reload() });
+                        });
+        
+                    },
+                    function () {
+                        alertify.error('Cancelado');
+                    });
+            }            
+        });
+
         function UpdateCotationTotal(){
             ticket = Cookies.getJSON('ticket_cookie');
             var total = 1;
