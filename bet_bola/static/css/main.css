@@ -50,7 +50,7 @@ thead tr th {
     background-color: #f7f00e !important;
 }
 .green-text-button{
-    color: #2f9048 !important;
+    color: #de2637 !important;
 }
 .blue-button{
     background-color: #1969a2;
@@ -59,7 +59,7 @@ thead tr th {
 
 
 .main-nav {
-    background-color: #3b9c00;
+    background-color: #FF2600;
 }
 
 nav .brand-logo{
@@ -70,7 +70,7 @@ nav .brand-logo{
 .section-header{
 
     font-family: 'Exo 2', sans-serif;
-    background-color: #2d9639;
+    background-color: #FF2600;
     font-size: 1.6rem;
 }
 
@@ -132,10 +132,14 @@ nav .brand-logo{
 }
 /* end championship */
 
+.slider-wrapper{
+    padding: 0px 12px;
+}
+
 /* suvnav */
 .subnav{
     height: 16px;
-    background-color: #377517;
+    background-color: #bd280e;
 }
 .main-section{
     margin-top: 10px;
@@ -178,11 +182,11 @@ nav .brand-logo{
 }
 
 .side-nav{
-    background-color: #39B54A;
+    background-color: #FF2600;
 }
 .collapsible-header-mobile{
     font-family: 'Exo 2', sans-serif;
-    background-color: #39B54A;
+    background-color: #FF2600;
     color: #ffffff;
     font-size: 1.4rem;
 }
@@ -270,7 +274,7 @@ nav .brand-logo{
 }
 .table-game-name{
     font-size: 1.3rem;
-    color: #1027c7;
+    color: #0c1971;
 }
 
 .user-logged-mobile{
@@ -340,7 +344,7 @@ span.step-links li.active a{
 .th-championsip-header{
     font-family: 'Exo 2', sans-serif;
     padding: 0;
-    background-color: #467ba2;
+    background-color: #ca4949;
     color: #ffffff;
     font-size: 1.45rem;
 }
@@ -419,7 +423,7 @@ span.step-links li.active a{
     margin-top: 50px;
     padding: 0px;
     font-family: 'Exo 2', sans-serif;
-    background-color: #467ba2;
+    background-color: #FF2600;
 }
 
 #ticket-details-actions{
@@ -435,7 +439,7 @@ span.step-links li.active a{
     margin: auto;
     height: 100%;
     display: block;
-    background-color: #85cc88;
+    background-color: #d84040;
     border-radius: 30px;
     padding: 8px 0px;
     color:#ffffff;
@@ -491,7 +495,18 @@ span.step-links li.active a{
     right: 15px;
   }
 
+.main-logo{
+    margin-top: 6px;
+    margin-left: 10px;
+}
+
 @media only screen and (max-width: 992px){
+
+    .main-logo{
+        margin-top: 4px;
+        margin-left: 14px;
+    }
+    
 
     .game-item-wrapper{
         margin: 10px 20px;
@@ -506,7 +521,7 @@ span.step-links li.active a{
         margin: auto;
         height: 100%;
         display: block;
-        background-color: #85cc88;
+        background-color: #d84040;
         border-radius: 30px;
         padding: 4px 4px;
         color:#ffffff;

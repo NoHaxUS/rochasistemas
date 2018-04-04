@@ -361,7 +361,8 @@ class TicketDetail(TemplateResponseMixin, View):
 				content += "<RIGHT> Status: " + ("Acertou" if cotation.winning else "Não acertou") + "<BR>"
 			
 			content += "<CENTER>-------------------------------> <BR>"
-		content += "<CENTER> "+ settings.APP_VERBOSE_NAME
+		content += "<CENTER> "+ settings.APP_VERBOSE_NAME + "<BR>"
+		content += "<CENTER> Prazo para Resgate do Prêmio: 48 horas."
 		content = urllib.parse.urlparse(content).geturl()
 		context = {'ticket': ticket, 'print': content, 'valor_apostado': "%.2f" % ticket.value, 'ganho_possivel': "%.2f" % ticket.reward.value}
 

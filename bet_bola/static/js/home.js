@@ -28,6 +28,13 @@ $(document).ready(function () {
         RenderTicket();
         UpdateCotationTotal();
 
+        $('.carousel.carousel-slider').carousel(
+            {
+                fullWidth: true,
+                duration:30
+            }
+        );
+
 
         $("#cellphone_register").mask("(99)99999-999?9");
         
@@ -627,7 +634,7 @@ $(document).ready(function () {
                         full_html += '<tr>' +
                         '<td class="hide">'+ array_cotations[i].pk + '</td>' +
                         '<td class="more-cotation-name">'+ array_cotations[i].fields.name + '</td>' +
-                        '<td class="more-cotation">'+ array_cotations[i].fields.value +'</td>' +
+                        '<td class="more-cotation">'+ array_cotations[i].fields.value.toFixed(2) +'</td>' +
                         '<td class="more-cotation-kind hide">' + array_cotations[i].fields.kind + '</td>' +
                          '</tr>';
 
@@ -687,7 +694,7 @@ $(document).ready(function () {
             var href = $(e).attr('href');
             if(url_array == href){
 
-                $(e).css('color','#2f9048');
+                $(e).css('color','#d04a16');
                 $(e).css('font-weight','bold');
             }
 

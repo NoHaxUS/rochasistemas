@@ -58,8 +58,8 @@ class PDF(View):
             pdf.text(0,h,'---------------------------------------------------------------------------------------------------------------------------------------------------------')			
 
         pdf.text(70,h+20, settings.APP_VERBOSE_NAME)
+        pdf.text(20,h+36, "Prazo para Resgate do Prêmio: 48 horas.")
         buffer = pdf.output(dest='S').encode('latin-1')
-
         response.write(buffer)
         return response
 
@@ -74,11 +74,12 @@ class PercentualReductionCotation(View):
             if request.user.is_superuser:
                 Cotation.objects.update(value=F('original_value') * percentual)
                 Cotation.objects.update(value=Case(When(value__lt=1,then=1.01),default=F('value')))
+                return HttpResponse("Percentual Alterado.")
             else:
                 return HttpResponse("Você não tem permissão para isso baby.")
 
         else:
             return HttpResponse("Não está Logado.")
 
-        return HttpResponse("Percentual Alterado.")
+        
 
