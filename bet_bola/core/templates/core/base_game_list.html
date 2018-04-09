@@ -203,8 +203,8 @@
         <li>
             <a href="{% url 'user:user_manager_home' %}" class="waves-effect waves-light btn white green-text-button">
                 Painel do Gerente</a>
-        </li>        
-        {% endif %} 
+        </li>       
+        {% endif %}
         {% if perms.user.be_seller and not user.is_superuser %}
         <li>
             <a href="{% url 'user:user_seller_home' %}" class="waves-effect waves-light btn white green-text-button">
@@ -235,6 +235,12 @@
             <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
                 Consultar Bilhete</a>
         </li>
+        {% endif %}
+        {% if perms.user.be_manager and not user.is_superuser %}
+        <li>
+            <a href="{% url 'user:user_manager_home' %}" class="waves-effect waves-light btn white green-text-button">
+                Painel do Gerente</a>
+        </li>       
         {% endif %}
         <li>
             <a href="{% url 'user:user_logout' %}" class="waves-effect waves-light btn white green-text-button">
