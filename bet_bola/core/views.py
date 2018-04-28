@@ -290,6 +290,7 @@ class CreateTicketView(View):
 			ticket = BetTicket(
 				user=CustomUser.objects.get(pk=request.user.pk),
 				value=ticket_bet_value,
+				cotation_value_total=cotation_sum,
 				creation_date = tzlocal.now(),
 				payment=Payment.objects.create(payment_date=None), 
 				reward=Reward.objects.create(reward_date=None)

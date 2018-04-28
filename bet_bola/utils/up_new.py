@@ -5,6 +5,7 @@ import utils.timezone as tzlocal
 import datetime
 from django.db.models import Count
 from django.db.models import F, Q
+import time
 
 
 """
@@ -40,7 +41,7 @@ MARKET_ID = {
     1: "Vencedor do Encontro",
     10: "Casa/Visitante",
     37: "Vencedor do Primeiro Tempo",
-    80: "Vencedor do Segundo Tempo", #
+    80: "Vencedor do Segundo Tempo", 
     976334: "Resultado/Total de Gol(s)",
     975916: "Resultado Exato no Primeiro Tempo",
     975909: "Resultado Exato do Jogo",
@@ -53,7 +54,7 @@ MARKET_ID = {
     976204: "Total de Gols do Visitante",
     976198: "Total de Gols da Casa",
     12: "Total de Gol(s) no Encontro, Acima/Abaixo",
-    47: "Total de Gol(s) no Segundo Tempo, Acima/Abaixo",#
+    47: "Total de Gol(s) no Segundo Tempo, Acima/Abaixo",
     38: "Total de Gols do Primeiro Tempo, Acima/Abaixo",
     976144: "Etapa com Mais Gol(s)",
     976316: "Resultado/2 Times Marcam",
@@ -251,7 +252,7 @@ def consuming_game_cotation_api():
     before_month = before_time.month
     before_day = before_time.day
     
-    after_time = tzlocal.now() + datetime.timedelta(days=8)
+    after_time = tzlocal.now() + datetime.timedelta(days=2)
 
     after_year = after_time.year
     after_month = after_time.month
@@ -301,12 +302,15 @@ def process_json_games_cotations(json_response):
                 if not ft_score:
                     ft_score = F('ft_score')
 
-                Game.objects.filter(
-                    pk=game['id']).update(
+                ht_score = game['scores']['ht_score']
+                if not ht_score:
+                    ht_score = F('ht_score')
+
+                Game.objects.filter(pk=game['id']).update(
                     name=game['localTeam']['data']['name'] +
                     " x " + game['visitorTeam']['data']['name'],
                     status_game=game['time']['status'],                
-                    ht_score=game['scores']['ht_score'],
+                    ht_score=ht_score,
                     ft_score=ft_score,
                     odds_calculated=game['winning_odds_calculated'],
                     start_game_date=datetime.datetime.strptime(
@@ -372,6 +376,11 @@ def save_odds(game_id, odds, max_cotation_value):
                 bookmaker = get_bet365_from_bookmakers(bookmakers)
                 cotations = bookmaker['odds']['data']
 
+                if GeneralConfigurations.objects.filter(pk=1):
+                    percentual_reduction = GeneralConfigurations.objects.get(pk=1).percentual_reduction
+                else:
+                    percentual_reduction = 100
+
                 for cotation in cotations:
 
                     cotation_value = max_cotation_value if float(cotation['value']) > max_cotation_value else float(cotation['value'])
@@ -391,17 +400,25 @@ def save_odds(game_id, odds, max_cotation_value):
                     if not cotation_total == None:
                         if len(cotation_total.split(',')) > 1:
                             continue
-                        
+                    
+                    cotation_value_reduced = round(cotation_value * (percentual_reduction / 100), 2)
+                    if cotation_value_reduced <= 1:
+                        cotation_value_reduced = 1.01
+
+
                     Cotation(
                         name=cotation_name,
-                            value=cotation_value,
-                            original_value=cotation_value,
-                            game=game_instance,
-                            is_standard=is_standard,
-                            total=cotation_total,
-                            winning=cotation['winning'],
-                            kind=market_instance
-                        ).save()        
+                        value=cotation_value_reduced,
+                        original_value=cotation_value,
+                        game=game_instance,
+                        is_standard=is_standard,
+                        total=cotation_total,
+                        winning=cotation['winning'],
+                        kind=market_instance
+                    ).save()
+             
+
+
                 processed_markets.append(kind_name)
 
 
@@ -415,9 +432,7 @@ def processing_cotations_v2():
     print("Processando resultados.")
 
     games_to_process = Game.objects.annotate(cotations_count=Count('cotations')).filter(
-            Q(status_game="FT") | Q(status_game="AET") | Q(status_game="FT_PEN") 
-        ).filter(odds_processed=False, ft_score__isnull=False,
-        cotations_count__gt=0).exclude(ft_score='')
+        ft_score__isnull=False, cotations_count__gt=0).exclude(ft_score='').exclude(ft_score='-')
         
     print(games_to_process.count(), '\n')
 

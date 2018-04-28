@@ -22,6 +22,7 @@ class BetTicket(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets',null=True, on_delete=models.SET_NULL, verbose_name='Apostador')
     random_user = models.ForeignKey('user.RandomUser', null=True, on_delete=models.SET_NULL, verbose_name='Cliente')
     cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
+    cotation_value_total = models.FloatField(verbose_name='Cota Total da Aposta')
     creation_date = models.DateTimeField(verbose_name='Data da aposta')	
     reward = models.ForeignKey('Reward', null=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
     payment = models.OneToOneField('Payment', null=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
@@ -63,10 +64,7 @@ class BetTicket(models.Model):
 
 
     def cotation_sum(self):
-        cotation_sum = 1
-        for cotation in self.cotations.all():
-            cotation_sum *= cotation.value
-        return round(cotation_sum,2)
+        return round(self.cotation_value_total, 2)
 
 
     def update_ticket_status(self):
@@ -207,9 +205,12 @@ class Cotation(models.Model):
 
 
     def save(self):
-        if not Cotation.objects.filter(name=self.name, kind=self.kind, 
-            game=self.game).exists() and not self.is_excluded_cotation(self.name, self.kind):
-            super().save()
+        if not Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).exists():
+            if not self.is_excluded_cotation(self.name, self.kind):
+                super().save()
+        else:
+            Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).update(value=self.value)
+        
 
 
     def is_excluded_cotation(self, cotation_name, kind):
