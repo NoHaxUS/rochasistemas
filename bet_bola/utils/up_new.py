@@ -432,7 +432,7 @@ def processing_cotations_v2():
     print("Processando resultados.")
 
     games_to_process = Game.objects.annotate(cotations_count=Count('cotations')).filter(
-        ft_score__isnull=False, cotations_count__gt=0).exclude(ft_score='').exclude(ft_score='-')
+        ft_score__isnull=False, cotations_count__gt=0, odds_processed=False).exclude(ft_score='').exclude(ft_score='-')
         
     print(games_to_process.count(), '\n')
 
