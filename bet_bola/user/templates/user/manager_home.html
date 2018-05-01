@@ -47,7 +47,7 @@
 
 {% block nav_links_mobile %}
 <ul class="side-nav" id="mobile-menu">
-    <li class="user-logged-name">Olá, {{user}} - Saldo: R$ {{user.manager.credit_limit_to_add}}</li>
+    <li class="user-logged-name user-logged-mobile">Olá, {{user}} - Saldo: R$ {{user.manager.credit_limit_to_add}}</li>
     <li>
         <a href="{% url 'core:core_home' %}" class="waves-effect waves-light btn white green-text-button">
             Início</a>
@@ -69,7 +69,7 @@
             <div class="collapsible-body white">
                 <ul class="championship-list">
                     <li class="center-align">
-                        <a href="#" class="">Meus Vendedores</a>
+                        <a href="#" class=""></a>
                     </li>                    
                 </ul>
             </div>
