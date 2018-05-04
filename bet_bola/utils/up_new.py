@@ -314,7 +314,8 @@ def process_json_games_cotations(json_response):
                     ft_score=ft_score,
                     odds_calculated=game['winning_odds_calculated'],
                     start_game_date=datetime.datetime.strptime(
-                    game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S")
+                    game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
+                    championship=Championship.objects.get(pk=game["league_id"])
                 )
             else:
                 Game.objects.create(
