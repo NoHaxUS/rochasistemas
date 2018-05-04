@@ -140,16 +140,16 @@ class GeneralConfigurations(models.Model):
     def save(self, *args, **kwargs):
         from core.models import Cotation
         
-        if self.max_cotation_value:
-            Cotation.objects.filter(value__gt=self.max_cotation_value).update(value=self.max_cotation_value)
         self.pk = 1
 
         Cotation.objects.update(value=F('original_value') * round((self.percentual_reduction / 100), 2) )
         Cotation.objects.update(value=Case(When(value__lt=1,then=1.01),default=F('value')))
 
+        
+        if self.max_cotation_value:
+            Cotation.objects.filter(value__gt=self.max_cotation_value).update(value=self.max_cotation_value)
+
         super(GeneralConfigurations, self).save()
-
-
 
 
     class Meta:
