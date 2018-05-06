@@ -23,7 +23,7 @@ class SellerAdmin(GuardedModelAdmin):
 
 	fieldsets = (
 		(None, {
-			'fields': ('first_name','last_name','cpf','address','username','password','email','cellphone')
+			'fields': ('first_name','last_name','cpf','address','username','password','email','cellphone','credit_limit')
 		}),
 	)
 	list_display =('pk','username','full_name','actual_revenue','credit_limit')
