@@ -61,12 +61,19 @@ class GetSellersByManager(PermissionRequiredMixin, TemplateResponseMixin, View):
         return self.render_to_response({'sellers': context, 'page_range':page_range})
 
 
+class ManagerHome(PermissionRequiredMixin,TemplateResponseMixin, View):
+    permission_required = 'user.be_manager'
+    template_name = 'user/manager_panel.html'
+    raise_exception = True
+
+    def get(self, request, *args, **kwargs):        
+        return self.render_to_response({})
 
 
-class ManagerHome(PermissionRequiredMixin, TemplateResponseMixin, View):
+class ManagerSellers(PermissionRequiredMixin, TemplateResponseMixin, View):
 
     permission_required = 'user.be_manager'
-    template_name = 'user/manager_home.html'
+    template_name = 'user/manager_sellers.html'
     raise_exception = True
 
     def get(self, request, *args, **kwargs):
@@ -243,6 +250,56 @@ class PunterRegister(View):
             if user is not None:
                 login(request, user)
                 return HttpResponse("User Created")
+
+
+class SellerRegister(View):
+
+    def post(self, request):
+
+        errors = {'errors':False, 'data': []}
+        if not request.POST['full_name']:
+            errors['errors'] = True
+            errors['data'].append('O nome é obrigatório')
+        elif not request.POST['cpf']:
+            errors['errors'] = True
+            errors['data'].append('O cpf é obrigatório')
+        elif not request.POST['login']:
+            errors['errors'] = True
+            errors['data'].append('O login é obrigatório')
+        elif not request.POST['password']:
+            errors['errors'] = True
+            errors['data'].append('A senha é obrigatória')
+        elif not request.POST['cellphone']:
+            errors['errors'] = True
+            errors['data'].append('O Telefone é obrigatório')
+        elif not request.POST['address']:
+            errors['errors'] = True
+            errors['data'].append('O endereço é obrigatório')
+
+        if request.POST['login']:
+            if Punter.objects.filter(username=request.POST['login']).exists():
+                errors['errors'] = True
+                errors['data'].append('Esse login já está em uso, desculpe.')
+        if request.POST['email']:
+            if Punter.objects.filter(email=request.POST['email']).exists():
+                errors['errors'] = True
+                errors['data'].append('Esse email já está em uso, desculpe.')
+
+        if errors['errors']:
+            return HttpResponse(json.dumps(errors, ensure_ascii=False), content_type="application/json", status=406)
+        else:
+            seller = Seller(first_name=request.POST['full_name'],
+            cpf=request.POST['cpf'],
+            email=request.POST['email'],
+            username=request.POST['login'],
+            password=request.POST['password'],
+            address=request.POST['address'],
+            cellphone=request.POST['cellphone'])
+            seller.save()            
+                    
+            if request.user.has_perm('user.be_manager'):
+                request.user.manager.add_set_limit_permission(seller)
+                return HttpResponse("Seller Created")
 
 
 class ManagerTransferCredit(PermissionRequiredMixin, View):

@@ -134,6 +134,10 @@ $(document).ready(function () {
 
                     }
 
+                    if(r.status == 405){
+                        alertify.error("Você não tem permissão a esse vendedor");
+                    }
+
                     if(r.status == 404){
                         alertify.error("Vendedor não encontrado");
                     }
@@ -785,5 +789,51 @@ $(document).ready(function () {
             });
         });
 
+});
+
+$("#create-seller-form").on('submit', function(e){
+        e.preventDefault();
+            var send_data = $(this).serialize();
+
+            $.post('/user/seller/register/', send_data, function(data, status, rq){
+                console.log(rq.status);
+
+                alertify.alert("Sucesso","Vendedor cadastrado com sucesso")
+                .set('onok', 
+                function(closeEvent){
+                    window.location = '/';
+                } );
+                
+
+            }).fail(function(rq, status, error){
+                console.log(rq.responseJSON);
+                var erros = '';
+                for(erro in rq.responseJSON.data){
+                    erros += rq.responseJSON.data[erro] + '<br>'
+                }
+                console.log(erros);
+                alertify.alert("Erro", erros )
+            });
+        });
+
+
+$(document).ready(function() {    
+
+    $.ajax({
+        type: 'GET',
+        url: '/utils/get_sellers/',
+        success: function(response) {
+        var sellerArray = response;
+        var sellers = {};
+
+        for (var i = 0; i < sellerArray.length; i++) {          
+          sellers[sellerArray[i].name] = null; 
+        }
+        $('.autocomplete').autocomplete({
+          data: sellers,
+          limit: Infinity,
+        });
+      }
+    });
 });
 

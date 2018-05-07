@@ -84,19 +84,8 @@
 {% block content %}
 
 <div class="row main-section">
-    <div class="col s2 hide-on-med-and-down white hoverable">
-        <div class="section-header white-text center-align">
-            Menu
-        </div>
-        <ul class="championship-list">
-            {% for item in management_list %}
-            <li class="center-align valign-wrapper">
-                <a href="#" class="modal-trigger">{{item}}</a>
-            </li>         
-            {% endfor %}   
-        </ul>
-    </div>
-    <div class="col s12 l10">                
+    
+    <div class="col s12 l12 ">                
         <div class="games-table-container">
             {% if sellers %}
             <table class="bordered highlight white centered games-table hoverable">
@@ -111,10 +100,13 @@
                 <tbody>
                     {% for seller in sellers %}
                         <td>
+                            {{ seller.pk }}
+                        </td>
+                        <td>
                             {{ seller.first_name }}
                         </td>
                         <td>
-                            {{ seller.credit_limit }}
+                            {{ seller.credit_limit }}                            
                         </td>
                         <td>
                             {{ seller.actual_revenue }}

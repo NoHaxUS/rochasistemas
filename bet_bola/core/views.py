@@ -374,8 +374,8 @@ class ResetSellerRevenue(View):
 
 	def get(self, request, *args, **kwargs):
 
-		if request.user.is_superuser:
-	
+		if request.user.is_superuser or request.user.has_perm('user.be_manager'):			
+
 			seller_id = int(request.GET['seller_id'])
 			tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=seller_id, payment__seller_was_rewarded=False)
 			revenue_total = 0
@@ -385,15 +385,16 @@ class ResetSellerRevenue(View):
 		
 			try:
 				seller = Seller.objects.get(pk=seller_id)
-				
+				if request.user.has_perm('user.be_manager') and not request.user.has_perm('set_credit_limit', seller):
+					return JsonResponse({'status': 405},json_dumps_params={'ensure_ascii': False})		
+
 				dict_response = {'nome': seller.full_name(), 'cpf': seller.cpf, 
 					'telefone': seller.cellphone,'faturamento': "%.2f" % revenue_total, 'status': 200}
 				
 				return JsonResponse(dict_response,json_dumps_params={'ensure_ascii': False})
 
 			except Seller.DoesNotExist:
-				return JsonResponse({'status': 404},json_dumps_params={'ensure_ascii': False})
-
+				return JsonResponse({'status': 404},json_dumps_params={'ensure_ascii': False})		
 		else:
 			return JsonResponse({'status': 400},json_dumps_params={'ensure_ascii': False})
 

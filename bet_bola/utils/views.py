@@ -3,11 +3,14 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.template.loader import get_template
 from django.views.generic import View
 from django.utils import timezone
+from django.core import serializers
 from core.models import BetTicket,Cotation
+from user.models import Seller
 from django.conf import settings
 from fpdf import FPDF
 from django.db.models import F, Q, When, Case
 import urllib
+import json
 
 
 class PDF(View):
@@ -80,6 +83,15 @@ class PercentualReductionCotation(View):
 
         else:
             return HttpResponse("Não está Logado.")
+
+
+class GetSellers(View):
+    def get(self, request, *args, **kwargs):
+        sellers = []
+        for seller in Seller.objects.all():
+            sellers.append({'name': seller.first_name + " - Login: " + seller.username})
+        data = json.dumps(sellers)
+        return HttpResponse(data, content_type='application/json' )
 
         
 
