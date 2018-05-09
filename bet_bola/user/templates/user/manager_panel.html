@@ -13,13 +13,13 @@
             <form class="col s12" id="create-seller-form">{% csrf_token %}
                 <div class="row">
                         <div class="input-field col s12">
-                            <input name="full_name" id="name_register" type="text" class="validate" tabindex="1" autofocus required>
+                            <input name="full_name" id="name_register" type="text" class="validate" tabindex="1" size="40" maxlength="40" autofocus required>
                             <label for="name" data-error="Nome  obrigatório" data-success="OK">Nome</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
-                            <input name="cpf" id="cpf_register" type="text" class="validate" tabindex="2">
+                            <input name="cpf" id="cpf_register" type="text" class="validate" tabindex="2" size="11" maxlength="11">
                             <label for="email" data-error="E-mail inválido" data-success="OK">CPF</label>
                         </div>
                     </div>
@@ -42,12 +42,11 @@
                         </div>
                     </div>
                     <div class="input-field col s12">
-                        <input name="address" id="address_register" type="text" class="validate" tabindex="6" data-inputmask="'mask': '99-9999999'"
-                            required>
+                        <input name="address" id="address_register" type="text" class="validate" tabindex="6" size="75" maxlength="75">
                         <label for="address">Endereço</label>
                     </div>
                     <div class="input-field col s12">
-                        <input name="cellphone" id="cellphone_register" type="text" class="validate" tabindex="7" data-inputmask="'mask': '99-9999999'"
+                        <input name="cellphone" id="cellphone_register" type="text" class="validate" tabindex="7" size="10" maxlength="10" data-inputmask="'mask': '99-9999999'"
                             required>
                         <label for="icon_telephone">Telefone</label>
                     </div>

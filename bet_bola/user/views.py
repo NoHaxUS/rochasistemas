@@ -277,11 +277,11 @@ class SellerRegister(View):
             errors['data'].append('O endereço é obrigatório')
 
         if request.POST['login']:
-            if Punter.objects.filter(username=request.POST['login']).exists():
+            if Seller.objects.filter(username=request.POST['login']).exists():                
                 errors['errors'] = True
                 errors['data'].append('Esse login já está em uso, desculpe.')
         if request.POST['email']:
-            if Punter.objects.filter(email=request.POST['email']).exists():
+            if Seller.objects.filter(email=request.POST['email']).exists():
                 errors['errors'] = True
                 errors['data'].append('Esse email já está em uso, desculpe.')
 
@@ -298,7 +298,8 @@ class SellerRegister(View):
             seller.save()            
                     
             if request.user.has_perm('user.be_manager'):
-                request.user.manager.add_set_limit_permission(seller)
+                sellers = [seller]
+                request.user.manager.add_set_limit_permission(sellers)
                 return HttpResponse("Seller Created")
 
 
