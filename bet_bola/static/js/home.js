@@ -90,64 +90,81 @@ $(document).ready(function () {
                     });
             }
         });
-    
+
 
     $("#reset-revenue-form").on('submit', function(e){
         e.preventDefault();
+        var send_data = $(this).serialize();                               
 
-        var seller_id = $('.reset-revenue').val();
+        alert_msg = "Deseja zerar faturamento do(s) usuario(s)"
+        for(x in $('.reset-revenue').material_chip('data')){                
+            send_data += '&vendedor'+(parseInt(x)+1)+'='+ $('.reset-revenue').material_chip('data')[x].tag.split(' ')[0]            
+            alert_msg += " - " + $('.reset-revenue').material_chip('data')[x].tag.split(' ')[0];                          
+        }       
+
+        send_data +='&quantidade=' + $('.reset-revenue').material_chip('data').length
 
 
-        if(seller_id == ''){
-            alertify.error('ID do vendedor obrigatória');
-        }else{
+        alertify.confirm('Confirmação', alert_msg,
+        function () {
+            
+            $.post('/reset_revenue/', send_data, function(response, status, rq){
 
-            $.ajax({
-                url: '/reset_revenue/',
-                data: {'seller_id': seller_id},
-                success: function(r, textStatus, jqXR){
-                    console.log(r);
-                    if(r.status == 200){
-                       
-                    var confirm_text = 'Nome: ' + r.nome + '<br>' +
-                    'CPF:' + r.cpf + '<br>' +
-                    'Telefone: '+ r.telefone + '<br>' +
-                    'Faturamento Atual: R$ ' + r.faturamento + '<br>';
+                alertify.alert(response.message, function(){ location.reload() });
+            }, 'json');
 
-                    alertify.confirm("Confirme os dados", confirm_text, function(){
-                        
-                        var seller_id = $('.reset-revenue').val();
-                        $.ajax({
-                            url:'/reset_revenue/',
-                            method: 'POST',
-                            data: {'seller_id': seller_id},
-                            success: function(r, textStatus, jqXR){
-                                if(r.status){
-                                    alertify.alert("Sucesso", "Faturamento Zerado com sucesso!.");
-                                };
-                            }
+        },
+        function () {
+            alertify.error('Cancelado');
+        });            
+         
 
-                        });
-                    }, function(){
-                        alertify.error('Cancelado.');
-                    });
+        // $.ajax({
+        //     url: '/reset_revenue/',
+        //     data: {'sellers': send_data},
+        //     success: function(r, textStatus, jqXR){
+        //         console.log(r);
+        //         if(r.status == 200){
+        //             console.log(r);                   
+                // var confirm_text = 'Nome: ' + r.nome + '<br>' +
+                // 'CPF:' + r.cpf + '<br>' +
+                // 'Telefone: '+ r.telefone + '<br>' +
+                // 'Faturamento Atual: R$ ' + r.faturamento + '<br>';
 
-                    }
+                // alertify.confirm("Confirme os dados", confirm_text, function(){
+                    
+                //     var seller_id = $('.reset-revenue').val();
+                //     $.ajax({
+                //         url:'/reset_revenue/',
+                //         method: 'POST',
+                //         data: {'seller_id': seller_id},
+                //         success: function(r, textStatus, jqXR){
+                //             if(r.status){
+                //                 alertify.alert("Sucesso", "Faturamento Zerado com sucesso!.");
+                //             };
+                // }
 
-                    if(r.status == 405){
-                        alertify.error("Você não tem permissão a esse vendedor");
-                    }
+                //     });
+                // }, function(){
+                //     alertify.error('Cancelado.');
+                // });
 
-                    if(r.status == 404){
-                        alertify.error("Vendedor não encontrado");
-                    }
+          //       }
 
-                    if(r.status == 400){
-                        alertify.error("Algo deu errado: " + r.status);
-                    }
-                }
-              });
-        }
+          //       if(r.status == 405){
+          //           alertify.error("Você não tem permissão a esse vendedor");
+          //       }
+
+          //       if(r.status == 404){
+          //           alertify.error("Vendedor não encontrado");
+          //       }
+
+          //       if(r.status == 400){
+          //           alertify.error("Algo deu errado: " + r.status);
+          //       }
+          //   }
+          // });
+        
 
     });
 
