@@ -337,19 +337,20 @@ class ManagerPermissions(LoginRequiredMixin, PermissionRequiredMixin, TemplateRe
     def post(self, request):                    
 
         manager = Manager.objects.get(pk=request.POST['gerente'])
-        message = 'Gerente - ' + manager.first_name
+        message = 'Gerente ' + manager.first_name
         sellers = []        
 
         for quant in range(int(request.POST['quantidade'])):
             username = request.POST['vendedor'+str(quant+1)]            
             
             if not Seller.objects.filter(username=username).exists():
-                return UnicodeJsonResponse({'message':'Usuario '+ username + 'não existe'})
+                return UnicodeJsonResponse({'message':'Usuario '+ username + ' não existe, selecione usuarios existentes'})
 
             sellers.append(Seller.objects.get(username=username))
             
+
             if quant == 0:
-                message += ' recebeu permissão ao vendedor - ' + sellers[quant].first_name
+                message += ' recebeu permissão ao vendedor ' + sellers[quant].first_name
             else:
                 message += ' e ' + sellers[quant].first_name
             
@@ -367,22 +368,25 @@ class ManagerPermissions(LoginRequiredMixin, PermissionRequiredMixin, TemplateRe
         print(delete)
 
         manager = Manager.objects.get(pk=delete['gerente']) 
-        message = 'Permissão de adicionar credito do gerente -' + manager.username
+        message = 'Permissão de adicionar credito do gerente ' + manager.username
         sellers = []
+
         for quant in range(int(delete['quantidade'])):
             username = delete['vendedor'+str(quant+1)]            
             
             if not Seller.objects.filter(username=username).exists():
-                return UnicodeJsonResponse({'message':'Usuario '+ username + 'não existe'})
+                return UnicodeJsonResponse({'message':'Usuario '+ username + ' não existe, selecione usuarios existentes'})
 
             sellers.append(Seller.objects.get(username=username))
             
-            if quant == 0:
-                message += ' foi revogada no vendedor - ' + sellers[quant].first_name
+
+            if manager.has_perm('set_credit_limit', Seller.objects.get(username=username)):
+                if quant == 0:
+                    message += ' foi revogada no vendedor ' + sellers[quant].first_name
+                else:
+                    message += ' e ' + sellers[quant].first_name    
             else:
-                message += ' e ' + sellers[quant].first_name
-        
-        
+                return UnicodeJsonResponse({'message':'Gerente '+ manager.username + ' não tem permissão ao usuario ' + username})
 
         manager.remove_set_limit_permission(sellers)        
         
