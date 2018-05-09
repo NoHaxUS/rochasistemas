@@ -100,11 +100,13 @@ class Manager(CustomUser):
 
         return 'Você não tem permissão para adicionar credito a esse usuário.'
 
-    def add_set_limit_permission(self,seller):		
-        assign_perm('set_credit_limit',self,seller)
+    def add_set_limit_permission(self,sellers):		
+        for seller in sellers:
+            assign_perm('set_credit_limit',self,seller)
 
-    def remove_set_limit_permission(self, seller):
-        remove_perm('set_credit_limit',self,seller)
+    def remove_set_limit_permission(self, sellers):
+        for seller in sellers:
+            remove_perm('set_credit_limit',self,seller)
 
     def save(self, *args, **kwargs):					
         if not self.has_usable_password():	

@@ -13,10 +13,10 @@
             <form id="form-add-permissions" method="POST">
                 {% csrf_token %}                 
                 <div class="row">
-                    <div class="input-field col s12">                                                
-                        <input id = "vendedor_id" name="vendedor" class="vendedor_id_add validate" type="text" tabindex="1" autocomplete="off">
+                    <div class="input-field col s12">                                                                  
+                        <div id = "vendedor_id" name="vendedor" class="vendedor_id_add validate chips-autocomplete" type="text" tabindex="1" autocomplete="off"></div>
                         <input name="gerente" type="hidden" class="gerente_id" />
-                        <label for="vendedor_id">Id vendedor</label>
+                        <label for="vendedor_id">Login vendedor</label>
                     </div>
                 </div>
                 <div class="row">
@@ -42,9 +42,9 @@
                 {% csrf_token %}                 
                 <div class="row">
                     <div class="input-field col s12">                                                
-                        <input name="vendedor" class="vendedor_id_remove" type="text" class="validate" tabindex="1" autocomplete="off">
+                        <div name="vendedor" class="vendedor_id_remove validate chips-autocomplete" type="text" tabindex="1" autocomplete="off"></div>
                         <input name="gerente" type="hidden" class="gerente_id" />
-                        <label for="id">ID Vendedor</label>
+                        <label for="id">Login Vendedor</label>
                     </div>
                 </div>
                 <div class="row">
@@ -188,6 +188,8 @@
         </div>
     </div>     
 </div> 
+  
+
 {% endblock %}
 
 {% block right_section_desktop %}

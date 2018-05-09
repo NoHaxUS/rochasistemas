@@ -89,7 +89,7 @@ class GetSellers(View):
     def get(self, request, *args, **kwargs):
         sellers = []
         for seller in Seller.objects.all():
-            sellers.append({'name': seller.first_name + " - Login: " + seller.username})
+            sellers.append({'login': seller.username + " - Nome: " + seller.first_name})
         data = json.dumps(sellers)
         return HttpResponse(data, content_type='application/json' )
 

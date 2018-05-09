@@ -91,6 +91,7 @@
             <table class="bordered highlight white centered games-table hoverable">
                 <thead>
                     <tr>
+                        <th>Login</th>
                         <th>Nome</th>
                         <th>Saldo</th>
                         <th>Faturamento</th>
@@ -100,7 +101,7 @@
                 <tbody>
                     {% for seller in sellers %}
                         <td>
-                            {{ seller.pk }}
+                            {{ seller.username }}
                         </td>
                         <td>
                             {{ seller.first_name }}

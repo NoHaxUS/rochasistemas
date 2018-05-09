@@ -334,15 +334,27 @@ class ManagerPermissions(LoginRequiredMixin, PermissionRequiredMixin, TemplateRe
 
         return self.render_to_response({'gerentes': context, 'page_range':page_range})
 
-    def post(self, request):            
-        manager = Manager.objects.get(pk=request.POST['gerente'])   
+    def post(self, request):                    
 
-        if not Seller.objects.filter(pk=request.POST['vendedor']).exists():
-            return UnicodeJsonResponse({'message':'Esse ID de vendedor não existe'})
+        manager = Manager.objects.get(pk=request.POST['gerente'])
+        message = 'Gerente - ' + manager.first_name
+        sellers = []        
 
-        seller = Seller.objects.get(pk=request.POST['vendedor'])
-        manager.add_set_limit_permission(seller)        
-        message = 'Permissão de adicionar credito ao vendedor ' + seller.first_name + ' foi concedida ao gerente ' + manager.first_name
+        for quant in range(int(request.POST['quantidade'])):
+            username = request.POST['vendedor'+str(quant+1)]            
+            
+            if not Seller.objects.filter(username=username).exists():
+                return UnicodeJsonResponse({'message':'Usuario '+ username + 'não existe'})
+
+            sellers.append(Seller.objects.get(username=username))
+            
+            if quant == 0:
+                message += ' recebeu permissão ao vendedor - ' + sellers[quant].first_name
+            else:
+                message += ' e ' + sellers[quant].first_name
+            
+        
+        manager.add_set_limit_permission(sellers)        
         
         return UnicodeJsonResponse({'message':message})
 
@@ -354,14 +366,26 @@ class ManagerPermissions(LoginRequiredMixin, PermissionRequiredMixin, TemplateRe
 
         print(delete)
 
-        manager = Manager.objects.get(pk=delete['gerente'])   
+        manager = Manager.objects.get(pk=delete['gerente']) 
+        message = 'Permissão de adicionar credito do gerente -' + manager.username
+        sellers = []
+        for quant in range(int(delete['quantidade'])):
+            username = delete['vendedor'+str(quant+1)]            
+            
+            if not Seller.objects.filter(username=username).exists():
+                return UnicodeJsonResponse({'message':'Usuario '+ username + 'não existe'})
 
-        if not Seller.objects.filter(pk=delete['vendedor']).exists():
-            return UnicodeJsonResponse({'message':'Esse ID de vendedor não existe'})
+            sellers.append(Seller.objects.get(username=username))
+            
+            if quant == 0:
+                message += ' foi revogada no vendedor - ' + sellers[quant].first_name
+            else:
+                message += ' e ' + sellers[quant].first_name
+        
+        
 
-        seller = Seller.objects.get(pk=delete['vendedor'])
-        manager.remove_set_limit_permission(seller)        
-        message = 'Permissão de adicionar credito ao vendedor ' + seller.first_name + ' foi removida do gerente ' + manager.first_name
+        manager.remove_set_limit_permission(sellers)        
+        
         
         return UnicodeJsonResponse({'message':message})
 

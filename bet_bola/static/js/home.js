@@ -90,7 +90,7 @@ $(document).ready(function () {
                     });
             }
         });
-
+    
 
     $("#reset-revenue-form").on('submit', function(e){
         e.preventDefault();
@@ -271,57 +271,52 @@ $(document).ready(function () {
     });
 
     $('#form-add-permissions').on('submit', function (e) {                        
-            e.preventDefault();
-            var send_data = $(this).serialize(); 
-            if( isNaN($('.vendedor_id_add').val()) ){
-                alertify.alert('Erro', 'O ID deve ser um numero inteiro.')
-            }
-            else if ($('.vendedor_id_add').val() == '' || parseInt($('.vendedor_id_add').val()) <= 0) {
-                alertify.alert('Erro', 'Você deve inserir um id valido.')
-            } else {
-                alert_msg = "Deseja adicionar essa permissão?"
-                alertify.confirm('Confirmação', alert_msg,
-                    function () {
-                        
-                        $.post('/user/config/manager_permissions', send_data, function(response, status, rq){
+            e.preventDefault();   
+            var send_data = $(this).serialize();                       
 
-                            alertify.alert(response.message, function(){ location.reload() });
-                        }, 'json');
-        
-                    },
-                    function () {
-                        alertify.error('Cancelado');
-                    });
-            }            
+            for(x in $('.vendedor_id_add').material_chip('data')){                
+                send_data += '&vendedor'+(parseInt(x)+1)+'='+$('.vendedor_id_add').material_chip('data')[x].tag.split(' ')[0]                                 
+            }        
+            send_data +='&quantidade=' + $('.vendedor_id_add').material_chip('data').length
+            alert_msg = "Deseja adicionar essa permissão?"
+            alertify.confirm('Confirmação', alert_msg,
+                function () {
+                    
+                    $.post('/user/config/manager_permissions', send_data, function(response, status, rq){
+
+                        alertify.alert(response.message, function(){ location.reload() });
+                    }, 'json');
+    
+                },
+                function () {
+                    alertify.error('Cancelado');
+                });            
         });
 
 
         $('#form-remove-permissions').on('submit', function (e) {          
-            e.preventDefault();
-            var send_data = $(this).serialize(); 
-            if( isNaN($('.vendedor_id_remove').val()) ){
-                alertify.alert('Erro', 'O ID deve ser um numero inteiro.')
-            }
-            else if ($('.vendedor_id_remove').val() == '' || parseInt($('.vendedor_id_remove').val()) <= 0) {
-                alertify.alert('Erro', 'Você deve inserir um id valido.')
-            } else {
-                alert_msg = "Deseja remover vendedor?"
-                alertify.confirm('Confirmação', alert_msg,
-                    function () {
-                        
-                        $.ajax({
+            e.preventDefault();   
+            var send_data = $(this).serialize();                       
+
+            for(x in $('.vendedor_id_remove').material_chip('data')){                
+                send_data += '&vendedor'+(parseInt(x)+1)+'='+$('.vendedor_id_remove').material_chip('data')[x].tag.split(' ')[0]                                 
+            }        
+            send_data +='&quantidade=' + $('.vendedor_id_remove').material_chip('data').length
+            alert_msg = "Deseja remover essa permissão?"
+            alertify.confirm('Confirmação', alert_msg,
+                function () {
+                    $.ajax({
                             url: '/user/config/manager_permissions',
                             type: 'DELETE',
                             data: send_data
                         }).done(function(response){
                             alertify.alert(response.message, function(){ location.reload() });
                         });
-        
-                    },
-                    function () {
-                        alertify.error('Cancelado');
-                    });
-            }            
+                },
+                function () {
+                    alertify.error('Cancelado');
+                });          
+
         });
 
         function UpdateCotationTotal(){
@@ -827,13 +822,23 @@ $(document).ready(function() {
         var sellers = {};
 
         for (var i = 0; i < sellerArray.length; i++) {          
-          sellers[sellerArray[i].name] = null; 
+          sellers[sellerArray[i].login] = null; 
         }
-        $('.autocomplete').autocomplete({
-          data: sellers,
-          limit: Infinity,
+        $('.chips-autocomplete').material_chip({
+            autocompleteOptions: {
+              data: sellers,
+              limit: Infinity,
+              minLength: 1
+            }
         });
+
+        // $('.autocomplete').autocomplete({
+        //   data: sellers,
+        //   limit: Infinity,
+        // });
       }
     });
 });
 
+
+  
