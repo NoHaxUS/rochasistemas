@@ -360,6 +360,8 @@ def save_odds(game_id, odds, max_cotation_value):
 
     processed_markets = []
 
+    #print("Game:" + str(game_instance.name))
+
     for market in odds_array:
 
         kind_name = MARKET_ID.get(market['id'], None)
@@ -383,6 +385,10 @@ def save_odds(game_id, odds, max_cotation_value):
                     percentual_reduction = 100
 
                 for cotation in cotations:
+                    
+                    #if 'Bayern' in game_instance.name and market['id'] == 37:
+                    #    print(cotation)
+                    #    input("Continue..")
 
                     cotation_value = max_cotation_value if float(cotation['value']) > max_cotation_value else float(cotation['value'])
                     cotation_name_renamed = renaming_cotations(cotation['label']).strip()
