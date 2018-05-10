@@ -42,8 +42,8 @@
                 <div class="row">
                 <div class="input-field col s12">
                     <i class="material-icons prefix">face</i>
-                    <input name="percent" id="icon_prefix" type="number" class="validate reset-revenue" autocomplete="off" autofocus>
-                    <label for="icon_prefix">Digite a ID do Vendedor</label>
+                    <div name="percent" id="icon_prefix" type="number" class="validate reset-revenue chips-autocomplete" autocomplete="off" autofocus></div>
+                    <label for="icon_prefix">Digite o Login do Vendedor</label>
                 </div>
                 <div class="row">
                     <div class="col s12">
@@ -122,7 +122,7 @@
             </li>
             <li class="center-align valign-wrapper">
                 <a href="#reset-revenue" class="modal-trigger">Zerar Faturamento do Vendedor</a>
-            </li>
+            </li>            
             <li class="center-align valign-wrapper">
                 <a href="{% url 'user:manager_permissions' %}" >Meus Gerentes</a>
             </li>

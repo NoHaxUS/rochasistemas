@@ -94,56 +94,29 @@ $(document).ready(function () {
 
     $("#reset-revenue-form").on('submit', function(e){
         e.preventDefault();
+        var send_data = $(this).serialize();                               
 
-        var seller_id = $('.reset-revenue').val();
+        alert_msg = "Deseja zerar faturamento do(s) usuário(s)"
+        for(x in $('.reset-revenue').material_chip('data')){                
+            send_data += '&vendedor'+(parseInt(x)+1)+'='+ $('.reset-revenue').material_chip('data')[x].tag.split(' ')[0]            
+            alert_msg += " - " + $('.reset-revenue').material_chip('data')[x].tag.split(' ')[0];                          
+        }       
+
+        send_data +='&quantidade=' + $('.reset-revenue').material_chip('data').length
 
 
-        if(seller_id == ''){
-            alertify.error('ID do vendedor obrigatória');
-        }else{
+        alertify.confirm('Confirmação', alert_msg,
+        function () {
+            
+            $.post('/reset_revenue/', send_data, function(response, status, rq){
 
-            $.ajax({
-                url: '/reset_revenue/',
-                data: {'seller_id': seller_id},
-                success: function(r, textStatus, jqXR){
-                    console.log(r);
-                    if(r.status == 200){
-                       
-                    var confirm_text = 'Nome: ' + r.nome + '<br>' +
-                    'CPF:' + r.cpf + '<br>' +
-                    'Telefone: '+ r.telefone + '<br>' +
-                    'Faturamento Atual: R$ ' + r.faturamento + '<br>';
+                alertify.alert(response.message, function(){ location.reload() });
+            }, 'json');
 
-                    alertify.confirm("Confirme os dados", confirm_text, function(){
-                        
-                        var seller_id = $('.reset-revenue').val();
-                        $.ajax({
-                            url:'/reset_revenue/',
-                            method: 'POST',
-                            data: {'seller_id': seller_id},
-                            success: function(r, textStatus, jqXR){
-                                if(r.status){
-                                    alertify.alert("Sucesso", "Faturamento Zerado com sucesso!.");
-                                };
-                            }
-
-                        });
-                    }, function(){
-                        alertify.error('Cancelado.');
-                    });
-
-                    }
-
-                    if(r.status == 404){
-                        alertify.error("Vendedor não encontrado");
-                    }
-
-                    if(r.status == 400){
-                        alertify.error("Algo deu errado: " + r.status);
-                    }
-                }
-              });
-        }
+        },
+        function () {
+            alertify.error('Cancelado');
+        });
 
     });
 
@@ -242,7 +215,7 @@ $(document).ready(function () {
             if ($('#valor_credito').val() == '' || parseInt($('#valor_credito').val()) <= 0) {
                 alertify.alert('Erro', 'Você deve inserir um valor valido positivo.')
             } else {
-                alert_msg = "confirma transfarência?"
+                alert_msg = "Confirma Transferência?"
                 alertify.confirm('Confirmação', alert_msg,
                     function () {
                         
@@ -250,7 +223,7 @@ $(document).ready(function () {
                             
                             data = jQuery.parseJSON(data);
 
-                            alertify.confirm(data.message, function(){ location.reload() });
+                            alertify.alert("Sucesso", data.message, function(){ location.reload() });
                         }, 'text');
         
                     },
@@ -267,57 +240,52 @@ $(document).ready(function () {
     });
 
     $('#form-add-permissions').on('submit', function (e) {                        
-            e.preventDefault();
-            var send_data = $(this).serialize(); 
-            if( isNaN($('.vendedor_id_add').val()) ){
-                alertify.alert('Erro', 'O ID deve ser um numero inteiro.')
-            }
-            else if ($('.vendedor_id_add').val() == '' || parseInt($('.vendedor_id_add').val()) <= 0) {
-                alertify.alert('Erro', 'Você deve inserir um id valido.')
-            } else {
-                alert_msg = "Deseja adicionar essa permissão?"
-                alertify.confirm('Confirmação', alert_msg,
-                    function () {
-                        
-                        $.post('/user/config/manager_permissions', send_data, function(response, status, rq){
+            e.preventDefault();   
+            var send_data = $(this).serialize();                       
 
-                            alertify.alert(response.message, function(){ location.reload() });
-                        }, 'json');
-        
-                    },
-                    function () {
-                        alertify.error('Cancelado');
-                    });
-            }            
+            for(x in $('.vendedor_id_add').material_chip('data')){                
+                send_data += '&vendedor'+(parseInt(x)+1)+'='+$('.vendedor_id_add').material_chip('data')[x].tag.split(' ')[0]                                 
+            }        
+            send_data +='&quantidade=' + $('.vendedor_id_add').material_chip('data').length
+            alert_msg = "Deseja adicionar essa permissão?"
+            alertify.confirm('Confirmação', alert_msg,
+                function () {
+                    
+                    $.post('/user/config/manager_permissions', send_data, function(response, status, rq){
+
+                        alertify.alert(response.message, function(){ location.reload() });
+                    }, 'json');
+    
+                },
+                function () {
+                    alertify.error('Cancelado');
+                });            
         });
 
 
         $('#form-remove-permissions').on('submit', function (e) {          
-            e.preventDefault();
-            var send_data = $(this).serialize(); 
-            if( isNaN($('.vendedor_id_remove').val()) ){
-                alertify.alert('Erro', 'O ID deve ser um numero inteiro.')
-            }
-            else if ($('.vendedor_id_remove').val() == '' || parseInt($('.vendedor_id_remove').val()) <= 0) {
-                alertify.alert('Erro', 'Você deve inserir um id valido.')
-            } else {
-                alert_msg = "Deseja remover vendedor?"
-                alertify.confirm('Confirmação', alert_msg,
-                    function () {
-                        
-                        $.ajax({
+            e.preventDefault();   
+            var send_data = $(this).serialize();                       
+
+            for(x in $('.vendedor_id_remove').material_chip('data')){                
+                send_data += '&vendedor'+(parseInt(x)+1)+'='+$('.vendedor_id_remove').material_chip('data')[x].tag.split(' ')[0]                                 
+            }        
+            send_data +='&quantidade=' + $('.vendedor_id_remove').material_chip('data').length
+            alert_msg = "Deseja remover essa permissão?"
+            alertify.confirm('Confirmação', alert_msg,
+                function () {
+                    $.ajax({
                             url: '/user/config/manager_permissions',
                             type: 'DELETE',
                             data: send_data
                         }).done(function(response){
                             alertify.alert(response.message, function(){ location.reload() });
                         });
-        
-                    },
-                    function () {
-                        alertify.error('Cancelado');
-                    });
-            }            
+                },
+                function () {
+                    alertify.error('Cancelado');
+                });          
+
         });
 
         function UpdateCotationTotal(){
@@ -498,7 +466,7 @@ $(document).ready(function () {
         }
 
         if (ticket_value <= 0){
-            alertify.error("Você deve apostar um valor maior que 0");
+            alertify.error("Você deve apostar um valor maior que 0.");
             return ;
         }
 
@@ -787,3 +755,59 @@ $(document).ready(function () {
 
 });
 
+$("#create-seller-form").on('submit', function(e){
+        e.preventDefault();
+            var send_data = $(this).serialize();
+
+            $.post('/user/seller/register/', send_data, function(data, status, rq){
+                console.log(rq.status);
+
+                alertify.alert("Sucesso","Vendedor cadastrado com sucesso")
+                .set('onok', 
+                function(closeEvent){
+                    window.location = '/';
+                } );
+                
+
+            }).fail(function(rq, status, error){
+                console.log(rq.responseJSON);
+                var erros = '';
+                for(erro in rq.responseJSON.data){
+                    erros += rq.responseJSON.data[erro] + '<br>'
+                }
+                console.log(erros);
+                alertify.alert("Erro", erros )
+            });
+        });
+
+
+$(document).ready(function() {    
+
+    $.ajax({
+        type: 'GET',
+        url: '/utils/get_sellers/',
+        success: function(response) {
+        var sellerArray = response;
+        var sellers = {};
+
+        for (var i = 0; i < sellerArray.length; i++) {          
+          sellers[sellerArray[i].login] = null; 
+        }
+        $('.chips-autocomplete').material_chip({
+            autocompleteOptions: {
+              data: sellers,
+              limit: Infinity,
+              minLength: 1
+            }
+        });
+
+        // $('.autocomplete').autocomplete({
+        //   data: sellers,
+        //   limit: Infinity,
+        // });
+      }
+    });
+});
+
+
+  
