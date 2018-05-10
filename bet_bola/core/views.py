@@ -404,13 +404,13 @@ class ResetSellerRevenue(View):
 		message = ""
 		if request.user.is_superuser or request.user.has_perm('user.be_manager'):
 			for quant in range(int(request.POST['quantidade'])):
-
-				username = request.POST['vendedor'+str(quant+1)]            
-	            
+				
+				username = request.POST['vendedor'+str(quant+1)]
 				if not Seller.objects.filter(username=username).exists():
-				    message += 'Usuario '+ username + ' não existe, selecione usuarios existentes</br></br>'
+				    message += 'Usuário '+ username + ' não existe. </br>'
 				else:					
 					seller = Seller.objects.get(username=username)
+
 					if request.user.manager.has_perm('set_credit_limit', seller):
 						tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=seller.pk, payment__seller_was_rewarded=False)	            	
 						payments = Payment.objects.filter(who_set_payment_id=seller.pk, seller_was_rewarded=False)
@@ -418,12 +418,12 @@ class ResetSellerRevenue(View):
 						for payment in payments:
 							payment.seller_was_rewarded = True
 							payment.save()
-						message += 'Usuario '+ username + ' teve seu faturamento zerado</br></br>'
+						message += 'Usuário '+ username + ' teve seu faturamento zerado. </br></br>'
 					else:
-						message += 'Você não tem permissão para zerar o faturamento do usuario '+ username + '</br></br>'
+						message += 'Você não tem permissão para zerar o faturamento do usuário '+ username + '. </br>'
 	            	           
 		else:
-			return UnicodeJsonResponse({'message':'Usuario '+ username + ' não tem permissão para zerar faturamento'})		
+			return UnicodeJsonResponse({'message':'Usuário '+ username + ' não tem permissão para zerar faturamento.'})		
 
 		return UnicodeJsonResponse({'message':message})
 

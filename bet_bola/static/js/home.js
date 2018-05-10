@@ -96,7 +96,7 @@ $(document).ready(function () {
         e.preventDefault();
         var send_data = $(this).serialize();                               
 
-        alert_msg = "Deseja zerar faturamento do(s) usuario(s)"
+        alert_msg = "Deseja zerar faturamento do(s) usuário(s)"
         for(x in $('.reset-revenue').material_chip('data')){                
             send_data += '&vendedor'+(parseInt(x)+1)+'='+ $('.reset-revenue').material_chip('data')[x].tag.split(' ')[0]            
             alert_msg += " - " + $('.reset-revenue').material_chip('data')[x].tag.split(' ')[0];                          
@@ -116,55 +116,7 @@ $(document).ready(function () {
         },
         function () {
             alertify.error('Cancelado');
-        });            
-         
-
-        // $.ajax({
-        //     url: '/reset_revenue/',
-        //     data: {'sellers': send_data},
-        //     success: function(r, textStatus, jqXR){
-        //         console.log(r);
-        //         if(r.status == 200){
-        //             console.log(r);                   
-                // var confirm_text = 'Nome: ' + r.nome + '<br>' +
-                // 'CPF:' + r.cpf + '<br>' +
-                // 'Telefone: '+ r.telefone + '<br>' +
-                // 'Faturamento Atual: R$ ' + r.faturamento + '<br>';
-
-                // alertify.confirm("Confirme os dados", confirm_text, function(){
-                    
-                //     var seller_id = $('.reset-revenue').val();
-                //     $.ajax({
-                //         url:'/reset_revenue/',
-                //         method: 'POST',
-                //         data: {'seller_id': seller_id},
-                //         success: function(r, textStatus, jqXR){
-                //             if(r.status){
-                //                 alertify.alert("Sucesso", "Faturamento Zerado com sucesso!.");
-                //             };
-                // }
-
-                //     });
-                // }, function(){
-                //     alertify.error('Cancelado.');
-                // });
-
-          //       }
-
-          //       if(r.status == 405){
-          //           alertify.error("Você não tem permissão a esse vendedor");
-          //       }
-
-          //       if(r.status == 404){
-          //           alertify.error("Vendedor não encontrado");
-          //       }
-
-          //       if(r.status == 400){
-          //           alertify.error("Algo deu errado: " + r.status);
-          //       }
-          //   }
-          // });
-        
+        });
 
     });
 
@@ -263,7 +215,7 @@ $(document).ready(function () {
             if ($('#valor_credito').val() == '' || parseInt($('#valor_credito').val()) <= 0) {
                 alertify.alert('Erro', 'Você deve inserir um valor valido positivo.')
             } else {
-                alert_msg = "confirma transfarência?"
+                alert_msg = "Confirma Transferência?"
                 alertify.confirm('Confirmação', alert_msg,
                     function () {
                         
@@ -271,7 +223,7 @@ $(document).ready(function () {
                             
                             data = jQuery.parseJSON(data);
 
-                            alertify.confirm(data.message, function(){ location.reload() });
+                            alertify.alert("Sucesso", data.message, function(){ location.reload() });
                         }, 'text');
         
                     },
@@ -514,7 +466,7 @@ $(document).ready(function () {
         }
 
         if (ticket_value <= 0){
-            alertify.error("Você deve apostar um valor maior que 0");
+            alertify.error("Você deve apostar um valor maior que 0.");
             return ;
         }
 

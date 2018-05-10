@@ -8,13 +8,13 @@
         <a href="#" class="modal-close">
             <i class="material-icons right">close</i>
         </a>
-        <h4>Adicionar Credito</h4>
+        <h4>Adicionar Crédito</h4>
         <div class="row">
             <form id="modal-add-credit" method="POST">
                 {% csrf_token %}                 
                 <div class="row">
                     <div class="input-field col s12">                                                
-                        <input name="valor" id="valor_credito" type="text" class="validate" tabindex="2">
+                        <input name="valor" id="valor_credito" type="text" class="validate" tabindex="2" autocomplete="off">
                         <input name="seller" type="hidden" id="seller_id" />
                         <label for="valor">Valor</label>
                     </div>
