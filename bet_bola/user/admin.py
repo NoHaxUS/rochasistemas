@@ -42,6 +42,6 @@ class ManagerAdmin(admin.ModelAdmin):
 		(None, {
 			'fields': ('first_name','last_name','cpf','address','username','password','email','cellphone','credit_limit_to_add')
 		}),
-		)	
+		)
 
 	list_display =('pk','username','first_name','email','cellphone','credit_limit_to_add')
