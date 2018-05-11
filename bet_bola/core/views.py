@@ -411,7 +411,7 @@ class ResetSellerRevenue(View):
 				else:					
 					seller = Seller.objects.get(username=username)
 
-					if request.user.manager.has_perm('set_credit_limit', seller):
+					if request.user.has_perm('set_credit_limit', seller):
 						tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=seller.pk, payment__seller_was_rewarded=False)	            	
 						payments = Payment.objects.filter(who_set_payment_id=seller.pk, seller_was_rewarded=False)
 
