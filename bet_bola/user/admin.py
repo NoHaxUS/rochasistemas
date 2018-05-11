@@ -40,7 +40,7 @@ class ManagerAdmin(admin.ModelAdmin):
 
 	fieldsets = (
 		(None, {
-			'fields': ('first_name','last_name','username','password','email','cellphone','credit_limit_to_add')
+			'fields': ('first_name','last_name','cpf','address','username','password','email','cellphone','credit_limit_to_add')
 		}),
 		)	
 

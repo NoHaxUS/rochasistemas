@@ -83,7 +83,8 @@ class Punter(CustomUser):
 
 
 class Manager(CustomUser):
-        
+    cpf = models.CharField(max_length=11, verbose_name='CPF', null=True)
+    address = models.CharField(max_length=75, verbose_name='Endereço', null=True)
     credit_limit_to_add = models.FloatField(default=0, verbose_name="Crédito")
 
     def transfer_credit_limit(self,seller,value):
