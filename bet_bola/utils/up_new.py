@@ -524,18 +524,27 @@ def dupla_chance(game, all_cotations,local_team_score,visitor_team_score):
     if cotations.count() > 0:
         cotations.update(winning=False)
         casa_empate = cotations.filter(name='1X')
+        casa_empate_nome = cotations.filter(name='Casa/Empate')
         casa_visitante = cotations.filter(name='12')
+        casa_visitante_nome = cotations.filter(name='Casa/Visitante')
         empate_visitante = cotations.filter(name='X2')
+        empate_visitante_nome = cotations.filter(name='Empate/Visitante')
     
         if local_team_score > visitor_team_score:
             casa_empate.update(winning=True)
+            casa_empate_nome.update(winning=True)
             casa_visitante.update(winning=True)
+            casa_visitante_nome.update(winning=True)
         elif local_team_score < visitor_team_score:
             casa_visitante.update(winning=True)
+            casa_visitante_nome.update(winning=True)
             empate_visitante.update(winning=True)
+            empate_visitante_nome.update(winning=True)
         else:
             casa_empate.update(winning=True)
+            casa_empate_nome.update(winning=True)
             empate_visitante.update(winning=True)
+            empate_visitante_nome.update(winning=True)
 
 
 def vencer_e_nao_tomar_gol(game, all_cotations,local_team_score,visitor_team_score):

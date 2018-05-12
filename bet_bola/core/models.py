@@ -311,8 +311,8 @@ class Cotation(models.Model):
                 is_excluded = True
 
 
-        elif kind.pk == 63:
-            is_excluded = True
+        #elif kind.pk == 63:
+        #    is_excluded = True
 
         #print("Excluded?: " + str(is_excluded))
         #input("Continuar")
