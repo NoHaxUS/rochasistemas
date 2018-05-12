@@ -82,6 +82,18 @@ class BetTicket(models.Model):
         return self.cotations.filter(winning=None).count() > 0
 
 
+class CotationHistory(models.Model):
+
+    bet_ticket = models.ForeignKey('BetTicket', on_delete=models.CASCADE, verbose_name='Ticket', related_name='cotations_history')
+    name = models.CharField(max_length=80, verbose_name='Nome da Cota')
+    original_value = models.FloatField(default=0,verbose_name='Valor Original')
+    value = models.FloatField(default=0, verbose_name='Valor Modificado')
+    game = models.ForeignKey('Game', related_name='cotations_history', null=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
+    winning = models.NullBooleanField(verbose_name='Vencedor ?')
+    is_standard = models.BooleanField(default=False, verbose_name='Cota Padrão ?')
+    kind = models.ForeignKey('Market', related_name='cotations_history', null=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
+    total = models.FloatField(blank=True, null=True)
+  
 
 class Game(models.Model):
 

@@ -3,7 +3,7 @@ from django.views import View
 from django.core.paginator import Paginator
 from django.views.generic.base import TemplateResponseMixin
 from django.http import HttpResponse, JsonResponse
-from .models import Cotation,BetTicket,Game,Championship,Payment,Reward,Country
+from .models import Cotation,BetTicket,Game,Championship,Payment,Reward,Country,CotationHistory
 from user.models import Seller
 from django.core import serializers
 from django.conf import settings
@@ -283,7 +283,7 @@ class CreateTicketView(View):
 
 		if len(game_cotations) < min_number_of_choices_per_bet:
 			data['success'] =  False
-			data['message'] =  "Desculpe. Aposte em pelo menos " + str(min_number_of_choices_per_bet) + " jogos."
+			data['message'] =  "Desculpe. Aposte em pelo menos " + str(min_number_of_choices_per_bet) + " jogo."
 
 
 		if data['success']:
@@ -307,8 +307,22 @@ class CreateTicketView(View):
 					data['message'] =  "Desculpe. Vendedor não possui limite de credito para efetuar a aposta."
 					return UnicodeJsonResponse(data)
 			
-			for game in game_cotations:
-				ticket.cotations.add(game)
+
+			for i_cotation in game_cotations:
+				ticket.cotations.add(i_cotation)
+
+				CotationHistory(
+					bet_ticket=ticket,
+					name=i_cotation.name,
+					original_value=i_cotation.original_value,
+					value=i_cotation.value,
+					game=i_cotation.game,
+					winning=i_cotation.winning,
+					is_standard=i_cotation.is_standard,
+					kind=i_cotation.kind,
+					total=i_cotation.total
+				).save()
+
 			ticket.reward.value = ticket_reward_value
 			ticket.reward.save()
 
@@ -365,7 +379,8 @@ class TicketDetail(TemplateResponseMixin, View):
 		content += "<CENTER> "+ settings.APP_VERBOSE_NAME + "<BR>"
 		content += "<CENTER> Prazo para Resgate do Prêmio: 48 horas."
 		content = urllib.parse.urlparse(content).geturl()
-		context = {'ticket': ticket, 'print': content, 'valor_apostado': "%.2f" % ticket.value, 'ganho_possivel': "%.2f" % ticket.reward.value}
+
+		context = {'ticket': ticket, 'print': content}
 
 		return self.render_to_response(context)	
 
