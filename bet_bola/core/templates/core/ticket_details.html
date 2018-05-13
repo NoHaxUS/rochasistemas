@@ -31,6 +31,7 @@
 
 {% block content %}
 <div class="col s12 center-align">
+    {% if show_ticket %}
     <div class="row">
         <div id="ticket-details-actions">
             <div class="col s6">
@@ -47,8 +48,10 @@
             </div>
         </div>
     </div>
+    {% endif %}
     <div class="row">
         <div class="col s11 l10 hcenter white ticket-details">
+            {% if show_ticket %}
             <div class="row white">
                 <div class="details-header">
                     <h5>Detalhes do Ticket: {{ticket.pk}}</h5>
@@ -118,6 +121,15 @@
                     </table>
                 </div>
             </div>
+        {% else %}
+
+        <div class="row white">
+                <div class="details-header">
+                    <h5>A visualização desse Ticket não está disponível, consulte a versão impressa.</h5>
+                </div>
+            </div>
+
+        {% endif %}
         </div>
     </div>
 </div>

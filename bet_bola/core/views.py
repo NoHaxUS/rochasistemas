@@ -362,46 +362,49 @@ class TicketDetail(TemplateResponseMixin, View):
 			return self.render_to_response(context={})
 
 		cotations_history = CotationHistory.objects.filter(bet_ticket=ticket.pk)
-
-		cotations_values = {}
-		for i_cotation in cotations_history:
-			cotations_values[i_cotation.original_cotation] = i_cotation.value
-
-
-		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
-		if ticket.random_user:
-			content += "<CENTER> CLIENTE: " + ticket.random_user.first_name + "<BR>"
-		else:
-			content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
-		content += "<CENTER> APOSTA: R$" + str("%.2f" % ticket.value) + "<BR>"
-		content += "<CENTER> COTA TOTAL: " + str("%.2f" % ticket.cotation_value_total) + "<BR>"
-		content += "<CENTER> GANHO POSSIVEL: R$" + str("%.2f" % ticket.reward.value) + "<BR>"
 		
-		content += "<CENTER> DATA: " + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
-		content += "<BR><BR>"
-		
-		content += "<LEFT> APOSTAS <BR>"
-		content += "<LEFT>-------------------------------> <BR>"
+		if cotations_history.count() > 0:
 
-		for cotation in ticket.cotations.all():
-			content += "<LEFT>" + cotation.game.name + "<BR>"
-			game_date = cotation.game.start_game_date.strftime('%d/%m/%Y %H:%M')
-			content += "<LEFT>" + game_date + "<BR>"
-			content += "<LEFT>"+ cotation.kind.name + "<BR>"
-			content += "<LEFT>" + self.get_verbose_cotation(cotation.name) + " --> " + str("%.2f" % cotations_values[cotation.pk]) + "<BR>"
+			cotations_values = {}
+			for i_cotation in cotations_history:
+				cotations_values[i_cotation.original_cotation] = i_cotation.value
 
-			if cotation.winning == None:
-				content += "<RIGHT> Status: Em Aberto <BR>"
+
+			content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
+			if ticket.random_user:
+				content += "<CENTER> CLIENTE: " + ticket.random_user.first_name + "<BR>"
 			else:
-				content += "<RIGHT> Status: " + ("Acertou" if cotation.winning else "Não acertou") + "<BR>"
+				content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
+			content += "<CENTER> APOSTA: R$" + str("%.2f" % ticket.value) + "<BR>"
+			content += "<CENTER> COTA TOTAL: " + str("%.2f" % ticket.cotation_value_total) + "<BR>"
+			content += "<CENTER> GANHO POSSIVEL: R$" + str("%.2f" % ticket.reward.value) + "<BR>"
 			
-			content += "<CENTER>-------------------------------> <BR>"
-		content += "<CENTER> "+ settings.APP_VERBOSE_NAME + "<BR>"
-		content += "<CENTER> Prazo para Resgate do Prêmio: 48 horas."
-		content = urllib.parse.urlparse(content).geturl()
+			content += "<CENTER> DATA: " + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
+			content += "<BR><BR>"
+			
+			content += "<LEFT> APOSTAS <BR>"
+			content += "<LEFT>-------------------------------> <BR>"
 
+			for cotation in ticket.cotations.all():
+				content += "<LEFT>" + cotation.game.name + "<BR>"
+				game_date = cotation.game.start_game_date.strftime('%d/%m/%Y %H:%M')
+				content += "<LEFT>" + game_date + "<BR>"
+				content += "<LEFT>"+ cotation.kind.name + "<BR>"
+				content += "<LEFT>" + self.get_verbose_cotation(cotation.name) + " --> " + str("%.2f" % cotations_values[cotation.pk]) + "<BR>"
+
+				if cotation.winning == None:
+					content += "<RIGHT> Status: Em Aberto <BR>"
+				else:
+					content += "<RIGHT> Status: " + ("Acertou" if cotation.winning else "Não acertou") + "<BR>"
+				
+				content += "<CENTER>-------------------------------> <BR>"
+			content += "<CENTER> "+ settings.APP_VERBOSE_NAME + "<BR>"
+			content += "<CENTER> Prazo para Resgate do Prêmio: 48 horas."
+			content = urllib.parse.urlparse(content).geturl()
+			context = {'ticket': ticket, 'print': content,'cotations_values':cotations_values, 'show_ticket': True}
 		
-		context = {'ticket': ticket, 'print': content,'cotations_values':cotations_values}
+		else:
+			context = {'show_ticket': False}
 
 		return self.render_to_response(context)	
 
