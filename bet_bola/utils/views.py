@@ -40,15 +40,16 @@ class PDF(View):
         pdf.add_font('DejaVu', '', 'DejaVuSansCondensed.ttf', uni=True)		
         pdf.set_font('DejaVu','',30)
         string = 'TICKET:' + str(ticket.pk)
-        pdf.text(65,12, string)
+        pdf.text(55,12, string)
         if ticket.random_user:
             string = 'CLIENTE: ' + ticket.random_user.first_name
         else:
             string = 'CLIENTE: ' + ticket.user.first_name							
-        pdf.text(65,24,string)									
-        pdf.text(65,36, date)
-        pdf.text(65,48, "APOSTA: R$" + str(ticket.value) )
-        pdf.text(65,60, "GANHO POSSÍVEL: R$" + str(ticket.reward.value) )
+        pdf.text(55,24,string)									
+        pdf.text(55,36, date)
+        pdf.text(55,48, "APOSTA: R$" + str("%.2f" % ticket.value) )
+        pdf.text(55,60, "COTA TOTAL: " + str("%.2f" % ticket.cotation_value_total) )
+        pdf.text(55,72, "GANHO POSSÍVEL: R$" + str("%.2f" % ticket.reward.value) )
         pdf.text(4,100,'APOSTAS')		
         pdf.text(0, 105,'--------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
         h = 110
@@ -74,7 +75,7 @@ class PDF(View):
             h=h+14
             pdf.text(0,h,'---------------------------------------------------------------------------------------------------------------------------------------------------------')			
 
-        pdf.text(70,h+20, settings.APP_VERBOSE_NAME)
+        pdf.text(80,h+20, settings.APP_VERBOSE_NAME)
         pdf.text(20,h+36, "Prazo para Resgate do Prêmio: 48 horas.")
         buffer = pdf.output(dest='S').encode('latin-1')
         response.write(buffer)
