@@ -351,7 +351,7 @@ class TicketDetail(TemplateResponseMixin, View):
 	template_name = 'core/ticket_details.html'
 
 	def get_verbose_cotation(self, cotation_name):
-		names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Fora'}
+		names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Visitante'}
 		return names_mapping.get(cotation_name, cotation_name)
 
 	def get(self, request, *args, **kwargs):
