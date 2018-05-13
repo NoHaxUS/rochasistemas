@@ -26,9 +26,16 @@ def order_by(queryset, args):
 
 @register.filter(name='get_item')
 def get_item(dictionary, key):
-	return dictionary.get(key,key)
+    return dictionary.get(key,key)
 
 
 @register.simple_tag
 def app_name():
     return settings.APP_VERBOSE_NAME
+
+
+@register.filter(name='get_verbose_cotation')
+def get_verbose_cotation(cotation_name):
+    names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Visitante'}
+    return names_mapping.get(cotation_name, cotation_name)
+

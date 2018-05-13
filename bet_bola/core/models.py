@@ -84,6 +84,7 @@ class BetTicket(models.Model):
 
 class CotationHistory(models.Model):
 
+    original_cotation = models.IntegerField()
     bet_ticket = models.ForeignKey('BetTicket', on_delete=models.CASCADE, verbose_name='Ticket', related_name='cotations_history')
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
     original_value = models.FloatField(default=0,verbose_name='Valor Original')
@@ -218,23 +219,15 @@ class Cotation(models.Model):
 
     def save(self):
         if not Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).exists():
-            #print("Cotation:" + str(self.game.name))
             if not self.is_excluded_cotation(self.name, self.kind):
                 super().save()
-                #print("Saving Cota:" + str(self.name) + " Tipo:" + str(self.kind))
-            else:
-                pass
-                #print("[NOT] Cota:" + str(self.name) + " Tipo:" + str(self.kind))
         else:
             Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).update(value=self.value)
-            #print("UPDATE Cota:" + str(self.name) + " Tipo:" + str(self.kind))
-
+  
 
     def is_excluded_cotation(self, cotation_name, kind):
 
         is_excluded = False
-
-        #print("ID: "+ str(kind.pk) + " Cota: " + cotation_name + " Tipo: " + str(kind.name))
 
         if kind.pk == 38:
             excluded_cotations = [
@@ -325,9 +318,6 @@ class Cotation(models.Model):
 
         #elif kind.pk == 63:
         #    is_excluded = True
-
-        #print("Excluded?: " + str(is_excluded))
-        #input("Continuar")
 
         return is_excluded
 

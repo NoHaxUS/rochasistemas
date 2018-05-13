@@ -138,6 +138,10 @@ class GameChampionship(TemplateResponseMixin, View):
 
 
 class CotationsView(View):
+
+	def get_verbose_cotation(self, cotation_name):
+		names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Visitante'}
+		return names_mapping.get(cotation_name, cotation_name)
 	
 	def get(self, request, *args, **kwargs):
 
@@ -146,6 +150,8 @@ class CotationsView(View):
 		cotations_of_game = Cotation.objects.filter(game_id=gameid, is_standard=False)
 	
 		for cotation in cotations_of_game:
+			if cotation.kind.pk != 976241:
+				cotation.name = self.get_verbose_cotation(cotation.name)
 			if cotation.kind.name not in cotations_by_kind:
 				cotations_by_kind[cotation.kind.name] = []
 				cotations_by_kind[cotation.kind.name].append(cotation)
@@ -309,9 +315,11 @@ class CreateTicketView(View):
 			
 
 			for i_cotation in game_cotations:
+
 				ticket.cotations.add(i_cotation)
 
 				CotationHistory(
+					original_cotation=i_cotation.pk,
 					bet_ticket=ticket,
 					name=i_cotation.name,
 					original_value=i_cotation.original_value,
@@ -342,12 +350,23 @@ class TicketDetail(TemplateResponseMixin, View):
 
 	template_name = 'core/ticket_details.html'
 
+	def get_verbose_cotation(self, cotation_name):
+		names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Fora'}
+		return names_mapping.get(cotation_name, cotation_name)
+
 	def get(self, request, *args, **kwargs):
 		try:
 			ticket = BetTicket.objects.get(pk=self.kwargs["pk"])
 		except BetTicket.DoesNotExist:
 			self.template_name = 'core/ticket_not_found.html'
 			return self.render_to_response(context={})
+
+		cotations_history = CotationHistory.objects.filter(bet_ticket=ticket.pk)
+
+		cotations_values = {}
+		for i_cotation in cotations_history:
+			cotations_values[i_cotation.original_cotation] = i_cotation.value
+
 
 		content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
 		if ticket.random_user:
@@ -368,7 +387,7 @@ class TicketDetail(TemplateResponseMixin, View):
 			game_date = cotation.game.start_game_date.strftime('%d/%m/%Y %H:%M')
 			content += "<LEFT>" + game_date + "<BR>"
 			content += "<LEFT>"+ cotation.kind.name + "<BR>"
-			content += "<LEFT>" + cotation.name + " --> " + str(round(cotation.value, 2)) + "<BR>"
+			content += "<LEFT>" + self.get_verbose_cotation(cotation.name) + " --> " + str("%.2f" % cotations_values[cotation.pk]) + "<BR>"
 
 			if cotation.winning == None:
 				content += "<RIGHT> Status: Em Aberto <BR>"
@@ -380,7 +399,8 @@ class TicketDetail(TemplateResponseMixin, View):
 		content += "<CENTER> Prazo para Resgate do Prêmio: 48 horas."
 		content = urllib.parse.urlparse(content).geturl()
 
-		context = {'ticket': ticket, 'print': content}
+		
+		context = {'ticket': ticket, 'print': content,'cotations_values':cotations_values}
 
 		return self.render_to_response(context)	
 

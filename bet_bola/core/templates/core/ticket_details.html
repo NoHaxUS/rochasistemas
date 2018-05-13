@@ -1,4 +1,5 @@
 {% extends './base_main.html' %}
+{% load filters %}
 
 {% block modals %}
 {% endblock %}
@@ -100,7 +101,7 @@
                             </td>
                             <td>
                             {{cotation.kind}} <br>
-                            Cota: {{cotation.name}} : {{cotation.value}}
+                            Cota: {{cotation.name | get_verbose_cotation}} : {{ cotations_values|get_item:cotation.pk }}
                             </td>
                             <td>
                             {% if cotation.winning %}

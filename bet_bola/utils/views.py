@@ -4,7 +4,7 @@ from django.template.loader import get_template
 from django.views.generic import View
 from django.utils import timezone
 from django.core import serializers
-from core.models import BetTicket,Cotation
+from core.models import BetTicket,Cotation,CotationHistory
 from user.models import Seller
 from django.conf import settings
 from fpdf import FPDF
@@ -14,10 +14,24 @@ import json
 
 
 class PDF(View):
+
+    def get_verbose_cotation(self, cotation_name):
+        names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Visitante'}
+        return names_mapping.get(cotation_name, cotation_name)
+
+
     def get(self, request, *args, **kwargs):
         ticket = get_object_or_404(BetTicket, pk=self.kwargs["pk"])
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = 'inline; filename="ticket.pdf"'
+
+
+        cotations_history = CotationHistory.objects.filter(bet_ticket=ticket.pk)
+
+        cotations_values = {}
+        for i_cotation in cotations_history:
+            cotations_values[i_cotation.original_cotation] = i_cotation.value
+
 
         date = 'DATA: ' + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
 
@@ -47,8 +61,8 @@ class PDF(View):
             h=h+14			
             pdf.text(4,h,c.kind.name)
             h=h+14
-            pdf.text(4,h,"Cota:" + c.name)			
-            pdf.text(190,h,str(c.value))
+            pdf.text(4,h,"Cota:" + self.get_verbose_cotation(c.name))			
+            pdf.text(190,h,str("%.2f" % cotations_values[c.pk]))
             h=h+14
             if not c.winning == None:
                 pdf.text(4,h,"Status:")			
@@ -92,6 +106,4 @@ class GetSellers(View):
             sellers.append({'login': seller.username + " - Nome: " + seller.first_name})
         data = json.dumps(sellers)
         return HttpResponse(data, content_type='application/json' )
-
-        
 
