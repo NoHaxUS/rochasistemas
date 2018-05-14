@@ -283,14 +283,13 @@ class CreateTicketView(View):
 
 		ticket_reward_value = round(cotation_sum * ticket_bet_value, 2)
 
-		if float(ticket_reward_value) > float(max_reward_to_pay):
+		if data['success'] and float(ticket_reward_value) > float(max_reward_to_pay):
 			data['success'] =  False
 			data['message'] =  "Desculpe. <br /> Valor máximo da recompensa: R$" + str(round(max_reward_to_pay, 2))
 
-		if len(game_cotations) < min_number_of_choices_per_bet:
+		if data['success'] and len(game_cotations) < min_number_of_choices_per_bet:
 			data['success'] =  False
 			data['message'] =  "Desculpe. Aposte em pelo menos " + str(min_number_of_choices_per_bet) + " jogo."
-
 
 		if data['success']:
 			ticket = BetTicket(
