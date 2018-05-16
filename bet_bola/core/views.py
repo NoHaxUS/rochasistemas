@@ -54,7 +54,16 @@ COUNTRY_TRANSLATE = {
 	"Iceland":"Islândia",
 	"Saudi Arabia": "Arábia Saudita",
 	"India":"Índia",
-
+	"Côte d'Ivoire":"Costa do Marfim",
+	"Ukraine":"Ucrânia",
+	"Iraq":"Iraque",
+	"Cyprus":"Chipre",
+	"Georgia":"Geórgia",
+	"South Africa":"África do Sul",
+	"Romania":"Romênia",
+	"Uruguay":"Uruguai",
+	"Republic of Ireland":"Irlanda",
+	"Bulgaria":"Bulgária"
 }
 
 
