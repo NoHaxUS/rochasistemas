@@ -37,7 +37,7 @@ $(document).ready(function () {
 
 
         $("#cellphone_register").mask("(99)99999-999?9");
-        
+        $("#telefone").mask("(99)99999-999?9");
         $(".button-collapse").sideNav();
         $('.modal').modal();
 
@@ -488,8 +488,20 @@ $(document).ready(function () {
                         if(data.success){
                             alertify.alert("Sucesso", data.message);
                         }else{
-                            if(data.action == 'log_in'){
-                                $('#modal-login').modal('open');
+                            if(data.action == 'random-user'){
+                                if(Cookies.get('warning') != undefined){                                    
+                                    $('#modal-random-user').modal('open');
+                                }
+                                else{
+                                    Cookies.set('warning',true,{expires: 7});
+                                    alertify.confirm('Confirmação','Ao realizar apostas sem estar logado, você perderá o histórico de suas apostas.',
+                                    function(){
+                                        $('#modal-random-user').modal('open');
+                                    },
+                                    function(){
+                                        $('#modal-login').modal('open');                    
+                                    }).set('labels',{ok:'Prosseguir',cancel:'Cancelar'});
+                                    }                                
                             }else{
                                 alertify.alert("Erro", data.message);
                             }
@@ -544,17 +556,13 @@ $(document).ready(function () {
                         
                         if(data.success){
                             alertify.alert("Sucesso", data.message);
-                        }else{
-                            if(data.action == 'log_in'){
-                                $('#modal-login').modal('open');
-                            }else{
-                                alertify.alert("Erro", data.message);
-                            }
+                        }else{                            
+                            alertify.alert("Erro", data.message);                            
                         }
                     }, 'json');
                 },function(){
                     alertify.error('Cancelado');
-                });
+                }).set('labels',{ok:'Confirmar',cancel:'Cancelar'});
                 
             }else{
                 alertify.error("Informe o valor da sua aposta");

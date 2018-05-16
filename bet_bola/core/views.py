@@ -230,9 +230,9 @@ class CreateTicketView(View):
 		client_name = request.POST.get('nome', None)
 		cellphone = request.POST.get('telefone', None)
 		
-		if not request.user.is_authenticated:
+		if not request.user.is_authenticated and not client_name:			
 			data['success'] =  False
-			data['action'] = 'log_in'
+			data['action'] = 'random-user'
 		
 		if request.user.is_superuser:
 			data['success'] =  False
@@ -292,8 +292,7 @@ class CreateTicketView(View):
 			data['message'] =  "Desculpe. Aposte em pelo menos " + str(min_number_of_choices_per_bet) + " jogo."
 
 		if data['success']:
-			ticket = BetTicket(
-				user=CustomUser.objects.get(pk=request.user.pk),
+			ticket = BetTicket(				
 				value=ticket_bet_value,
 				cotation_value_total=cotation_sum,
 				creation_date = tzlocal.now(),
@@ -302,9 +301,13 @@ class CreateTicketView(View):
 			)
 
 			if not request.user.has_perm('user.be_seller'):
-				ticket.random_user=None
+				if request.user.is_authenticated:
+					ticket.user=CustomUser.objects.get(pk=request.user.pk)
+				elif request.user.is_anonymous:
+					ticket.random_user=RandomUser.objects.create(first_name=client_name, cellphone=cellphone)				
 				ticket.save()
 			else:
+				user=CustomUser.objects.get(pk=request.user.pk)
 				ticket.random_user=RandomUser.objects.create(first_name=client_name, cellphone=cellphone)
 				ticket.save()
 				if not ticket.validate_ticket(request.user):
