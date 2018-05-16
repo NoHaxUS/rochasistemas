@@ -230,9 +230,10 @@ class CreateTicketView(View):
 		client_name = request.POST.get('nome', None)
 		cellphone = request.POST.get('telefone', None)
 		
-		if not request.user.is_authenticated and not client_name:			
+		if not request.user.is_authenticated and not client_name:
 			data['success'] =  False
 			data['action'] = 'random-user'
+			data['message'] = 'O nome do cliente é obrigatório.'
 		
 		if request.user.is_superuser:
 			data['success'] =  False

@@ -470,8 +470,6 @@ $(document).ready(function () {
             return ;
         }
 
-        console.log(ticket_value);
-
         if(ticket == '{}'){
             alertify.error("Nenhuma cota selecionada nessa sessão");
             COTATION_TOTAL = 0;
@@ -482,6 +480,11 @@ $(document).ready(function () {
 
                 alertify.confirm('Confirmação','Confirmar aposta?', function(){
 
+                    if(Cookies.get('warning') == undefined){
+                        Cookies.set('warning',true,{expires: 7});
+                        alertify.alert("Dica", "Realizar apostas logado mantem o histórico de suas apostas.")
+                    }
+
                     $.post('/ticket/',
                     {'ticket_value': ticket_value},
                     (data, status, rq)=>{
@@ -489,19 +492,7 @@ $(document).ready(function () {
                             alertify.alert("Sucesso", data.message);
                         }else{
                             if(data.action == 'random-user'){
-                                if(Cookies.get('warning') != undefined){                                    
-                                    $('#modal-random-user').modal('open');
-                                }
-                                else{
-                                    Cookies.set('warning',true,{expires: 7});
-                                    alertify.confirm('Confirmação','Ao realizar apostas sem estar logado, você perderá o histórico de suas apostas.',
-                                    function(){
-                                        $('#modal-random-user').modal('open');
-                                    },
-                                    function(){
-                                        $('#modal-login').modal('open');                    
-                                    }).set('labels',{ok:'Prosseguir',cancel:'Cancelar'});
-                                    }                                
+                                $('#modal-random-user').modal('open');
                             }else{
                                 alertify.alert("Erro", data.message);
                             }
@@ -527,7 +518,7 @@ $(document).ready(function () {
 
         var nome = $('.nome').val();
         var telefone = $('.telefone').val();
-        var ticket = Cookies.get('ticket_cookie');  
+        var ticket = Cookies.get('ticket_cookie');
 
         if($(this).attr('desktop') == 'True'){
             ticket_value = $('.ticket-bet-value-desktop').val();
@@ -539,8 +530,6 @@ $(document).ready(function () {
             alertify.error("Você deve apostar um valor maior que 0");
             return ;
         }
-
-        console.log(ticket_value);
 
         if(ticket == '{}'){
             alertify.error("Nenhuma cota selecionada nessa sessão");
@@ -557,12 +546,12 @@ $(document).ready(function () {
                         if(data.success){
                             alertify.alert("Sucesso", data.message);
                         }else{                            
-                            alertify.alert("Erro", data.message);                            
+                            alertify.alert("Erro", data.message);                     
                         }
                     }, 'json');
                 },function(){
                     alertify.error('Cancelado');
-                }).set('labels',{ok:'Confirmar',cancel:'Cancelar'});
+                }).set('labels',{ok:'OK',cancel:'Cancelar'});
                 
             }else{
                 alertify.error("Informe o valor da sua aposta");
