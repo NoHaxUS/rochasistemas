@@ -66,6 +66,9 @@
                         {% else %}
                             {{ticket.user.first_name}}
                         {% endif %}
+                        {% if perms.user.be_seller or user.is_superuser or perms.user.be_manager %}
+                        <div class="row"><span class='bold'>Telefone:</span> {{ticket.random_user.cellphone}}</div>
+                        {% endif %}
                     </div>
                     <div class="row"><span class='bold'>Data de Criação:</span> {{ticket.creation_date}}</div>
                     <div class="row"><span class='bold'>Status do Pagamento:</span> {{ticket.payment.status_payment}} </div>
