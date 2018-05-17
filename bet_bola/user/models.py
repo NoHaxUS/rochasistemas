@@ -141,16 +141,22 @@ class GeneralConfigurations(models.Model):
         return "Configuração Atual"
 
     def save(self, *args, **kwargs):
-        from core.models import Cotation
+        from core.models import Game
         
         self.pk = 1
 
-        Cotation.objects.update(value=F('original_value') * round((self.percentual_reduction / 100), 2) )
-        Cotation.objects.update(value=Case(When(value__lt=1,then=1.01),default=F('value')))
+        able_games = Game.objects.able_games()
+
+        for game in able_games:
+            game.cotations.update(value=F('original_value') * round((self.percentual_reduction / 100), 2) )
+            game.cotations.update(value=Case(When(value__lt=1,then=1.01),default=F('value')))
+            game.cotations.filter(value__gt=self.max_cotation_value).update(value=self.max_cotation_value)
+        #Cotation.objects.update(value=F('original_value') * round((self.percentual_reduction / 100), 2) )
+        #Cotation.objects.update(value=Case(When(value__lt=1,then=1.01),default=F('value')))
 
         
-        if self.max_cotation_value:
-            Cotation.objects.filter(value__gt=self.max_cotation_value).update(value=self.max_cotation_value)
+        #if self.max_cotation_value:
+        #    Cotation.objects.filter(value__gt=self.max_cotation_value).update(value=self.max_cotation_value)
 
         super(GeneralConfigurations, self).save()
 
