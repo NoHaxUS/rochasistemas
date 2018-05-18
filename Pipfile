@@ -11,6 +11,7 @@ django = "*"
 "psycopg2" = "*"
 requests = "*"
 fpdf = "*"
+bootstrap-admin = "*"
 
 
 [dev-packages]

@@ -34,6 +34,7 @@ APP_VERBOSE_NAME = 'Minas Bet'
 # Application definition
 
 INSTALLED_APPS = [
+    'bootstrap_admin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 ]
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
@@ -72,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',
             ],
         },
     },
@@ -134,8 +137,31 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = 'pt-br'
+from django.utils.translation import gettext_lazy as _
 
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, "locale"),
+)
+
+LANGUAGES = (
+    ('en', _('Inglês')),
+    ('pt-BR', _('Português')),
+)
+
+LANGUAGE_CODE = 'en'
+
+#Encoding
+DEFAULT_CHARSET = 'utf-8'
+
+#Email
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'MAIL'
+EMAIL_HOST_PASSWORD = 'PASS'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'Pablo <noreply@example.com>'
+
+#Zones
 TIME_ZONE = 'UTC'
 TIME_ZONE_LOCAL = 'America/Sao_Paulo'
 
@@ -144,9 +170,9 @@ USE_L10N = True
 USE_TZ = False
 
 
-#statis files
+#Statis Files
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = '/home/mushzinho/webapps/static_minasbet'
+STATIC_ROOT = '/home/mushzinho/webapps/static_SITE'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
