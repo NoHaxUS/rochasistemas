@@ -35,13 +35,13 @@ class BetTicket(models.Model):
         return str(self.pk)
 
 
-    class Meta:
-        verbose_name = 'Ticket'
-        verbose_name_plural = 'Tickets'
-        permissions = (
-            ('can_validate_payment', "Can validate user ticket"),
-            ('can_reward', "Can reward a user"),
-        )
+    def real_punter_name(self):
+        if self.random_user:
+            return self.random_user.first_name
+        else:
+            return self.user.full_name()
+    real_punter_name.short_description = 'Apostador'
+
 
     def validate_ticket(self, user):
         if user.seller.can_sell_ilimited:
@@ -82,6 +82,15 @@ class BetTicket(models.Model):
 
     def check_if_waiting_results(self):
         return self.cotations.filter(winning=None).count() > 0
+
+
+    class Meta:
+        verbose_name = 'Ticket'
+        verbose_name_plural = 'Tickets'
+        permissions = (
+            ('can_validate_payment', "Can validate user ticket"),
+            ('can_reward', "Can reward a user"),
+        )
 
 
 class CotationHistory(models.Model):
@@ -145,7 +154,7 @@ class Championship(models.Model):
 
     name = models.CharField(max_length=80, verbose_name='Nome', help_text='Campeonato')
     country = models.ForeignKey('Country', related_name='my_championships',null=True, on_delete=models.SET_NULL, verbose_name='Pais')
-    priority = models.IntegerField(default=1)
+    priority = models.IntegerField(default=1, verbose_name='Prioridade')
 
     def __str__(self):
         return self.name

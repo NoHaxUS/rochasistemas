@@ -25,10 +25,6 @@ class GamesWithNoFinalResults(admin.SimpleListFilter):
 			return queryset.filter(status_game='FT', ft_score__isnull=True)
 
 
-@admin.register(Country)
-class CountryAdmin(admin.ModelAdmin):
-	pass
-
 
 
 @admin.register(BetTicket)
@@ -38,39 +34,17 @@ class BetTicketAdmin(admin.ModelAdmin):
 	'payment__who_set_payment_id',
 	'payment__status_payment',
 	'reward__status_reward')
-	list_display =('pk','user','creation_date','reward','value','cotation_sum','bet_ticket_status')
-	exclude = ('cotations',)
-	autocomplete_fields = ('user',)
+	list_display =('pk','real_punter_name','creation_date','value','reward','cotation_sum','bet_ticket_status')
+	exclude = ('cotations','user','random_user',)
 
-
-
-@admin.register(Cotation)
-class CotationAdmin(admin.ModelAdmin):
-	search_fields = ['game_id__name']
-	list_display = ('pk','game','original_value','value')
-	fieldsets = (
-		(None, {
-			'fields': ('name','original_value', 'value','game','is_standard','total')
-		}),
-	)
 
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
 	search_fields = ['name']
 	list_filter = (GamesWithNoFinalResults,)
-	fieldsets = (
-		(None, {
-			'fields': ('name','ht_score','ft_score','status_game')
-		}),
-	)
-	list_display = ('name',)
-	search_fields_hint = 'Buscar pelo nome do Jogo'
-
-
-@admin.register(Championship)
-class ChampionshipAdmin(admin.ModelAdmin):
-	search_fields = ['name']
-	search_fields_hint = 'Buscar pelo nome do Campeoanto'
+	fields = ('name','ht_score','ft_score','status_game',)
+	list_display = ('pk','name',)
+	list_display_links = ('pk','name',)
 
 

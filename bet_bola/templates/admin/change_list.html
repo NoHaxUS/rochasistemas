@@ -91,6 +91,7 @@
         <form id="changelist-form" action="" method="post"{% if cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>{% csrf_token %}
         {% if cl.formset %}
           <div>{{ cl.formset.management_form }}</div>
+          
         {% endif %}
           {% block result_list %}
             <div class="place-info-actions">
@@ -135,6 +136,7 @@
                 {{ cl.opts.verbose_name_plural }}
               {% endifequal %}
             </span>
+      
             <div class="right-buttons">
               <a href="#panel-heading" class="btn btn-default btn-xs" role="button">
                 <span class="glyphicon glyphicon-chevron-up"></span>
