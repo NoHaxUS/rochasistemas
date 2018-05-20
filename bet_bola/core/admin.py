@@ -1,15 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import BetTicket,Cotation,Payment,Game,Championship,Reward
+from user.models import CustomUser
+from .models import BetTicket,Cotation,Payment,Game,Championship,Reward,Country
 from user.models import CustomUser
 from django.contrib.auth.models import Group
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 # Register your models here.
-
-
-
-admin.site.unregister(Group)
 
 
 
@@ -28,17 +25,23 @@ class GamesWithNoFinalResults(admin.SimpleListFilter):
 			return queryset.filter(status_game='FT', ft_score__isnull=True)
 
 
+@admin.register(Country)
+class CountryAdmin(admin.ModelAdmin):
+	pass
+
+
+
 @admin.register(BetTicket)
 class BetTicketAdmin(admin.ModelAdmin):	
 	search_fields = ['user__first_name']
-	search_fields_hint = 'Buscar pelo nome do Vendedor'
-	list_filter = ('bet_ticket_status','payment__who_set_payment_id','payment__status_payment','reward__status_reward')
+	list_filter = ('bet_ticket_status',
+	'payment__who_set_payment_id',
+	'payment__status_payment',
+	'reward__status_reward')
 	list_display =('pk','user','creation_date','reward','value','cotation_sum','bet_ticket_status')
-	fieldsets = (
-		(None, {
-			'fields': ('user',)
-		}),
-	)
+	exclude = ('cotations',)
+	autocomplete_fields = ('user',)
+
 
 
 @admin.register(Cotation)

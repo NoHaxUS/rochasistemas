@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-18 11:09-0300\n"
+"POT-Creation-Date: 2018-05-19 13:28-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\config\settings.py:153
-msgid "Português"
-msgstr ""
-
-#: .\config\settings.py:154
+#: .\config\settings.py:147
 msgid "Inglês"
 msgstr ""
 
-#: .\core\admin.py:18 .\core\admin.py:23
+#: .\config\settings.py:148
+msgid "Português"
+msgstr ""
+
+#: .\core\admin.py:21 .\core\admin.py:26
 msgid "Jogos sem resultado final"
 msgstr ""
 
@@ -39,7 +39,7 @@ msgstr "Não encontramos a página requisitada"
 
 #: .\templates\admin\500.html:6 .\templates\admin\app_index.html:10
 #: .\templates\admin\auth\user\change_password.html:19
-#: .\templates\admin\base.html:145 .\templates\admin\change_form.html:22
+#: .\templates\admin\base.html:144 .\templates\admin\change_form.html:22
 #: .\templates\admin\change_list.html:32
 #: .\templates\admin\delete_confirmation.html:14
 #: .\templates\admin\delete_selected_confirmation.html:15
@@ -104,7 +104,7 @@ msgstr "Entre login e senha."
 
 #: .\templates\admin\auth\user\change_password.html:31
 #: .\templates\admin\auth\user\change_password.html:75
-#: .\templates\admin\base.html:125
+#: .\templates\admin\base.html:124
 msgid "Change password"
 msgstr "Mudar Senha"
 
@@ -142,20 +142,20 @@ msgid "Enter the same password as above, for verification."
 msgstr "Repita a senha de cima"
 
 #: .\templates\admin\base.html:72 .\templates\admin\base.html:97
-#: .\templates\admin\base.html:99 .\templates\admin\base.html:101
+#: .\templates\admin\base.html:98 .\templates\admin\base.html:100
 #: .\templates\admin\login.html:31 .\templates\admin\login.html:35
 msgid "Django administration"
 msgstr "Administração Plataforma Bet"
 
-#: .\templates\admin\base.html:120 .\templates\admin\base.html:134
+#: .\templates\admin\base.html:119 .\templates\admin\base.html:133
 msgid "Documentation"
 msgstr "Documentação"
 
-#: .\templates\admin\base.html:129 .\templates\admin\base.html:136
+#: .\templates\admin\base.html:128 .\templates\admin\base.html:135
 msgid "Log out"
 msgstr "Sair"
 
-#: .\templates\admin\base.html:155 .\templates\admin\change_list.html:57
+#: .\templates\admin\base.html:154 .\templates\admin\change_list.html:57
 msgid "Close"
 msgstr "Fechar"
 
@@ -226,7 +226,8 @@ msgstr ""
 msgid ""
 "Deleting the %(object_name)s '%(escaped_object)s' would require deleting the "
 "following protected related objects:"
-msgstr "Deletar %(object_name)s '%(escaped_object)s' implica em deletar também: "
+msgstr ""
+"Deletar %(object_name)s '%(escaped_object)s' implica em deletar também: "
 
 #: .\templates\admin\delete_confirmation.html:62
 #, python-format
@@ -252,24 +253,23 @@ msgid ""
 "objects, but your account doesn't have permission to delete the following "
 "types of objects:"
 msgstr ""
-"Deletar %(objects_name)s também resulta em deletar objetos relacionadosd"
-"Porém você não tem permissão para deletar os seguinte tipos de objetos: "
+"Deletar %(objects_name)s também resulta em deletar objetos "
+"relacionadosdPorém você não tem permissão para deletar os seguinte tipos de "
+"objetos: "
 
 #: .\templates\admin\delete_selected_confirmation.html:46
 #, python-format
 msgid ""
 "Deleting the selected %(objects_name)s would require deleting the following "
 "protected related objects:"
-msgstr ""
-"Deletar %(objects_name)s implica em deletar também:"
+msgstr "Deletar %(objects_name)s implica em deletar também:"
 
 #: .\templates\admin\delete_selected_confirmation.html:60
 #, python-format
 msgid ""
 "Are you sure you want to delete the selected %(objects_name)s? All of the "
 "following objects and their related items will be deleted:"
-msgstr ""
-"Deletar %(objects_name)s implica em deletar:"
+msgstr "Deletar %(objects_name)s implica em deletar:"
 
 #: .\templates\admin\edit_inline\tabular.html:22
 msgid "Delete?"
@@ -343,7 +343,8 @@ msgid ""
 "You are authenticated as %(username)s, but are not authorized to access this "
 "page. Would you like to login to a different account?"
 msgstr ""
-"%(username)s, Você não tem autorização para acessar essa página, deseja loga em outra conta?"
+"%(username)s, Você não tem autorização para acessar essa página, deseja loga "
+"em outra conta?"
 
 #: .\templates\admin\login.html:84
 #: .\templates\registration\password_reset_complete.html:23
@@ -352,7 +353,7 @@ msgstr "Logar"
 
 #: .\templates\admin\login.html:95
 msgid "Forgotten your password or username?"
-msgstr "Esqueceu a senha ou login?"
+msgstr "Esqueceu a senha ou login ?"
 
 #: .\templates\admin\object_history.html:29
 msgid "Date/time"
@@ -483,26 +484,33 @@ msgstr "Confirmar senha:"
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used.  Please request a new password reset."
-msgstr "O link de resetar senha é inválido porque já foi usado, solicite uma nova senha."
+msgstr ""
+"O link de resetar senha é inválido porque já foi usado, solicite uma nova "
+"senha."
 
 #: .\templates\registration\password_reset_done.html:19
 msgid ""
 "We've emailed you instructions for setting your password. You should be "
 "receiving them shortly."
-msgstr "Enviamos um email com as instruções de como resetar a senha, você receberá em breve."
+msgstr ""
+"Enviamos um email com as instruções de como resetar a senha, você receberá "
+"em breve."
 
 #: .\templates\registration\password_reset_done.html:21
 msgid ""
 "If you don't receive an email, please make sure you've entered the address "
 "you registered with, and check your spam folder."
-msgstr "Se você não receber o email, confira o e-mail inserido e olhe na pasta de SPAM"
+msgstr ""
+"Se você não receber o email, confira o e-mail inserido e olhe na pasta de "
+"SPAM"
 
 #: .\templates\registration\password_reset_email.html:2
 #, python-format
 msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at %(site_name)s."
-msgstr "Você recebeu esse e-mail porque quer resetar sua senha na %(site_name)s."
+msgstr ""
+"Você recebeu esse e-mail porque quer resetar sua senha na %(site_name)s."
 
 #: .\templates\registration\password_reset_email.html:4
 msgid "Please go to the following page and choose a new password:"
@@ -525,7 +533,9 @@ msgstr "%(site_name)s time"
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll email "
 "instructions for setting a new one."
-msgstr "Esqueceu sua senha? insira seu e-mail abaixo, e lhe enviaremos instruções para definir uma nova."
+msgstr ""
+"Esqueceu sua senha? insira seu e-mail abaixo, e lhe enviaremos instruções "
+"para definir uma nova."
 
 #: .\templates\registration\password_reset_form.html:29
 msgid "Email address:"

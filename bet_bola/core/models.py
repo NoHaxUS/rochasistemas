@@ -9,6 +9,7 @@ from django.db.models import Q
 import decimal
 from django.conf import settings
 import utils.timezone as tzlocal
+from .cotations_restrictions import is_excluded_cotation
 
 
 class BetTicket(models.Model):
@@ -27,7 +28,7 @@ class BetTicket(models.Model):
     reward = models.ForeignKey('Reward', null=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
     payment = models.OneToOneField('Payment', null=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
     value = models.FloatField(verbose_name='Valor Apostado')
-    bet_ticket_status = models.CharField(max_length=80, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][1],verbose_name='Status')
+    bet_ticket_status = models.CharField(max_length=80, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][1],verbose_name='Status de Pagamento')
 
 
     def __str__(self):
@@ -65,6 +66,7 @@ class BetTicket(models.Model):
 
     def cotation_sum(self):
         return round(self.cotation_value_total, 2)
+    cotation_sum.short_description = 'Cota Total'
 
 
     def update_ticket_status(self):
@@ -157,7 +159,14 @@ class Championship(models.Model):
 class Country(models.Model):
 
     name = models.CharField(max_length=45, verbose_name='País')
-    priority = models.IntegerField(default=1)
+    priority = models.IntegerField(default=1, verbose_name='Prioridade')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'País'
+        verbose_name_plural = 'Países'
 
 class Reward(models.Model):
 
@@ -171,7 +180,7 @@ class Reward(models.Model):
     who_rewarded = models.ForeignKey('user.Seller', null=True, on_delete=models.SET_NULL)
     reward_date = models.DateTimeField(null=True)
     value = models.FloatField(default=0)
-    status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1])
+    status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1], verbose_name='Status do Prêmio')
 
     def __str__(self):
         return str(self.value)
@@ -208,118 +217,22 @@ class Cotation(models.Model):
     total = models.FloatField(blank=True, null=True)
     objects = GamesManager()
 
+
     def __str__(self):
         return str(self.value)
 
+
+    def save(self):
+        if not Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).exists():
+            if not is_excluded_cotation(self.name, self.kind):
+                super().save()
+        else:
+            Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).update(value=self.value)
 
     class Meta:
         verbose_name = 'Cota'
         verbose_name_plural = 'Cotas'
 
-
-    def save(self):
-        if not Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).exists():
-            if not self.is_excluded_cotation(self.name, self.kind):
-                super().save()
-        else:
-            Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).update(value=self.value)
-  
-
-    def is_excluded_cotation(self, cotation_name, kind):
-
-        is_excluded = False
-
-        if kind.pk == 38:
-            excluded_cotations = [
-                'Acima 0.5',
-                'Abaixo 2.5',
-                'Abaixo 3.5',
-                'Abaixo 4.5',
-                'Abaixo 5.5',
-                'Abaixo 3.0',
-                'Abaixo 4.0',
-                'Abaixo 5.0',
-            ]
-
-            if cotation_name in excluded_cotations:
-                is_excluded = True
-
-        elif kind.pk == 12:
-            excluded_cotations = [
-                'Acima 0.5', 
-                'Abaixo 4.5',
-                'Abaixo 5.5',
-                'Abaixo 6.5',
-                'Abaixo 7.5',
-                'Abaixo 8.5',
-                'Abaixo 9.5',
-                'Abaixo 4.0',
-                'Abaixo 5.0',
-                'Abaixo 6.0',
-                'Abaixo 7.0',
-                'Abaixo 8.0',
-                'Abaixo 9.0',
-                'Abaixo 4.75',
-                'Abaixo 5.75',
-                'Abaixo 6.75',
-                'Abaixo 7.75',
-                'Abaixo 8.75',
-                'Abaixo 9.75',
-            ]
-            
-            if cotation_name in excluded_cotations:
-                is_excluded = True
-
-        elif kind.pk == 976204:
-            excluded_cotations = [
-                'Abaixo 2.0',
-                'Abaixo 3.0',
-                'Abaixo 4.0',
-                'Abaixo 5.0',
-                'Abaixo 2.5',
-                'Abaixo 3.5',
-                'Abaixo 4.5',
-                'Abaixo 5.5',
-            ]
-
-            if cotation_name in excluded_cotations:
-                is_excluded = True
-
-        elif kind.pk == 976198:
-            excluded_cotations = [
-                'Abaixo 2.0',
-                'Abaixo 3.0',
-                'Abaixo 4.0',
-                'Abaixo 5.0',
-                'Abaixo 2.5',
-                'Abaixo 3.5',
-                'Abaixo 4.5',
-                'Abaixo 5.5',
-            ]
-            
-            if cotation_name in excluded_cotations:
-                is_excluded = True
-
-        elif kind.pk == 47:
-            excluded_cotations = [
-                'Acima 0.5',
-                'Abaixo 2.5',
-                'Abaixo 3.5',
-                'Abaixo 4.5',
-                'Abaixo 5.5',
-                'Abaixo 3.0',
-                'Abaixo 4.0',
-                'Abaixo 5.0',
-            ]
-
-            if cotation_name in excluded_cotations:
-                is_excluded = True
-
-
-        #elif kind.pk == 63:
-        #    is_excluded = True
-
-        return is_excluded
 
 class Payment(models.Model):
 
@@ -328,10 +241,10 @@ class Payment(models.Model):
         ('Pago', 'Pago'),
     )
 
-    who_set_payment = models.ForeignKey('user.Seller', null=True, on_delete=models.SET_NULL)
-    status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1])
-    payment_date = models.DateTimeField(null=True)
-    seller_was_rewarded = models.BooleanField(default=False)
+    who_set_payment = models.ForeignKey('user.Seller', null=True, on_delete=models.SET_NULL, verbose_name='Vendedor')
+    status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1], verbose_name='Status do Pagamento')
+    payment_date = models.DateTimeField(null=True, verbose_name='Data do Pagamento')
+    seller_was_rewarded = models.BooleanField(default=False, verbose_name='Vendedor foi pago')
 
     def __str__(self):
         return self.status_payment

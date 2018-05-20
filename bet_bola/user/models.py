@@ -2,16 +2,19 @@ from django.db import models
 from django.contrib.auth.models import User, Permission, AbstractUser, BaseUserManager
 from guardian.shortcuts import assign_perm, remove_perm
 from django.db.models import F, Q, When, Case
+from guardian.shortcuts import get_objects_for_user
 # Create your models here.
 
+objects = models.Manager()
 
 class CustomUser(AbstractUser):
     cellphone = models.CharField(max_length=14, verbose_name='Celular')
+    email = models.EmailField(null=True, verbose_name='E-mail')
 
     def __str__(self):
         return self.first_name
 
-    email = models.EmailField(null=True, verbose_name='E-mail')
+    
 
 
 class RandomUser(models.Model):
@@ -27,12 +30,21 @@ class Seller(CustomUser):
     cpf = models.CharField(max_length=11, verbose_name='CPF')
     address = models.CharField(max_length=75, verbose_name='Endereço')
     can_sell_ilimited = models.BooleanField(default=True)
+    commission = models.FloatField(default=0, verbose_name='Comissão')
     credit_limit = models.FloatField(default=0, verbose_name='Créditos')
 
 
     def full_name(self):
         return self.first_name + ' ' + self.last_name
     full_name.short_description = 'Nome Completo'
+
+
+    def net_value(self):
+        
+        total_net_value = self.actual_revenue() * (self.commission / 100)
+        return round(total_net_value,2)
+    net_value.short_description = 'Líquido'
+    net_value.cor = 'Azul'
     
     def actual_revenue(self):
         from core.models import BetTicket
@@ -41,9 +53,8 @@ class Seller(CustomUser):
 
         for ticket in tickets_revenue:
             revenue_total += ticket.value
-        to_string = str(revenue_total)
+        return revenue_total
 
-        return "R$ " + to_string
     actual_revenue.short_description = 'Faturamento Total'
 
     def is_seller(self):
@@ -85,7 +96,26 @@ class Punter(CustomUser):
 class Manager(CustomUser):
     cpf = models.CharField(max_length=11, verbose_name='CPF', null=True)
     address = models.CharField(max_length=75, verbose_name='Endereço', null=True)
+    commission = models.FloatField(default=0, verbose_name='Comissão')
     credit_limit_to_add = models.FloatField(default=0, verbose_name="Crédito")
+
+
+    def net_value(self):
+        total_net_value = self.actual_revenue() * (self.commission / 100)
+        return round(total_net_value,2)
+    net_value.short_description = 'Líquido'
+
+    def actual_revenue(self):
+
+        manager = CustomUser.objects.get(pk=self.pk)
+        sellers = get_objects_for_user(manager, 'user.set_credit_limit').order_by('-pk')
+
+        total_revenue = 0
+        for seller in sellers:
+            total_revenue += seller.actual_revenue()
+        return total_revenue
+    actual_revenue.short_description = 'Faturamento'
+
 
     def transfer_credit_limit(self,seller,value):
         if self.has_perm('set_credit_limit', seller):
@@ -97,7 +127,7 @@ class Manager(CustomUser):
                             
                 return 'Valor adicionado com sucesso.'
             else:
-                return 'Voce possui créditos suficientes para essa transfarência.'
+                return 'Voce possui créditos suficientes para essa transferência.'
 
         return 'Você não tem permissão para adicionar credito a esse usuário.'
 
@@ -111,7 +141,7 @@ class Manager(CustomUser):
 
     def save(self, *args, **kwargs):					
         if not self.has_usable_password():	
-            self.set_password(self.password)  # password encryption
+            self.set_password(self.password)
 
         super(Manager, self).save()
         self.clean()			
