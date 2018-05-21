@@ -24,7 +24,7 @@ class BetTicket(models.Model):
     random_user = models.ForeignKey('user.RandomUser', null=True, on_delete=models.SET_NULL, verbose_name='Cliente')
     cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
     cotation_value_total = models.FloatField(verbose_name='Cota Total da Aposta')
-    creation_date = models.DateTimeField(verbose_name='Data da aposta')	
+    creation_date = models.DateTimeField(verbose_name='Data da Aposta')	
     reward = models.ForeignKey('Reward', null=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
     payment = models.OneToOneField('Payment', null=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
     value = models.FloatField(verbose_name='Valor Apostado')
@@ -253,7 +253,7 @@ class Payment(models.Model):
     who_set_payment = models.ForeignKey('user.Seller', null=True, on_delete=models.SET_NULL, verbose_name='Vendedor')
     status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1], verbose_name='Status do Pagamento')
     payment_date = models.DateTimeField(null=True, verbose_name='Data do Pagamento')
-    seller_was_rewarded = models.BooleanField(default=False, verbose_name='Vendedor foi pago')
+    seller_was_rewarded = models.BooleanField(default=False, verbose_name='Já Prestou Contas')
 
     def __str__(self):
         return self.status_payment
