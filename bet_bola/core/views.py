@@ -313,11 +313,13 @@ class CreateTicketView(View):
 			if not request.user.has_perm('user.be_seller'):
 				if request.user.is_authenticated:
 					ticket.user=CustomUser.objects.get(pk=request.user.pk)
-				elif request.user.is_anonymous:
+				else:
 					ticket.random_user=RandomUser.objects.create(first_name=client_name, cellphone=cellphone)				
 				ticket.save()
 			else:
-				user=CustomUser.objects.get(pk=request.user.pk)
+				user =  CustomUser.objects.get(pk=request.user.pk)
+				print(user)
+				ticket.user=CustomUser.objects.get(pk=request.user.pk)
 				ticket.random_user=RandomUser.objects.create(first_name=client_name, cellphone=cellphone)
 				ticket.save()
 				if not ticket.validate_ticket(request.user):

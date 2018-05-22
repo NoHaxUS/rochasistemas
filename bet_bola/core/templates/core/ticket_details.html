@@ -60,10 +60,14 @@
             <div class="row white">
                 <div class="col s12 ticket-details-info">
                     <div class="row">
-                        <span class='bold'>Cliente: </span>
                         {% if ticket.random_user %}
-                            {{ticket.random_user.first_name}}
+                        <span class='bold'>Cliente: </span>
+                        {{ticket.random_user.first_name}}
+                            {% if ticket.user %}
+                            <div class="row"><span class='bold'>Vendedor: </span>{{ticket.user.first_name}} </div>
+                            {% endif %}
                         {% else %}
+                            <span class='bold'>Cliente: </span>
                             {{ticket.user.first_name}}
                         {% endif %}
 
