@@ -487,7 +487,7 @@ $(document).ready(function () {
 
                     $.post('/ticket/',
                     {'ticket_value': ticket_value},
-                    (data, status, rq)=>{
+                    function(data, status, rq){
                         if(data.success){
                             alertify.alert("Sucesso", data.message);
                         }else{
@@ -541,7 +541,7 @@ $(document).ready(function () {
                     alertify.confirm('Confirmação','Confirmar aposta?', function(){                        
                     $.post('/ticket/',
                     {'ticket_value': ticket_value, 'nome':nome, 'telefone':telefone},
-                    (data, status, rq)=>{
+                    function(data, status, rq){
                         
                         if(data.success){
                             alertify.alert("Sucesso", data.message);
@@ -716,10 +716,10 @@ $(document).ready(function () {
 
             $.post(form.attr('data-action'),
             send_data, 
-            (response, status, rq)=>{
+            function(response, status, rq){
                 if (response.success){
                     
-                    alertify.alert('Sucesso', response.message, ()=>{
+                    alertify.alert('Sucesso', response.message, function(){
                         window.location = '/';
                     });
                 }else{
