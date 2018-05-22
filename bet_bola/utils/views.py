@@ -43,6 +43,8 @@ class PDF(View):
         pdf.text(55,12, string)
         if ticket.random_user:
             string = 'CLIENTE: ' + ticket.random_user.first_name
+            if ticket.user:
+                pdf.text(55,84, 'VENDEDOR: ' + ticket.user.first_name)
         else:
             string = 'CLIENTE: ' + ticket.user.first_name							
         pdf.text(55,24,string)									

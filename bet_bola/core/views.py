@@ -386,8 +386,12 @@ class TicketDetail(TemplateResponseMixin, View):
 			content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
 			if ticket.random_user:
 				content += "<CENTER> CLIENTE: " + ticket.random_user.first_name + "<BR>"
+				if ticket.user:
+					content += "<CENTER> VENDEDOR: " + ticket.user.first_name + "<BR>"
 			else:
 				content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
+
+
 			content += "<CENTER> APOSTA: R$" + str("%.2f" % ticket.value) + "<BR>"
 			content += "<CENTER> COTA TOTAL: " + str("%.2f" % ticket.cotation_value_total) + "<BR>"
 			content += "<CENTER> GANHO POSSIVEL: R$" + str("%.2f" % ticket.reward.value) + "<BR>"
