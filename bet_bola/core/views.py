@@ -318,7 +318,6 @@ class CreateTicketView(View):
 				ticket.save()
 			else:
 				user =  CustomUser.objects.get(pk=request.user.pk)
-				print(user)
 				ticket.user=CustomUser.objects.get(pk=request.user.pk)
 				ticket.random_user=RandomUser.objects.create(first_name=client_name, cellphone=cellphone)
 				ticket.save()
