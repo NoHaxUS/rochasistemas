@@ -18,9 +18,10 @@ class BetTicket(models.Model):
         ('Não Venceu', 'Não Venceu'),
         ('Venceu', 'Venceu'),
     )
-
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets',null=True, on_delete=models.SET_NULL, verbose_name='Apostador')
-    random_user = models.ForeignKey('user.RandomUser', null=True, on_delete=models.SET_NULL, verbose_name='Cliente')
+    
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', null=True, on_delete=models.SET_NULL, verbose_name='Apostador')
+    seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, on_delete=models.SET_NULL, verbose_name='Vendedor')
+    normal_user = models.ForeignKey('user.normaluser', null=True, related_name='ticket', on_delete=models.SET_NULL, verbose_name='Cliente')
     cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
     cotation_value_total = models.FloatField(verbose_name='Cota Total da Aposta')
     creation_date = models.DateTimeField(verbose_name='Data da aposta')	
@@ -33,14 +34,6 @@ class BetTicket(models.Model):
     def __str__(self):
         return str(self.pk)
 
-
-    class Meta:
-        verbose_name = 'Ticket'
-        verbose_name_plural = 'Tickets'
-        permissions = (
-            ('can_validate_payment', "Can validate user ticket"),
-            ('can_reward', "Can reward a user"),
-        )
 
     def validate_ticket(self, user):
         if user.seller.can_sell_ilimited:
@@ -80,6 +73,15 @@ class BetTicket(models.Model):
 
     def check_if_waiting_results(self):
         return self.cotations.filter(winning=None).count() > 0
+
+
+    class Meta:
+        verbose_name = 'Ticket'
+        verbose_name_plural = 'Tickets'
+        permissions = (
+            ('can_validate_payment', "Can validate user ticket"),
+            ('can_reward', "Can reward a user"),
+        )
 
 
 class CotationHistory(models.Model):

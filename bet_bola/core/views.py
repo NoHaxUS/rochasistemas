@@ -7,7 +7,7 @@ from .models import Cotation,BetTicket,Game,Championship,Payment,Reward,Country,
 from user.models import Seller
 from django.core import serializers
 from django.conf import settings
-from user.models import CustomUser, RandomUser
+from user.models import CustomUser, NormalUser
 import utils.timezone as tzlocal
 from utils.utils import no_repetition_list
 from utils.response import UnicodeJsonResponse
@@ -314,12 +314,12 @@ class CreateTicketView(View):
 				if request.user.is_authenticated:
 					ticket.user=CustomUser.objects.get(pk=request.user.pk)
 				else:
-					ticket.random_user=RandomUser.objects.create(first_name=client_name, cellphone=cellphone)				
+					ticket.random_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)				
 				ticket.save()
 			else:
 				user =  CustomUser.objects.get(pk=request.user.pk)
 				ticket.user=CustomUser.objects.get(pk=request.user.pk)
-				ticket.random_user=RandomUser.objects.create(first_name=client_name, cellphone=cellphone)
+				ticket.random_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
 				ticket.save()
 				if not ticket.validate_ticket(request.user):
 					data['success'] =  False
