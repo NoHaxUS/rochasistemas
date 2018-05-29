@@ -252,7 +252,7 @@ def consuming_game_cotation_api():
     before_month = before_time.month
     before_day = before_time.day
     
-    after_time = tzlocal.now() + datetime.timedelta(days=2)
+    after_time = tzlocal.now() + datetime.timedelta(days=3)
 
     after_year = after_time.year
     after_month = after_time.month

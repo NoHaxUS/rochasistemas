@@ -21,6 +21,7 @@ app_name = 'core'
 
 urlpatterns = [
     path('', views.Home.as_view(), name='core_home'),
+    path('today_games', views.TodayGames.as_view(), name='core_today_games'),
     path('tomorrow_games/', views.TomorrowGames.as_view(), name='core_tomorrow_games'),
     path('championship/<int:pk>/', views.GameChampionship.as_view(), name='core_championship_get'),
     path('ticket/<int:pk>/', views.TicketDetail.as_view(), name='core_ticket_get'),

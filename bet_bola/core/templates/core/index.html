@@ -74,5 +74,20 @@
         </div>             
         {% endfor %}
     </div>
-</div>                                
+    <div class="row">
+            <ul class="pagination center">
+                <span class="step-links">
+                    {%for page_num in other_thing %}
+                        {% if page_num == actual_page %}                                  
+                            <li class="active" ><a href="?page={{page_num}}">{{page_num}}</a></li>
+                        {% else %}
+                            <li class="waves-effect"><a href="?page={{page_num}}">{{page_num}}</a></li>
+                        {% endif %}
+                    {%endfor%}
+                </span>                                                                   
+            </ul>
+    </div>
+</div>
+
+
 {% endblock %}

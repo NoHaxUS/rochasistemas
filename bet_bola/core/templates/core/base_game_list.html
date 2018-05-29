@@ -323,7 +323,10 @@
                 <div class="collapsible-body white">
                     <ul class="championship-list championship-list-mobile">
                         <li>
-                            <a href="{% url 'core:core_home' %}" class="">Jogos de Hoje</a>
+                            <a href="{% url 'core:core_home' %}" class="">Todos os Jogos</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'core:core_today_games' %}" class="">Jogos de Hoje</a>
                         </li>
                         <li>
                             <a href="{% url 'core:core_tomorrow_games' %}" class="">Jogos de Amanhã</a>
@@ -420,7 +423,10 @@
     </div>
     <ul class="championship-list">
         <li class="center-align">
-            <a href="{% url 'core:core_home' %}" class="">Jogos de Hoje</a>
+            <a href="{% url 'core:core_home' %}" class="">Todos os Jogos</a>
+        </li>
+        <li class="center-align">
+            <a href="{% url 'core:core_today_games' %}" class="">Jogos de Hoje</a>
         </li>
         <li class="center-align">
             <a href="{% url 'core:core_tomorrow_games' %}" class="">Jogos de Amanhã</a>
@@ -506,4 +512,6 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
+
