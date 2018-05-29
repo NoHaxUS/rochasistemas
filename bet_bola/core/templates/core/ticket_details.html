@@ -60,9 +60,9 @@
             <div class="row white">
                 <div class="col s12 ticket-details-info">
                     <div class="row">
-                        {% if ticket.random_user %}
+                        {% if ticket.normal_user %}
                         <span class='bold'>Cliente: </span>
-                        {{ticket.random_user.first_name}}
+                        {{ticket.normal_user.first_name}}
                             {% if ticket.user %}
                             <div class="row"><span class='bold'>Vendedor: </span>{{ticket.user.first_name}} </div>
                             {% endif %}
@@ -77,9 +77,9 @@
                             {% endif %}
                         {% endif %}
 
-                        {%if ticket.random_user.cellphone %}
+                        {%if ticket.normal_user.cellphone %}
                             {% if perms.user.be_seller or user.is_superuser or perms.user.be_manager %}
-                            <div class="row"><span class='bold'>Telefone:</span> {{ticket.random_user.cellphone}}</div>
+                            <div class="row"><span class='bold'>Telefone:</span> {{ticket.normal_user.cellphone}}</div>
                             {% endif %}
                         {% endif %}
                     </div>

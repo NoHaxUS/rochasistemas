@@ -14,14 +14,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
+        migrations.RenameField(
             model_name='betticket',
-            name='random_user',
-        ),
-        migrations.AddField(
-            model_name='betticket',
-            name='normal_user',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='ticket', to='user.NormalUser', verbose_name='Cliente'),
+            old_name='random_user',
+            new_name='normal_user',
         ),
         migrations.AddField(
             model_name='betticket',

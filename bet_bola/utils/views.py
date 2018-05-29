@@ -41,8 +41,8 @@ class PDF(View):
         pdf.set_font('DejaVu','',30)
         string = 'TICKET:' + str(ticket.pk)
         pdf.text(55,12, string)
-        if ticket.random_user:
-            string = 'CLIENTE: ' + ticket.random_user.first_name
+        if ticket.normal_user:
+            string = 'CLIENTE: ' + ticket.normal_user.first_name
             if ticket.user:
                 pdf.text(55,84, 'VENDEDOR: ' + ticket.user.first_name)
         else:

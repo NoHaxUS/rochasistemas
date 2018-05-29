@@ -314,12 +314,12 @@ class CreateTicketView(View):
 				if request.user.is_authenticated:
 					ticket.user=CustomUser.objects.get(pk=request.user.pk)
 				else:
-					ticket.random_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)				
+					ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)				
 				ticket.save()
 			else:
 				user =  CustomUser.objects.get(pk=request.user.pk)
 				ticket.user=CustomUser.objects.get(pk=request.user.pk)
-				ticket.random_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
+				ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
 				ticket.save()
 				if not ticket.validate_ticket(request.user):
 					data['success'] =  False
@@ -384,8 +384,8 @@ class TicketDetail(TemplateResponseMixin, View):
 
 
 			content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
-			if ticket.random_user:
-				content += "<CENTER> CLIENTE: " + ticket.random_user.first_name + "<BR>"
+			if ticket.normal_user:
+				content += "<CENTER> CLIENTE: " + ticket.normal_user.first_name + "<BR>"
 				if ticket.user:
 					content += "<CENTER> VENDEDOR: " + ticket.user.first_name + "<BR>"
 			else:
