@@ -26,7 +26,7 @@ class NormalUser(models.Model):
 class Seller(CustomUser):
     cpf = models.CharField(max_length=11, verbose_name='CPF')
     address = models.CharField(max_length=75, verbose_name='Endereço')
-    can_sell_ilimited = models.BooleanField(default=True)
+    can_sell_unlimited = models.BooleanField(default=True)
     credit_limit = models.FloatField(default=0, verbose_name='Créditos')
 
 

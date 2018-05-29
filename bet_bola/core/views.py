@@ -219,9 +219,9 @@ class CreateTicketView(View):
 	def post(self, request, *args, **kwargs):
 		
 		from user.models import GeneralConfigurations
+
 		try:
 			general_config = GeneralConfigurations.objects.get(pk=1)
-
 			max_reward_to_pay = general_config.max_reward_to_pay
 			min_number_of_choices_per_bet = general_config.min_number_of_choices_per_bet
 			min_bet_value = general_config.min_bet_value
@@ -243,34 +243,43 @@ class CreateTicketView(View):
 			data['success'] =  False
 			data['action'] = 'random-user'
 			data['message'] = 'O nome do cliente é obrigatório.'
+			return UnicodeJsonResponse(data)
 		
 		if request.user.is_superuser:
 			data['success'] =  False
 			data['message'] =  """Desculpe. Contas administradoras
-			não são apropriadas para criarem apostas. <br /> Use contas normais ou conta de vendedor."""
+			não são apropriadas para criarem apostas. <br /> 
+			Use contas normais ou conta de vendedor."""
+			return UnicodeJsonResponse(data)
 
 		if client_name and cellphone:
 			if len(client_name) > 40 or len(cellphone) > 14:
 				data['success'] =  False
 				data['message'] =  "Erro. O nome do cliente precisa ser menor que 40 digitos e o telefone menor que 14"
+				return UnicodeJsonResponse(data)
 
 		if ticket_value == None:
 			data['success'] =  False
 			data['message'] =  "Valor da aposta inválido."
-		else:
-			ticket_bet_value = round( float(ticket_value ), 2)
+			return UnicodeJsonResponse(data)
+
 		
-			if ticket_bet_value < min_bet_value:
-				data['success'] =  False
-				data['message'] =  "A aposta mínima é: R$ " + str(round(min_bet_value, 2))
+		ticket_bet_value = round( float(ticket_value), 2)
+		
+		if ticket_bet_value < min_bet_value:
+			data['success'] =  False
+			data['message'] =  "A aposta mínima é: R$ " + str(round(min_bet_value, 2))
+			return UnicodeJsonResponse(data)
 
 		if 'ticket' not in request.session:
 			data['success'] =  False
 			data['message'] =  "Selecionar Cotas antes de apostas."
+			return UnicodeJsonResponse(data)
 
 		if ticket_bet_value <= 0:
 			data['success'] =  False
 			data['message'] =  "Valor da aposta inválido."
+			return UnicodeJsonResponse(data)
 
 	
 		cotation_sum = 1
@@ -282,24 +291,27 @@ class CreateTicketView(View):
 				if game_contation.game.start_game_date < tzlocal.now():
 					data['success'] =  False
 					data['message'] =  "Desculpe, o jogo:" + game_contation.game.name + " já começou, remova-o"
-					break
+					return UnicodeJsonResponse(data)
+
 				game_cotations.append(game_contation)
 				cotation_sum *= game_contation.value
 			except Cotation.DoesNotExist:
 				data['success'] =  False
 				data['message'] =  "Erro, uma das cotas enviadas não existe."
-				break
+				return UnicodeJsonResponse(data)
 
 
 		ticket_reward_value = round(cotation_sum * ticket_bet_value, 2)
 
-		if data['success'] and float(ticket_reward_value) > float(max_reward_to_pay):
+		if float(ticket_reward_value) > float(max_reward_to_pay):
 			data['success'] =  False
 			data['message'] =  "Desculpe. <br /> Valor máximo da recompensa: R$" + str(round(max_reward_to_pay, 2))
+			return UnicodeJsonResponse(data)
 
-		if data['success'] and len(game_cotations) < min_number_of_choices_per_bet:
+		if len(game_cotations) < min_number_of_choices_per_bet:
 			data['success'] =  False
 			data['message'] =  "Desculpe. Aposte em pelo menos " + str(min_number_of_choices_per_bet) + " jogo."
+			return UnicodeJsonResponse(data)
 
 		if data['success']:
 			ticket = BetTicket(				
@@ -310,27 +322,27 @@ class CreateTicketView(View):
 				reward=Reward.objects.create(reward_date=None)
 			)
 
-			if not request.user.has_perm('user.be_seller'):
+			if request.user.has_perm('user.be_seller'):
+				ticket.seller=CustomUser.objects.get(pk=request.user.pk)
+				ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
+				
+				if not ticket.validate_ticket(request.user):
+					data['success'] =  False
+					data['message'] =  "Desculpe. Vendedor não possui limite de crédito para efetuar a aposta."
+					return UnicodeJsonResponse(data)
+			else:
 				if request.user.is_authenticated:
 					ticket.user=CustomUser.objects.get(pk=request.user.pk)
 				else:
-					ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)				
-				ticket.save()
-			else:
-				user =  CustomUser.objects.get(pk=request.user.pk)
-				ticket.user=CustomUser.objects.get(pk=request.user.pk)
-				ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
-				ticket.save()
-				if not ticket.validate_ticket(request.user):
-					data['success'] =  False
-					data['message'] =  "Desculpe. Vendedor não possui limite de credito para efetuar a aposta."
-					return UnicodeJsonResponse(data)
+					ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
 			
+			ticket.save()
+			ticket.reward.value = ticket_reward_value
+			ticket.reward.save()
+
 
 			for i_cotation in game_cotations:
-
 				ticket.cotations.add(i_cotation)
-
 				CotationHistory(
 					original_cotation=i_cotation.pk,
 					bet_ticket=ticket,
@@ -344,9 +356,6 @@ class CreateTicketView(View):
 					total=i_cotation.total
 				).save()
 
-			ticket.reward.value = ticket_reward_value
-			ticket.reward.save()
-
 			data['message'] = """
 				Ticket N° <span class='ticket-number-after-create'>""" +  str(ticket.pk) + """</span>
                 <br /> Para acessar detalhes do Ticket, entre no painel do cliente
@@ -354,7 +363,6 @@ class CreateTicketView(View):
                 <br /><br />
 				<a href='/ticket/""" + str(ticket.pk) + """' class='waves-effect waves-light btn text-white see-ticket-after-create hoverable'> Ver Ticket </a>
 			"""
-
 		return UnicodeJsonResponse(data)
 
 
@@ -382,8 +390,9 @@ class TicketDetail(TemplateResponseMixin, View):
 			for i_cotation in cotations_history:
 				cotations_values[i_cotation.original_cotation] = i_cotation.value
 
-
+			"""
 			content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
+			
 			if ticket.normal_user:
 				content += "<CENTER> CLIENTE: " + ticket.normal_user.first_name + "<BR>"
 				if ticket.user:
@@ -422,8 +431,9 @@ class TicketDetail(TemplateResponseMixin, View):
 		
 		else:
 			context = {'show_ticket': False}
-
-		return self.render_to_response(context)	
+		"""
+		context = {'ticket': ticket,'cotations_values':cotations_values, 'show_ticket': True}
+		return self.render_to_response(context)
 
 
 class ResetSellerRevenue(View):

@@ -62,7 +62,7 @@
 
 <ul class="right hide-on-med-and-down">
     <li class="user-logged-name">Olá, {{user}} - Faturamento: R$ {{faturamento}}
-    {% if user.seller.can_sell_ilimited%}
+    {% if user.seller.can_sell_unlimited %}
         - Saldo R$ {{user.seller.credit_limit}}
     {% endif %}
     </li>
@@ -80,7 +80,7 @@
 {% block nav_links_mobile %}
 <ul class="side-nav" id="mobile-menu">
     <li class="user-logged-name user-logged-mobile">Olá, {{user}} <br> Faturamento: R$ {{faturamento}}
-    {% if user.seller.can_sell_ilimited%}
+    {% if user.seller.can_sell_unlimited %}
         - Saldo R$ {{user.seller.credit_limit}}
     {% endif %}
     </li>
