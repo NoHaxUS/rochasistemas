@@ -9,6 +9,8 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.admin.views.main import ChangeList
 
 
+admin.site.unregister(Group)
+
 class GamesWithNoFinalResults(admin.SimpleListFilter):
 
 	title = _('Jogos sem resultado final')
@@ -37,7 +39,7 @@ class BetTicketAdmin(admin.ModelAdmin):
 	exclude = ('cotations','user','random_user',)
 
 
-
+"""
 	def get_total_bet_reward(self, request):
 		cl = self.get_changelist(request)
 		qs = cl.get_queryset()
@@ -51,14 +53,14 @@ class BetTicketAdmin(admin.ModelAdmin):
 		self.total_reward = total_reward
 		return total_bet, total_reward
 
-
-
+"""
+"""
 	def changelist_view(self, request, extra_context=None):
 		extra_context = extra_context or {}
 		extra_context['a'], extra_context['b'] = self.get_total_bet_reward(request)
 		return super().changelist_view(request, extra_context)
 
-
+"""
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
