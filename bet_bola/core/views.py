@@ -325,7 +325,7 @@ class CreateTicketView(View):
 			if request.user.has_perm('user.be_seller'):
 				ticket.seller=CustomUser.objects.get(pk=request.user.pk)
 				ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
-				
+
 				if not ticket.validate_ticket(request.user):
 					data['success'] =  False
 					data['message'] =  "Desculpe. Vendedor não possui limite de crédito para efetuar a aposta."
@@ -390,16 +390,15 @@ class TicketDetail(TemplateResponseMixin, View):
 			for i_cotation in cotations_history:
 				cotations_values[i_cotation.original_cotation] = i_cotation.value
 
-			"""
+
 			content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
 			
+			if ticket.seller:
+				content += "<CENTER> VENDEDOR: " + ticket.seller.first_name + "<BR>"
 			if ticket.normal_user:
 				content += "<CENTER> CLIENTE: " + ticket.normal_user.first_name + "<BR>"
-				if ticket.user:
-					content += "<CENTER> VENDEDOR: " + ticket.user.first_name + "<BR>"
-			else:
+			if ticket.user:
 				content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
-
 
 			content += "<CENTER> APOSTA: R$" + str("%.2f" % ticket.value) + "<BR>"
 			content += "<CENTER> COTA TOTAL: " + str("%.2f" % ticket.cotation_value_total) + "<BR>"
@@ -428,11 +427,9 @@ class TicketDetail(TemplateResponseMixin, View):
 			content += "<CENTER> Prazo para Resgate do Prêmio: 48 horas."
 			content = urllib.parse.urlparse(content).geturl()
 			context = {'ticket': ticket, 'print': content,'cotations_values':cotations_values, 'show_ticket': True}
-		
 		else:
 			context = {'show_ticket': False}
-		"""
-		context = {'ticket': ticket,'cotations_values':cotations_values, 'show_ticket': True}
+
 		return self.render_to_response(context)
 
 

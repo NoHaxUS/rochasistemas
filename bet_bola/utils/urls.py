@@ -19,7 +19,7 @@ from . import views
 app_name = 'utils'
 
 urlpatterns = [      
-    path('pdf/<int:pk>', views.PDF.as_view(), name='pdf'),
+    path('pdf/<int:pk>/', views.PDF.as_view(), name='pdf'),
     path('cotation_reduction/<str:percentual>', views.PercentualReductionCotation.as_view(), name='cotation_reduction'),
     path('get_sellers/', views.GetSellers.as_view(), name='get_sellers'),
     
