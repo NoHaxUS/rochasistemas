@@ -91,7 +91,7 @@ class Home(TemplateResponseMixin, View):
 
 		page = int(request.GET.get('page', 1))
 		count = 0
-		per_page = 30
+		per_page = 40
 		start_count = ((page - 1) * per_page) + 1
 
 		max_count = page * per_page
