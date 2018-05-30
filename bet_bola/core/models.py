@@ -4,6 +4,7 @@ from datetime import datetime
 from .manager import GamesManager, CotationsManager
 from user.models import Seller
 from django.contrib.auth.models import User
+from user.models import NormalUser
 from django.utils import timezone
 from django.db.models import Q
 import decimal
@@ -22,7 +23,7 @@ class BetTicket(models.Model):
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', null=True, on_delete=models.SET_NULL, verbose_name='Apostador')
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, on_delete=models.SET_NULL, verbose_name='Vendedor')
-    normal_user = models.ForeignKey('user.NormalUser', null=True, related_name='ticket', on_delete=models.SET_NULL, verbose_name='Cliente')
+    normal_user = models.ForeignKey(NormalUser, null=True, on_delete=models.SET_NULL, verbose_name='Cliente')
     cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
     cotation_value_total = models.FloatField(verbose_name='Cota Total da Aposta')
     creation_date = models.DateTimeField(verbose_name='Data da aposta')	
