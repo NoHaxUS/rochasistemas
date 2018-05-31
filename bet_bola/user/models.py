@@ -21,7 +21,7 @@ class CustomUser(AbstractUser):
     
 
 
-class RandomUser(models.Model):
+class NormalUser(models.Model):
     first_name = models.CharField(max_length=40, verbose_name='Nome')
     cellphone = models.CharField(max_length=14, verbose_name='Celular')
 

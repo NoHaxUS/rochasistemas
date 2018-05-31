@@ -7,7 +7,7 @@ from .models import Cotation,BetTicket,Game,Championship,Payment,Reward,Country,
 from user.models import Seller
 from django.core import serializers
 from django.conf import settings
-from user.models import CustomUser, RandomUser
+from user.models import CustomUser, NormalUser
 import utils.timezone as tzlocal
 from utils.utils import no_repetition_list
 from utils.response import UnicodeJsonResponse

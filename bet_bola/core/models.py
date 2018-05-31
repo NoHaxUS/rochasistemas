@@ -21,7 +21,7 @@ class BetTicket(models.Model):
     )
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets',null=True, on_delete=models.SET_NULL, verbose_name='Apostador')
-    random_user = models.ForeignKey('user.RandomUser', null=True, on_delete=models.SET_NULL, verbose_name='Cliente')
+    normal_user = models.ForeignKey('user.NormalUser', null=True, on_delete=models.SET_NULL, verbose_name='Cliente')
     cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
     cotation_value_total = models.FloatField(verbose_name='Cota Total da Aposta')
     creation_date = models.DateTimeField(verbose_name='Data da Aposta')	
@@ -36,8 +36,8 @@ class BetTicket(models.Model):
 
 
     def real_punter_name(self):
-        if self.random_user:
-            return self.random_user.first_name
+        if self.normal_user:
+            return self.normal_user.first_name
         else:
             return self.user.full_name()
     real_punter_name.short_description = 'Apostador'

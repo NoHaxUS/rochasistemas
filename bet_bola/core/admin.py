@@ -36,7 +36,7 @@ class BetTicketAdmin(admin.ModelAdmin):
 	'payment__seller_was_rewarded',
 	'reward__status_reward')
 	list_display =('pk','real_punter_name','creation_date','value','reward','cotation_sum','bet_ticket_status')
-	exclude = ('cotations','user','random_user',)
+	exclude = ('cotations','user','normal_user',)
 
 
 """
