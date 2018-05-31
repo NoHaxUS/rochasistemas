@@ -13,6 +13,7 @@ import urllib
 import json
 
 
+
 class PDF(View):
 
     def get_verbose_cotation(self, cotation_name):
@@ -33,20 +34,20 @@ class PDF(View):
             cotations_values[i_cotation.original_cotation] = i_cotation.value
 
 
-        date = 'DATA: ' + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
-
         pdf = FPDF('P', 'mm', (231, 297 + ticket.cotations.count() * 84))
         pdf.add_page()
         pdf.add_font('DejaVu', '', 'DejaVuSansCondensed.ttf', uni=True)		
         pdf.set_font('DejaVu','',30)
-        string = 'TICKET:' + str(ticket.pk)
-        pdf.text(55,12, string)
-        if ticket.random_user:
-            string = 'CLIENTE: ' + ticket.random_user.first_name
-        else:
-            string = 'CLIENTE: ' + ticket.user.first_name							
-        pdf.text(55,24,string)									
-        pdf.text(55,36, date)
+        pdf.text(55,12, 'TICKET:' + str(ticket.pk))
+
+        if ticket.seller:
+            pdf.text(55,84, 'VENDEDOR: ' + ticket.seller.first_name)
+        if ticket.normal_user:
+            pdf.text(55,24, 'CLIENTE:' + ticket.normal_user.first_name)
+        if ticket.user:
+            pdf.text(55,24, 'CLIENTE:' + ticket.user.first_name)
+								
+        pdf.text(55,36, 'DATA: ' + ticket.creation_date.strftime('%d/%m/%Y %H:%M'))
         pdf.text(55,48, "APOSTA: R$" + str("%.2f" % ticket.value) )
         pdf.text(55,60, "COTA TOTAL: " + str("%.2f" % ticket.cotation_value_total) )
         pdf.text(55,72, "GANHO POSSÍVEL: R$" + str("%.2f" % ticket.reward.value) )
