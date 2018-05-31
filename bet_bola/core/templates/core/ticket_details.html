@@ -36,7 +36,7 @@
         <div id="ticket-details-actions">
             <div class="col s6">
                 <a class="btn waves-effect waves-light blue-button" type="button" 
-                    href="/utils/pdf/{{ticket.pk}}" target="blank">Abrir PDF
+                    href="/utils/pdf/{{ticket.pk}}/" target="blank">Abrir PDF
                     <i class="material-icons right">picture_as_pdf</i>
                 </a>
             </div>
@@ -60,11 +60,21 @@
             <div class="row white">
                 <div class="col s12 ticket-details-info">
                     <div class="row">
-                        <span class='bold'>Cliente: </span>
-                        {% if ticket.random_user %}
-                            {{ticket.random_user.first_name}}
-                        {% else %}
-                            {{ticket.user.first_name}}
+
+                        {% if ticket.seller %}
+                        <div class="row">
+                            <span class='bold'>Vendedor:</span> {{ ticket.seller.first_name }}
+                        </div>
+                        {% endif %}
+                        {% if ticket.normal_user %}
+                        <div class="row">
+                            <span class='bold'>Cliente:</span> {{ ticket.normal_user.first_name }}
+                        </div>
+                        {% endif %}
+                        {% if ticket.user %}
+                        <div class="row">
+                                <span class='bold'>Cliente:</span> {{ ticket.user.first_name }}
+                        </div>
                         {% endif %}
 
                         {%if ticket.user.cellphone %}
@@ -73,19 +83,31 @@
                             {% endif %}
                         {% endif %}
 
-                        {%if ticket.random_user.cellphone %}
+                        {%if ticket.normal_user.cellphone %}
                             {% if perms.user.be_seller or user.is_superuser or perms.user.be_manager %}
-                            <div class="row"><span class='bold'>Telefone:</span> {{ticket.random_user.cellphone}}</div>
+                            <div class="row"><span class='bold'>Telefone:</span> {{ticket.normal_user.cellphone}}</div>
                             {% endif %}
                         {% endif %}
                     </div>
-                    <div class="row"><span class='bold'>Data de Criação:</span> {{ticket.creation_date}}</div>
-                    <div class="row"><span class='bold'>Status do Pagamento:</span> {{ticket.payment.status_payment}} </div>
                     <div class="row">
-                        {% if ticket.payment.payment_date %}
-                        <span class='bold'>Última Atualização:</span> {{ticket.payment.payment_date}}
-                        {% endif %}
+                        <span class='bold'>Data de Criação:</span> {{ ticket.creation_date }}
                     </div>
+                    <div class="row">
+                        <span class='bold'>Status do Pagamento:</span> {{ ticket.payment.status_payment }}
+                    </div>
+                
+                    {% if ticket.payment.who_set_payment %}
+                    <div class="row">
+                            <span class='bold'>Pago por:</span> {{ ticket.payment.who_set_payment.first_name }}
+                    </div>
+                    {% endif %}
+
+                    {% if ticket.payment.payment_date %}
+                    <div class="row">
+                        <span class='bold'>Data de Pagamento:</span> {{ticket.payment.payment_date}}
+                    </div>
+                    {% endif %}
+
                     <div class="row"><span class='bold'>Status do Ticket:</span> {{ticket.bet_ticket_status}}</div>
                     <div class="row"><span class='bold'>Valor apostado:</span> R$ {{ticket.value | floatformat:"2"}}</div>
                     <div class="row"><span class='bold'>Cota Total:</span> {{ticket.cotation_sum | floatformat:"2"}}</div>
