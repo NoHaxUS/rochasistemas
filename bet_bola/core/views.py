@@ -67,7 +67,7 @@ COUNTRY_TRANSLATE = {
 }
 
 
-class Home(TemplateResponseMixin, View):
+class AllGames(TemplateResponseMixin, View):
 
 	template_name = 'core/index.html'
 
@@ -153,7 +153,7 @@ class TodayGames(TemplateResponseMixin, View):
 		
 		return self.render_to_response(context)
 
-class TomorrowGames(Home):
+class TomorrowGames(TemplateResponseMixin, View):
 
 	template_name = 'core/index.html'
 
