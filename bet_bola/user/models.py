@@ -97,7 +97,7 @@ class Manager(CustomUser):
                             
                 return 'Valor adicionado com sucesso.'
             else:
-                return 'Voce possui créditos suficientes para essa transfarência.'
+                return 'Você não possui créditos suficientes.'
 
         return 'Você não tem permissão para adicionar credito a esse usuário.'
 
