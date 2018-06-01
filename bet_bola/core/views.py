@@ -31,7 +31,7 @@ COUNTRY_TRANSLATE = {
 	"USA":"Estados Unidos",
 	"Turkey":"Turquia",
 	"Netherlands":"Holanda",
-	"Russia":"Russia",
+	"Russia":"Rússia",
 	"Austria":"Áustria",
 	"Poland":"Polônia",
 	"Angola":"Ângola",
@@ -63,7 +63,19 @@ COUNTRY_TRANSLATE = {
 	"Romania":"Romênia",
 	"Uruguay":"Uruguai",
 	"Republic of Ireland":"Irlanda",
-	"Bulgaria":"Bulgária"
+	"Bulgaria":"Bulgária",
+	"Belarus":"Bielorrússia",
+	"Serbia":"Sérvia",
+	"Japan":"Japão",
+	"Wales":"País de Gales",
+	"Cameroon":"Camarões",
+	"Egypt":"Egito",
+	"Paraguay":"Paraguai",
+	"Lithuania":"Lituânia",
+	"Estonia":"Estónia",
+	"Panama":"Panamá",
+	"Indonesia":"Indonésia",
+	"Asia":"Ásia"
 }
 
 
