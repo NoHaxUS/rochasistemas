@@ -170,6 +170,7 @@ INVALID_ALL_COTES_CHAMPIONSHIPS = [
     1345,
     357,
     642,
+    1082,
 ]
 
 def renaming_cotations(string):
@@ -439,7 +440,8 @@ def processing_cotations_v2():
     print("Processando resultados.")
 
     games_to_process = Game.objects.annotate(cotations_count=Count('cotations')).filter(
-        ft_score__isnull=False, cotations_count__gt=0, odds_processed=False).exclude(ft_score='').exclude(ft_score='-')
+        ft_score__isnull=False, cotations_count__gt=0, 
+        odds_processed=False).exclude(ft_score='').exclude(ft_score='-').exclude(ft_score='0').exclude(ht_score='0')
         
     print(games_to_process.count(), '\n')
 
