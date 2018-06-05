@@ -53,7 +53,7 @@ class BetTicket(models.Model):
 
 
     def reward_ticket(self, user):
-        self.reward.status_reward = Payment.REWARD_STATUS[1][1]
+        self.reward.status_reward = Reward.REWARD_STATUS[1][1]
         self.reward.reward_date = tzlocal.now()
         self.reward.who_rewarded = Seller.objects.get(pk=user.pk)
         self.reward.save()
