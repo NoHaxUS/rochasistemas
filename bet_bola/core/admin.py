@@ -36,7 +36,7 @@ class BetTicketAdmin(admin.ModelAdmin):
 	list_display =('pk','bet_ticket_status','value','reward','cotation_sum','creation_date')
 	fieldsets = (
 		(None, {
-			'fields': ('user','normal_user','seller','bet_ticket_status',)
+			'fields': ('bet_ticket_status',)
 		}),
 	)
 
