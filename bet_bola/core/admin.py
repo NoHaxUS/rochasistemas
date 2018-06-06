@@ -58,7 +58,7 @@ class GameAdmin(admin.ModelAdmin):
 	list_filter = (GamesWithNoFinalResults,)
 	fieldsets = (
 		(None, {
-			'fields': ('name','ht_score','ft_score','status_game')
+			'fields': ('name','ht_score','ft_score','status_game','odds_processed','championship')
 		}),
 	)
 	list_display = ('name',)
