@@ -147,16 +147,12 @@ class GeneralConfigurations(models.Model):
 
         able_games = Game.objects.able_games()
 
+        reduction = self.percentual_reduction / 100
+        
         for game in able_games:
-            game.cotations.update(value=F('original_value') * round((self.percentual_reduction / 100), 2) )
+            game.cotations.update(value=F('original_value') * reduction )
             game.cotations.update(value=Case(When(value__lt=1,then=1.01),default=F('value')))
             game.cotations.filter(value__gt=self.max_cotation_value).update(value=self.max_cotation_value)
-        #Cotation.objects.update(value=F('original_value') * round((self.percentual_reduction / 100), 2) )
-        #Cotation.objects.update(value=Case(When(value__lt=1,then=1.01),default=F('value')))
-
-        
-        #if self.max_cotation_value:
-        #    Cotation.objects.filter(value__gt=self.max_cotation_value).update(value=self.max_cotation_value)
 
         super(GeneralConfigurations, self).save()
 

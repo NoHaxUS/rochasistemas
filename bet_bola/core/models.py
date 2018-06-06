@@ -227,7 +227,7 @@ class Cotation(models.Model):
             if not self.is_excluded_cotation(self.name, self.kind):
                 super().save()
         else:
-            Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).update(value=self.value)
+            Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).update(value=self.value, original_value=self.original_value)
   
 
     def is_excluded_cotation(self, cotation_name, kind):
