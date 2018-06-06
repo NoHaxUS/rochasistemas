@@ -30,13 +30,13 @@ class GamesWithNoFinalResults(admin.SimpleListFilter):
 
 @admin.register(BetTicket)
 class BetTicketAdmin(admin.ModelAdmin):	
-	search_fields = ['user__first_name']
+	search_fields = ['pk','user__first_name']
 	search_fields_hint = 'Buscar pelo nome do Vendedor'
 	list_filter = ('bet_ticket_status','payment__who_set_payment_id','payment__status_payment','reward__status_reward')
-	list_display =('pk','creation_date','reward','value','cotation_sum','bet_ticket_status')
+	list_display =('pk','bet_ticket_status','value','reward','cotation_sum','creation_date')
 	fieldsets = (
 		(None, {
-			'fields': ('user',)
+			'fields': ('user','normal_user','seller','bet_ticket_status',)
 		}),
 	)
 
@@ -69,5 +69,4 @@ class GameAdmin(admin.ModelAdmin):
 class ChampionshipAdmin(admin.ModelAdmin):
 	search_fields = ['name']
 	search_fields_hint = 'Buscar pelo nome do Campeoanto'
-
 
