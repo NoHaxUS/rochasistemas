@@ -35,7 +35,7 @@ class BetTicketAdmin(admin.ModelAdmin):
 	'creation_date',
 	'payment__seller_was_rewarded',
 	'reward__status_reward')
-	list_display =('pk','real_punter_name','creation_date','value','reward','cotation_sum','bet_ticket_status')
+	list_display =('pk','creation_date','value','reward','cotation_sum','bet_ticket_status')
 	exclude = ('cotations','user','normal_user',)
 
 @admin.register(Game)
