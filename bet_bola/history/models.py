@@ -14,12 +14,12 @@ class SellerSalesHistory(models.Model):
     seller_after_balance = models.FloatField(null=True, verbose_name='Saldo Atual')
 
     def __str__(self):
-        return "Histórico - Vendedores"
+        return "Transações - Vendedores"
 
 
     class Meta:
-        verbose_name = 'Histórico - Vendedor'
-        verbose_name_plural = 'Histórico - Vendedores'
+        verbose_name = 'Transação - Vendedor'
+        verbose_name_plural = 'Transações - Vendedores'
 
 
 
