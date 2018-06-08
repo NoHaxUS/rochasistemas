@@ -163,36 +163,10 @@ class Manager(CustomUser):
 
 
 
-class GeneralConfigurations(models.Model):
-
-    max_cotation_value = models.FloatField(default=200, verbose_name="Valor Máximo das Cotas")
-    min_number_of_choices_per_bet = models.IntegerField(default=1, verbose_name="Número mínimo de escolhas por Aposta")
-    max_reward_to_pay = models.FloatField(default=50000, verbose_name="Valor máximo pago pela Banca")
-    min_bet_value = models.FloatField(default=1, verbose_name="Valor mínimo da aposta")
-    percentual_reduction = models.IntegerField(default=100, verbose_name="Redução Percentual")
-
-    def __str__(self):
-        return "Configuração Atual"
-
-    def save(self, *args, **kwargs):
-        from core.models import Game
-        
-        self.pk = 1
-
-        able_games = Game.objects.able_games()
-
-        reduction = self.percentual_reduction / 100
-        
-        for game in able_games:
-            game.cotations.update(value=F('original_value') * reduction )
-            game.cotations.update(value=Case(When(value__lt=1,then=1.01),default=F('value')))
-            game.cotations.filter(value__gt=self.max_cotation_value).update(value=self.max_cotation_value)
-
-        super(GeneralConfigurations, self).save()
-
-
-    class Meta:
-        verbose_name = "Configurar Restrições"
-        verbose_name_plural = "Configurar Restrições"
+class SellerManagerAssoc(models.Model):
+    who_made_assoc = models.CharField(max_length=80)
+    seller = models.ForeignKey(Seller, on_delete=models.CASCADE, related_name='seller_assoc', verbose_name='Vendedor')
+    manager = models.ForeignKey(Manager, on_delete=models.CASCADE, related_name='manager_assoc', verbose_name='Gerente')
+    assoc_date = models.DateTimeField(auto_now_add=True,verbose_name='Data da Associação')
 
 

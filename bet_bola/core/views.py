@@ -289,7 +289,7 @@ class CreateTicketView(View):
 
 	def post(self, request, *args, **kwargs):
 		
-		from user.models import GeneralConfigurations
+		from utils.models import GeneralConfigurations
 
 		try:
 			general_config = GeneralConfigurations.objects.get(pk=1)

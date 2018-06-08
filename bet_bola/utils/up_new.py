@@ -1,6 +1,6 @@
 import requests
 from core.models import Game, Cotation, Championship, BetTicket, Country, Market
-from user.models import GeneralConfigurations
+from utils.models import GeneralConfigurations
 import utils.timezone as tzlocal
 import datetime
 from django.db.models import Count
