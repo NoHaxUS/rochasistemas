@@ -2,9 +2,9 @@ from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
 from user.models import CustomUser
 from core.models import BetTicket
-from .models import Punter, Seller, Manager, SellerManagerAssoc
+from .models import Punter, Seller, Manager
 from utils.models import GeneralConfigurations
-from guardian.shortcuts import get_objects_for_user
+from django.contrib import messages
 
 admin.site.register(GeneralConfigurations)
 
@@ -29,22 +29,37 @@ class SellerAdmin(GuardedModelAdmin):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
+        return qs.filter(my_manager=request.user)
 
-        manager = CustomUser.objects.get(pk=request.user.pk)
-        print(manager)
-        qs = get_objects_for_user(manager, 'user.set_credit_limit')
-        print(qs)
-        return qs
+    def save_model(self, request, obj, form, change):
+        from pprint import pprint
+        pprint(self)
+      
+        if request.user.has_perm('user.be_manager'):
+            if form.is_valid():
+                if obj.my_manager.pk == request.user.pk:
+                    seller = Seller.objects.get(pk=obj.pk)
+                    manager = obj.my_manager
 
+                    print(manager.credit_limit_to_add)
 
-@admin.register(SellerManagerAssoc)
-class SellerManagerAssocAdmin(admin.ModelAdmin):
-    #search_fields = ['first_name']
-    #filter_horizontal = ['user_permissions',]
-    #list_display =('pk','username','first_name','email','cellphone','actual_revenue','net_value','commission','credit_limit_to_add')
-    #list_editable = ('credit_limit_to_add',)
-    list_display = ('pk',)
-    list_display_links = ('pk',)
+                    diff = obj.credit_limit - seller.credit_limit
+
+                    manager_balance_after = manager.credit_limit_to_add - diff
+
+                    if manager_balance_after < 0:
+                        messages.warning(request, 'Você não tem saldo suficiente.')
+                        obj.status = 'NO'
+                    else:
+                        manager.credit_limit_to_add -= diff
+                        manager.save()
+                        super().save_model(request, obj, form, change)
+                    print(diff)
+                    print(manager_balance_after)
+
+                
+            
+        #super().save_model(request, obj, form, change)
 
 @admin.register(Manager)
 class ManagerAdmin(admin.ModelAdmin):

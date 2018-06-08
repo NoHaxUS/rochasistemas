@@ -36,6 +36,7 @@ class Seller(CustomUser):
     can_sell_unlimited = models.BooleanField(default=True, verbose_name='Vender Ilimitado?')
     commission = models.FloatField(default=0, verbose_name='Comissão')
     credit_limit = models.FloatField(default=0, verbose_name='Créditos')
+    my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True)
 
 
     def full_name(self):
@@ -61,17 +62,15 @@ class Seller(CustomUser):
 
     actual_revenue.short_description = 'Faturamento Total'
 
-    def is_seller(self):
-        return True
+
 
     def save(self, *args, **kwargs):	
         self.clean()
         if not self.has_usable_password():	
-            self.set_password(self.password)  # password encryption
+            self.set_password(self.password) 
         super(Seller, self).save()
 
-        be_seller_permission = Permission.objects.get(
-            codename='be_seller')
+        be_seller_permission = Permission.objects.get(codename='be_seller')
         self.user_permissions.add(be_seller_permission)		
 
 
@@ -81,7 +80,6 @@ class Seller(CustomUser):
 
         permissions = (
             ('be_seller', 'Be a seller, permission.'),
-            ('set_credit_limit', 'Set the credit limit value'),
         )
 
 class Punter(CustomUser):	
@@ -89,7 +87,7 @@ class Punter(CustomUser):
     def save(self, *args, **kwargs):
         self.clean()
         if not self.has_usable_password():	
-            self.set_password(self.password)  # password encryption
+            self.set_password(self.password)
         super(Punter, self).save()
 
     class Meta:
@@ -160,24 +158,3 @@ class Manager(CustomUser):
         permissions = (								
                 ('be_manager', 'Be a manager, permission.'),
             )
-
-
-
-class SellerManagerAssoc(models.Model):
-    who_made_assoc = models.CharField(max_length=80, verbose_name='Quem associou?')
-    seller = models.ForeignKey(Seller, on_delete=models.CASCADE, related_name='seller_assoc', verbose_name='Vendedor')
-    manager = models.ForeignKey(Manager, on_delete=models.CASCADE, related_name='manager_assoc', verbose_name='Gerente')
-    assoc_date = models.DateTimeField(auto_now_add=True,verbose_name='Data da Associação')
-
-
-    def __str__(self):
-        return "Gerente e Vendedor"
-
-    def save(self, *args, **kwargs):
-        if not SellerManagerAssoc.objects.filter(seller=self.seller, manager=self.manager):
-            super().save()
-
-    class Meta:
-        verbose_name = 'Gerente e Vendedor'
-        verbose_name_plural = 'Gerentes e Vendedores'
-
