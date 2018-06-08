@@ -31,7 +31,7 @@ COUNTRY_TRANSLATE = {
 	"USA":"Estados Unidos",
 	"Turkey":"Turquia",
 	"Netherlands":"Holanda",
-	"Russia":"Russia",
+	"Russia":"Rússia",
 	"Austria":"Áustria",
 	"Poland":"Polônia",
 	"Angola":"Ângola",
@@ -63,11 +63,82 @@ COUNTRY_TRANSLATE = {
 	"Romania":"Romênia",
 	"Uruguay":"Uruguai",
 	"Republic of Ireland":"Irlanda",
-	"Bulgaria":"Bulgária"
+	"Bulgaria":"Bulgária",
+	"Belarus":"Bielorrússia",
+	"Serbia":"Sérvia",
+	"Japan":"Japão",
+	"Wales":"País de Gales",
+	"Cameroon":"Camarões",
+	"Egypt":"Egito",
+	"Paraguay":"Paraguai",
+	"Lithuania":"Lituânia",
+	"Estonia":"Estónia",
+	"Panama":"Panamá",
+	"Indonesia":"Indonésia",
+	"Asia":"Ásia"
 }
 
 
-class Home(TemplateResponseMixin, View):
+class AllGames(TemplateResponseMixin, View):
+
+	template_name = 'core/index.html'
+
+	def get(self, request, *args, **kwargs):
+
+		championships = []
+		countries = []
+		championship_games = {}
+	
+		for championship in Championship.objects.all().order_by('-country__priority', '-priority'):
+			my_games = championship.my_games.able_games()
+			if my_games.count() > 0:
+				championships.append(championship)
+				countries.append(championship.country)
+				my_games_today = my_games.able_games()
+
+				if my_games_today.count() > 0:
+					games = my_games_today.filter(championship=championship)
+					championship_games[championship] = games
+
+
+		page = int(request.GET.get('page', 1))
+		count = 0
+		per_page = 40
+		start_count = ((page - 1) * per_page) + 1
+
+		max_count = page * per_page
+		
+		page_games = {}
+
+		for championship in championship_games:
+			count += len(championship_games[championship])
+			if count >= start_count:
+				page_games[championship] = championship_games[championship]
+			else:
+				continue
+			if count >= max_count:
+				break
+
+		total_games = 0
+		for championship in championship_games:
+			total_games += len(championship_games[championship])
+
+		links = (total_games // per_page) + 1
+
+		print(list(range(links)))
+					
+		countries = no_repetition_list(countries)
+		
+		context = {'dict_championship_games': page_games,
+		'championships': championships,
+		'other_thing': list(range(1,links+1)),
+		'actual_page': page,
+		'countries':countries, 'countries_dict':COUNTRY_TRANSLATE}
+		
+		return self.render_to_response(context)
+
+
+class TodayGames(TemplateResponseMixin, View):
 
 	template_name = 'core/index.html'
 
@@ -94,7 +165,7 @@ class Home(TemplateResponseMixin, View):
 		
 		return self.render_to_response(context)
 
-class TomorrowGames(Home):
+class TomorrowGames(TemplateResponseMixin, View):
 
 	template_name = 'core/index.html'
 
@@ -433,7 +504,6 @@ class TicketDetail(TemplateResponseMixin, View):
 			context = {'show_ticket': False}
 
 		return self.render_to_response(context)
-
 
 
 class ResetSellerRevenue(View):

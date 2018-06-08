@@ -138,7 +138,13 @@
                             </td>
                             <td>
                             {{cotation.kind}} <br>
+
+                            {% if cotation.kind.pk != 976241 %}
                             Cota: {{cotation.name | get_verbose_cotation}} : {{ cotations_values|get_item:cotation.pk|floatformat:2 }}
+                            {% else %}
+                            Cota: {{cotation.name}} : {{ cotations_values|get_item:cotation.pk|floatformat:2 }}
+                            {% endif %}
+                            
                             </td>
                             <td>
                             {% if cotation.winning %}

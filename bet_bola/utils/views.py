@@ -83,24 +83,6 @@ class PDF(View):
         return response
 
 
-class PercentualReductionCotation(View):
-    def get(self, request, *args, **kwargs):
-        percentual = float(self.kwargs["percentual"])
-        if percentual <= 0 or percentual > 1:
-            return HttpResponse("Valor inválido.")
-
-        if  request.user.is_authenticated:
-            if request.user.is_superuser:
-                Cotation.objects.update(value=F('original_value') * percentual)
-                Cotation.objects.update(value=Case(When(value__lt=1,then=1.01),default=F('value')))
-                return HttpResponse("Percentual Alterado.")
-            else:
-                return HttpResponse("Você não tem permissão para isso baby.")
-
-        else:
-            return HttpResponse("Não está Logado.")
-
-
 class GetSellers(View):
     def get(self, request, *args, **kwargs):
         sellers = []

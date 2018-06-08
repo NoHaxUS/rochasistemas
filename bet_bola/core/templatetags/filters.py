@@ -9,15 +9,14 @@ def standard_cotations_order_by(queryset):
 
     standard_cotations = queryset.filter(is_standard=True).order_by('name')
     
-    if standard_cotations:
+    if standard_cotations.count() >=3:
         cotations_ordered = []
         cotations_ordered.append(standard_cotations[0])
         cotations_ordered.append(standard_cotations[2])
         cotations_ordered.append(standard_cotations[1])
-        
         return cotations_ordered
-    else:
-        return standard_cotations
+  
+    return standard_cotations
 
 @register.filter(name='order_by')
 def order_by(queryset, args):

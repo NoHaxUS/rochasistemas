@@ -33,7 +33,7 @@ class NormalUser(models.Model):
 class Seller(CustomUser):
     cpf = models.CharField(max_length=11, verbose_name='CPF')
     address = models.CharField(max_length=75, verbose_name='Endereço')
-    can_sell_ilimited = models.BooleanField(default=True)
+    can_sell_unlimited = models.BooleanField(default=True, verbose_name='Vender Ilimitado?')
     commission = models.FloatField(default=0, verbose_name='Comissão')
     credit_limit = models.FloatField(default=0, verbose_name='Créditos')
 
@@ -131,7 +131,7 @@ class Manager(CustomUser):
                             
                 return 'Valor adicionado com sucesso.'
             else:
-                return 'Voce possui créditos suficientes para essa transferência.'
+                return 'Você não possui créditos suficientes.'
 
         return 'Você não tem permissão para adicionar credito a esse usuário.'
 
@@ -181,16 +181,12 @@ class GeneralConfigurations(models.Model):
 
         able_games = Game.objects.able_games()
 
+        reduction = self.percentual_reduction / 100
+        
         for game in able_games:
-            game.cotations.update(value=F('original_value') * round((self.percentual_reduction / 100), 2) )
+            game.cotations.update(value=F('original_value') * reduction )
             game.cotations.update(value=Case(When(value__lt=1,then=1.01),default=F('value')))
             game.cotations.filter(value__gt=self.max_cotation_value).update(value=self.max_cotation_value)
-        #Cotation.objects.update(value=F('original_value') * round((self.percentual_reduction / 100), 2) )
-        #Cotation.objects.update(value=Case(When(value__lt=1,then=1.01),default=F('value')))
-
-        
-        #if self.max_cotation_value:
-        #    Cotation.objects.filter(value__gt=self.max_cotation_value).update(value=self.max_cotation_value)
 
         super(GeneralConfigurations, self).save()
 

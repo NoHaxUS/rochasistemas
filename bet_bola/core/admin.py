@@ -38,36 +38,11 @@ class BetTicketAdmin(admin.ModelAdmin):
 	list_display =('pk','real_punter_name','creation_date','value','reward','cotation_sum','bet_ticket_status')
 	exclude = ('cotations','user','normal_user',)
 
-
-"""
-	def get_total_bet_reward(self, request):
-		cl = self.get_changelist(request)
-		qs = cl.get_queryset()
-		total_bet = 0
-		total_reward = 0
-		for ticket in qs:
-			total_bet += ticket.value
-			total_reward+= ticket.reward.value
-		
-		self.total_bet = total_bet
-		self.total_reward = total_reward
-		return total_bet, total_reward
-
-"""
-"""
-	def changelist_view(self, request, extra_context=None):
-		extra_context = extra_context or {}
-		extra_context['a'], extra_context['b'] = self.get_total_bet_reward(request)
-		return super().changelist_view(request, extra_context)
-
-"""
-
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
 	search_fields = ['name']
 	list_filter = (GamesWithNoFinalResults,)
-	fields = ('name','ht_score','ft_score','status_game',)
+	fields = ('name','ht_score','ft_score','status_game','odds_processed','championship')
 	list_display = ('pk','name',)
 	list_display_links = ('pk','name',)
-
 

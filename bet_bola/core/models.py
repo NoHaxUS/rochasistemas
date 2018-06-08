@@ -4,9 +4,11 @@ from datetime import datetime
 from .manager import GamesManager, CotationsManager
 from user.models import Seller
 from django.contrib.auth.models import User
+from user.models import NormalUser
 from django.utils import timezone
 from django.db.models import Q
 import decimal
+from user.models import NormalUser
 from django.conf import settings
 import utils.timezone as tzlocal
 from .cotations_restrictions import is_excluded_cotation
@@ -19,11 +21,10 @@ class BetTicket(models.Model):
         ('Não Venceu', 'Não Venceu'),
         ('Venceu', 'Venceu'),
     )
-
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', null=True, on_delete=models.SET_NULL, verbose_name='Apostador')
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, on_delete=models.SET_NULL, verbose_name='Vendedor')
-    normal_user = models.ForeignKey('user.NormalUser', null=True, on_delete=models.SET_NULL, verbose_name='Cliente')
+    normal_user = models.ForeignKey(NormalUser, null=True, on_delete=models.SET_NULL, verbose_name='Cliente')
     cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
     cotation_value_total = models.FloatField(verbose_name='Cota Total da Aposta')
     creation_date = models.DateTimeField(verbose_name='Data da Aposta')	
@@ -37,20 +38,13 @@ class BetTicket(models.Model):
         return str(self.pk)
 
 
-    def real_punter_name(self):
-        if self.normal_user:
-            return self.normal_user.first_name
-        else:
-            return self.user.full_name()
-    real_punter_name.short_description = 'Apostador'
-
-
     def validate_ticket(self, user):
-        if user.seller.can_sell_ilimited:
+        if user.seller.can_sell_unlimited:
             if self.value > user.seller.credit_limit:                
                 return False
             user.seller.credit_limit -= self.value 
             user.seller.save()
+
 
         self.payment.status_payment = Payment.PAYMENT_STATUS[1][1]
         self.payment.payment_date = tzlocal.now()
@@ -60,7 +54,7 @@ class BetTicket(models.Model):
 
 
     def reward_ticket(self, user):
-        self.reward.status_reward = Payment.REWARD_STATUS[1][1]
+        self.reward.status_reward = Reward.REWARD_STATUS[1][1]
         self.reward.reward_date = tzlocal.now()
         self.reward.who_rewarded = Seller.objects.get(pk=user.pk)
         self.reward.save()
@@ -238,7 +232,7 @@ class Cotation(models.Model):
             if not is_excluded_cotation(self.name, self.kind):
                 super().save()
         else:
-            Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).update(value=self.value)
+            Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).update(value=self.value, original_value=self.original_value)
 
     class Meta:
         verbose_name = 'Cota'
