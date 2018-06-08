@@ -29,11 +29,11 @@ class SellerAdmin(GuardedModelAdmin):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
-        return qs.filter(my_manager=request.user)
+        #return qs
+        return qs.filter(my_manager=request.user.manager)
 
     def save_model(self, request, obj, form, change):
         from pprint import pprint
-        pprint(self)
       
         if request.user.has_perm('user.be_manager'):
             if form.is_valid():
@@ -56,10 +56,9 @@ class SellerAdmin(GuardedModelAdmin):
                         super().save_model(request, obj, form, change)
                     print(diff)
                     print(manager_balance_after)
-
-                
-            
-        #super().save_model(request, obj, form, change)
+        
+        ## This save always occur, causes double messages, solve this 
+        super().save_model(request, obj, form, change)
 
 @admin.register(Manager)
 class ManagerAdmin(admin.ModelAdmin):
