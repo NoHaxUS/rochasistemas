@@ -164,9 +164,20 @@ class Manager(CustomUser):
 
 
 class SellerManagerAssoc(models.Model):
-    who_made_assoc = models.CharField(max_length=80)
+    who_made_assoc = models.CharField(max_length=80, verbose_name='Quem associou?')
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, related_name='seller_assoc', verbose_name='Vendedor')
     manager = models.ForeignKey(Manager, on_delete=models.CASCADE, related_name='manager_assoc', verbose_name='Gerente')
     assoc_date = models.DateTimeField(auto_now_add=True,verbose_name='Data da Associação')
 
+
+    def __str__(self):
+        return "Gerente e Vendedor"
+
+    def save(self, *args, **kwargs):
+        if not SellerManagerAssoc.objects.filter(seller=self.seller, manager=self.manager):
+            super().save()
+
+    class Meta:
+        verbose_name = 'Gerente e Vendedor'
+        verbose_name_plural = 'Gerentes e Vendedores'
 
