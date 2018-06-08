@@ -11,7 +11,10 @@ class SellerSalesHistory(models.Model):
     sell_date = models.DateTimeField(verbose_name='Data da Venda', auto_now_add=True)
     value = models.FloatField(verbose_name='Valor Apostado')
     seller_before_balance = models.FloatField(null=True, verbose_name='Saldo Anterior')
-    seller_after_balance = models.FloatField(null=True, verbose_name='Saldo Anterior')
+    seller_after_balance = models.FloatField(null=True, verbose_name='Saldo Atual')
+
+    def __str__(self):
+        return "Histórico - Vendedores"
 
 
     class Meta:
@@ -29,6 +32,9 @@ class ManagerTransactions(models.Model):
     seller_after_balance = models.FloatField(null=True, verbose_name='Saldo Atual')
 
 
+    def __str__(self):
+        return "Transações - Gerentes"
+
     class Meta:
         verbose_name = 'Transação - Gerente'
         verbose_name_plural = 'Transações - Gerentes'
@@ -42,6 +48,8 @@ class RevenueHistorySeller(models.Model):
     actual_comission = models.FloatField(null=True, verbose_name='Comissão')
     earned_value = models.FloatField(null=True, verbose_name='Valor Recebido')
 
+    def __str__(self):
+        return "Pagamentos - Vendedores"
 
     class Meta:
         verbose_name = 'Pagamentos - Vendedor'
@@ -57,6 +65,9 @@ class RevenueHistoryManager(models.Model):
     actual_comission = models.FloatField(null=True, verbose_name='Comissão')
     earned_value = models.FloatField(null=True, verbose_name='Valor Recebido')
 
+
+    def __str__(self):
+        return "Pagamentos - Gerentes"
 
     class Meta:
         verbose_name = 'Pagamentos - Gerente'
