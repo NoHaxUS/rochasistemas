@@ -74,3 +74,17 @@ class RevenueHistoryManager(models.Model):
         verbose_name_plural = 'Pagamentos - Gerentes'
 
 
+class PunterPayedHistory(models.Model):
+    punter_payed = models.CharField(max_length=200, verbose_name='Apostador')
+    seller = models.ForeignKey(Seller, on_delete=models.CASCADE, verbose_name='Vendedor')
+    ticket_winner = models.ForeignKey(BetTicket, on_delete=models.CASCADE, verbose_name='Ticket Vencedor')
+    payment_date = models.DateTimeField(verbose_name='Data do Pagamento', auto_now_add=True)
+    payed_value = models.FloatField(verbose_name='Valor Pago')
+
+    def __str__(self):
+        return "Pagamentos - Apostadores"
+
+    class Meta:
+        verbose_name = 'Pagamento - Apostador'
+        verbose_name_plural = 'Pagamentos - Apostadores'
+        
