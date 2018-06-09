@@ -92,12 +92,12 @@
               {% block pretitle %}{% endblock %}
               {% block content_title %}
                 <h1>
-                {% if title %}
-                  <span class="django-admin-title"> {{ site_header|default:_('Django administration') }} &raquo;</span>
-                  {% trans 'Django administration' %}
-                {% else %}
-                  {{ site_header|default:_('Django administration') }}
-                {% endif %}
+                  {% if perms.user.be_seller %}
+                  Meu Saldo: {{ user.seller.credit_limit | floatformat:'2'}}
+                  {% endif %}
+                  {% if perms.user.be_manager %}
+                  Meu Saldo: {{ user.manager.credit_limit_to_add | floatformat:'2'}}
+                  {% endif %}
                 </h1>
               {% endblock %}
               <div id="user-tools" class="btn-group">

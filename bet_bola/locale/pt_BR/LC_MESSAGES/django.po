@@ -145,7 +145,7 @@ msgstr "Repita a senha de cima"
 #: .\templates\admin\base.html:98 .\templates\admin\base.html:100
 #: .\templates\admin\login.html:31 .\templates\admin\login.html:35
 msgid "Django administration"
-msgstr "Administração Plataforma Bet"
+msgstr "Plataforma Bet"
 
 #: .\templates\admin\base.html:119 .\templates\admin\base.html:133
 msgid "Documentation"

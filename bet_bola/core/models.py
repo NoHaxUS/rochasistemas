@@ -22,14 +22,14 @@ class BetTicket(models.Model):
         ('Venceu', 'Venceu'),
     )
     
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', null=True, on_delete=models.SET_NULL, verbose_name='Apostador')
-    seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, on_delete=models.SET_NULL, verbose_name='Vendedor')
-    normal_user = models.ForeignKey(NormalUser, null=True, on_delete=models.SET_NULL, verbose_name='Cliente')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Apostador')
+    seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Vendedor')
+    normal_user = models.ForeignKey(NormalUser, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cliente')
     cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
     cotation_value_total = models.FloatField(verbose_name='Cota Total da Aposta')
     creation_date = models.DateTimeField(verbose_name='Data da Aposta')	
-    reward = models.ForeignKey('Reward', null=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
-    payment = models.OneToOneField('Payment', null=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
+    reward = models.ForeignKey('Reward', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
+    payment = models.OneToOneField('Payment', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
     value = models.FloatField(verbose_name='Valor Apostado')
     bet_ticket_status = models.CharField(max_length=80, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][1],verbose_name='Status de Pagamento')
 

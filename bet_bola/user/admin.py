@@ -19,7 +19,7 @@ class PunterAdmin(admin.ModelAdmin):
 @admin.register(Seller)
 class SellerAdmin(GuardedModelAdmin):
     search_fields = ['id','first_name','username','email']
-    fields = ('user_permissions','is_staff','username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'commission', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active')
+    fields = ('is_staff','username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'commission', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active')
     list_editable = ('credit_limit',)
     list_display = ('pk','username','full_name','actual_revenue','net_value','commission','credit_limit', 'can_sell_unlimited')
     list_display_links = ('pk','username',)
@@ -60,7 +60,6 @@ class SellerAdmin(GuardedModelAdmin):
                         print(diff)
                         print(manager_balance_after)
         else:
-            #pass
             super().save_model(request, obj, form, change)
 
 @admin.register(Manager)

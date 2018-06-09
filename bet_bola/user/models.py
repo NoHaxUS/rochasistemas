@@ -64,14 +64,18 @@ class Seller(CustomUser):
 
 
 
-    def save(self, *args, **kwargs):	
+    def save(self, *args, **kwargs):
         self.clean()
         if not self.has_usable_password():	
             self.set_password(self.password) 
-        super(Seller, self).save()
+        super().save()
+
 
         be_seller_permission = Permission.objects.get(codename='be_seller')
-        self.user_permissions.add(be_seller_permission)		
+        chance_betticket = Permission.objects.get(codename='change_betticket')
+        self.user_permissions.add(be_seller_permission)
+        self.user_permissions.add(chance_betticket)
+
 
 
     class Meta:
