@@ -36,7 +36,7 @@ class Seller(CustomUser):
     can_sell_unlimited = models.BooleanField(default=True, verbose_name='Vender Ilimitado?')
     commission = models.FloatField(default=0, verbose_name='Comissão')
     credit_limit = models.FloatField(default=0, verbose_name='Créditos')
-    my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True)
+    my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True, blank=True)
 
 
     def full_name(self):

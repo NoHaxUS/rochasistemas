@@ -18,10 +18,10 @@ class PunterAdmin(admin.ModelAdmin):
 
 @admin.register(Seller)
 class SellerAdmin(GuardedModelAdmin):
-    search_fields = ['first_name']
-    exclude = ('user_permissions','groups',)
+    search_fields = ['id','first_name','username','email']
+    fields = ('username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'commission', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active')
     list_editable = ('credit_limit',)
-    list_display = ('pk','username','full_name','actual_revenue','net_value','commission','credit_limit')
+    list_display = ('pk','username','full_name','actual_revenue','net_value','commission','credit_limit', 'can_sell_unlimited')
     list_display_links = ('pk','username',)
 
 
@@ -35,30 +35,34 @@ class SellerAdmin(GuardedModelAdmin):
     def save_model(self, request, obj, form, change):
         from pprint import pprint
       
-        if request.user.has_perm('user.be_manager'):
+        obj.is_superuser = False
+        if request.user.has_perm('user.be_manager') and not request.user.is_superuser:
             if form.is_valid():
-                if obj.my_manager.pk == request.user.pk:
-                    seller = Seller.objects.get(pk=obj.pk)
-                    manager = obj.my_manager
+                if obj.my_manager:
+                    if obj.my_manager.pk == request.user.pk:
+                        seller = Seller.objects.get(pk=obj.pk)
+                        manager = obj.my_manager
 
-                    print(manager.credit_limit_to_add)
+                        diff = obj.credit_limit - seller.credit_limit
+                        manager_balance_after = manager.credit_limit_to_add - diff
 
-                    diff = obj.credit_limit - seller.credit_limit
+                        obj.can_sell_unlimited = seller.can_sell_unlimited
 
-                    manager_balance_after = manager.credit_limit_to_add - diff
-
-                    if manager_balance_after < 0:
-                        messages.warning(request, 'Você não tem saldo suficiente.')
-                        obj.status = 'NO'
-                    else:
-                        manager.credit_limit_to_add -= diff
-                        manager.save()
-                        super().save_model(request, obj, form, change)
-                    print(diff)
-                    print(manager_balance_after)
-        
-        ## This save always occur, causes double messages, solve this 
-        super().save_model(request, obj, form, change)
+                        if manager_balance_after < 0:
+                            messages.warning(request, 'Você não tem saldo suficiente.')
+                            obj.status = 'NO'
+                        elif obj.credit_limit < 0:
+                            messages.warning(request, 'O saldo mínimo é 0.')
+                            obj.status = 'NO'
+                        else:
+                            manager.credit_limit_to_add -= diff
+                            manager.save()
+                            super().save_model(request, obj, form, change)
+                        print(diff)
+                        print(manager_balance_after)
+        else:
+            #pass
+            super().save_model(request, obj, form, change)
 
 @admin.register(Manager)
 class ManagerAdmin(admin.ModelAdmin):
@@ -67,3 +71,5 @@ class ManagerAdmin(admin.ModelAdmin):
     list_display =('pk','username','first_name','email','cellphone','actual_revenue','net_value','commission','credit_limit_to_add')
     list_editable = ('credit_limit_to_add',)
     list_display_links = ('pk','username',)
+
+

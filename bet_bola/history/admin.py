@@ -1,6 +1,6 @@
 from django.contrib import admin
 from user.models import CustomUser
-from .models import SellerSalesHistory,ManagerTransactions,RevenueHistorySeller,RevenueHistoryManager
+from .models import SellerSalesHistory,ManagerTransactions,RevenueHistorySeller,RevenueHistoryManager, PunterPayedHistory
 from user.models import CustomUser
 from django.utils.translation import gettext_lazy as _
 
@@ -31,3 +31,11 @@ class RevenueHistoryManagerAdmin(admin.ModelAdmin):
 	search_fields = ['manager__first_name']
 	list_display = ('pk','who_reseted_revenue','manager','revenue_reseted_date','final_revenue','actual_comission','earned_value')
 	list_display_links = ('pk','manager')
+
+
+
+@admin.register(PunterPayedHistory)
+class PunterPayedHistoryAdmin(admin.ModelAdmin):
+	search_fields = ['seller__first_name', 'ticket_winner__pk']
+	list_display = ('pk','punter_payed','seller','ticket_winner','payment_date','payed_value')
+	list_display_links = ('pk','punter_payed')
