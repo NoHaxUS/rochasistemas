@@ -40,7 +40,10 @@ def validate_selected_tickets(modeladmin, request, queryset):
                 break
             validated_ticket.append(str(ticket.pk))
         if not validate_all:
-            messages.success(request, 'Tickets' + ','.join(validated_ticket)+ 'validados, porém o saldo não foi suficiente para validar todos os selecionados.')
+            if len(validated_ticket) == 0:
+                messages.warning(request, 'Seu saldo não é suficiente.')
+            else:
+                messages.success(request, 'Ticket(s) ' + ','.join(validated_ticket) + ' validado(s), porém o saldo não foi suficiente para validar todos os selecionados.')
         else:
             messages.success(request, 'Todos os tickets foram validados.')
 
