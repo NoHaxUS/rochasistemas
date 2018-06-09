@@ -7,11 +7,11 @@ from django.contrib.auth.models import User
 from user.models import NormalUser
 from django.utils import timezone
 from django.db.models import Q
-import decimal
 from user.models import NormalUser
 from django.conf import settings
 import utils.timezone as tzlocal
 from .cotations_restrictions import is_excluded_cotation
+
 
 
 class BetTicket(models.Model):
@@ -38,13 +38,14 @@ class BetTicket(models.Model):
         return str(self.pk)
 
 
+
     def validate_ticket(self, user):
-        if user.seller.can_sell_unlimited:
+        if not user.seller.can_sell_unlimited:
             if self.value > user.seller.credit_limit:                
                 return False
+            
             user.seller.credit_limit -= self.value 
             user.seller.save()
-
 
         self.payment.status_payment = Payment.PAYMENT_STATUS[1][1]
         self.payment.payment_date = tzlocal.now()
@@ -53,11 +54,30 @@ class BetTicket(models.Model):
         return True
 
 
-    def reward_ticket(self, user):
+    def pay_winner_punter(self, user):
+        from history.models import PunterPayedHistory
+
+        if not self.bet_ticket_status == 'Venceu':
+            return {'success':False,
+                'message':'O Ticket não Venceu'}
+
+        if self.normal_user:
+            punter_payed =  str(self.normal_user.pk) +' - '+ str(self.normal_user.first_name)
+        elif self.user:
+            punter_payed = str(self.user.pk) +' - '+ str(self.user.first_name)
+
         self.reward.status_reward = Reward.REWARD_STATUS[1][1]
         self.reward.reward_date = tzlocal.now()
         self.reward.who_rewarded = Seller.objects.get(pk=user.pk)
         self.reward.save()
+
+        PunterPayedHistory.objects.create(punter_payed=punter_payed,
+            seller=user.seller,
+            ticket_winner=self,
+            payed_value=self.reward.value)
+
+        return {'success':True,
+                'message':'O Apostador foi Pago'}
 
 
     def cotation_sum(self):
@@ -126,14 +146,14 @@ class Game(models.Model):
         ('WO', 'WO'),
     )
 
-    name = models.CharField(max_length=80, verbose_name='Nome do Jogo')	
+    name = models.CharField(max_length=80, verbose_name='Nome do Jogo')
     start_game_date = models.DateTimeField(verbose_name='Início da Partida')
     championship = models.ForeignKey('Championship',related_name='my_games',null=True, on_delete=models.SET_NULL,verbose_name='Campeonato')
     status_game = models.CharField(max_length=80,default=GAME_STATUS[0][1], choices=GAME_STATUS,verbose_name='Status do Jogo')
-    odds_calculated = models.BooleanField()	
-    ht_score = models.CharField(max_length=80, null=True, verbose_name='Placar até o meio-tempo')
+    odds_calculated = models.BooleanField()
+    ht_score = models.CharField(max_length=80, null=True, verbose_name='Placar até o meio-tempo', help_text="Placar meio-tempo Ex: 3-5 (Casa-Visita)")
     ft_score = models.CharField(max_length=80, null=True, verbose_name='Placar no final do Jogo', help_text="Placar final Ex: 3-5 (Casa-Visita)")
-    odds_processed = models.BooleanField(default=False)
+    odds_processed = models.BooleanField(default=False, verbose_name='Foi processado?')
 
     objects = GamesManager()	
 
