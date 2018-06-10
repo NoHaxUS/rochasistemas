@@ -32,7 +32,7 @@ class BetTicket(models.Model):
     reward = models.ForeignKey('Reward', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
     payment = models.OneToOneField('Payment', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
     value = models.FloatField(verbose_name='Valor Apostado')
-    bet_ticket_status = models.CharField(max_length=80, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][1],verbose_name='Status de Pagamento')
+    bet_ticket_status = models.CharField(max_length=80, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][1],verbose_name='Status de Ticket')
 
 
     def __str__(self):
@@ -42,7 +42,7 @@ class BetTicket(models.Model):
 
     def validate_ticket(self, user):
         from history.models import SellerSalesHistory
-        
+
         seller_before_balance = 0
         seller_after_balance= 0
         if not user.seller.can_sell_unlimited:
@@ -53,6 +53,8 @@ class BetTicket(models.Model):
             seller_after_balance = user.seller.credit_limit
             user.seller.save()
         
+        self.save()
+
         SellerSalesHistory.objects.create(seller=user.seller,
         bet_ticket=self,
         value=self.value,

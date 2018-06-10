@@ -3,6 +3,7 @@ from user.models import CustomUser
 from .models import SellerSalesHistory,ManagerTransactions,RevenueHistorySeller,RevenueHistoryManager, PunterPayedHistory
 from user.models import CustomUser
 from django.utils.translation import gettext_lazy as _
+from admin_view_permission.admin import AdminViewPermissionModelAdmin
 
 
 @admin.register(SellerSalesHistory)
@@ -13,14 +14,14 @@ class SellerSalesHistoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(ManagerTransactions)
-class ManagerTransactionsAdmin(admin.ModelAdmin):
+class ManagerTransactionsAdmin(AdminViewPermissionModelAdmin):
 	search_fields = ['manager__first_name']
 	list_display = ('pk','manager','seller','transaction_date','transferred_amount','seller_before_balance','seller_after_balance')
 	list_display_links = ('pk','manager')
 
 
 @admin.register(RevenueHistorySeller)
-class RevenueHistorySellerAdmin(admin.ModelAdmin):
+class RevenueHistorySellerAdmin(AdminViewPermissionModelAdmin):
 	search_fields = ['seller__first_name']
 	list_display = ('pk','who_reseted_revenue','seller','revenue_reseted_date','final_revenue','actual_comission','earned_value')
 	list_display_links = ('pk','seller')
@@ -35,7 +36,7 @@ class RevenueHistoryManagerAdmin(admin.ModelAdmin):
 
 
 @admin.register(PunterPayedHistory)
-class PunterPayedHistoryAdmin(admin.ModelAdmin):
+class PunterPayedHistoryAdmin(AdminViewPermissionModelAdmin):
 	search_fields = ['seller__first_name', 'ticket_winner__pk']
 	list_display = ('pk','punter_payed','seller','ticket_winner','payment_date','payed_value')
 	list_display_links = ('pk','punter_payed')

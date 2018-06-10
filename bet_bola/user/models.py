@@ -39,17 +39,35 @@ class Seller(CustomUser):
     my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True, blank=True)
 
 
+    def reset_revenue(self, who_reseted_revenue):
+        from core.models import Payment
+        from history.models import RevenueHistorySeller
+
+        payments = Payment.objects.filter(who_set_payment_id=self.pk, seller_was_rewarded=False)
+        
+        RevenueHistorySeller.objects.create(who_reseted_revenue=who_reseted_revenue,
+        seller=self,
+        final_revenue=self.actual_revenue(),
+        actual_comission=self.commission,
+        earned_value=self.net_value())
+
+        payments.update(seller_was_rewarded=True)
+
+
+
+    
     def full_name(self):
         return self.first_name + ' ' + self.last_name
     full_name.short_description = 'Nome Completo'
 
-
+    
     def net_value(self):
         
         total_net_value = self.actual_revenue() * (self.commission / 100)
         return round(total_net_value,2)
     net_value.short_description = 'Líquido'
     net_value.cor = 'Azul'
+    
     
     def actual_revenue(self):
         from core.models import BetTicket

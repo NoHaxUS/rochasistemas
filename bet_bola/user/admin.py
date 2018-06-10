@@ -18,14 +18,29 @@ class PunterAdmin(admin.ModelAdmin):
     exclude = ('user_permissions','groups',)
     list_display_links = ('pk','first_name')
 
+
+
+def pay_seller(modeladmin, request, queryset):
+    who_reseted_revenue = str(request.user.pk) + ' - ' + request.user.first_name
+
+    for seller in queryset:
+        seller.reset_revenue(who_reseted_revenue)
+    
+    messages.success(request, 'Vendedores Pagos')
+
+pay_seller.short_description = 'Pagar Vendedores'
+
 @admin.register(Seller)
-class SellerAdmin(GuardedModelAdmin):
+class SellerAdmin(AdminViewPermissionModelAdmin):
     search_fields = ['id','first_name','username','email']
-    fields = ('is_staff','username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'commission', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active')
+    filter_horizontal = ['user_permissions',]
+    fields = ('user_permissions','is_staff','username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'commission', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active')
     list_editable = ('credit_limit',)
     list_display = ('pk','username','full_name','actual_revenue','net_value','commission','credit_limit', 'can_sell_unlimited')
     list_display_links = ('pk','username',)
+    actions = [pay_seller]
 
+    
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
