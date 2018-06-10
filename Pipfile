@@ -12,6 +12,7 @@ django = "*"
 requests = "*"
 fpdf = "*"
 bootstrap-admin = "*"
+django-admin-view-permission = "*"
 
 
 [dev-packages]

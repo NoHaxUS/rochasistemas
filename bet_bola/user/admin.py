@@ -5,6 +5,8 @@ from core.models import BetTicket
 from .models import Punter, Seller, Manager
 from utils.models import GeneralConfigurations
 from django.contrib import messages
+from admin_view_permission.admin import AdminViewPermissionModelAdmin
+
 
 admin.site.register(GeneralConfigurations)
 
@@ -62,8 +64,10 @@ class SellerAdmin(GuardedModelAdmin):
         else:
             super().save_model(request, obj, form, change)
 
+
+
 @admin.register(Manager)
-class ManagerAdmin(admin.ModelAdmin):
+class ManagerAdmin(AdminViewPermissionModelAdmin):
     search_fields = ['first_name']
     filter_horizontal = ['user_permissions',]
     list_display =('pk','username','first_name','email','cellphone','actual_revenue','net_value','commission','credit_limit_to_add')
