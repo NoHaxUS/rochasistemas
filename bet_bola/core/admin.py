@@ -70,16 +70,24 @@ pay_winner_punter.short_description = 'Pagar Apostador'
 
 @admin.register(BetTicket)
 class BetTicketAdmin(admin.ModelAdmin):	
-    search_fields = ['user__first_name']
+    search_fields = ['id']
     list_filter = ('bet_ticket_status',
     'payment__who_set_payment_id',
     'payment__status_payment',
     'creation_date',
     'payment__seller_was_rewarded',
     'reward__status_reward')
-    list_display =('pk','creation_date','value','reward','cotation_sum','bet_ticket_status')
+    list_display =('pk','value','reward','cotation_sum','bet_ticket_status','creation_date')
     exclude = ('cotations','user','normal_user',)
     actions = [validate_selected_tickets, pay_winner_punter]
+
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if request.user.has_perm('user.be_seller'):
+            if 'delete_selected' in actions:
+                del actions['delete_selected']
+        return actions
 
     def get_list_filter(self, request):
         if request.user.has_perm('user.be_seller'):

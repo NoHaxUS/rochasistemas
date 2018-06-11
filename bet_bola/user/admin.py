@@ -38,6 +38,7 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
     list_editable = ('credit_limit',)
     list_display = ('pk','username','full_name','actual_revenue','net_value','commission','credit_limit', 'can_sell_unlimited')
     list_display_links = ('pk','username',)
+    autocomplete_fields = ['my_manager',]
     actions = [pay_seller]
 
     
@@ -49,33 +50,18 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
         return qs.filter(my_manager=request.user.manager)
 
     def save_model(self, request, obj, form, change):
-        from pprint import pprint
       
-        obj.is_superuser = False
         if request.user.has_perm('user.be_manager') and not request.user.is_superuser:
             if form.is_valid():
+                obj.is_superuser = False
                 if obj.my_manager:
                     if obj.my_manager.pk == request.user.pk:
-                        seller = Seller.objects.get(pk=obj.pk)
-                        manager = obj.my_manager
-
-                        diff = obj.credit_limit - seller.credit_limit
-                        manager_balance_after = manager.credit_limit_to_add - diff
-
-                        obj.can_sell_unlimited = seller.can_sell_unlimited
-
-                        if manager_balance_after < 0:
-                            messages.warning(request, 'Você não tem saldo suficiente.')
-                            obj.status = 'NO'
-                        elif obj.credit_limit < 0:
-                            messages.warning(request, 'O saldo mínimo é 0.')
-                            obj.status = 'NO'
-                        else:
-                            manager.credit_limit_to_add -= diff
-                            manager.save()
+                        credit_transation = obj.my_manager.manage_credit(obj)
+                        if credit_transation['success']:
                             super().save_model(request, obj, form, change)
-                        print(diff)
-                        print(manager_balance_after)
+                            messages.success(request, credit_transation['message'])
+                        else:
+                            messages.warning(request, credit_transation['message'])
         else:
             super().save_model(request, obj, form, change)
 

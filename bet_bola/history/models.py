@@ -10,8 +10,8 @@ class SellerSalesHistory(models.Model):
     bet_ticket = models.ForeignKey(BetTicket, on_delete=models.CASCADE, verbose_name='Ticket Criado')
     sell_date = models.DateTimeField(verbose_name='Data da Venda', auto_now_add=True)
     value = models.FloatField(verbose_name='Valor Apostado')
-    seller_before_balance = models.FloatField(null=True, verbose_name='Saldo Anterior')
-    seller_after_balance = models.FloatField(null=True, verbose_name='Saldo Atual')
+    seller_before_balance = models.FloatField(null=True,blank=True, verbose_name='Saldo Anterior')
+    seller_after_balance = models.FloatField(null=True, blank=True, verbose_name='Saldo Atual')
 
     def __str__(self):
         return "Transações - Vendedores"
@@ -28,8 +28,10 @@ class ManagerTransactions(models.Model):
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, verbose_name='Vendedor')
     transaction_date = models.DateTimeField(verbose_name='Data da Transação', auto_now_add=True)
     transferred_amount = models.FloatField(verbose_name='Valor Transferido')
-    seller_before_balance = models.FloatField(null=True, verbose_name='Saldo Anterior')
-    seller_after_balance = models.FloatField(null=True, verbose_name='Saldo Atual')
+    manager_before_balance = models.FloatField(null=True,blank=True, verbose_name='Saldo Anterior')
+    manager_after_balance = models.FloatField(null=True,blank=True, verbose_name='Saldo Atual')
+    seller_before_balance = models.FloatField(null=True,blank=True, verbose_name='Saldo Anterior(Vendedor)')
+    seller_after_balance = models.FloatField(null=True,blank=True, verbose_name='Saldo Atual(Vendedor)')
 
 
     def __str__(self):

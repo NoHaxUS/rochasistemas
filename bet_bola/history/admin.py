@@ -16,7 +16,7 @@ class SellerSalesHistoryAdmin(admin.ModelAdmin):
 @admin.register(ManagerTransactions)
 class ManagerTransactionsAdmin(AdminViewPermissionModelAdmin):
 	search_fields = ['manager__first_name']
-	list_display = ('pk','manager','seller','transaction_date','transferred_amount','seller_before_balance','seller_after_balance')
+	list_display = ('pk','manager','seller','transaction_date','transferred_amount','manager_before_balance','manager_after_balance','seller_before_balance','seller_after_balance')
 	list_display_links = ('pk','manager')
 
 
@@ -37,6 +37,6 @@ class RevenueHistoryManagerAdmin(admin.ModelAdmin):
 
 @admin.register(PunterPayedHistory)
 class PunterPayedHistoryAdmin(AdminViewPermissionModelAdmin):
-	search_fields = ['seller__first_name', 'ticket_winner__pk']
+	search_fields = ['punter_payed','seller__first_name', 'ticket_winner__id']
 	list_display = ('pk','punter_payed','seller','ticket_winner','payment_date','payed_value')
 	list_display_links = ('pk','punter_payed')

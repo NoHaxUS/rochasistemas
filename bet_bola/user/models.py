@@ -141,19 +141,42 @@ class Manager(CustomUser):
     actual_revenue.short_description = 'Faturamento'
 
 
-    def transfer_credit_limit(self,seller,value):
-        if self.has_perm('set_credit_limit', seller):
-            if value <= self.credit_limit_to_add:
-                seller.credit_limit += value
-                self.credit_limit_to_add -= value
-                self.save()
-                seller.save()
-                            
-                return 'Valor adicionado com sucesso.'
-            else:
-                return 'Você não possui créditos suficientes.'
+    def manage_credit(self, obj):
+        from history.models import ManagerTransactions
 
-        return 'Você não tem permissão para adicionar credito a esse usuário.'
+        seller = Seller.objects.get(pk=obj.pk)
+
+        manager_before_balance = self.credit_limit_to_add
+        seller_before_balance = seller.credit_limit
+
+        diff = obj.credit_limit - seller.credit_limit
+        manager_balance_after = self.credit_limit_to_add - diff
+
+        seller_after_balance = seller.credit_limit + diff
+
+        obj.can_sell_unlimited = seller.can_sell_unlimited
+
+        if manager_balance_after < 0:
+            return {'success': False,
+            'message': 'Você não tem saldo suficiente'}
+        elif obj.credit_limit < 0:
+            return {'success': False,
+            'message': 'Você não pode ter saldo negativo.'}
+        else:
+            self.credit_limit_to_add -= diff
+            self.save()
+
+            ManagerTransactions.objects.create(manager=self,
+            seller=seller,
+            transferred_amount=diff,
+            manager_before_balance=manager_before_balance,
+            manager_after_balance=manager_balance_after,
+            seller_before_balance=seller_before_balance,
+            seller_after_balance=seller_after_balance)
+
+            return {'success': True,
+            'message': 'Transação realizada.'}
+        
 
     def add_set_limit_permission(self,sellers):		
         for seller in sellers:
