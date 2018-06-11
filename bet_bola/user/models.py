@@ -89,10 +89,17 @@ class Seller(CustomUser):
         super().save()
 
 
-        be_seller_permission = Permission.objects.get(codename='be_seller')
-        chance_betticket = Permission.objects.get(codename='change_betticket')
-        self.user_permissions.add(be_seller_permission)
-        self.user_permissions.add(chance_betticket)
+        be_seller_perm = Permission.objects.get(codename='be_seller')
+        change_ticket_perm = Permission.objects.get(codename='change_betticket')
+        view_managertransactions_perm = Permission.objects.get(codename='view_managertransactions')
+        view_revenuehistoryseller_perm = Permission.objects.get(codename='view_revenuehistoryseller')
+        view_sellersaleshistory_perm = Permission.objects.get(codename='view_sellersaleshistory')
+        view_punterpayedhistory_perm = Permission.objects.get(codename='view_punterpayedhistory')
+        
+        self.user_permissions.add(be_seller_perm, change_ticket_perm, 
+        view_managertransactions_perm, view_revenuehistoryseller_perm, 
+        view_sellersaleshistory_perm, view_punterpayedhistory_perm)
+        #self.user_permissions.add(chance_betticket)
 
 
 
@@ -193,8 +200,8 @@ class Manager(CustomUser):
         super(Manager, self).save()
         self.clean()			
 
-        be_manager_permission = Permission.objects.get(
-                codename='be_manager')
+        be_manager_permission = Permission.objects.get(codename='be_manager')
+        
         self.user_permissions.add(be_manager_permission)
 
     class Meta:

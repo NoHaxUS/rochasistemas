@@ -34,7 +34,7 @@ pay_seller.short_description = 'Pagar Vendedores'
 class SellerAdmin(AdminViewPermissionModelAdmin):
     search_fields = ['id','first_name','username','email']
     filter_horizontal = ['user_permissions',]
-    fields = ('user_permissions','is_staff','username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'commission', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active')
+    fields = ('username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'commission', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active')
     list_editable = ('credit_limit',)
     list_display = ('pk','username','full_name','actual_revenue','net_value','commission','credit_limit', 'can_sell_unlimited')
     list_display_links = ('pk','username',)
@@ -50,7 +50,7 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
         return qs.filter(my_manager=request.user.manager)
 
     def save_model(self, request, obj, form, change):
-      
+        obj.is_staff = True
         if request.user.has_perm('user.be_manager') and not request.user.is_superuser:
             if form.is_valid():
                 obj.is_superuser = False

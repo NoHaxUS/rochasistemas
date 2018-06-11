@@ -12,6 +12,13 @@ class SellerSalesHistoryAdmin(admin.ModelAdmin):
 	list_display = ('pk','seller','bet_ticket','sell_date','value','seller_before_balance','seller_after_balance')
 	list_display_links = ('pk','seller')
 
+	def get_queryset(self, request):
+		qs = super().get_queryset(request)
+		if request.user.is_superuser:
+			return qs
+		elif request.user.has_perm('user.be_seller'):
+			return SellerSalesHistory.objects.filter(seller=request.user.seller)
+
 
 @admin.register(ManagerTransactions)
 class ManagerTransactionsAdmin(AdminViewPermissionModelAdmin):
@@ -20,11 +27,27 @@ class ManagerTransactionsAdmin(AdminViewPermissionModelAdmin):
 	list_display_links = ('pk','manager')
 
 
+	def get_queryset(self, request):
+		qs = super().get_queryset(request)
+		if request.user.is_superuser:
+			return qs
+		elif request.user.has_perm('user.be_seller'):
+			return ManagerTransactions.objects.filter(seller=request.user.seller)
+
+
 @admin.register(RevenueHistorySeller)
 class RevenueHistorySellerAdmin(AdminViewPermissionModelAdmin):
 	search_fields = ['seller__first_name']
 	list_display = ('pk','who_reseted_revenue','seller','revenue_reseted_date','final_revenue','actual_comission','earned_value')
 	list_display_links = ('pk','seller')
+
+
+	def get_queryset(self, request):
+		qs = super().get_queryset(request)
+		if request.user.is_superuser:
+			return qs
+		elif request.user.has_perm('user.be_seller'):
+			return RevenueHistorySeller.objects.filter(seller=request.user.seller)
 
 
 @admin.register(RevenueHistoryManager)
@@ -40,3 +63,12 @@ class PunterPayedHistoryAdmin(AdminViewPermissionModelAdmin):
 	search_fields = ['punter_payed','seller__first_name', 'ticket_winner__id']
 	list_display = ('pk','punter_payed','seller','ticket_winner','payment_date','payed_value')
 	list_display_links = ('pk','punter_payed')
+
+
+	def get_queryset(self, request):
+		qs = super().get_queryset(request)
+		if request.user.is_superuser:
+			return qs
+		elif request.user.has_perm('user.be_seller'):
+			return PunterPayedHistory.objects.filter(seller=request.user.seller)
+
