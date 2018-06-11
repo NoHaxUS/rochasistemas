@@ -111,8 +111,7 @@ class Seller(CustomUser):
         self.user_permissions.add(be_seller_perm, change_ticket_perm, 
         view_managertransactions_perm, view_revenuehistoryseller_perm, 
         view_sellersaleshistory_perm, view_punterpayedhistory_perm)
-        #self.user_permissions.add(chance_betticket)
-
+ 
 
 
     class Meta:
@@ -148,8 +147,8 @@ class Manager(CustomUser):
         return round(total_net_value,2)
     net_value.short_description = 'Líquido'
 
-    def actual_revenue(self):
 
+    def actual_revenue(self):
         manager = CustomUser.objects.get(pk=self.pk)
         sellers = get_objects_for_user(manager, 'user.set_credit_limit').order_by('-pk')
 
@@ -212,9 +211,16 @@ class Manager(CustomUser):
         super(Manager, self).save()
         self.clean()			
 
-        be_manager_permission = Permission.objects.get(codename='be_manager')
+        be_manager_perm = Permission.objects.get(codename='be_manager')
+        view_managertransactions_perm = Permission.objects.get(codename='view_managertransactions')
+        view_revenuehistoryseller_perm = Permission.objects.get(codename='view_revenuehistoryseller')
+        view_sellersaleshistory_perm = Permission.objects.get(codename='view_sellersaleshistory')
+        view_punterpayedhistory_perm = Permission.objects.get(codename='view_punterpayedhistory')
+        view_revenuehistorymanager = Permission.objects.get(codename='view_revenuehistorymanager')
         
-        self.user_permissions.add(be_manager_permission)
+        self.user_permissions.add(be_manager_perm,view_managertransactions_perm,
+        view_revenuehistoryseller_perm,view_sellersaleshistory_perm,
+        view_punterpayedhistory_perm, view_revenuehistorymanager)
 
     class Meta:
         verbose_name = 'Gerente'

@@ -47,7 +47,9 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
-        return qs.filter(my_manager=request.user.manager)
+        if request.user.has_perm('user.be_manager'):
+            return qs.filter(my_manager=request.user.manager)
+        return qs
 
     def save_model(self, request, obj, form, change):
         obj.is_staff = True
@@ -70,8 +72,9 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
 @admin.register(Manager)
 class ManagerAdmin(AdminViewPermissionModelAdmin):
     search_fields = ['first_name']
-    filter_horizontal = ['user_permissions',]
-    list_display =('pk','username','first_name','email','cellphone','actual_revenue','net_value','commission','credit_limit_to_add')
+    #filter_horizontal = ['user_permissions',]
+    fields = ('username','password','first_name','last_name','email','cellphone','address','commission','credit_limit_to_add','is_staff')
+    list_display = ('pk','username','first_name','email','cellphone','actual_revenue','net_value','commission','credit_limit_to_add')
     list_editable = ('credit_limit_to_add',)
     list_display_links = ('pk','username',)
 
