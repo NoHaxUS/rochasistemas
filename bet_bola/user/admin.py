@@ -36,7 +36,7 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
     filter_horizontal = ['user_permissions',]
     fields = ('username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'commission', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active')
     list_editable = ('credit_limit',)
-    list_display = ('pk','username','full_name','actual_revenue','net_value','commission','credit_limit', 'can_sell_unlimited')
+    list_display = ('pk','username','full_name','actual_revenue','commission','net_value','out_money','credit_limit','can_sell_unlimited')
     list_display_links = ('pk','username',)
     autocomplete_fields = ['my_manager',]
     actions = [pay_seller]

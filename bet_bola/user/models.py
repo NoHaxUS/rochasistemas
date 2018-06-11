@@ -65,10 +65,22 @@ class Seller(CustomUser):
         
         total_net_value = self.actual_revenue() * (self.commission / 100)
         return round(total_net_value,2)
-    net_value.short_description = 'Líquido'
+    net_value.short_description = 'A Receber'
     net_value.cor = 'Azul'
     
-    
+    def out_money(self):
+        from history.models import PunterPayedHistory
+
+        payed_sum = 0
+        payeds_open = PunterPayedHistory.objects.filter(seller=self, is_closed=False)
+
+        for payed in payeds_open:
+            payed_sum += payed.payed_value
+        return payed_sum
+
+    out_money.short_description = 'Saída'
+
+
     def actual_revenue(self):
         from core.models import BetTicket
         tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=self.pk, payment__seller_was_rewarded=False)
@@ -78,7 +90,7 @@ class Seller(CustomUser):
             revenue_total += ticket.value
         return revenue_total
 
-    actual_revenue.short_description = 'Faturamento Total'
+    actual_revenue.short_description = 'Faturamento'
 
 
 
