@@ -32,20 +32,13 @@ class GamesWithNoFinalResults(admin.SimpleListFilter):
 def validate_selected_tickets(modeladmin, request, queryset):
     
     if request.user.has_perm('user.be_seller'):
-        validate_all = True
-        validated_ticket = []
         for ticket in queryset:
-            if not ticket.validate_ticket(request.user):
-                validate_all = False
-                break
-            validated_ticket.append(str(ticket.pk))
-        if not validate_all:
-            if len(validated_ticket) == 0:
-                messages.warning(request, 'Seu saldo não é suficiente.')
+            ticket_validation = ticket.validate_ticket(request.user)
+            if ticket_validation['success']:
+                messages.success(request, ticket_validation['message'])
             else:
-                messages.success(request, 'Ticket(s) ' + ','.join(validated_ticket) + ' validado(s), porém o saldo não foi suficiente para validar todos os selecionados.')
-        else:
-            messages.success(request, 'Todos os tickets foram validados.')
+                messages.warning(request, ticket_validation['message'])
+                break
 
     
 validate_selected_tickets.short_description = 'Validar Tickets'
@@ -67,6 +60,9 @@ pay_winner_punter.short_description = 'Pagar Apostador'
 
 
 
+def payment_status(obj):
+    return ("%s" % obj.payment.status_payment)
+payment_status.short_description = 'Status do Pagamento'
 
 @admin.register(BetTicket)
 class BetTicketAdmin(admin.ModelAdmin):	
@@ -77,7 +73,7 @@ class BetTicketAdmin(admin.ModelAdmin):
     'creation_date',
     'payment__seller_was_rewarded',
     'reward__status_reward')
-    list_display =('pk','value','reward','cotation_sum','bet_ticket_status','creation_date')
+    list_display =('pk','value','reward','cotation_sum','bet_ticket_status', payment_status,'creation_date')
     exclude = ('cotations','user','normal_user',)
     actions = [validate_selected_tickets, pay_winner_punter]
 
@@ -95,7 +91,7 @@ class BetTicketAdmin(admin.ModelAdmin):
         return super().get_list_filter(request)
 
     def get_readonly_fields(self, request, obj):
-        if request.user.has_perm('user.be_seller'):
+        if request.user.has_perm('user.be_seller') and not request.user.is_superuser:
             return ('value','reward','payment','creation_date','cotation_value_total', 'seller', 'bet_ticket_status')
         return super().get_readonly_fields(request, obj)
 
@@ -103,7 +99,9 @@ class BetTicketAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
-        return qs.filter(payment__status_payment='Aguardando Pagamento do Ticket')
+        if request.user.has_perm('user.be_seller'):
+            return qs.filter(Q(payment__status_payment='Aguardando Pagamento do Ticket') | Q(bet_ticket_status='Venceu'))\
+            .exclude(reward__status_reward=Reward.REWARD_STATUS[1][1])
 
 
 @admin.register(Game)

@@ -91,14 +91,23 @@
               {% endif %}
               {% block pretitle %}{% endblock %}
               {% block content_title %}
-                <h1>
-                  {% if perms.user.be_seller %}
-                  Meu Saldo: {{ user.seller.credit_limit | floatformat:'2'}}
-                  {% endif %}
-                  {% if perms.user.be_manager %}
-                  Meu Saldo: {{ user.manager.credit_limit_to_add | floatformat:'2'}}
-                  {% endif %}
-                </h1>
+
+              {% if perms.user.be_seller %}  
+              <h1>
+                (S): {{ user.seller.credit_limit | floatformat:'2'}} 
+                (F): {{ user.seller.actual_revenue | floatformat:'2'}}
+                (L): {{ user.seller.net_value | floatformat:'2'}} 
+              </h1>
+              {% endif %}
+
+              {% if perms.user.be_manager %}  
+              <h1>
+                Meu Saldo: {{ user.manager.credit_limit_to_add | floatformat:'2'}}
+                Faturamento: {{ user.seller.actual_revenue | floatformat:'2'}}
+                A Receber: {{ user.seller.net_value | floatformat:'2'}}
+              </h1>
+              {% endif %}
+
               {% endblock %}
               <div id="user-tools" class="btn-group">
                 <div class="btn-group">

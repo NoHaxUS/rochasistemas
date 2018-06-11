@@ -43,30 +43,35 @@ class BetTicket(models.Model):
     def validate_ticket(self, user):
         from history.models import SellerSalesHistory
 
+        if not self.payment.status_payment == 'Aguardando Pagamento do Ticket':
+            return {'success':False,
+                'message':'O Ticket '+ str(self.pk) +' não está Aguardando Pagamento.'}
+
         seller_before_balance = 0
         seller_after_balance= 0
         if not user.seller.can_sell_unlimited:
             if self.value > user.seller.credit_limit:                
-                return False
+                return {'success':False,
+                'message':'Você não tem saldo suficiente para pagar o Ticket: ' + str(self.pk)}
             seller_before_balance = user.seller.credit_limit
             user.seller.credit_limit -= self.value
             seller_after_balance = user.seller.credit_limit
             user.seller.save()
         
         self.save()
+        self.payment.status_payment = Payment.PAYMENT_STATUS[1][1]
+        self.payment.payment_date = tzlocal.now()
+        self.payment.who_set_payment = Seller.objects.get(pk=user.pk)
+        self.payment.save()
 
         SellerSalesHistory.objects.create(seller=user.seller,
         bet_ticket=self,
         value=self.value,
         seller_before_balance=seller_before_balance,
         seller_after_balance=seller_after_balance)
-
-        self.payment.status_payment = Payment.PAYMENT_STATUS[1][1]
-        self.payment.payment_date = tzlocal.now()
-        self.payment.who_set_payment = Seller.objects.get(pk=user.pk)
-        self.payment.save()
         
-        return True
+        return {'success':True,
+            'message':'Ticket '+ str(self.pk) +' Pago com Sucesso.'}
 
 
     def pay_winner_punter(self, user):
@@ -74,7 +79,7 @@ class BetTicket(models.Model):
 
         if not self.bet_ticket_status == 'Venceu':
             return {'success':False,
-                'message':'O Ticket não Venceu'}
+                'message':'O Ticket '+ str(self.pk) +' não Venceu'}
 
         if self.normal_user:
             punter_payed =  str(self.normal_user.pk) +' - '+ str(self.normal_user.first_name)
@@ -92,7 +97,7 @@ class BetTicket(models.Model):
             payed_value=self.reward.value)
 
         return {'success':True,
-                'message':'O Apostador foi Pago'}
+                'message':'O Apostador ' + punter_payed  + ' foi marcado como Pago'}
 
 
     def cotation_sum(self):
