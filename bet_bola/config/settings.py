@@ -103,7 +103,7 @@ DATABASES_ = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'bet_bola',
+        'NAME': 'bet_bola_v6',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': 'localhost',
