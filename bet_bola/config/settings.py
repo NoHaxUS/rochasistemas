@@ -151,6 +151,10 @@ LANGUAGES = (
 
 LANGUAGE_CODE = 'en'
 
+#Decimal
+DECIMAL_SEPARATOR = '.'
+USE_THOUSAND_SEPARATOR = True
+
 #Encoding
 DEFAULT_CHARSET = 'utf-8'
 
