@@ -18,6 +18,12 @@ class SellerSalesHistoryAdmin(admin.ModelAdmin):
 			return qs
 		elif request.user.has_perm('user.be_seller'):
 			return SellerSalesHistory.objects.filter(seller=request.user.seller)
+		
+		elif request.user.has_perm('user.be_manager'):
+			return SellerSalesHistory.objects.filter(seller__my_manager=request.user.manager)
+		
+		return qs
+
 
 
 @admin.register(ManagerTransactions)
@@ -34,6 +40,11 @@ class ManagerTransactionsAdmin(AdminViewPermissionModelAdmin):
 		elif request.user.has_perm('user.be_seller'):
 			return ManagerTransactions.objects.filter(seller=request.user.seller)
 
+		elif request.user.has_perm('user.be_manager'):
+			return ManagerTransactions.objects.filter(manager=request.user.manager)
+		
+		return qs
+
 
 @admin.register(RevenueHistorySeller)
 class RevenueHistorySellerAdmin(AdminViewPermissionModelAdmin):
@@ -49,12 +60,28 @@ class RevenueHistorySellerAdmin(AdminViewPermissionModelAdmin):
 		elif request.user.has_perm('user.be_seller'):
 			return RevenueHistorySeller.objects.filter(seller=request.user.seller)
 
+		elif request.user.has_perm('user.be_manager'):
+			return RevenueHistorySeller.objects.filter(seller__my_manager=request.user.manager)
+		
+		return qs
+
 
 @admin.register(RevenueHistoryManager)
 class RevenueHistoryManagerAdmin(admin.ModelAdmin):
 	search_fields = ['manager__first_name']
 	list_display = ('pk','who_reseted_revenue','manager','revenue_reseted_date','final_revenue','actual_comission','earned_value')
 	list_display_links = ('pk','manager')
+
+
+	def get_queryset(self, request):
+		qs = super().get_queryset(request)
+		if request.user.is_superuser:
+			return qs
+
+		elif request.user.has_perm('user.be_manager'):
+			return RevenueHistoryManager.objects.filter(manager=request.user.manager)
+		
+		return qs
 
 
 
@@ -71,4 +98,9 @@ class PunterPayedHistoryAdmin(AdminViewPermissionModelAdmin):
 			return qs
 		elif request.user.has_perm('user.be_seller'):
 			return PunterPayedHistory.objects.filter(seller=request.user.seller)
+
+		elif request.user.has_perm('user.be_manager'):
+			return PunterPayedHistory.objects.filter(seller__my_manager=request.user.manager)
+		
+		return qs
 
