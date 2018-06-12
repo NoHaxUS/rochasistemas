@@ -56,14 +56,18 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
         if request.user.has_perm('user.be_manager') and not request.user.is_superuser:
             if form.is_valid():
                 obj.is_superuser = False
-                if obj.my_manager:
-                    if obj.my_manager.pk == request.user.pk:
-                        credit_transation = obj.my_manager.manage_credit(obj)
-                        if credit_transation['success']:
-                            super().save_model(request, obj, form, change)
-                            messages.success(request, credit_transation['message'])
-                        else:
-                            messages.warning(request, credit_transation['message'])
+                if obj.pk:
+                    if obj.my_manager:
+                        if obj.my_manager.pk == request.user.pk:
+                            credit_transation = obj.my_manager.manage_credit(obj)
+                            if credit_transation['success']:
+                                super().save_model(request, obj, form, change)
+                                messages.success(request, credit_transation['message'])
+                            else:
+                                messages.warning(request, credit_transation['message'])
+                else:
+                    obj.my_manager = request.user.manager
+                    super().save_model(request, obj, form, change)
         else:
             super().save_model(request, obj, form, change)
 
@@ -74,6 +78,7 @@ class ManagerAdmin(AdminViewPermissionModelAdmin):
     search_fields = ['first_name']
     #filter_horizontal = ['user_permissions',]
     fields = ('username','password','first_name','last_name','email','cellphone','address','commission','credit_limit_to_add','is_staff')
+    #fields = ('user_permissions','username','password','first_name','last_name','email','cellphone','address','commission','credit_limit_to_add','is_staff')
     list_display = ('pk','username','first_name','email','cellphone','actual_revenue','net_value','commission','credit_limit_to_add')
     list_editable = ('credit_limit_to_add',)
     list_display_links = ('pk','username',)

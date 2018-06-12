@@ -3,7 +3,7 @@ from django.contrib.auth.models import User, Permission, AbstractUser, BaseUserM
 from guardian.shortcuts import assign_perm, remove_perm
 from django.db.models import F, Q, When, Case
 from guardian.shortcuts import get_objects_for_user
-# Create your models here.
+
 
 objects = models.Manager()
 
@@ -33,7 +33,7 @@ class NormalUser(models.Model):
 class Seller(CustomUser):
     cpf = models.CharField(max_length=11, verbose_name='CPF')
     address = models.CharField(max_length=75, verbose_name='Endereço')
-    can_sell_unlimited = models.BooleanField(default=True, verbose_name='Vender Ilimitado?')
+    can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
     commission = models.FloatField(default=0, verbose_name='Comissão')
     credit_limit = models.FloatField(default=0, verbose_name='Créditos')
     my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True, blank=True)
@@ -52,8 +52,6 @@ class Seller(CustomUser):
         earned_value=self.net_value())
 
         payments.update(seller_was_rewarded=True)
-
-
 
     
     def full_name(self):
@@ -78,7 +76,7 @@ class Seller(CustomUser):
             payed_sum += payed.payed_value
         return payed_sum
 
-    out_money.short_description = 'Saída'
+    out_money.short_description = 'Pagamentos'
 
 
     def actual_revenue(self):
@@ -91,7 +89,6 @@ class Seller(CustomUser):
         return revenue_total
 
     actual_revenue.short_description = 'Faturamento'
-
 
 
     def save(self, *args, **kwargs):
@@ -150,8 +147,7 @@ class Manager(CustomUser):
 
     def actual_revenue(self):
         manager = CustomUser.objects.get(pk=self.pk)
-        sellers = get_objects_for_user(manager, 'user.set_credit_limit').order_by('-pk')
-
+        sellers = Seller.objects.filter(my_manager=self)
         total_revenue = 0
         for seller in sellers:
             total_revenue += seller.actual_revenue()
@@ -196,14 +192,6 @@ class Manager(CustomUser):
             'message': 'Transação realizada.'}
         
 
-    def add_set_limit_permission(self,sellers):		
-        for seller in sellers:
-            assign_perm('set_credit_limit',self,seller)
-
-    def remove_set_limit_permission(self, sellers):
-        for seller in sellers:
-            remove_perm('set_credit_limit',self,seller)
-
     def save(self, *args, **kwargs):					
         if not self.has_usable_password():	
             self.set_password(self.password)
@@ -217,10 +205,12 @@ class Manager(CustomUser):
         view_sellersaleshistory_perm = Permission.objects.get(codename='view_sellersaleshistory')
         view_punterpayedhistory_perm = Permission.objects.get(codename='view_punterpayedhistory')
         view_revenuehistorymanager = Permission.objects.get(codename='view_revenuehistorymanager')
+        change_seller = Permission.objects.get(codename='change_seller')
+        add_seller = Permission.objects.get(codename='add_seller')
         
         self.user_permissions.add(be_manager_perm,view_managertransactions_perm,
         view_revenuehistoryseller_perm,view_sellersaleshistory_perm,
-        view_punterpayedhistory_perm, view_revenuehistorymanager)
+        view_punterpayedhistory_perm, view_revenuehistorymanager, change_seller, add_seller)
 
     class Meta:
         verbose_name = 'Gerente'
