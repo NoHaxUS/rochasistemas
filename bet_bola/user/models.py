@@ -64,7 +64,6 @@ class Seller(CustomUser):
         total_net_value = self.actual_revenue() * (self.commission / 100)
         return round(total_net_value,2)
     net_value.short_description = 'A Receber'
-    net_value.cor = 'Azul'
     
     def out_money(self):
         from history.models import PunterPayedHistory
@@ -80,12 +79,14 @@ class Seller(CustomUser):
 
 
     def actual_revenue(self):
-        from core.models import BetTicket
-        tickets_revenue = BetTicket.objects.filter(payment__who_set_payment_id=self.pk, payment__seller_was_rewarded=False)
-        revenue_total = 0
 
-        for ticket in tickets_revenue:
-            revenue_total += ticket.value
+        from core.models import Payment
+        
+        payments_not_rewarded = Payment.objects.filter(payment__who_set_payment_id=self.pk, seller_was_rewarded=False)
+        
+        revenue_total = 0
+        for payment in payments_not_rewarded:
+            revenue_total += payment.value
         return revenue_total
 
     actual_revenue.short_description = 'Faturamento'
@@ -146,12 +147,22 @@ class Manager(CustomUser):
 
 
     def actual_revenue(self):
-        manager = CustomUser.objects.get(pk=self.pk)
+        from core.models import Payment
+        
         sellers = Seller.objects.filter(my_manager=self)
         total_revenue = 0
         for seller in sellers:
             total_revenue += seller.actual_revenue()
         return total_revenue
+
+        
+        
+        payments_not_rewarded = Payment.objects.filter(payment__who_set_payment_id=self.pk, seller_was_rewarded=False)
+        
+        revenue_total = 0
+        for payment in payments_not_rewarded:
+            revenue_total += payment.value
+        return revenue_total
     actual_revenue.short_description = 'Faturamento'
 
 
