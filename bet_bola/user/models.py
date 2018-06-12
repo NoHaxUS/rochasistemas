@@ -26,6 +26,18 @@ class NormalUser(models.Model):
         return self.first_name
 
 
+class Punter(CustomUser):	
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        if not self.has_usable_password():	
+            self.set_password(self.password)
+        super(Punter, self).save()
+
+    class Meta:
+        verbose_name = 'Apostador'
+        verbose_name_plural = 'Apostadores'
+
 
 class Seller(CustomUser):
     cpf = models.CharField(max_length=11, verbose_name='CPF')
@@ -40,16 +52,14 @@ class Seller(CustomUser):
         from core.models import Payment
         from history.models import RevenueHistorySeller
 
-        payments = Payment.objects.filter(who_set_payment_id=self.pk, seller_was_rewarded=False)
-        
         RevenueHistorySeller.objects.create(who_reseted_revenue=who_reseted_revenue,
         seller=self,
         final_revenue=self.actual_revenue(),
         actual_comission=self.commission,
         earned_value=self.net_value())
 
+        payments = Payment.objects.filter(who_set_payment_id=self.pk, seller_was_rewarded=False)
         payments.update(seller_was_rewarded=True)
-
     
     def full_name(self):
         return self.first_name + ' ' + self.last_name
@@ -115,17 +125,6 @@ class Seller(CustomUser):
             ('be_seller', 'Be a seller, permission.'),
         )
 
-class Punter(CustomUser):	
-
-    def save(self, *args, **kwargs):
-        self.clean()
-        if not self.has_usable_password():	
-            self.set_password(self.password)
-        super(Punter, self).save()
-
-    class Meta:
-        verbose_name = 'Apostador'
-        verbose_name_plural = 'Apostadores'
 
 
 class Manager(CustomUser):
@@ -133,6 +132,24 @@ class Manager(CustomUser):
     address = models.CharField(max_length=75, verbose_name='Endereço', null=True)
     commission = models.FloatField(default=0, verbose_name='Comissão')
     credit_limit_to_add = models.FloatField(default=0, verbose_name="Crédito")
+
+    def reset_revenue(self, who_reseted_revenue):
+        from core.models import Payment
+        from history.models import RevenueHistoryManager
+
+        RevenueHistoryManager.objects.create(who_reseted_revenue=who_reseted_revenue,
+        manager=self,
+        final_revenue=self.actual_revenue(),
+        actual_comission=self.commission,
+        earned_value=self.net_value())
+
+        sellers = Seller.objects.filter(my_manager=self)
+        for seller in sellers:
+            payments_not_rewarded = Payment.objects.filter(who_set_payment=seller, manager_was_rewarded=False)
+            payments_not_rewarded.update(manager_was_rewarded=True)
+
+
+
 
 
     def net_value(self):

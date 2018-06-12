@@ -72,6 +72,16 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
 
 
 
+def pay_manager(modeladmin, request, queryset):
+    who_reseted_revenue = str(request.user.pk) + ' - ' + request.user.first_name
+
+    for manager in queryset:
+        manager.reset_revenue(who_reseted_revenue)
+    
+    messages.success(request, 'Gerentes Pagos')
+
+pay_manager.short_description = 'Pagar Gerentes'
+
 @admin.register(Manager)
 class ManagerAdmin(AdminViewPermissionModelAdmin):
     search_fields = ['first_name']
@@ -81,5 +91,12 @@ class ManagerAdmin(AdminViewPermissionModelAdmin):
     list_display = ('pk','username','first_name','email','cellphone','actual_revenue','net_value','commission','credit_limit_to_add')
     list_editable = ('credit_limit_to_add',)
     list_display_links = ('pk','username',)
+    actions = [pay_manager]
+
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if request.user.is_superuser:
+            return actions
 
 
