@@ -1,5 +1,4 @@
 from django.contrib import admin
-from guardian.admin import GuardedModelAdmin
 from user.models import CustomUser
 from core.models import BetTicket
 from .models import Punter, Seller, Manager

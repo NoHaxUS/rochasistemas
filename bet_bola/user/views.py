@@ -8,7 +8,6 @@ from django.views import View
 from django.views.generic.base import TemplateResponseMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from guardian.shortcuts import get_objects_for_user
 from core.models import BetTicket
 from user.models import Punter, CustomUser, Seller, Manager
 import utils.timezone as tzlocal

@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'user',
     'history',
     'utils',
-    'guardian',
 ]
 
 MIDDLEWARE = [
@@ -113,7 +112,6 @@ DATABASES = {
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend', # this is default
-    'guardian.backends.ObjectPermissionBackend',
 )
 
 

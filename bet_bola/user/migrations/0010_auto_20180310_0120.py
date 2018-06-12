@@ -7,7 +7,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('admin', '0002_logentry_remove_auto_add'),
-        ('guardian', '0001_initial'),
         ('core', '0017_auto_20180225_2039'),
         ('user', '0009_auto_20180302_0208'),
     ]

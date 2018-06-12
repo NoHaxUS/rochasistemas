@@ -1,11 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User, Permission, AbstractUser, BaseUserManager
-from guardian.shortcuts import assign_perm, remove_perm
 from django.db.models import F, Q, When, Case
-from guardian.shortcuts import get_objects_for_user
 
 
-objects = models.Manager()
 
 class CustomUser(AbstractUser):
     cellphone = models.CharField(max_length=14, verbose_name='Celular')
@@ -80,15 +77,13 @@ class Seller(CustomUser):
 
     def actual_revenue(self):
 
-        from core.models import Payment
+        from core.models import BetTicket
         
-        payments_not_rewarded = Payment.objects.filter(payment__who_set_payment_id=self.pk, seller_was_rewarded=False)
-        
-        revenue_total = 0
-        for payment in payments_not_rewarded:
-            revenue_total += payment.value
-        return revenue_total
-
+        total_revenue = 0
+        tickets_not_rewarded = BetTicket.objects.filter(payment__who_set_payment=self, payment__seller_was_rewarded=False)
+        for ticket in tickets_not_rewarded:
+            total_revenue += ticket.value
+        return total_revenue
     actual_revenue.short_description = 'Faturamento'
 
 
@@ -147,22 +142,17 @@ class Manager(CustomUser):
 
 
     def actual_revenue(self):
-        from core.models import Payment
-        
+        from core.models import Seller,BetTicket
+
         sellers = Seller.objects.filter(my_manager=self)
+
         total_revenue = 0
         for seller in sellers:
-            total_revenue += seller.actual_revenue()
+            tickets_not_rewarded = BetTicket.objects.filter(payment__who_set_payment=seller, payment__manager_was_rewarded=False)
+            for ticket in tickets_not_rewarded:
+                total_revenue += ticket.value
         return total_revenue
 
-        
-        
-        payments_not_rewarded = Payment.objects.filter(payment__who_set_payment_id=self.pk, seller_was_rewarded=False)
-        
-        revenue_total = 0
-        for payment in payments_not_rewarded:
-            revenue_total += payment.value
-        return revenue_total
     actual_revenue.short_description = 'Faturamento'
 
 
