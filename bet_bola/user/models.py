@@ -69,7 +69,7 @@ class Seller(CustomUser):
     def net_value(self):
         
         total_net_value = self.actual_revenue() * (self.commission / 100)
-        return total_net_value
+        return round(total_net_value,2)
 
     net_value.short_description = 'A Receber'
     
@@ -94,7 +94,9 @@ class Seller(CustomUser):
         tickets_not_rewarded = BetTicket.objects.filter(payment__who_set_payment=self, payment__seller_was_rewarded=False)
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
+
         return total_revenue
+
     actual_revenue.short_description = 'Faturamento'
 
 
@@ -152,12 +154,9 @@ class Manager(CustomUser):
             payments_not_rewarded.update(manager_was_rewarded=True)
 
 
-
-
-
     def net_value(self):
         total_net_value = self.actual_revenue() * (self.commission / 100)
-        return total_net_value
+        return round(total_net_value,2)
         
     net_value.short_description = 'Líquido'
 

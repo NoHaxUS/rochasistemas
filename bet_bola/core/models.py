@@ -89,6 +89,10 @@ class BetTicket(models.Model):
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não foi Pago.'}
 
+        if not self.payment.who_set_payment.pk == user.pk:
+            return {'success':False,
+                'message':'Você só pode recompensar apostas pagas por você.'}
+
         if self.normal_user:
             punter_payed =  str(self.normal_user.pk) +' - '+ str(self.normal_user.first_name)
         elif self.user:

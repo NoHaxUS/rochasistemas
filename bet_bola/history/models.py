@@ -7,7 +7,7 @@ from user.models import Seller, Manager
 
 class SellerSalesHistory(models.Model):
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, verbose_name='Vendedor')
-    bet_ticket = models.ForeignKey(BetTicket, on_delete=models.CASCADE, verbose_name='Ticket Criado')
+    bet_ticket = models.ForeignKey(BetTicket, on_delete=models.CASCADE, verbose_name='Ticket Pago')
     sell_date = models.DateTimeField(verbose_name='Data da Venda', auto_now_add=True)
     value = models.DecimalField(max_digits=30, decimal_places=2,verbose_name='Valor Apostado')
     seller_before_balance = models.DecimalField(max_digits=30, decimal_places=2,null=True,blank=True, verbose_name='Saldo Anterior')
