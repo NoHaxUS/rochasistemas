@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from user.models import CustomUser
-from .models import BetTicket,Cotation,Payment,Game,Championship,Reward,Country
+from .models import BetTicket,Cotation,Payment,Game,Championship,Reward,Country,Market
 from user.models import CustomUser
 from django.contrib.auth.models import Group
 from django.db.models import Q
@@ -108,17 +108,42 @@ class BetTicketAdmin(admin.ModelAdmin):
 class GameAdmin(admin.ModelAdmin):
     search_fields = ['name']
     list_filter = (GamesWithNoFinalResults,)
-    fields = ('name','ht_score','ft_score','status_game','odds_processed','championship')
+    #fields = ('name','ht_score','ft_score','status_game','odds_processed','championship')
     list_display = ('pk','name',)
+    list_display_links = ('pk','name',)
+    autocomplete_fields = ['championship',]
+
+@admin.register(Market)
+class MarketAdmin(admin.ModelAdmin):
+    search_fields = ['id','name']
+    list_display = ('pk','name',)
+    list_display_links = ('pk','name')
+    #autocomplete_fields = ['country',]
+
+
+@admin.register(Cotation)
+class CotationAdmin(admin.ModelAdmin):
+    search_fields = ['id','name','game__name']
+    autocomplete_fields = ['game','kind',]
+    #list_filter = (GamesWithNoFinalResults,)
+    #fields = ('name','ht_score','ft_score','status_game','odds_processed','championship')
+    list_display = ('pk','name', 'original_value', 'value', 'game', 'kind')
     list_display_links = ('pk','name',)
 
 
-@admin.register(Game)
-class GameAdmin(admin.ModelAdmin):
-    search_fields = ['name']
-    list_filter = (GamesWithNoFinalResults,)
-    fields = ('name','ht_score','ft_score','status_game','odds_processed','championship')
-    list_display = ('pk','name',)
-    list_display_links = ('pk','name',)
+@admin.register(Country)
+class CountryAdmin(admin.ModelAdmin):
+    search_fields = ['id','name']
+    #list_filter = (GamesWithNoFinalResults,)
+    #fields = ('name','ht_score','ft_score','status_game','odds_processed','championship')
+    list_display = ('pk','name', 'priority')
+    list_display_links = ('pk','name')
 
+
+@admin.register(Championship)
+class ChampionshipAdmin(admin.ModelAdmin):
+    search_fields = ['id','name']
+    list_display = ('pk','name','country','priority')
+    list_display_links = ('pk','name')
+    autocomplete_fields = ['country',]
 
