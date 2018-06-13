@@ -6,6 +6,7 @@ import datetime
 from django.db.models import Count
 from django.db.models import F, Q
 import time
+from decimal import Decimal
 
 
 """
@@ -405,7 +406,7 @@ def save_odds(game_id, odds, max_cotation_value):
                         if len(cotation_total.split(',')) > 1:
                             continue
                     
-                    cotation_value_reduced = cotation_value * (percentual_reduction / 100)
+                    cotation_value_reduced = Decimal(cotation_value) * Decimal((percentual_reduction / 100))
                     if cotation_value_reduced <= 1:
                         cotation_value_reduced = 1.01
 
