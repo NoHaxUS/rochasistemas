@@ -48,7 +48,10 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
             return qs
         if request.user.has_perm('user.be_manager'):
             return qs.filter(my_manager=request.user.manager)
-        return qs
+
+        if request.user.has_perm('user.be_seller'):
+            return qs.filter(pk=request.user.pk)
+        
 
     def save_model(self, request, obj, form, change):
         obj.is_staff = True
@@ -92,6 +95,14 @@ class ManagerAdmin(AdminViewPermissionModelAdmin):
     list_editable = ('credit_limit_to_add',)
     list_display_links = ('pk','username',)
     actions = [pay_manager]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        if request.user.has_perm('user.be_manager'):
+            return qs.filter(pk=request.user.pk)
+
 
 
     def get_actions(self, request):

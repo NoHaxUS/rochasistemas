@@ -21,8 +21,6 @@ class SellerSalesHistoryAdmin(admin.ModelAdmin):
 		
 		elif request.user.has_perm('user.be_manager'):
 			return SellerSalesHistory.objects.filter(seller__my_manager=request.user.manager)
-		
-		return qs
 
 
 
@@ -43,8 +41,6 @@ class ManagerTransactionsAdmin(AdminViewPermissionModelAdmin):
 		elif request.user.has_perm('user.be_manager'):
 			return ManagerTransactions.objects.filter(manager=request.user.manager)
 		
-		return qs
-
 
 @admin.register(RevenueHistorySeller)
 class RevenueHistorySellerAdmin(AdminViewPermissionModelAdmin):
@@ -63,7 +59,6 @@ class RevenueHistorySellerAdmin(AdminViewPermissionModelAdmin):
 		elif request.user.has_perm('user.be_manager'):
 			return RevenueHistorySeller.objects.filter(seller__my_manager=request.user.manager)
 		
-		return qs
 
 
 @admin.register(RevenueHistoryManager)
@@ -80,8 +75,7 @@ class RevenueHistoryManagerAdmin(admin.ModelAdmin):
 
 		elif request.user.has_perm('user.be_manager'):
 			return RevenueHistoryManager.objects.filter(manager=request.user.manager)
-		
-		return qs
+
 
 
 
@@ -102,5 +96,4 @@ class PunterPayedHistoryAdmin(AdminViewPermissionModelAdmin):
 		elif request.user.has_perm('user.be_manager'):
 			return PunterPayedHistory.objects.filter(seller__my_manager=request.user.manager)
 		
-		return qs
 

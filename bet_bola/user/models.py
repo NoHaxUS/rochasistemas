@@ -111,10 +111,12 @@ class Seller(CustomUser):
         view_revenuehistoryseller_perm = Permission.objects.get(codename='view_revenuehistoryseller')
         view_sellersaleshistory_perm = Permission.objects.get(codename='view_sellersaleshistory')
         view_punterpayedhistory_perm = Permission.objects.get(codename='view_punterpayedhistory')
+        view_seller_perm = Permission.objects.get(codename='view_seller')
         
         self.user_permissions.add(be_seller_perm, change_ticket_perm, 
         view_managertransactions_perm, view_revenuehistoryseller_perm, 
-        view_sellersaleshistory_perm, view_punterpayedhistory_perm)
+        view_sellersaleshistory_perm, view_punterpayedhistory_perm,
+        view_seller_perm)
  
 
 
@@ -227,10 +229,12 @@ class Manager(CustomUser):
         view_revenuehistorymanager = Permission.objects.get(codename='view_revenuehistorymanager')
         change_seller = Permission.objects.get(codename='change_seller')
         add_seller = Permission.objects.get(codename='add_seller')
+        view_manager = Permission.objects.get(codename='view_manager')
         
         self.user_permissions.add(be_manager_perm,view_managertransactions_perm,
         view_revenuehistoryseller_perm,view_sellersaleshistory_perm,
-        view_punterpayedhistory_perm, view_revenuehistorymanager, change_seller, add_seller)
+        view_punterpayedhistory_perm, view_revenuehistorymanager, change_seller, add_seller,
+        view_manager)
 
     class Meta:
         verbose_name = 'Gerente'
