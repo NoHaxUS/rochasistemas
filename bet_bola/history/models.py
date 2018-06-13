@@ -46,9 +46,9 @@ class RevenueHistorySeller(models.Model):
     who_reseted_revenue = models.CharField(max_length=200, verbose_name='Reponsável pelo Fechamento')
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, verbose_name='Vendedor')
     revenue_reseted_date = models.DateTimeField(verbose_name='Data da Transação', auto_now_add=True)
-    final_revenue = models.DecimalField(max_digits=30, decimal_places=2,null=True, verbose_name='Faturamento')
-    actual_comission = models.DecimalField(max_digits=30, decimal_places=2,null=True, verbose_name='Comissão')
-    earned_value = models.DecimalField(max_digits=30, decimal_places=2,null=True, verbose_name='Valor Recebido')
+    final_revenue = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Faturamento')
+    actual_comission = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Comissão')
+    earned_value = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Valor Recebido')
 
     def __str__(self):
         return "Pagamentos - Vendedores"
@@ -63,9 +63,9 @@ class RevenueHistoryManager(models.Model):
     who_reseted_revenue = models.CharField(max_length=200, verbose_name='Reponsável pelo Fechamento')
     manager = models.ForeignKey(Manager, on_delete=models.CASCADE, verbose_name='Gerente')
     revenue_reseted_date = models.DateTimeField(verbose_name='Data da Transação', auto_now_add=True)
-    final_revenue = models.DecimalField(max_digits=30, decimal_places=2,null=True, verbose_name='Faturamento')
-    actual_comission = models.DecimalField(max_digits=30, decimal_places=2,null=True, verbose_name='Comissão')
-    earned_value = models.DecimalField(max_digits=30, decimal_places=2,null=True, verbose_name='Valor Recebido')
+    final_revenue = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Faturamento')
+    actual_comission = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Comissão')
+    earned_value = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Valor Recebido')
 
 
     def __str__(self):

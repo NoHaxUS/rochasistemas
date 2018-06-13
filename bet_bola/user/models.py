@@ -6,7 +6,7 @@ from django.db.models import F, Q, When, Case
 
 class CustomUser(AbstractUser):
     cellphone = models.CharField(max_length=14, verbose_name='Celular')
-    email = models.EmailField(null=True, verbose_name='E-mail')
+    email = models.EmailField(null=True, blank=True, verbose_name='E-mail')
 
     def __str__(self):
         return self.first_name
@@ -129,8 +129,8 @@ class Seller(CustomUser):
 
 
 class Manager(CustomUser):
-    cpf = models.CharField(max_length=11, verbose_name='CPF', null=True)
-    address = models.CharField(max_length=75, verbose_name='Endereço', null=True)
+    cpf = models.CharField(max_length=11, verbose_name='CPF', null=True, blank=True)
+    address = models.CharField(max_length=75, verbose_name='Endereço', null=True, blank=True)
     commission = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Comissão')
     credit_limit_to_add = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name="Crédito")
 

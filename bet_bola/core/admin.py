@@ -112,3 +112,13 @@ class GameAdmin(admin.ModelAdmin):
     list_display = ('pk','name',)
     list_display_links = ('pk','name',)
 
+
+@admin.register(Game)
+class GameAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+    list_filter = (GamesWithNoFinalResults,)
+    fields = ('name','ht_score','ft_score','status_game','odds_processed','championship')
+    list_display = ('pk','name',)
+    list_display_links = ('pk','name',)
+
+

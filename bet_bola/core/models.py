@@ -136,11 +136,11 @@ class CotationHistory(models.Model):
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
     original_value = models.DecimalField(max_digits=30, decimal_places=2,default=0,verbose_name='Valor Original')
     value = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
-    game = models.ForeignKey('Game', related_name='cotations_history', null=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
+    game = models.ForeignKey('Game', related_name='cotations_history', null=True,blank=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
     winning = models.NullBooleanField(verbose_name='Vencedor ?')
     is_standard = models.BooleanField(default=False, verbose_name='Cota Padrão ?')
-    kind = models.ForeignKey('Market', related_name='cotations_history', null=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
-    total = models.DecimalField(max_digits=30, decimal_places=2, blank=True, null=True)
+    kind = models.ForeignKey('Market', related_name='cotations_history', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
+    total = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True)
   
 
 class Game(models.Model):
@@ -168,11 +168,11 @@ class Game(models.Model):
 
     name = models.CharField(max_length=80, verbose_name='Nome do Jogo')
     start_game_date = models.DateTimeField(verbose_name='Início da Partida')
-    championship = models.ForeignKey('Championship',related_name='my_games',null=True, on_delete=models.SET_NULL,verbose_name='Campeonato')
+    championship = models.ForeignKey('Championship',related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL,verbose_name='Campeonato')
     status_game = models.CharField(max_length=80,default=GAME_STATUS[0][1], choices=GAME_STATUS,verbose_name='Status do Jogo')
     odds_calculated = models.BooleanField()
-    ht_score = models.CharField(max_length=80, null=True, verbose_name='Placar até o meio-tempo', help_text="Placar meio-tempo Ex: 3-5 (Casa-Visita)")
-    ft_score = models.CharField(max_length=80, null=True, verbose_name='Placar no final do Jogo', help_text="Placar final Ex: 3-5 (Casa-Visita)")
+    ht_score = models.CharField(max_length=80, null=True, blank=True, verbose_name='Placar até o meio-tempo', help_text="Placar meio-tempo Ex: 3-5 (Casa-Visita)")
+    ft_score = models.CharField(max_length=80, null=True, blank=True, verbose_name='Placar no final do Jogo', help_text="Placar final Ex: 3-5 (Casa-Visita)")
     odds_processed = models.BooleanField(default=False, verbose_name='Foi processado?')
 
     objects = GamesManager()	
@@ -189,7 +189,7 @@ class Game(models.Model):
 class Championship(models.Model):
 
     name = models.CharField(max_length=80, verbose_name='Nome', help_text='Campeonato')
-    country = models.ForeignKey('Country', related_name='my_championships',null=True, on_delete=models.SET_NULL, verbose_name='Pais')
+    country = models.ForeignKey('Country', related_name='my_championships',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pais')
     priority = models.IntegerField(default=1, verbose_name='Prioridade')
 
     def __str__(self):
@@ -255,11 +255,11 @@ class Cotation(models.Model):
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
     original_value = models.DecimalField(max_digits=30, decimal_places=2, default=0,verbose_name='Valor Original')
     value = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
-    game = models.ForeignKey('Game', related_name='cotations', null=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
+    game = models.ForeignKey('Game', related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
     winning = models.NullBooleanField(verbose_name='Vencedor ?')
     is_standard = models.BooleanField(default=False, verbose_name='Cota Padrão ?')
-    kind = models.ForeignKey(Market, related_name='cotations', null=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
-    total = models.DecimalField(max_digits=30, decimal_places=2, blank=True, null=True)
+    kind = models.ForeignKey(Market, related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
+    total = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True)
     objects = GamesManager()
 
 
@@ -286,9 +286,9 @@ class Payment(models.Model):
         ('Pago', 'Pago'),
     )
 
-    who_set_payment = models.ForeignKey('user.Seller', null=True, on_delete=models.SET_NULL, verbose_name='Vendedor')
+    who_set_payment = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Vendedor')
     status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1], verbose_name='Status do Pagamento')
-    payment_date = models.DateTimeField(null=True, verbose_name='Data do Pagamento')
+    payment_date = models.DateTimeField(null=True, blank=True, verbose_name='Data do Pagamento')
     seller_was_rewarded = models.BooleanField(default=False, verbose_name='Vendedor foi pago?')
     manager_was_rewarded = models.BooleanField(default=False, verbose_name='Vendedor foi pago?')
 

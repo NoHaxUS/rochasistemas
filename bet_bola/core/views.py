@@ -76,7 +76,8 @@ COUNTRY_TRANSLATE = {
 	"Estonia":"Estónia",
 	"Panama":"Panamá",
 	"Indonesia":"Indonésia",
-	"Asia":"Ásia"
+	"Asia":"Ásia",
+	"World": "Copa do Mundo",
 }
 
 
