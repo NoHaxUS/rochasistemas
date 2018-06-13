@@ -43,8 +43,8 @@ class Seller(CustomUser):
     cpf = models.CharField(max_length=11, verbose_name='CPF')
     address = models.CharField(max_length=75, verbose_name='Endereço')
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
-    commission = models.FloatField(default=0, verbose_name='Comissão')
-    credit_limit = models.FloatField(default=0, verbose_name='Créditos')
+    commission = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Comissão')
+    credit_limit = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Créditos')
     my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True, blank=True)
 
 
@@ -130,8 +130,8 @@ class Seller(CustomUser):
 class Manager(CustomUser):
     cpf = models.CharField(max_length=11, verbose_name='CPF', null=True)
     address = models.CharField(max_length=75, verbose_name='Endereço', null=True)
-    commission = models.FloatField(default=0, verbose_name='Comissão')
-    credit_limit_to_add = models.FloatField(default=0, verbose_name="Crédito")
+    commission = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Comissão')
+    credit_limit_to_add = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name="Crédito")
 
     def reset_revenue(self, who_reseted_revenue):
         from core.models import Payment

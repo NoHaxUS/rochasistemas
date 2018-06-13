@@ -27,11 +27,11 @@ class BetTicket(models.Model):
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Vendedor')
     normal_user = models.ForeignKey(NormalUser, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cliente')
     cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
-    cotation_value_total = models.FloatField(verbose_name='Cota Total da Aposta')
+    cotation_value_total = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Cota Total da Aposta')
     creation_date = models.DateTimeField(verbose_name='Data da Aposta')	
-    reward = models.ForeignKey('Reward', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
+    reward = models.OneToOneField('Reward', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
     payment = models.OneToOneField('Payment', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
-    value = models.FloatField(verbose_name='Valor Apostado')
+    value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')
     bet_ticket_status = models.CharField(max_length=80, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][1],verbose_name='Status de Ticket')
 
 
@@ -134,13 +134,13 @@ class CotationHistory(models.Model):
     original_cotation = models.IntegerField()
     bet_ticket = models.ForeignKey('BetTicket', on_delete=models.CASCADE, verbose_name='Ticket', related_name='cotations_history')
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
-    original_value = models.FloatField(default=0,verbose_name='Valor Original')
-    value = models.FloatField(default=0, verbose_name='Valor Modificado')
+    original_value = models.DecimalField(max_digits=30, decimal_places=2,default=0,verbose_name='Valor Original')
+    value = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
     game = models.ForeignKey('Game', related_name='cotations_history', null=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
     winning = models.NullBooleanField(verbose_name='Vencedor ?')
     is_standard = models.BooleanField(default=False, verbose_name='Cota Padrão ?')
     kind = models.ForeignKey('Market', related_name='cotations_history', null=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
-    total = models.FloatField(blank=True, null=True)
+    total = models.DecimalField(max_digits=30, decimal_places=2, blank=True, null=True)
   
 
 class Game(models.Model):
@@ -222,9 +222,9 @@ class Reward(models.Model):
         ('Venceu, Aguardando pagamento', 'Venceu, Aguardando pagamento'),
     )
 
-    who_rewarded = models.ForeignKey('user.Seller', null=True, on_delete=models.SET_NULL)
-    reward_date = models.DateTimeField(null=True)
-    value = models.FloatField(default=0)
+    who_rewarded = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL)
+    reward_date = models.DateTimeField(null=True, blank=True)
+    value = models.DecimalField(max_digits=50, decimal_places=2, default=0)
     status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1], verbose_name='Status do Prêmio')
 
     def __str__(self):
@@ -253,13 +253,13 @@ class Market(models.Model):
 class Cotation(models.Model):
 
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
-    original_value = models.FloatField(default=0,verbose_name='Valor Original')
-    value = models.FloatField(default=0, verbose_name='Valor Modificado')
+    original_value = models.DecimalField(max_digits=30, decimal_places=2, default=0,verbose_name='Valor Original')
+    value = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
     game = models.ForeignKey('Game', related_name='cotations', null=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
     winning = models.NullBooleanField(verbose_name='Vencedor ?')
     is_standard = models.BooleanField(default=False, verbose_name='Cota Padrão ?')
     kind = models.ForeignKey(Market, related_name='cotations', null=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
-    total = models.FloatField(blank=True, null=True)
+    total = models.DecimalField(max_digits=30, decimal_places=2, blank=True, null=True)
     objects = GamesManager()
 
 

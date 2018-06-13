@@ -4,10 +4,10 @@ from django.db.models import F, Q, When, Case
 
 class GeneralConfigurations(models.Model):
 
-    max_cotation_value = models.FloatField(default=200, verbose_name="Valor Máximo das Cotas")
+    max_cotation_value = models.DecimalField(max_digits=30, decimal_places=2,default=200, verbose_name="Valor Máximo das Cotas")
     min_number_of_choices_per_bet = models.IntegerField(default=1, verbose_name="Número mínimo de escolhas por Aposta")
-    max_reward_to_pay = models.FloatField(default=50000, verbose_name="Valor máximo pago pela Banca")
-    min_bet_value = models.FloatField(default=1, verbose_name="Valor mínimo da aposta")
+    max_reward_to_pay = models.DecimalField(max_digits=30, decimal_places=2,default=50000, verbose_name="Valor máximo pago pela Banca")
+    min_bet_value = models.DecimalField(max_digits=30, decimal_places=2,default=1, verbose_name="Valor mínimo da aposta")
     percentual_reduction = models.IntegerField(default=100, verbose_name="Redução Percentual")
 
     def __str__(self):
