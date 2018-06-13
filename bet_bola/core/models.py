@@ -49,7 +49,7 @@ class BetTicket(models.Model):
 
         if not self.bet_ticket_status == 'Aguardando Resultados':
             return {'success':False,
-                'message':'Você só pode pagar um Ticket '+ str(self.pk) +' que está Aguardando Resultados.'}
+                'message':'O Ticket '+ str(self.pk) +' não está Aguardando Resultados.'}
 
         seller_before_balance = 0
         seller_after_balance= 0
@@ -85,7 +85,7 @@ class BetTicket(models.Model):
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não Venceu'}
 
-        if not self.payment == 'Pago':
+        if not self.payment.status_payment == 'Pago':
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não foi Pago.'}
 
