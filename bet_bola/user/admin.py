@@ -40,7 +40,12 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
     autocomplete_fields = ['my_manager',]
     actions = [pay_seller]
 
-    
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if request.user.has_perm('user.be_manager'):
+            if 'delete_selected' in actions:
+                del actions['delete_selected']
+        return actions
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

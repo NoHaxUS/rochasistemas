@@ -47,6 +47,10 @@ class BetTicket(models.Model):
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Aguardando Pagamento.'}
 
+        if not self.bet_ticket_status == 'Aguardando Resultados':
+            return {'success':False,
+                'message':'Você só pode pagar um Ticket '+ str(self.pk) +' que está Aguardando Resultados.'}
+
         seller_before_balance = 0
         seller_after_balance= 0
         if not user.seller.can_sell_unlimited:
@@ -80,6 +84,10 @@ class BetTicket(models.Model):
         if not self.bet_ticket_status == 'Venceu':
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não Venceu'}
+
+        if not self.payment == 'Pago':
+            return {'success':False,
+                'message':'O Ticket '+ str(self.pk) +' não foi Pago.'}
 
         if self.normal_user:
             punter_payed =  str(self.normal_user.pk) +' - '+ str(self.normal_user.first_name)
@@ -290,7 +298,7 @@ class Payment(models.Model):
     status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1], verbose_name='Status do Pagamento')
     payment_date = models.DateTimeField(null=True, blank=True, verbose_name='Data do Pagamento')
     seller_was_rewarded = models.BooleanField(default=False, verbose_name='Vendedor foi pago?')
-    manager_was_rewarded = models.BooleanField(default=False, verbose_name='Vendedor foi pago?')
+    manager_was_rewarded = models.BooleanField(default=False, verbose_name='Gerente foi pago?')
 
     def __str__(self):
         return self.status_payment

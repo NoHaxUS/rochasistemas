@@ -64,8 +64,18 @@ def payment_status(obj):
     return ("%s" % obj.payment.status_payment)
 payment_status.short_description = 'Status do Pagamento'
 
+
+@admin.register(Reward)
+class RewardAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    pass
+
+
 @admin.register(BetTicket)
-class BetTicketAdmin(admin.ModelAdmin):	
+class BetTicketAdmin(admin.ModelAdmin):
     search_fields = ['id']
     list_filter = ('bet_ticket_status',
     'payment__who_set_payment_id',
@@ -76,6 +86,8 @@ class BetTicketAdmin(admin.ModelAdmin):
     list_display =('pk','value','reward','cotation_sum','bet_ticket_status', payment_status,'creation_date')
     exclude = ('cotations','user','normal_user',)
     actions = [validate_selected_tickets, pay_winner_punter]
+
+
 
 
     def get_actions(self, request):
