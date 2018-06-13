@@ -112,8 +112,12 @@ class BetTicketAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs
         if request.user.has_perm('user.be_seller'):
-            return qs.filter(Q(payment__status_payment='Aguardando Pagamento do Ticket') | Q(bet_ticket_status='Venceu'))\
-            .exclude(reward__status_reward=Reward.REWARD_STATUS[1][1])
+            return qs.filter(Q(payment__status_payment=Payment.PAYMENT_STATUS[0][1],
+            bet_ticket_status=BetTicket.BET_TICKET_STATUS[0][1]) | Q(payment__status_payment=Payment.PAYMENT_STATUS[1][1],
+            bet_ticket_status=BetTicket.BET_TICKET_STATUS[2][1], payment__who_set_payment=request.user.seller)).exclude(reward__status_reward=Reward.REWARD_STATUS[1][1])
+
+        
+        
 
 
 @admin.register(Game)
