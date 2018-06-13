@@ -69,7 +69,8 @@ class Seller(CustomUser):
     def net_value(self):
         
         total_net_value = self.actual_revenue() * (self.commission / 100)
-        return round(total_net_value,2)
+        return total_net_value
+
     net_value.short_description = 'A Receber'
     
     def out_money(self):
@@ -154,7 +155,8 @@ class Manager(CustomUser):
 
     def net_value(self):
         total_net_value = self.actual_revenue() * (self.commission / 100)
-        return round(total_net_value,2)
+        return total_net_value
+        
     net_value.short_description = 'Líquido'
 
 

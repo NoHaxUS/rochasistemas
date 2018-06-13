@@ -101,7 +101,7 @@ class BetTicket(models.Model):
 
 
     def cotation_sum(self):
-        return round(self.cotation_value_total, 2)
+        return self.cotation_value_total
     cotation_sum.short_description = 'Cota Total'
 
 

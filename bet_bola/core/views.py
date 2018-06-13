@@ -14,6 +14,7 @@ from utils.response import UnicodeJsonResponse
 from django.urls import reverse_lazy
 import json
 import urllib
+from decimal import Decimal
 
 
 COUNTRY_TRANSLATE = {
@@ -335,11 +336,11 @@ class CreateTicketView(View):
 			return UnicodeJsonResponse(data)
 
 		
-		ticket_bet_value = round( float(ticket_value), 2)
+		ticket_bet_value = Decimal(ticket_value)
 		
 		if ticket_bet_value < min_bet_value:
 			data['success'] =  False
-			data['message'] =  "A aposta mínima é: R$ " + str(round(min_bet_value, 2))
+			data['message'] =  "A aposta mínima é: R$ " + str(min_bet_value)
 			return UnicodeJsonResponse(data)
 
 		if 'ticket' not in request.session:
@@ -372,11 +373,11 @@ class CreateTicketView(View):
 				return UnicodeJsonResponse(data)
 
 
-		ticket_reward_value = round(cotation_sum * ticket_bet_value, 2)
+		ticket_reward_value = cotation_sum * ticket_bet_value
 
-		if float(ticket_reward_value) > float(max_reward_to_pay):
+		if Decimal(ticket_reward_value) > Decimal(max_reward_to_pay):
 			data['success'] =  False
-			data['message'] =  "Desculpe. <br /> Valor máximo da recompensa: R$" + str(round(max_reward_to_pay, 2))
+			data['message'] =  "Desculpe. <br /> Valor máximo da recompensa: R$" + str(max_reward_to_pay)
 			return UnicodeJsonResponse(data)
 
 		if len(game_cotations) < min_number_of_choices_per_bet:

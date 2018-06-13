@@ -386,12 +386,8 @@ def save_odds(game_id, odds, max_cotation_value):
                     percentual_reduction = 100
 
                 for cotation in cotations:
-                    
-                    #if 'Bayern' in game_instance.name and market['id'] == 37:
-                    #    print(cotation)
-                    #    input("Continue..")
 
-                    cotation_value = max_cotation_value if float(cotation['value']) > max_cotation_value else float(cotation['value'])
+                    cotation_value = max_cotation_value if Decimal(cotation['value']) > max_cotation_value else Decimal(cotation['value'])
                     cotation_name_renamed = renaming_cotations(cotation['label']).strip()
                     total_or_none = None if cotation['total'] == None else cotation['total'].strip()
                     if total_or_none:
@@ -409,7 +405,7 @@ def save_odds(game_id, odds, max_cotation_value):
                         if len(cotation_total.split(',')) > 1:
                             continue
                     
-                    cotation_value_reduced = round(cotation_value * (percentual_reduction / 100), 2)
+                    cotation_value_reduced = cotation_value * (percentual_reduction / 100)
                     if cotation_value_reduced <= 1:
                         cotation_value_reduced = 1.01
 

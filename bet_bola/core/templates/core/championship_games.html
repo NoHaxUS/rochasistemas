@@ -41,7 +41,7 @@
                     <div class="col s3 l1 center-align">
                         <span class="hide cotation_pk">{{cotation.pk}}</span>
                         <span class="hide cotation_name">{{cotation.name | get_verbose_cotation}}</span>
-                        <span class="cotation">{{cotation.value | floatformat:"2" }}</span>
+                        <span class="cotation">{{cotation.value }}</span>
                         <span class="hide cotation_kind">{{cotation.kind}}</span>
                     </div>
                     {% endfor %}
