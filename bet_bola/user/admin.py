@@ -12,7 +12,7 @@ admin.site.register(GeneralConfigurations)
 
 @admin.register(Punter)
 class PunterAdmin(admin.ModelAdmin):
-    search_fields = ['first_name']
+    search_fields = ['pk','first_name']
     list_display = ('pk','first_name')
     exclude = ('user_permissions','groups',)
     list_display_links = ('pk','first_name')
