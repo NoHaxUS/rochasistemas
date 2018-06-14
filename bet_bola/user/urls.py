@@ -21,6 +21,7 @@ app_name = 'user'
 
 urlpatterns = [
     path('punter/home/', views.PunterHome.as_view(), name='user_punter_home'),
+    path('punter/register/', views.PunterRegister.as_view(), name='user_punter_register'),
     path('seller/home/', views.SellerHome.as_view(), name='user_seller_home'),
     path('seller/payed_bets/', views.SellerPayedBets.as_view(), name='user_seller_payed_bets'),
     path('seller/created_bets/', views.SellerCreatedBets.as_view(), name='user_seller_created_bets'),
