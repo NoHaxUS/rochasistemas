@@ -10,6 +10,7 @@ from django.contrib.admin.views.main import ChangeList
 import utils.timezone as tzlocal
 from history.models import PunterPayedHistory
 from django.contrib import messages
+from admin_view_permission.admin import AdminViewPermissionModelAdmin
 
 
 admin.site.unregister(Group)
@@ -75,7 +76,7 @@ class PaymentAdmin(admin.ModelAdmin):
 
 
 @admin.register(BetTicket)
-class BetTicketAdmin(admin.ModelAdmin):
+class BetTicketAdmin(AdminViewPermissionModelAdmin):
     search_fields = ['id']
     list_filter = ('bet_ticket_status',
     'payment__who_set_payment_id',
@@ -100,6 +101,10 @@ class BetTicketAdmin(admin.ModelAdmin):
     def get_list_filter(self, request):
         if request.user.has_perm('user.be_seller'):
             return None
+
+        if request.user.has_perm('user.be_manager'):
+            return super().get_list_filter(request)
+
         return super().get_list_filter(request)
 
     def get_readonly_fields(self, request, obj):
@@ -116,7 +121,8 @@ class BetTicketAdmin(admin.ModelAdmin):
             bet_ticket_status=BetTicket.BET_TICKET_STATUS[0][1]) | Q(payment__status_payment=Payment.PAYMENT_STATUS[1][1],
             bet_ticket_status=BetTicket.BET_TICKET_STATUS[2][1], payment__who_set_payment=request.user.seller)).exclude(reward__status_reward=Reward.REWARD_STATUS[1][1])
 
-        
+        if request.user.has_perm('user.be_manager'):
+            return super().get_queryset(request)
         
 
 
