@@ -82,7 +82,8 @@ class PunterPayedHistory(models.Model):
     ticket_winner = models.ForeignKey(BetTicket, on_delete=models.CASCADE, verbose_name='Ticket Vencedor')
     payment_date = models.DateTimeField(verbose_name='Data do Pagamento', auto_now_add=True)
     payed_value = models.DecimalField(max_digits=30, decimal_places=2,verbose_name='Valor Pago')
-    is_closed = models.BooleanField(default=False)
+    is_closed_for_seller = models.BooleanField(verbose_name='Vendedor Prestou Conta?', default=False)
+    is_closed_for_manager = models.BooleanField(verbose_name='Gerente Prestou Conta?', default=False)
 
     def __str__(self):
         return "Pagamentos - Apostadores"
