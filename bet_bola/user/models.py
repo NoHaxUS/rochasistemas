@@ -50,7 +50,7 @@ class Seller(CustomUser):
 
     def reset_revenue(self, who_reseted_revenue):
         from core.models import Payment
-        from history.models import RevenueHistorySeller
+        from history.models import RevenueHistorySeller, PunterPayedHistory
 
         RevenueHistorySeller.objects.create(who_reseted_revenue=who_reseted_revenue,
         seller=self,
@@ -146,7 +146,7 @@ class Manager(CustomUser):
 
     def reset_revenue(self, who_reseted_revenue):
         from core.models import Payment
-        from history.models import RevenueHistoryManager
+        from history.models import RevenueHistoryManager, PunterPayedHistory
 
         RevenueHistoryManager.objects.create(who_reseted_revenue=who_reseted_revenue,
         manager=self,

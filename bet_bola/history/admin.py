@@ -45,7 +45,7 @@ class ManagerTransactionsAdmin(AdminViewPermissionModelAdmin):
 @admin.register(RevenueHistorySeller)
 class RevenueHistorySellerAdmin(AdminViewPermissionModelAdmin):
 	search_fields = ['seller__first_name']
-	list_display = ('pk','who_reseted_revenue','seller','revenue_reseted_date','final_revenue','actual_comission','earned_value')
+	list_display = ('pk','who_reseted_revenue','seller','revenue_reseted_date','final_revenue','actual_comission','earned_value', 'final_out_value', 'profit')
 	list_display_links = ('pk','seller')
 
 
@@ -64,7 +64,7 @@ class RevenueHistorySellerAdmin(AdminViewPermissionModelAdmin):
 @admin.register(RevenueHistoryManager)
 class RevenueHistoryManagerAdmin(admin.ModelAdmin):
 	search_fields = ['manager__first_name']
-	list_display = ('pk','who_reseted_revenue','manager','revenue_reseted_date','final_revenue','actual_comission','earned_value')
+	list_display = ('pk','who_reseted_revenue','manager','revenue_reseted_date','final_revenue','actual_comission','earned_value','final_out_value', 'profit')
 	list_display_links = ('pk','manager')
 
 
