@@ -59,23 +59,33 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
         
 
     def save_model(self, request, obj, form, change):
-        obj.is_staff = True
         if request.user.has_perm('user.be_manager') and not request.user.is_superuser:
             if form.is_valid():
+                obj.is_staff = True
                 obj.is_superuser = False
+
                 if obj.pk:
-                    if obj.my_manager:
-                        if obj.my_manager.pk == request.user.pk:
-                            credit_transation = obj.my_manager.manage_credit(obj)
-                            if credit_transation['success']:
-                                super().save_model(request, obj, form, change)
-                                messages.success(request, credit_transation['message'])
-                            else:
-                                messages.warning(request, credit_transation['message'])
+                    credit_transation = request.user.manager.manage_credit(obj)
+                    if credit_transation['success']:
+                        super().save_model(request, obj, form, change)
+                        messages.success(request, credit_transation['message'])
+                    else:
+                        messages.warning(request, credit_transation['message'])
                 else:
                     obj.my_manager = request.user.manager
+                    credit_to_add = obj.credit_limit
+                    obj.credit_limit = 0
                     super().save_model(request, obj, form, change)
-        else:
+
+                    obj.credit_limit = credit_to_add
+                    credit_transation = request.user.manager.manage_credit(obj, is_new=True)                    
+                    if credit_transation['success']:
+                        messages.success(request, credit_transation['message'])
+                    else:
+                        messages.warning(request, credit_transation['message'])
+         
+
+        elif request.user.is_superuser:
             super().save_model(request, obj, form, change)
 
 
@@ -92,7 +102,7 @@ pay_manager.short_description = 'Pagar Gerentes'
 
 @admin.register(Manager)
 class ManagerAdmin(AdminViewPermissionModelAdmin):
-    search_fields = ['first_name']
+    search_fields = ['id','first_name','username','email']
     #filter_horizontal = ['user_permissions',]
     fields = ('username','password','first_name','last_name','email','cellphone','address','commission','credit_limit_to_add','is_staff')
     #fields = ('user_permissions','username','password','first_name','last_name','email','cellphone','address','commission','credit_limit_to_add','is_staff')

@@ -158,7 +158,7 @@ class Manager(CustomUser):
         total_net_value = self.actual_revenue() * (self.commission / 100)
         return round(total_net_value,2)
         
-    net_value.short_description = 'Líquido'
+    net_value.short_description = 'A Receber'
 
 
     def actual_revenue(self):
@@ -176,30 +176,43 @@ class Manager(CustomUser):
     actual_revenue.short_description = 'Faturamento'
 
 
-    def manage_credit(self, obj):
+    def manage_credit(self, obj, is_new=False):
         from history.models import ManagerTransactions
 
         seller = Seller.objects.get(pk=obj.pk)
-
         manager_before_balance = self.credit_limit_to_add
-        seller_before_balance = seller.credit_limit
 
-        diff = obj.credit_limit - seller.credit_limit
+        if is_new:
+            seller_before_balance = 0
+            diff = obj.credit_limit
+            seller_after_balance = obj.credit_limit
+        else:
+            seller_before_balance = seller.credit_limit
+            diff = obj.credit_limit - seller.credit_limit
+            seller_after_balance = seller.credit_limit + diff
+
         manager_balance_after = self.credit_limit_to_add - diff
-
-        seller_after_balance = seller.credit_limit + diff
 
         obj.can_sell_unlimited = seller.can_sell_unlimited
 
         if manager_balance_after < 0:
-            return {'success': False,
-            'message': 'Você não tem saldo suficiente'}
+            if is_new:
+                return {'success': False,
+                'message': 'Você não tem saldo suficiente para adicionar crédito, porém o vendedor foi criado.'}
+            else:
+                return {'success': False,
+                'message': 'Você não tem saldo suficiente'}
+        
         elif obj.credit_limit < 0:
             return {'success': False,
-            'message': 'Você não pode ter saldo negativo.'}
+            'message': 'O Vendedor não pode ter saldo negativo.'}
         else:
             self.credit_limit_to_add -= diff
             self.save()
+
+            if is_new:
+                seller.credit_limit = obj.credit_limit
+                seller.save()
 
             ManagerTransactions.objects.create(manager=self,
             seller=seller,
