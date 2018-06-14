@@ -79,6 +79,11 @@ class Seller(CustomUser):
 
     net_value.short_description = 'A Receber'
     
+
+    def get_commission(self):
+        return str(round(self.commission,0)) + "%"
+    get_commission.short_description = 'Comissão'
+
     def out_money(self):
         from history.models import PunterPayedHistory
 
@@ -181,6 +186,10 @@ class Manager(CustomUser):
 
     out_money.short_description = 'Pagamentos'
 
+
+    def get_commission(self):
+        return str(round(self.commission,0)) + "%"
+    get_commission.short_description = 'Comissão'
 
     def net_value(self):
         total_net_value = self.actual_revenue() * (self.commission / 100)
