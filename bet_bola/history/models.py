@@ -46,9 +46,11 @@ class RevenueHistorySeller(models.Model):
     who_reseted_revenue = models.CharField(max_length=200, verbose_name='Reponsável pelo Fechamento')
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, verbose_name='Vendedor')
     revenue_reseted_date = models.DateTimeField(verbose_name='Data da Transação', auto_now_add=True)
-    final_revenue = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Faturamento')
+    final_revenue = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Total Faturado')
     actual_comission = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Comissão')
     earned_value = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Valor Recebido')
+    final_out_value = models.DecimalField(max_digits=40, decimal_places=2,null=True, blank=True, verbose_name='Total Pago')
+    profit = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Lucro')
 
     def __str__(self):
         return "Pagamentos - Vendedores"
@@ -66,6 +68,8 @@ class RevenueHistoryManager(models.Model):
     final_revenue = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Faturamento')
     actual_comission = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Comissão')
     earned_value = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Valor Recebido')
+    final_out_value = models.DecimalField(max_digits=40, decimal_places=2,null=True, blank=True, verbose_name='Total Pago')
+    profit = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Lucro')
 
 
     def __str__(self):

@@ -56,11 +56,17 @@ class Seller(CustomUser):
         seller=self,
         final_revenue=self.actual_revenue(),
         actual_comission=self.commission,
-        earned_value=self.net_value())
+        earned_value=self.net_value(),
+        final_out_value=self.out_money(),
+        profit = self.actual_revenue() - self.out_money())
 
-        payments = Payment.objects.filter(who_set_payment_id=self.pk, seller_was_rewarded=False)
+        payments = Payment.objects.filter(who_set_payment=self, seller_was_rewarded=False)
         payments.update(seller_was_rewarded=True)
-    
+
+        payeds_open = PunterPayedHistory.objects.filter(seller=self, is_closed_for_seller=False)
+        payeds_open.update(is_closed_for_seller=True)
+
+
     def full_name(self):
         return self.first_name + ' ' + self.last_name
     full_name.short_description = 'Nome Completo'
@@ -77,7 +83,7 @@ class Seller(CustomUser):
         from history.models import PunterPayedHistory
 
         payed_sum = 0
-        payeds_open = PunterPayedHistory.objects.filter(seller=self, is_closed=False)
+        payeds_open = PunterPayedHistory.objects.filter(seller=self, is_closed_for_seller=False)
 
         for payed in payeds_open:
             payed_sum += payed.payed_value
@@ -146,12 +152,33 @@ class Manager(CustomUser):
         manager=self,
         final_revenue=self.actual_revenue(),
         actual_comission=self.commission,
-        earned_value=self.net_value())
+        earned_value=self.net_value(),
+        final_out_value=self.out_money(),
+        profit = self.actual_revenue() - self.out_money())
 
         sellers = Seller.objects.filter(my_manager=self)
         for seller in sellers:
             payments_not_rewarded = Payment.objects.filter(who_set_payment=seller, manager_was_rewarded=False)
             payments_not_rewarded.update(manager_was_rewarded=True)
+            payeds_open = PunterPayedHistory.objects.filter(seller=seller, is_closed_for_manager=False)
+            payeds_open.update(is_closed_for_manager=True)
+
+
+    def out_money(self):
+        from history.models import PunterPayedHistory
+
+        sellers = Seller.objects.filter(my_manager=self)
+
+        payed_sum = 0
+        for seller in sellers:
+            payeds_open = PunterPayedHistory.objects.filter(seller=seller, is_closed_for_manager=False)
+
+            for payed in payeds_open:
+                payed_sum += payed.payed_value
+
+        return payed_sum
+
+    out_money.short_description = 'Pagamentos'
 
 
     def net_value(self):

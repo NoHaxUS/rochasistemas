@@ -106,7 +106,7 @@ class ManagerAdmin(AdminViewPermissionModelAdmin):
     #filter_horizontal = ['user_permissions',]
     fields = ('username','password','first_name','last_name','email','cellphone','address','commission','credit_limit_to_add','is_staff')
     #fields = ('user_permissions','username','password','first_name','last_name','email','cellphone','address','commission','credit_limit_to_add','is_staff')
-    list_display = ('pk','username','first_name','email','cellphone','actual_revenue','net_value','commission','credit_limit_to_add')
+    list_display = ('pk','username','first_name','email','cellphone','actual_revenue','commission','net_value','out_money','credit_limit_to_add')
     list_editable = ('credit_limit_to_add',)
     list_display_links = ('pk','username',)
     actions = [pay_manager]
