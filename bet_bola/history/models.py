@@ -52,6 +52,12 @@ class RevenueHistorySeller(models.Model):
     final_out_value = models.DecimalField(max_digits=40, decimal_places=2,null=True, blank=True, verbose_name='Total Pago')
     profit = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Lucro')
 
+
+    def get_commission(self):
+        return str(round(self.actual_comission,0)) + "%"
+    get_commission.short_description = 'Comissão'
+
+
     def __str__(self):
         return "Pagamentos - Vendedores"
 
@@ -70,6 +76,11 @@ class RevenueHistoryManager(models.Model):
     earned_value = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Valor Recebido')
     final_out_value = models.DecimalField(max_digits=40, decimal_places=2,null=True, blank=True, verbose_name='Total Pago')
     profit = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Lucro')
+
+
+    def get_commission(self):
+        return str(round(self.actual_comission,0)) + "%"
+    get_commission.short_description = 'Comissão'
 
 
     def __str__(self):

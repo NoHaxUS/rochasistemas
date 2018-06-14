@@ -13,14 +13,14 @@ admin.site.register(GeneralConfigurations)
 @admin.register(Punter)
 class PunterAdmin(admin.ModelAdmin):
     search_fields = ['pk','first_name']
-    list_display = ('pk','first_name')
+    list_display = ('pk','username','first_name','cellphone')
     exclude = ('user_permissions','groups',)
     list_display_links = ('pk','first_name')
 
 
 
 def pay_seller(modeladmin, request, queryset):
-    who_reseted_revenue = str(request.user.pk) + ' - ' + request.user.first_name
+    who_reseted_revenue = str(request.user.pk) + ' - ' + request.user.username
 
     for seller in queryset:
         seller.reset_revenue(who_reseted_revenue)
@@ -91,7 +91,7 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
 
 
 def pay_manager(modeladmin, request, queryset):
-    who_reseted_revenue = str(request.user.pk) + ' - ' + request.user.first_name
+    who_reseted_revenue = str(request.user.pk) + ' - ' + request.user.username
 
     for manager in queryset:
         manager.reset_revenue(who_reseted_revenue)
