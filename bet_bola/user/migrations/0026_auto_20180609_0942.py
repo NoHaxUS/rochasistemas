@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameModel(
             old_name='NormalUser',
-            new_name='RandomUser',  
+            new_name='RandomUser',
         ),
         migrations.RenameModel(
             old_name='RandomUser',
