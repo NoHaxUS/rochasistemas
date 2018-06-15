@@ -11,8 +11,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameModel(
-            old_name='RandomUser',
-            new_name='NormalUser',
-        ),
     ]

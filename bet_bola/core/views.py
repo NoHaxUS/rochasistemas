@@ -314,7 +314,7 @@ class CreateTicketView(View):
 		
 		if not request.user.is_authenticated and not client_name:
 			data['success'] =  False
-			data['action'] = 'random-user'
+			data['action'] = 'Anon-user'
 			data['message'] = 'O nome do cliente é obrigatório.'
 			return UnicodeJsonResponse(data)
 		

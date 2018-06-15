@@ -252,8 +252,8 @@ $(document).ready(function () {
                         if(data.success){
                             alertify.alert("Sucesso", data.message);
                         }else{
-                            if(data.action == 'random-user'){
-                                $('#modal-random-user').modal('open');
+                            if(data.action == 'Anon-user'){
+                                $('#modal-anon-user').modal('open');
                             }else{
                                 alertify.alert("Erro", data.message);
                             }

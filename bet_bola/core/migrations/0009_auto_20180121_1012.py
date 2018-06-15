@@ -34,11 +34,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='betticket',
-            name='random_user',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='user.RandomUser', verbose_name='Cliente'),
-        ),
-        migrations.AlterField(
-            model_name='betticket',
             name='reward',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='core.Reward', verbose_name='Recompensa'),
         ),
