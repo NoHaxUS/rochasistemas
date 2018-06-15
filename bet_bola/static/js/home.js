@@ -777,34 +777,4 @@ $("#create-seller-form").on('submit', function(e){
             });
         });
 
-
-$(document).ready(function() {    
-
-    $.ajax({
-        type: 'GET',
-        url: '/utils/get_sellers/',
-        success: function(response) {
-        var sellerArray = response;
-        var sellers = {};
-
-        for (var i = 0; i < sellerArray.length; i++) {          
-          sellers[sellerArray[i].login] = null; 
-        }
-        $('.chips-autocomplete').material_chip({
-            autocompleteOptions: {
-              data: sellers,
-              limit: Infinity,
-              minLength: 1
-            }
-        });
-
-        // $('.autocomplete').autocomplete({
-        //   data: sellers,
-        //   limit: Infinity,
-        // });
-      }
-    });
-});
-
-
   
