@@ -14,8 +14,9 @@ admin.site.register(GeneralConfigurations)
 class PunterAdmin(admin.ModelAdmin):
     search_fields = ['pk','first_name']
     list_display = ('pk','username','first_name','cellphone')
-    exclude = ('user_permissions','groups',)
+    fields = ('username','password','first_name', 'last_name', 'cellphone', 'email','is_active')
     list_display_links = ('pk','first_name')
+    list_per_page = 20
 
 
     def get_queryset(self, request):
@@ -64,6 +65,7 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
     list_display_links = ('pk','username',)
     autocomplete_fields = ['my_manager',]
     actions = [pay_seller]
+    list_per_page = 20
 
     def get_actions(self, request):
         actions = super().get_actions(request)
@@ -88,7 +90,7 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
     def save_model(self, request, obj, form, change):
         if request.user.has_perm('user.be_manager') and not request.user.is_superuser:
             if form.is_valid():
-                
+
                 if obj.pk:
                     credit_transation = request.user.manager.manage_credit(obj)
                     if credit_transation['success']:
@@ -134,6 +136,7 @@ class ManagerAdmin(AdminViewPermissionModelAdmin):
     list_editable = ('credit_limit_to_add',)
     list_display_links = ('pk','username',)
     actions = [pay_manager]
+    list_per_page = 20
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

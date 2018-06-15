@@ -41,7 +41,6 @@ def validate_selected_tickets(modeladmin, request, queryset):
                 messages.warning(request, ticket_validation['message'])
                 break
 
-    
 validate_selected_tickets.short_description = 'Validar Tickets'
 
 
@@ -54,7 +53,6 @@ def pay_winner_punter(modeladmin, request, queryset):
                 messages.success(request, pay_winner_result['message'])
             else:
                 messages.warning(request, pay_winner_result['message'])
-
 
 pay_winner_punter.short_description = 'Pagar Apostador'
 
@@ -87,6 +85,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
     list_display =('pk','value','reward','cotation_sum','bet_ticket_status', payment_status,'creation_date')
     exclude = ('cotations','user','normal_user',)
     actions = [validate_selected_tickets, pay_winner_punter]
+    list_per_page = 20
 
 
 
@@ -157,6 +156,8 @@ class GameAdmin(admin.ModelAdmin):
     list_display = ('pk','name',)
     list_display_links = ('pk','name',)
     autocomplete_fields = ['championship',]
+    list_per_page = 20
+
 
 @admin.register(Market)
 class MarketAdmin(admin.ModelAdmin):
@@ -164,6 +165,7 @@ class MarketAdmin(admin.ModelAdmin):
     list_display = ('pk','name',)
     list_display_links = ('pk','name')
     #autocomplete_fields = ['country',]
+    list_per_page = 20
 
 
 @admin.register(Cotation)
@@ -174,6 +176,7 @@ class CotationAdmin(admin.ModelAdmin):
     #fields = ('name','ht_score','ft_score','status_game','odds_processed','championship')
     list_display = ('pk','name', 'original_value', 'value', 'game', 'kind')
     list_display_links = ('pk','name',)
+    list_per_page = 20
 
 
 @admin.register(Country)
@@ -183,6 +186,7 @@ class CountryAdmin(admin.ModelAdmin):
     #fields = ('name','ht_score','ft_score','status_game','odds_processed','championship')
     list_display = ('pk','name', 'priority')
     list_display_links = ('pk','name')
+    list_per_page = 20
 
 
 @admin.register(Championship)
@@ -191,4 +195,5 @@ class ChampionshipAdmin(admin.ModelAdmin):
     list_display = ('pk','name','country','priority')
     list_display_links = ('pk','name')
     autocomplete_fields = ['country',]
+    list_per_page = 20
 
