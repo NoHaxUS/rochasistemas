@@ -270,12 +270,12 @@ $(document).ready(function () {
 
 
     $('.btn-bet-submit-seller').on('click', function(){            
-        $('#modal-random-user').modal('open');
+        $('#modal-anon-user').modal('open');
     });
 
     $('.user-random').on('click', function(){      
 
-        $('#modal-random-user').modal('close');
+        $('#modal-anon-user').modal('close');
 
         var nome = $('.nome').val();
         var telefone = $('.telefone').val();
