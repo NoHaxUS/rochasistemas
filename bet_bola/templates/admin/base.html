@@ -67,11 +67,8 @@
             <div id="sidebar-menu" class="col-xs-6 col-sm-3 col-md-2 sidebar-menu">
               {% block branding %}
                 <a href="{% url 'admin:index' %}" class="django-admin-logo">
-                  HOME
                   <!-- Django Administration -->
-                  <!--
-                  <img src="{% static "bootstrap_admin/img/logo-140x60.png" %}" alt="{{ site_header|default:_('Django administration') }}">
-                  -->
+                  <img src="{% static "bootstrap_admin/img/logo-small.png" %}" alt="{{ site_header|default:_('Django administration') }}">
                 </a>
               {% endblock branding %}
               {% block filters %}{% endblock filters %}
