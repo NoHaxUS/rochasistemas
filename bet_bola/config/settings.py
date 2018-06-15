@@ -25,6 +25,7 @@ SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+DB_SWAP_LOCAL = True
 
 ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
@@ -88,27 +89,29 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'db_SITENAME',
-        'USER': 'user_SITENAME',
-        'PASSWORD': 'DBPASSWORD',
-        'HOST': 'localhost',
-        'PORT': '5432',
+if DB_SWAP_LOCAL:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'bet_bola_v6',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
     }
-}
 
-DATABASES_ = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'bet_bola_v6',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'localhost',
-        'PORT': '5432',
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'db_SITENAME',
+            'USER': 'user_SITENAME',
+            'PASSWORD': 'DBPASSWORD',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
     }
-}
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend', # this is default
