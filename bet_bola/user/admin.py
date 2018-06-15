@@ -23,15 +23,23 @@ class PunterAdmin(admin.ModelAdmin):
 
         if request.user.is_superuser:
             return qs
-
         if request.user.has_perm('user.be_manager'):
             return qs
-
         if request.user.has_perm('user.be_seller'):
             return qs
-
         if request.user.has_perm('user.be_punter'):
             return qs.filter(pk=request.user.pk)
+
+    def get_fields(self, request, obj):
+        fields = super().get_fields(request, obj)
+        if request.user.is_superuser:
+            return fields
+        if request.user.has_perm('user.be_manager'):
+            return ('username','password','first_name', 'last_name', 'cellphone', 'email','is_active')
+        if request.user.has_perm('user.be_seller'):
+            return ('username','password','first_name', 'last_name', 'cellphone', 'email','is_active')
+        if request.user.has_perm('user.be_punter'):
+            return ('username','password','first_name', 'last_name', 'cellphone', 'email')
     
 
 
@@ -80,9 +88,7 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
     def save_model(self, request, obj, form, change):
         if request.user.has_perm('user.be_manager') and not request.user.is_superuser:
             if form.is_valid():
-                obj.is_staff = True
-                obj.is_superuser = False
-
+                
                 if obj.pk:
                     credit_transation = request.user.manager.manage_credit(obj)
                     if credit_transation['success']:

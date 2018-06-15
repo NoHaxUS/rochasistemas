@@ -32,6 +32,10 @@ class Punter(CustomUser):
         self.clean()
         if not self.has_usable_password():
             self.set_password(self.password)
+        
+        self.is_superuser = False
+        self.is_staff = True
+        
         super().save()
 
         view_ticket_perm = Permission.objects.get(codename='view_betticket')
@@ -125,7 +129,9 @@ class Seller(CustomUser):
     def save(self, *args, **kwargs):
         self.clean()
         if not self.has_usable_password():
-            self.set_password(self.password) 
+            self.set_password(self.password)
+        self.is_superuser = False
+        self.is_staff = True
         super().save()
 
 
@@ -278,6 +284,8 @@ class Manager(CustomUser):
         self.clean()
         if not self.has_usable_password():					
             self.set_password(self.password)
+        self.is_superuser = False
+        self.is_staff = True
         super().save()
 
 
