@@ -8,7 +8,7 @@ from admin_view_permission.admin import AdminViewPermissionModelAdmin
 
 @admin.register(SellerSalesHistory)
 class SellerSalesHistoryAdmin(admin.ModelAdmin):
-    search_fields = ['seller__first_name']
+    search_fields = ['seller__username','seller__first_name']
     list_display = ('pk','seller','bet_ticket','sell_date','value','seller_before_balance','seller_after_balance')
     list_display_links = ('pk','seller')
     list_per_page = 20
@@ -31,7 +31,7 @@ class SellerSalesHistoryAdmin(admin.ModelAdmin):
 
 @admin.register(ManagerTransactions)
 class ManagerTransactionsAdmin(AdminViewPermissionModelAdmin):
-    search_fields = ['manager__first_name']
+    search_fields = ['manager__username','manager__first_name','seller__username','seller__first_name']
     list_display = ('pk','manager','seller','transaction_date','transferred_amount','manager_before_balance','manager_after_balance','seller_before_balance','seller_after_balance')
     list_display_links = ('pk','manager')
     list_per_page = 20
@@ -54,7 +54,7 @@ class ManagerTransactionsAdmin(AdminViewPermissionModelAdmin):
 
 @admin.register(RevenueHistorySeller)
 class RevenueHistorySellerAdmin(AdminViewPermissionModelAdmin):
-    search_fields = ['seller__first_name']
+    search_fields = ['seller__username','seller__first_name']
     list_display = ('pk','who_reseted_revenue','seller','revenue_reseted_date','final_revenue','get_commission','earned_value', 'final_out_value', 'profit')
     list_display_links = ('pk','seller')
     list_per_page = 20
@@ -78,7 +78,7 @@ class RevenueHistorySellerAdmin(AdminViewPermissionModelAdmin):
 
 @admin.register(RevenueHistoryManager)
 class RevenueHistoryManagerAdmin(admin.ModelAdmin):
-    search_fields = ['manager__first_name']
+    search_fields = ['manager__username','manager__first_name']
     list_display = ('pk','who_reseted_revenue','manager','revenue_reseted_date','final_revenue','get_commission','earned_value','final_out_value', 'profit')
     list_display_links = ('pk','manager')
     list_per_page = 20
@@ -99,10 +99,9 @@ class RevenueHistoryManagerAdmin(admin.ModelAdmin):
 
 
 
-
 @admin.register(PunterPayedHistory)
 class PunterPayedHistoryAdmin(AdminViewPermissionModelAdmin):
-    search_fields = ['punter_payed','seller__first_name', 'ticket_winner__id']
+    search_fields = ['punter_payed','seller__username','seller__first_name', 'ticket_winner__id']
     list_display = ('pk','punter_payed','seller','ticket_winner','payment_date','payed_value')
     list_display_links = ('pk','punter_payed')
     list_per_page = 20

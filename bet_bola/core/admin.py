@@ -153,9 +153,8 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
-    search_fields = ['name']
+    search_fields = ['id','name']
     list_filter = (GamesWithNoFinalResults,)
-    #fields = ('name','ht_score','ft_score','status_game','odds_processed','championship')
     list_display = ('pk','name',)
     list_display_links = ('pk','name',)
     autocomplete_fields = ['championship',]
@@ -167,7 +166,6 @@ class MarketAdmin(admin.ModelAdmin):
     search_fields = ['id','name']
     list_display = ('pk','name',)
     list_display_links = ('pk','name')
-    #autocomplete_fields = ['country',]
     list_per_page = 20
 
 
@@ -175,8 +173,6 @@ class MarketAdmin(admin.ModelAdmin):
 class CotationAdmin(admin.ModelAdmin):
     search_fields = ['id','name','game__name']
     autocomplete_fields = ['game','kind',]
-    #list_filter = (GamesWithNoFinalResults,)
-    #fields = ('name','ht_score','ft_score','status_game','odds_processed','championship')
     list_display = ('pk','name', 'original_value', 'value', 'game', 'kind')
     list_display_links = ('pk','name',)
     list_per_page = 20
@@ -185,8 +181,6 @@ class CotationAdmin(admin.ModelAdmin):
 @admin.register(Country)
 class CountryAdmin(admin.ModelAdmin):
     search_fields = ['id','name']
-    #list_filter = (GamesWithNoFinalResults,)
-    #fields = ('name','ht_score','ft_score','status_game','odds_processed','championship')
     list_display = ('pk','name', 'priority')
     list_display_links = ('pk','name')
     list_per_page = 20

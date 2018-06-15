@@ -12,7 +12,7 @@ admin.site.register(GeneralConfigurations)
 
 @admin.register(Punter)
 class PunterAdmin(admin.ModelAdmin):
-    search_fields = ['pk','first_name']
+    search_fields = ['pk','first_name','username','cpf']
     list_display = ('pk','username','first_name','cellphone')
     fields = ('username','password','first_name', 'last_name', 'cellphone', 'email','is_active')
     list_display_links = ('pk','username')
@@ -57,8 +57,7 @@ pay_seller.short_description = 'Pagar Vendedores'
 
 @admin.register(Seller)
 class SellerAdmin(AdminViewPermissionModelAdmin):
-    search_fields = ['id','first_name','username','email']
-    filter_horizontal = ['user_permissions',]
+    search_fields = ['pk','first_name','username','cpf']
     fields = ('username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'commission', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active')
     list_editable = ('credit_limit',)
     list_display = ('pk','username','full_name','actual_revenue','get_commission','net_value','out_money','credit_limit','can_sell_unlimited')
@@ -129,8 +128,7 @@ pay_manager.short_description = 'Pagar Gerentes'
 
 @admin.register(Manager)
 class ManagerAdmin(AdminViewPermissionModelAdmin):
-    search_fields = ['id','first_name','username','email']
-    #filter_horizontal = ['user_permissions',]
+    search_fields = ['pk','first_name','username','cpf']
     fields = ('username','password','first_name','last_name','email','cellphone','cpf','address','commission','credit_limit_to_add','is_active')
     list_display = ('pk','username','first_name','email','cellphone','actual_revenue','get_commission','net_value','out_money','credit_limit_to_add')
     list_editable = ('credit_limit_to_add',)
