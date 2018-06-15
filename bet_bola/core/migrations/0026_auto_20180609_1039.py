@@ -20,11 +20,5 @@ class Migration(migrations.Migration):
             model_name='game',
             name='odds_processed',
             field=models.BooleanField(default=False, verbose_name='Foi processado?'),
-        ),
-        migrations.RenameField(
-            model_name='betticket',
-            old_name='random_user',
-            new_name='normal_user'
         )
-   
     ]

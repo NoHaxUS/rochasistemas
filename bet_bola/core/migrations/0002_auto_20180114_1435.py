@@ -48,8 +48,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='betticket',
-            name='random_user',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='user.RandomUser'),
+            name='normal_user',
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='user.NormalUser'),
         ),
         migrations.AddField(
             model_name='betticket',

@@ -21,12 +21,12 @@ class Migration(migrations.Migration):
             field=models.CharField(max_length=14, verbose_name='Celular'),
         ),
         migrations.AlterField(
-            model_name='randomuser',
+            model_name='normaluser',
             name='cellphone',
             field=models.CharField(max_length=14, verbose_name='Celular'),
         ),
         migrations.AlterField(
-            model_name='randomuser',
+            model_name='normaluser',
             name='first_name',
             field=models.CharField(max_length=40, verbose_name='Nome'),
         ),
