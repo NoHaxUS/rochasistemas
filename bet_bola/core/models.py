@@ -182,7 +182,6 @@ class Game(models.Model):
     start_game_date = models.DateTimeField(verbose_name='Início da Partida')
     championship = models.ForeignKey('Championship',related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL,verbose_name='Campeonato')
     status_game = models.CharField(max_length=80,default=GAME_STATUS[0][1], choices=GAME_STATUS,verbose_name='Status do Jogo')
-    odds_calculated = models.BooleanField()
     ht_score = models.CharField(max_length=80, null=True, blank=True, verbose_name='Placar até o meio-tempo', help_text="Placar meio-tempo Ex: 3-5 (Casa-Visita)")
     ft_score = models.CharField(max_length=80, null=True, blank=True, verbose_name='Placar no final do Jogo', help_text="Placar final Ex: 3-5 (Casa-Visita)")
     odds_processed = models.BooleanField(default=False, verbose_name='Foi processado?')

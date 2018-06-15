@@ -314,7 +314,6 @@ def process_json_games_cotations(json_response):
                     status_game=game['time']['status'],                
                     ht_score=ht_score,
                     ft_score=ft_score,
-                    odds_calculated=game['winning_odds_calculated'],
                     start_game_date=datetime.datetime.strptime(
                     game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
                     championship=Championship.objects.get(pk=game["league_id"])
@@ -327,7 +326,6 @@ def process_json_games_cotations(json_response):
                     status_game=game['time']['status'],                
                     ht_score=game['scores']['ht_score'],
                     ft_score=game['scores']['ft_score'],
-                    odds_calculated=game['winning_odds_calculated'],
                     start_game_date=datetime.datetime.strptime(
                     game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
                     championship=Championship.objects.get(pk=game["league_id"])
