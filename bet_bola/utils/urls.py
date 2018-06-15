@@ -20,6 +20,4 @@ app_name = 'utils'
 
 urlpatterns = [
     path('pdf/<int:pk>/', views.PDF.as_view(), name='pdf'),
-    path('get_sellers/', views.GetSellers.as_view(), name='get_sellers'),
-    
 ]

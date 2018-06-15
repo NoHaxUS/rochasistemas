@@ -82,12 +82,3 @@ class PDF(View):
         response.write(buffer)
         return response
 
-
-class GetSellers(View):
-    def get(self, request, *args, **kwargs):
-        sellers = []
-        for seller in Seller.objects.all():
-            sellers.append({'login': seller.username + " - Nome: " + seller.first_name})
-        data = json.dumps(sellers)
-        return HttpResponse(data, content_type='application/json' )
-

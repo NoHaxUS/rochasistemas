@@ -3,13 +3,15 @@ import sys
 import django
 
 def main():
-    #sys.path.append('C:\\DEV\\bet_bola2\\bet_bola')
+    from utils import update_games
+    from utils.timezone import now
+
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
     django.setup()
-    from utils import up_new
-    print("Start")
-    up_new.consuming_championship_api()
-    print("End")
+    
+    print("Update Started.." + now())
+    update_games.consuming_championship_api()
+    print("Finished Succesfully.")
 
 
 if __name__ == '__main__':

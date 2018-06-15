@@ -29,7 +29,5 @@ urlpatterns = [
     path('bet/', views.BetView.as_view(), name='core_bet_get'),
     path('bet/<str:pk>/', views.BetView.as_view(), name='core_bet_post'),
     path('cotations/<int:gameid>/', views.CotationsView.as_view(), name='core_cotations_get'),
-    path('config/', views.GeneralConf.as_view(), name='core_config'),
-    path('reset_revenue/', views.ResetSellerRevenue.as_view(), name='core_reset_seller_revenue'),
     path('app/', views.AppDownload.as_view(), name='core_app_download'),
 ]
