@@ -407,7 +407,7 @@ $(document).ready(function () {
             var href = $(e).attr('href');
             if(url_array == href){
 
-                $(e).css('color','#d04a16');
+                $(e).css('color','#289c6a');
                 $(e).css('font-weight','bold');
             }
 
