@@ -37,6 +37,10 @@ class Punter(CustomUser):
         self.is_staff = True
         
         super().save()
+        
+        self.define_default_permissions()
+
+    def define_default_permissions(self):
 
         view_ticket_perm = Permission.objects.get(codename='view_betticket')
         be_punter = Permission.objects.get(codename='be_punter')
@@ -134,6 +138,9 @@ class Seller(CustomUser):
         self.is_staff = True
         super().save()
 
+        self.define_default_permissions()
+
+    def define_default_permissions(self):
 
         be_seller_perm = Permission.objects.get(codename='be_seller')
         change_ticket_perm = Permission.objects.get(codename='change_betticket')
@@ -288,6 +295,9 @@ class Manager(CustomUser):
         self.is_staff = True
         super().save()
 
+        self.define_default_permissions()
+
+    def define_default_permissions(self):
 
         be_manager_perm = Permission.objects.get(codename='be_manager')
         view_managertransactions_perm = Permission.objects.get(codename='view_managertransactions')

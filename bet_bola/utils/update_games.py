@@ -174,6 +174,76 @@ INVALID_ALL_COTES_CHAMPIONSHIPS = [
     1082,
 ]
 
+
+COUNTRY_TRANSLATE = {
+	"Brazil":"Brasil",
+	"England":"Inglaterra",
+	"Spain":"Espanha",
+	"France":"França",
+	"Germany":"Alemanha",
+	"Italy":"Itália",
+	"Portugal":"Portugal",
+	"Belgium":"Bélgica",
+	"USA":"Estados Unidos",
+	"Turkey":"Turquia",
+	"Netherlands":"Holanda",
+	"Russia":"Rússia",
+	"Austria":"Áustria",
+	"Poland":"Polônia",
+	"Angola":"Ângola",
+	"Albania":"Albânia",
+	"Croatia":"Croácia",
+	"Sweden":"Suécia",
+	"Malta":"Malta",
+	"Saudi Arabia":"Arábia Saudita",
+	"Israel":"Israel",
+	"Denmark":"Dinamarca",
+	"Hong Kong":"Hong Kong",
+	"United Arab Emirates":"Emirados Árabes",
+	"Finland":"Finlândia",
+	"Norway":"Noruega",
+	"Greece":"Grécia",
+	"Switzerland": "Suíça",
+	"Mexico":"México",
+	"Ecuador":"Equador",
+	"Scotland":"Escócia",
+	"Iceland":"Islândia",
+	"Saudi Arabia": "Arábia Saudita",
+	"India":"Índia",
+	"Côte d'Ivoire":"Costa do Marfim",
+	"Ukraine":"Ucrânia",
+	"Iraq":"Iraque",
+	"Cyprus":"Chipre",
+	"Georgia":"Geórgia",
+	"South Africa":"África do Sul",
+	"Romania":"Romênia",
+	"Uruguay":"Uruguai",
+	"Republic of Ireland":"Irlanda",
+	"Bulgaria":"Bulgária",
+	"Belarus":"Bielorrússia",
+	"Serbia":"Sérvia",
+	"Japan":"Japão",
+	"Wales":"País de Gales",
+	"Cameroon":"Camarões",
+	"Egypt":"Egito",
+	"Paraguay":"Paraguai",
+	"Lithuania":"Lituânia",
+	"Estonia":"Estónia",
+	"Panama":"Panamá",
+	"Indonesia":"Indonésia",
+    "Hungary": "Hungria",
+    "Czech Republic": "República Checa",
+    "South Korea": "Coreia do Sul",
+    "Korea Republic": "Coreia do Sul",
+    "Ghana":"Gana",
+    "Morocco":"Marrocos",
+    "Iran":"Irã",
+    "Tunisia":"Tunísia",
+}
+
+def get_country_translated(country_name):
+    return COUNTRY_TRANSLATE.get(country_name, country_name)
+
 def renaming_cotations(string):
 
     COTATION_NAME = {
@@ -309,8 +379,8 @@ def process_json_games_cotations(json_response):
                     ht_score = F('ht_score')
 
                 Game.objects.filter(pk=game['id']).update(
-                    name=game['localTeam']['data']['name'] +
-                    " x " + game['visitorTeam']['data']['name'],
+                    name=get_country_translated(game['localTeam']['data']['name']) +
+                    " x " + get_country_translated(game['visitorTeam']['data']['name']),
                     status_game=game['time']['status'],                
                     ht_score=ht_score,
                     ft_score=ft_score,
@@ -321,8 +391,8 @@ def process_json_games_cotations(json_response):
             else:
                 Game.objects.create(
                     pk=game['id'],
-                    name=game['localTeam']['data']['name'] +
-                    " x " + game['visitorTeam']['data']['name'],
+                    name=get_country_translated(game['localTeam']['data']['name']) +
+                    " x " + get_country_translated(game['visitorTeam']['data']['name']),
                     status_game=game['time']['status'],                
                     ht_score=game['scores']['ht_score'],
                     ft_score=game['scores']['ft_score'],
