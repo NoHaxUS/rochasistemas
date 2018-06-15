@@ -80,7 +80,6 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
     'payment__who_set_payment_id',
     'payment__status_payment',
     'creation_date',
-    'payment__seller_was_rewarded',
     'reward__status_reward')
     list_display =('pk','value','reward','cotation_sum','bet_ticket_status', payment_status,'creation_date')
     exclude = ('cotations','user','normal_user',)
@@ -119,7 +118,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
             return None
 
         if request.user.has_perm('user.be_seller'):
-            return None
+            return ('bet_ticket_status','payment__status_payment',)
 
         if request.user.has_perm('user.be_manager'):
             return super().get_list_filter(request)
@@ -136,9 +135,13 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
         if request.user.is_superuser:
             return qs
         if request.user.has_perm('user.be_seller'):
-            return qs.filter(Q(payment__status_payment=Payment.PAYMENT_STATUS[0][1],
-            bet_ticket_status=BetTicket.BET_TICKET_STATUS[0][1]) | Q(payment__status_payment=Payment.PAYMENT_STATUS[1][1],
-            bet_ticket_status=BetTicket.BET_TICKET_STATUS[2][1], payment__who_set_payment=request.user.seller)).exclude(reward__status_reward=Reward.REWARD_STATUS[1][1])
+            return qs.filter(Q(payment__status_payment=Payment.PAYMENT_STATUS[0][1], 
+            bet_ticket_status=BetTicket.BET_TICKET_STATUS[0][1]) | \
+            Q(payment__status_payment=Payment.PAYMENT_STATUS[1][1],
+            bet_ticket_status=BetTicket.BET_TICKET_STATUS[2][1], payment__who_set_payment=request.user.seller) | \
+            Q(bet_ticket_status=BetTicket.BET_TICKET_STATUS[0][1], payment__status_payment=Payment.PAYMENT_STATUS[1][1], 
+            payment__who_set_payment=request.user.seller ) )\
+            .exclude(reward__status_reward=Reward.REWARD_STATUS[1][1])
 
         if request.user.has_perm('user.be_manager'):
             return super().get_queryset(request)
