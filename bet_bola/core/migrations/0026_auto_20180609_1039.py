@@ -21,13 +21,11 @@ class Migration(migrations.Migration):
             name='odds_processed',
             field=models.BooleanField(default=False, verbose_name='Foi processado?'),
         ),
-        migrations.RemoveField(
+
+        migrations.RenameField(
             model_name='betticket',
-            name='random_user',
-        ),
-        migrations.AddField(
-            model_name='betticket',
-            name='normal_user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='user.NormalUser', verbose_name='Cliente'),
-        ),
+            old_name='random_user',
+            new_name='normal_user'
+        )
+   
     ]
