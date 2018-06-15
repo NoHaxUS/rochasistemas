@@ -50,7 +50,7 @@ thead tr th {
     background-color: #f7f00e !important;
 }
 .green-text-button{
-    color: #de2637 !important;
+    color: #334a40 !important;
 }
 .blue-button{
     background-color: #1969a2;
@@ -59,7 +59,7 @@ thead tr th {
 
 
 .main-nav {
-    background-color: #FF2600;
+    background-color: #334a40;
 }
 
 nav .brand-logo{
@@ -70,7 +70,7 @@ nav .brand-logo{
 .section-header{
 
     font-family: 'Exo 2', sans-serif;
-    background-color: #FF2600;
+    background-color: #334a40;
     font-size: 1.6rem;
 }
 
@@ -139,7 +139,7 @@ nav .brand-logo{
 /* suvnav */
 .subnav{
     height: 16px;
-    background-color: #bd280e;
+    background-color: #ffcc2a;
 }
 .main-section{
     margin-top: 10px;
@@ -182,11 +182,11 @@ nav .brand-logo{
 }
 
 .side-nav{
-    background-color: #FF2600;
+    background-color: #334a40;
 }
 .collapsible-header-mobile{
     font-family: 'Exo 2', sans-serif;
-    background-color: #FF2600;
+    background-color: #334a40;
     color: #ffffff;
     font-size: 1.4rem;
 }
@@ -344,7 +344,7 @@ span.step-links li.active a{
 .th-championsip-header{
     font-family: 'Exo 2', sans-serif;
     padding: 0;
-    background-color: #ca4949;
+    background-color: #334a40;
     color: #ffffff;
     font-size: 1.45rem;
 }
@@ -363,7 +363,7 @@ span.step-links li.active a{
     color:#ffffff;
     font-size: 1.4rem;
     font-weight: bold;
-    background: #ca4949;
+    background: #334a40;
     border-bottom: #eee 1px solid;
     border-radius: 2px 2px 0 0;
 }
@@ -423,7 +423,7 @@ span.step-links li.active a{
     margin-top: 50px;
     padding: 0px;
     font-family: 'Exo 2', sans-serif;
-    background-color: #FF2600;
+    background-color: #334a40;
 }
 
 #ticket-details-actions{
@@ -439,7 +439,7 @@ span.step-links li.active a{
     margin: auto;
     height: 100%;
     display: block;
-    background-color: #d84040;
+    background-color: #edb811;
     border-radius: 30px;
     padding: 8px 0px;
     color:#ffffff;
@@ -470,7 +470,7 @@ span.step-links li.active a{
     margin: auto;
     height: 100%;
     display: block;
-    background-color: #919ad4;
+    background-color: #289c6a;
     border-radius: 30px;
     padding: 8px 0px;
     color:#ffffff;
@@ -521,7 +521,7 @@ span.step-links li.active a{
         margin: auto;
         height: 100%;
         display: block;
-        background-color: #d84040;
+        background-color: #edb811;
         border-radius: 30px;
         padding: 4px 4px;
         color:#ffffff;
@@ -533,7 +533,7 @@ span.step-links li.active a{
         margin: auto;
         height: 100%;
         display: block;
-        background-color: #919ad4;
+        background-color: #289c6a;
         border-radius: 30px;
         padding: 4px 4px;
         color:#ffffff;
@@ -543,7 +543,7 @@ span.step-links li.active a{
 
     nav .brand-logo{
         padding: 0px;
-        font-size: 1.8rem;
+        font-size: 1.6rem;
     }
 
     .modal {

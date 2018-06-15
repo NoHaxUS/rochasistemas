@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
-APP_VERBOSE_NAME = 'Minas Bet'
+APP_VERBOSE_NAME = 'SITENAME'
 
 
 # Application definition
@@ -88,18 +88,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES_ = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'db_minasbet',
-        'USER': 'user_minasbet',
-        'PASSWORD': '98xjEnLyq4b4RDMA',
+        'NAME': 'db_SITENAME',
+        'USER': 'user_SITENAME',
+        'PASSWORD': 'DBPASSWORD',
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
 
-DATABASES = {
+DATABASES_ = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'bet_bola_v6',
@@ -177,7 +177,7 @@ USE_TZ = False
 
 #Statis Files
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = '/home/mushzinho/webapps/static_SITE'
+STATIC_ROOT = '/home/mushzinho/webapps/static_SITENAME'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
