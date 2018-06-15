@@ -18,6 +18,23 @@ class PunterAdmin(admin.ModelAdmin):
     list_display_links = ('pk','first_name')
 
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+
+        if request.user.is_superuser:
+            return qs
+
+        if request.user.has_perm('user.be_manager'):
+            return qs
+
+        if request.user.has_perm('user.be_seller'):
+            return qs
+
+        if request.user.has_perm('user.be_punter'):
+            return qs.filter(pk=request.user.pk)
+    
+
+
 
 def pay_seller(modeladmin, request, queryset):
     who_reseted_revenue = str(request.user.pk) + ' - ' + request.user.username

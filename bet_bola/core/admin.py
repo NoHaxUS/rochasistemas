@@ -93,19 +93,39 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
 
     def get_actions(self, request):
         actions = super().get_actions(request)
+
+        if request.user.is_superuser:
+            return actions
+
         if request.user.has_perm('user.be_seller'):
             if 'delete_selected' in actions:
                 del actions['delete_selected']
-        return actions
+            return actions
+        
+        if request.user.has_perm('user.be_manager'):
+            if 'delete_selected' in actions:
+                del actions['delete_selected']
+            return actions
+
+        if request.user.has_perm('user.be_punter'):
+            return None
+
 
     def get_list_filter(self, request):
+
+        if request.user.is_superuser:
+            return super().get_list_filter(request)
+            
+        if request.user.has_perm('user.be_punter'):
+            return None
+
         if request.user.has_perm('user.be_seller'):
             return None
 
         if request.user.has_perm('user.be_manager'):
             return super().get_list_filter(request)
 
-        return super().get_list_filter(request)
+        
 
     def get_readonly_fields(self, request, obj):
         if request.user.has_perm('user.be_seller') and not request.user.is_superuser:
@@ -123,6 +143,9 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
 
         if request.user.has_perm('user.be_manager'):
             return super().get_queryset(request)
+
+        if request.user.has_perm('user.be_punter'):
+            return qs.filter(user=request.user.punter)
         
 
 

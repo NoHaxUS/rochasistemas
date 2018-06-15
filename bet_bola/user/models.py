@@ -30,13 +30,24 @@ class Punter(CustomUser):
 
     def save(self, *args, **kwargs):
         self.clean()
-        if not self.has_usable_password():	
+        if not self.has_usable_password:
             self.set_password(self.password)
-        super(Punter, self).save()
+        super().save()
+
+        view_ticket_perm = Permission.objects.get(codename='view_betticket')
+        be_punter = Permission.objects.get(codename='be_punter')
+        change_punter = Permission.objects.get(codename='change_punter')
+
+        self.user_permissions.add(view_ticket_perm, be_punter, change_punter)
 
     class Meta:
         verbose_name = 'Apostador'
         verbose_name_plural = 'Apostadores'
+
+        permissions = (
+            ('be_punter', 'Be a punter, permission.'),
+        )
+
 
 
 class Seller(CustomUser):
@@ -113,7 +124,7 @@ class Seller(CustomUser):
 
     def save(self, *args, **kwargs):
         self.clean()
-        if not self.has_usable_password():	
+        if not self.has_usable_password:
             self.set_password(self.password) 
         super().save()
 
@@ -263,12 +274,11 @@ class Manager(CustomUser):
             'message': 'Transação realizada.'}
         
 
-    def save(self, *args, **kwargs):					
-        if not self.has_usable_password():	
+    def save(self, *args, **kwargs):
+        self.clean()
+        if not self.has_usable_password:					
             self.set_password(self.password)
-
-        super(Manager, self).save()
-        self.clean()			
+        super().save()		
 
         be_manager_perm = Permission.objects.get(codename='be_manager')
         view_managertransactions_perm = Permission.objects.get(codename='view_managertransactions')
