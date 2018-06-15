@@ -93,7 +93,7 @@ if DB_SWAP_LOCAL:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'bet_bola_v6',
+            'NAME': 'bet_bola',
             'USER': 'postgres',
             'PASSWORD': 'postgres',
             'HOST': 'localhost',

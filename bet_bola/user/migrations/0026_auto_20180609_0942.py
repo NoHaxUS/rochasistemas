@@ -16,4 +16,8 @@ class Migration(migrations.Migration):
             name='my_manager',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='manager_assoc', to='user.Manager', verbose_name='Gerente'),
         ),
+        migrations.RenameModel(
+            old_name='RandomUser',
+            new_name='NormalUser',
+        ),
     ]
