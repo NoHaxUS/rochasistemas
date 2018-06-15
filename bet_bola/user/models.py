@@ -30,7 +30,7 @@ class Punter(CustomUser):
 
     def save(self, *args, **kwargs):
         self.clean()
-        if not self.has_usable_password:
+        if not self.has_usable_password():
             self.set_password(self.password)
         super().save()
 
@@ -124,7 +124,7 @@ class Seller(CustomUser):
 
     def save(self, *args, **kwargs):
         self.clean()
-        if not self.has_usable_password:
+        if not self.has_usable_password():
             self.set_password(self.password) 
         super().save()
 
@@ -276,9 +276,10 @@ class Manager(CustomUser):
 
     def save(self, *args, **kwargs):
         self.clean()
-        if not self.has_usable_password:					
+        if not self.has_usable_password():					
             self.set_password(self.password)
-        super().save()		
+        super().save()
+
 
         be_manager_perm = Permission.objects.get(codename='be_manager')
         view_managertransactions_perm = Permission.objects.get(codename='view_managertransactions')
