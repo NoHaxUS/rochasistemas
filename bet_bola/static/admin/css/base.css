@@ -313,6 +313,16 @@ select {
   padding:0 0 0 7px;
 }
 
+.home_link{
+  margin: 10px 10px;
+  text-align: center;
+  font-size: 1.6rem;
+}
+
+.home_link a{
+  color: #ffffff !important;
+}
+
 @media (max-width: 768px) {
   .breadcrumb > li {
     overflow: hidden;

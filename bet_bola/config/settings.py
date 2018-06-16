@@ -25,7 +25,7 @@ SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-DB_SWAP_LOCAL = False
+DB_SWAP_LOCAL = True
 
 ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
