@@ -500,7 +500,8 @@ class TicketDetail(TemplateResponseMixin, View):
 				content += "<CENTER>-------------------------------> <BR>"
 			content += "<CENTER> "+ settings.APP_VERBOSE_NAME + "<BR>"
 			content += "<CENTER> Prazo para Resgate do Prêmio: 48 horas."
-			content = urllib.parse.urlparse(content).geturl()
+			content += "#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;"
+			
 			context = {'ticket': ticket, 'print': content,'cotations_values':cotations_values, 'show_ticket': True}
 		else:
 			context = {'show_ticket': False}

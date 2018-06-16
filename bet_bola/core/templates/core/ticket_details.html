@@ -42,7 +42,8 @@
             </div>
             <div class="col s6">
                 <a class="btn waves-effect waves-light yellow black-text"
-                onclick="window.location.href='intent://{{print}}#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;'">Imprimir
+                onclick="print_ticket(this.attributes.command.value)"
+                command="{{print}}">Imprimir
                     <i class="material-icons right">print</i>
                 </a>
             </div>
