@@ -25,7 +25,7 @@ SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-DB_SWAP_LOCAL = True
+DB_SWAP_LOCAL = False
 
 ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
@@ -152,7 +152,7 @@ LANGUAGES = (
     ('pt-br', _('Português')),
 )
 
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = 'pt-br'
 
 #Decimal
 DECIMAL_SEPARATOR = '.'
@@ -180,7 +180,7 @@ USE_TZ = False
 
 #Statis Files
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = '/home/mushzinho/webapps/static_SITENAME'
+STATIC_ROOT = '/home/mushzinhooo/webapps/static_SITENAME'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
