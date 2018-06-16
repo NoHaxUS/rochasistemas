@@ -1,3 +1,9 @@
 from django.contrib import admin
+from .models import Overview
+from django.contrib import messages
 
-# Register your models here.
+
+@admin.register(Overview)
+class OverviewAdmin(admin.ModelAdmin):
+    list_display = ('pk','total_revenue','total_out_money','total_net_value','profit_result')
+ 
