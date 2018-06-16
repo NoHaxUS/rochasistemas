@@ -89,7 +89,7 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
     def save_model(self, request, obj, form, change):
         if request.user.has_perm('user.be_manager') and not request.user.is_superuser:
             if form.is_valid():
-
+                obj.can_sell_unlimited = False
                 if obj.pk:
                     credit_transation = request.user.manager.manage_credit(obj)
                     if credit_transation['success']:

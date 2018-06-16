@@ -254,7 +254,7 @@ class Manager(CustomUser):
 
         manager_balance_after = self.credit_limit_to_add - diff
 
-        obj.can_sell_unlimited = seller.can_sell_unlimited
+        #obj.can_sell_unlimited = seller.can_sell_unlimited
 
         if manager_balance_after < 0:
             if is_new:
