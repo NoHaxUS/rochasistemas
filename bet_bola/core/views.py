@@ -318,17 +318,17 @@ class CreateTicketView(View):
 			data['message'] = 'O nome do cliente é obrigatório.'
 			return UnicodeJsonResponse(data)
 		
-		if request.user.is_superuser:
+		if request.user.is_superuser or request.user.has_perm('user.be_manager'):
 			data['success'] =  False
-			data['message'] =  """Desculpe. Contas administradoras
-			não são apropriadas para criarem apostas. <br /> 
+			data['message'] =  """Desculpe, Contas administradoras ou Gerentes
+			não são apropriados para criarem apostas. <br /> 
 			Use contas normais ou conta de vendedor."""
 			return UnicodeJsonResponse(data)
 
 		if client_name and cellphone:
 			if len(client_name) > 40 or len(cellphone) > 14:
 				data['success'] =  False
-				data['message'] =  "Erro. O nome do cliente precisa ser menor que 40 digitos e o telefone menor que 14"
+				data['message'] =  "Erro. O nome do cliente precisa ser menor que 40 dígitos e o telefone menor que 14"
 				return UnicodeJsonResponse(data)
 
 		if ticket_value == None:
@@ -405,8 +405,10 @@ class CreateTicketView(View):
 					ticket.user=CustomUser.objects.get(pk=request.user.pk)
 				else:
 					ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
+			
 			ticket.reward.value = ticket_reward_value
 			ticket.reward.save()
+			ticket.save()
 
 			for i_cotation in game_cotations:
 				ticket.cotations.add(i_cotation)
@@ -431,11 +433,13 @@ class CreateTicketView(View):
                 <br /><br />
 				<a href='/ticket/""" + str(ticket.pk) + """' class='waves-effect waves-light btn text-white see-ticket-after-create hoverable'> Ver Ticket </a>
 			"""
-
-			if not ticket.validate_ticket(request.user)['success']:
-				data['not_validated'] =  "Você não tem saldo para validar o Ticket ! <br />"
-				data['message'] = data['not_validated'] + data['message']
-				return UnicodeJsonResponse(data)
+			if request.user.has_perm('user.be_seller'):
+				if not ticket.validate_ticket(request.user)['success']:
+					data['not_validated'] =  "Você não tem saldo para validar o Ticket ! <br />"
+					data['message'] = data['not_validated'] + data['message']
+					return UnicodeJsonResponse(data)
+				else:
+					return UnicodeJsonResponse(data)
 			else:
 				return UnicodeJsonResponse(data)
 
