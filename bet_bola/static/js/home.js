@@ -427,7 +427,20 @@ $(document).ready(function () {
 
         });
 
+
+        $('#check-ticket-form').on('submit', function(){
+            
+            var ticket_num = $('.check-ticket-input').val();
+            if (ticket_num == '') {
+                alertify.alert('Erro', 'Você deve informar o número do ticket.');
+            }else{
+                var Url = '/ticket/' + ticket_num + '/';
+                $(this).attr('action', Url);
+                $(this).submit();
+            }
+        });
     
+        
         $('#user_register_form').on('submit', function(e){
             e.preventDefault();
             var send_data = $(this).serialize();
