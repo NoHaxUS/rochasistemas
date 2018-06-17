@@ -51,6 +51,13 @@ class BetTicket(models.Model):
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Aguardando Resultados.'}
 
+
+        for cotation in self.cotations.objects.all():
+            if cotation.game.start_game_date < tzlocal.now():
+                return {'success':False,
+                'message':'O Ticket '+ str(self.pk) +' não pode ser pago, pois tem jogos que já começaram.'}
+
+
         seller_before_balance = 0
         seller_after_balance= 0
         if not user.seller.can_sell_unlimited:
