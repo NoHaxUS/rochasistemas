@@ -16,7 +16,6 @@ $(document).ready(function () {
         }
     
         function csrfSafeMethod(method) {
-            // these HTTP methods do not require CSRF protection
             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
         }
 
@@ -26,10 +25,13 @@ $(document).ready(function () {
             return s.replace(/[\W\[\] ]/g,function(a){return map[a]||a});
           };
 
-
-        function print_ticket(command){
+        
+          $('#print_ticket').click(function(e){
+            command = $(this).attr('command');
+            console.log(command)
+            console.log(this)
             window.location = 'intent://' + encodeURI(removerAcentos(command))
-          };
+          });
 
 
         var csrftoken = getCookie('csrftoken');
