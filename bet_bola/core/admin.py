@@ -93,7 +93,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
         actions = super().get_actions(request)
 
         if request.user.is_superuser:
-            return actions['delete_selected']
+            return None
 
         if request.user.has_perm('user.be_seller'):
             if 'delete_selected' in actions:
