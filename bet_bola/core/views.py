@@ -396,14 +396,17 @@ class CreateTicketView(View):
 			)
 
 			if request.user.has_perm('user.be_seller'):
-				ticket.seller=CustomUser.objects.get(pk=request.user.pk)
-				ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
-
 				if not ticket.validate_ticket(request.user):
 					data['success'] =  False
 					data['message'] =  "Desculpe. Vendedor não possui limite de crédito para efetuar a aposta."
 					return UnicodeJsonResponse(data)
+
+				ticket.save()
+				ticket.seller=CustomUser.objects.get(pk=request.user.pk)
+				ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
+
 			else:
+				ticket.save()
 				if request.user.is_authenticated:
 					ticket.user=CustomUser.objects.get(pk=request.user.pk)
 				else:
