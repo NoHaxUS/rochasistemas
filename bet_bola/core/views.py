@@ -395,27 +395,18 @@ class CreateTicketView(View):
 				reward=Reward.objects.create(reward_date=None)
 			)
 
+			ticket.save()
 			if request.user.has_perm('user.be_seller'):
-				if not ticket.validate_ticket(request.user):
-					data['success'] =  False
-					data['message'] =  "Desculpe. Vendedor não possui limite de crédito para efetuar a aposta."
-					return UnicodeJsonResponse(data)
-
-				ticket.save()
 				ticket.seller=CustomUser.objects.get(pk=request.user.pk)
 				ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
 
 			else:
-				ticket.save()
 				if request.user.is_authenticated:
 					ticket.user=CustomUser.objects.get(pk=request.user.pk)
 				else:
 					ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
-			
-			ticket.save()
 			ticket.reward.value = ticket_reward_value
 			ticket.reward.save()
-
 
 			for i_cotation in game_cotations:
 				ticket.cotations.add(i_cotation)
@@ -431,15 +422,22 @@ class CreateTicketView(View):
 					kind=i_cotation.kind,
 					total=i_cotation.total
 				).save()
+		
 
 			data['message'] = """
-				Ticket N° <span class='ticket-number-after-create'>""" +  str(ticket.pk) + """</span>
+				Ticket N° <span class='ticket-number-after-create'> """ +  str(ticket.pk) + """</span>
                 <br /> Para acessar detalhes do Ticket, entre no painel do cliente
             	<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket
                 <br /><br />
 				<a href='/ticket/""" + str(ticket.pk) + """' class='waves-effect waves-light btn text-white see-ticket-after-create hoverable'> Ver Ticket </a>
 			"""
-		return UnicodeJsonResponse(data)
+
+			if not ticket.validate_ticket(request.user)['success']:
+				data['not_validated'] =  "Você não tem saldo para validar o Ticket ! <br />"
+				data['message'] = data['not_validated'] + data['message']
+				return UnicodeJsonResponse(data)
+			else:
+				return UnicodeJsonResponse(data)
 
 
 
