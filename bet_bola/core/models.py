@@ -290,8 +290,15 @@ class Cotation(models.Model):
             if not is_excluded_cotation(self.name, self.kind):
                 super().save()
         else:
-            Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).update(value=self.value, original_value=self.original_value)
+            Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game)\
+            .update(value=self.value, 
+            original_value=self.original_value,
+            kind=self.kind,
+            total=self.total,
+            is_standard=self.is_standard,
+            game=self.game)
 
+            
     class Meta:
         verbose_name = 'Cota'
         verbose_name_plural = 'Cotas'

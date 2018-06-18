@@ -232,14 +232,15 @@ class CotationsView(View):
 		cotations_of_game = Cotation.objects.filter(game_id=gameid, is_standard=False)
 	
 		for cotation in cotations_of_game:
-			if cotation.kind.pk != 976241:
-				cotation.name = self.get_verbose_cotation(cotation.name)
-			if cotation.kind.name not in cotations_by_kind:
-				cotations_by_kind[cotation.kind.name] = []
-				cotations_by_kind[cotation.kind.name].append(cotation)
-			else:
-				cotations_by_kind[cotation.kind.name].append(cotation)
-		
+			if cotation.kind:
+				if cotation.kind.pk != 976241:
+					cotation.name = self.get_verbose_cotation(cotation.name)
+				if cotation.kind.name not in cotations_by_kind:
+					cotations_by_kind[cotation.kind.name] = []
+					cotations_by_kind[cotation.kind.name].append(cotation)
+				else:
+					cotations_by_kind[cotation.kind.name].append(cotation)
+			
 		cotations_serialized = {}
 		for cotation_market in cotations_by_kind:
 			cotations_serialized[cotation_market] = serializers.serialize("json", cotations_by_kind[cotation_market], use_natural_foreign_keys=True)
