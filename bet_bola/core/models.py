@@ -40,8 +40,9 @@ class BetTicket(models.Model):
 
 
     def cancel_ticket(self, user):
-
-
+        from history.models import TicketCancelationHistory
+        
+        who_cancelled  = str(user.pk) + ' - ' + user.username
         if not self.bet_ticket_status == 'Aguardando Resultados':
             return {'success':False,
                 'message':' Ticket '+ str(self.pk)+ ' não cancelado, pois não está aguardando resultados.'}
@@ -58,6 +59,10 @@ class BetTicket(models.Model):
         self.payment.payment_date = None
         self.payment.save()
         self.save()
+
+        TicketCancelationHistory.objects.create(who_cancelled=who_cancelled,
+        ticket_cancelled=self)
+
         return {'success':True,
             'message':'O Ticket '+ str(self.pk) +' foi cancelado.'}
 

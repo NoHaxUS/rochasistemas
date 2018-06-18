@@ -1,6 +1,6 @@
 from django.contrib import admin
 from user.models import CustomUser
-from .models import SellerSalesHistory,ManagerTransactions,RevenueHistorySeller,RevenueHistoryManager, PunterPayedHistory
+from .models import SellerSalesHistory,ManagerTransactions,RevenueHistorySeller,RevenueHistoryManager, PunterPayedHistory, TicketCancelationHistory
 from user.models import CustomUser
 from django.utils.translation import gettext_lazy as _
 from admin_view_permission.admin import AdminViewPermissionModelAdmin
@@ -123,3 +123,10 @@ class PunterPayedHistoryAdmin(AdminViewPermissionModelAdmin):
         if request.user.is_superuser:
             return ('seller','payment_date')
 
+
+@admin.register(TicketCancelationHistory)
+class TicketCancelationHistoryHistoryAdmin(AdminViewPermissionModelAdmin):
+    search_fields = ['who_cancelled','ticket_cancelled__id']
+    list_display = ('pk','ticket_cancelled','who_cancelled')
+    list_display_links = ('pk','ticket_cancelled')
+    list_per_page = 20

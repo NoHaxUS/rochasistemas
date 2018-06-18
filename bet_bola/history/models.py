@@ -106,4 +106,19 @@ class PunterPayedHistory(models.Model):
     class Meta:
         verbose_name = 'Pagamento - Apostador'
         verbose_name_plural = 'Pagamentos - Apostadores'
+
+
+
+class TicketCancelationHistory(models.Model):
+    who_cancelled = models.CharField(max_length=200, verbose_name='Quem Cancelou ?')
+    ticket_cancelled = models.ForeignKey(BetTicket, on_delete=models.CASCADE, verbose_name='Ticket Cancelado')
+    cancelation_date = models.DateTimeField(verbose_name='Data do Pagamento', auto_now_add=True)
+
+    def __str__(self):
+        return "Cancelamento - Ticket"
+
+    class Meta:
+        verbose_name = 'Cancelamento - Ticket'
+        verbose_name_plural = 'Cancelamentos - Tickets'
+        
         
