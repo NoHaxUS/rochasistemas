@@ -436,7 +436,7 @@ class CreateTicketView(View):
 			"""
 			if request.user.has_perm('user.be_seller'):
 				if not ticket.validate_ticket(request.user)['success']:
-					data['not_validated'] =  "Você não tem saldo para validar o Ticket ! <br />"
+					data['not_validated'] =  "<span class='no_credit_message'> Você não tem saldo para validar o Ticket !!! <br /></span>"
 					data['message'] = data['not_validated'] + data['message']
 					return UnicodeJsonResponse(data)
 				else:

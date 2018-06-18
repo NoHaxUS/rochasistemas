@@ -310,11 +310,12 @@ class Manager(CustomUser):
         view_manager = Permission.objects.get(codename='view_manager')
         view_ticket_perm = Permission.objects.get(codename='view_betticket')
         view_punter_perm = Permission.objects.get(codename='view_punter')
+        change_ticket_perm = Permission.objects.get(codename='change_betticket')
         
         self.user_permissions.add(be_manager_perm,view_managertransactions_perm,
         view_revenuehistoryseller_perm,view_sellersaleshistory_perm,
         view_punterpayedhistory_perm, view_revenuehistorymanager, change_seller, add_seller,
-        view_manager, view_ticket_perm, view_punter_perm)
+        view_manager, view_ticket_perm, view_punter_perm, change_ticket_perm)
 
     class Meta:
         verbose_name = 'Gerente'

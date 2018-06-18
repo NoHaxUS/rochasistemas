@@ -41,11 +41,12 @@
         $.cookie('hidden_sidebar_menu', true, {path: '/'});
       }
     };
+    show_hide_sidebar_menu();
     if (!$('body').hasClass('popup')) {
       if ($.cookie('hidden_sidebar_menu')) {
         /* always show on change_list.html */
         if (!$('body').hasClass('change-list')) {
-          show_hide_sidebar_menu();
+          //show_hide_sidebar_menu();
         }
       }
       $('.show-hide-sidebar-menu').on('click', function(e){

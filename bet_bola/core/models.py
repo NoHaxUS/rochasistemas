@@ -39,6 +39,30 @@ class BetTicket(models.Model):
         return str(self.pk)
 
 
+    def cancel_ticket(self, user):
+
+
+        if not self.bet_ticket_status == 'Aguardando Resultados':
+            return {'success':False,
+                'message':' Ticket '+ str(self.pk)+ ' não cancelado, pois não está aguardando resultados.'}
+        
+        if not self.payment.status_payment == 'Pago':
+            return {'success':False,
+                'message':'O Ticket '+ str(self.pk) +' não está Pago para ser cancelado.'}
+        
+        seller = self.payment.who_set_payment
+        seller.credit_limit += self.value
+        seller.save()
+        self.payment.status_payment = 'Aguardando Pagamento do Ticket'
+        self.payment.who_set_payment = None
+        self.payment.save()
+        self.save()
+        return {'success':True,
+            'message':'O Ticket '+ str(self.pk) +' foi cancelado.'}
+
+
+
+
 
     def validate_ticket(self, user):
         from history.models import SellerSalesHistory

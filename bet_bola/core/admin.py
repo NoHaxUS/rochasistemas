@@ -30,6 +30,17 @@ class GamesWithNoFinalResults(admin.SimpleListFilter):
             return queryset.filter(status_game='FT', ft_score__isnull=True)
 
 
+def cancel_ticket(modeladmin, request, queryset):
+    if request.user.has_perm('user.be_manager') or request.user.is_superuser:
+        for ticket in queryset:
+            ticket_cancelation = ticket.cancel_ticket(request.user)
+            if ticket_cancelation['success']:
+                messages.success(request, ticket_cancelation['message'])
+            else:
+                messages.warning(request, ticket_cancelation['message'])
+                break
+cancel_ticket.short_description = 'Cancelar Ticket'
+
 def validate_selected_tickets(modeladmin, request, queryset):
     
     if request.user.has_perm('user.be_seller'):
@@ -83,7 +94,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
     'reward__status_reward')
     list_display =('pk','value','reward','cotation_sum','bet_ticket_status', payment_status,'creation_date')
     exclude = ('cotations','user','normal_user',)
-    actions = [validate_selected_tickets, pay_winner_punter]
+    actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket]
     list_per_page = 20
 
 
@@ -91,18 +102,30 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
 
     def get_actions(self, request):
         actions = super().get_actions(request)
+        from collections import OrderedDict
 
         if request.user.is_superuser:
-            return None
+            valid_actions = ['validate_selected_tickets', 'cancel_ticket', 'pay_winner_punter']
+            actions_copy = actions.copy()
+            for action in actions_copy:
+                if not action in valid_actions:
+                    del actions[action]
+            return actions
 
         if request.user.has_perm('user.be_seller'):
-            if 'delete_selected' in actions:
-                del actions['delete_selected']
+            valid_actions = ['validate_selected_tickets', 'pay_winner_punter']
+            actions_copy = actions.copy()
+            for action in actions_copy:
+                if not action in valid_actions:
+                    del actions[action]
             return actions
         
         if request.user.has_perm('user.be_manager'):
-            if 'delete_selected' in actions:
-                del actions['delete_selected']
+            valid_actions = ['cancel_ticket']
+            actions_copy = actions.copy()
+            for action in actions_copy:
+                if not action in valid_actions:
+                    del actions[action]
             return actions
 
         if request.user.has_perm('user.be_punter'):
@@ -144,7 +167,8 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
             .exclude(reward__status_reward=Reward.REWARD_STATUS[1][1])
 
         if request.user.has_perm('user.be_manager'):
-            return super().get_queryset(request)
+            #return qs
+            return qs.filter(payment__who_set_payment__my_manager=request.user.manager)
 
         if request.user.has_perm('user.be_punter'):
             return qs.filter(user=request.user.punter)

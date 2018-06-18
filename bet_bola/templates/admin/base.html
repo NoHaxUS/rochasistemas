@@ -109,11 +109,6 @@
               <div id="user-tools" class="btn-group">
                 <div class="btn-group">
                   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                    {% if user.is_active and user.is_staff %}
-                      {% block welcome-msg %}
-                        {% firstof user.get_short_name user.get_username %}
-                      {% endblock %}
-                    {% endif %}
                     <span class="caret"></span>
                   </button>
 
@@ -124,6 +119,12 @@
                         <a href="{{ docsroot }}">{% trans 'Documentation' %}</a>
                       </li>
                     {% endif %}
+                    <li>
+                      <a href="#">
+                        {% if user.is_active and user.is_staff %}
+                        {{user.username}}
+                      {% endif %}</a>
+                    </li>
                     {% if user.has_usable_password %}
                       <li>
                         <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a>
