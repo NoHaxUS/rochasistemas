@@ -55,6 +55,7 @@ class BetTicket(models.Model):
         seller.save()
         self.payment.status_payment = 'Aguardando Pagamento do Ticket'
         self.payment.who_set_payment = None
+        self.payment.payment_date = None
         self.payment.save()
         self.save()
         return {'success':True,

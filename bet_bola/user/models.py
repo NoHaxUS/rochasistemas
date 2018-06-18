@@ -173,6 +173,8 @@ class Manager(CustomUser):
     address = models.CharField(max_length=75, verbose_name='Endereço', null=True, blank=True)
     commission = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Comissão')
     credit_limit_to_add = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name="Crédito")
+    can_cancel_ticket = models.BooleanField(default=True, verbose_name='Cancela Ticket ?')
+
 
     def reset_revenue(self, who_reseted_revenue):
         from core.models import Payment

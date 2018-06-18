@@ -31,7 +31,7 @@ class GamesWithNoFinalResults(admin.SimpleListFilter):
 
 
 def cancel_ticket(modeladmin, request, queryset):
-    if request.user.has_perm('user.be_manager') or request.user.is_superuser:
+    if request.user.is_superuser:
         for ticket in queryset:
             ticket_cancelation = ticket.cancel_ticket(request.user)
             if ticket_cancelation['success']:
@@ -39,6 +39,19 @@ def cancel_ticket(modeladmin, request, queryset):
             else:
                 messages.warning(request, ticket_cancelation['message'])
                 break
+
+    if request.user.has_perm('user.be_manager') and not request.user.is_superuser:
+        if request.user.manager.can_cancel_ticket:
+            for ticket in queryset:
+                ticket_cancelation = ticket.cancel_ticket(request.user)
+                if ticket_cancelation['success']:
+                    messages.success(request, ticket_cancelation['message'])
+                else:
+                    messages.warning(request, ticket_cancelation['message'])
+                    break
+        else:
+            messages.warning(request, "Você não tem permissão pra cancelar Tickets.")
+
 cancel_ticket.short_description = 'Cancelar Ticket'
 
 def validate_selected_tickets(modeladmin, request, queryset):
@@ -167,7 +180,6 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
             .exclude(reward__status_reward=Reward.REWARD_STATUS[1][1])
 
         if request.user.has_perm('user.be_manager'):
-            #return qs
             return qs.filter(payment__who_set_payment__my_manager=request.user.manager)
 
         if request.user.has_perm('user.be_punter'):
