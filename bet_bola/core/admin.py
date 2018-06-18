@@ -118,7 +118,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
         from collections import OrderedDict
 
         if request.user.is_superuser:
-            valid_actions = ['validate_selected_tickets', 'cancel_ticket', 'pay_winner_punter']
+            valid_actions = ['cancel_ticket']
             actions_copy = actions.copy()
             for action in actions_copy:
                 if not action in valid_actions:
