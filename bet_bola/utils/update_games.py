@@ -7,6 +7,15 @@ from django.db.models import Count
 from django.db.models import F, Q
 import time
 from decimal import Decimal
+import urllib3
+import socket
+
+def allowed_gai_family():
+    family = socket.AF_INET
+    return family
+
+
+urllib3.util.connection.allowed_gai_family = allowed_gai_family
 
 
 """
