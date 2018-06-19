@@ -61,7 +61,8 @@ class BetTicket(models.Model):
         self.save()
 
         TicketCancelationHistory.objects.create(who_cancelled=who_cancelled,
-        ticket_cancelled=self)
+        ticket_cancelled=self,
+        seller_of_payed=seller)
 
         return {'success':True,
             'message':'O Ticket '+ str(self.pk) +' foi cancelado.'}

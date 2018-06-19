@@ -127,7 +127,7 @@ class PunterPayedHistoryAdmin(AdminViewPermissionModelAdmin):
 @admin.register(TicketCancelationHistory)
 class TicketCancelationHistoryHistoryAdmin(AdminViewPermissionModelAdmin):
     search_fields = ['who_cancelled','ticket_cancelled__id']
-    list_display = ('pk','ticket_cancelled','who_cancelled','cancelation_date')
+    list_display = ('pk','ticket_cancelled','who_cancelled','cancelation_date','seller_of_payed')
     fields = ('ticket_cancelled','who_cancelled','cancelation_date')
     list_display_links = ('pk','ticket_cancelled')
     list_per_page = 20
