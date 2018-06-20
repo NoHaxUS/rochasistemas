@@ -257,7 +257,6 @@ class Manager(CustomUser):
 
         manager_balance_after = self.credit_limit_to_add - diff
 
-        #obj.can_sell_unlimited = seller.can_sell_unlimited
 
         if manager_balance_after < 0:
             if is_new:
@@ -278,13 +277,14 @@ class Manager(CustomUser):
                 seller.credit_limit = obj.credit_limit
                 seller.save()
 
-            ManagerTransactions.objects.create(manager=self,
-            seller=seller,
-            transferred_amount=diff,
-            manager_before_balance=manager_before_balance,
-            manager_after_balance=manager_balance_after,
-            seller_before_balance=seller_before_balance,
-            seller_after_balance=seller_after_balance)
+            if not manager_before_balance == manager_balance_after:
+                ManagerTransactions.objects.create(manager=self,
+                seller=seller,
+                transferred_amount=diff,
+                manager_before_balance=manager_before_balance,
+                manager_after_balance=manager_balance_after,
+                seller_before_balance=seller_before_balance,
+                seller_after_balance=seller_after_balance)
 
             return {'success': True,
             'message': 'Transação realizada.'}
