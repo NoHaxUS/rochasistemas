@@ -38,6 +38,13 @@ class BetTicket(models.Model):
     def __str__(self):
         return str(self.pk)
 
+    def get_punter_name(self):
+        if self.user:
+            return self.user.first_name
+        elif self.normal_user:
+            return self.normal_user.first_name
+
+    get_punter_name.short_description = 'Apostador'
 
     def cancel_ticket(self, user):
         from history.models import TicketCancelationHistory

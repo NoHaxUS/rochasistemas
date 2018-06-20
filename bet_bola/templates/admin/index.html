@@ -18,9 +18,6 @@
           <button class="btn btn-default" title="{% trans "Apps" %}">
             <span class="glyphicon glyphicon-star-empty"></span>
           </button>
-          <a href="#timeline" class="btn btn-default" title="{% trans "Recent Actions" %}">
-            <span class="glyphicon glyphicon-tasks"></span> {% trans "Recent Actions" %}
-          </a>
         </div>
       </div>
       <div class="table-responsive table-apps">
@@ -73,67 +70,6 @@
           </tbody>
         </table>
       </div>
-      {% block recent_actions %}
-        <div id="content-related" class="recent-actions panel-body">
-          <div class="module" id="recent-actions-module">
-            <div class="page-header">
-              <h2 id="timeline" class="h3">{% trans 'Recent Actions' %} <small>({% trans 'My Actions' %})</small></h2>
-            </div>
-            {% load log %}
-            {% get_admin_log 10 as admin_log for_user user %}
-            {% if not admin_log %}
-              <p class="none-available">{% trans 'None available' %}</p>
-            {% else %}
-              <ul class="timeline">
-                {% for entry in admin_log %}
-                  {% if entry.is_addition %}
-                  <li>
-                    <span class="timeline-badge add">
-                      <i class="glyphicon glyphicon-plus"></i>
-                    </span>
-                  {% elif entry.is_change %}
-                  <li>
-                    <span class="timeline-badge change">
-                      <i class="glyphicon glyphicon-pencil"></i>
-                    </span>
-                  {% else %}
-                  <li class="timeline-inverted">
-                    <span class="timeline-badge delete">
-                      <i class="glyphicon glyphicon-minus"></i>
-                    </span>
-                  {% endif %}
-                    <span class="timeline-panel">
-                      <span class="timeline-heading">
-                        <h3 class="timeline-title h4">
-                          {% if entry.content_type %}
-                            {% filter capfirst %}{% trans entry.content_type.name %}{% endfilter %}
-                          {% else %}
-                            {% trans 'Unknown content' %}
-                          {% endif %}
-                        </h3>
-                        <p>
-                          <small class="text-muted">
-                            <i class="glyphicon glyphicon-time"></i> {{ entry.action_time }}
-                          </small>
-                        </p>
-                      </span>
-                      <span class="timeline-body">
-                        <p>
-                          {% if entry.is_deletion or not entry.get_admin_url %}
-                            {{ entry.object_repr }}
-                          {% else %}
-                            <a href="{{ admin_root_url }}{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
-                          {% endif %}
-                        </p>
-                      </span>
-                    </span>
-                  </li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-          </div>
-        </div>
-      {% endblock recent_actions %}
     </div>
   {% else %}
     <p>{% trans "You don't have permission to edit anything." %}</p>
