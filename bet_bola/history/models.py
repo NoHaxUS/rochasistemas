@@ -14,12 +14,12 @@ class SellerSalesHistory(models.Model):
     seller_after_balance = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Saldo Atual')
 
     def __str__(self):
-        return "Transações - Vendedores"
+        return "Entrada - Vendedores"
 
 
     class Meta:
-        verbose_name = 'Transação - Vendedor'
-        verbose_name_plural = 'Transações - Vendedores'
+        verbose_name = 'Entrada - Vendedor'
+        verbose_name_plural = 'Entradas - Vendedores'
 
 
 
@@ -35,11 +35,11 @@ class ManagerTransactions(models.Model):
 
 
     def __str__(self):
-        return "Transações - Gerentes"
+        return " Transf. - Gerentes"
 
     class Meta:
-        verbose_name = 'Transação - Gerente'
-        verbose_name_plural = 'Transações - Gerentes'
+        verbose_name = 'Transf. - Gerente'
+        verbose_name_plural = 'Transf. - Gerentes'
 
 
 class RevenueHistorySeller(models.Model):
@@ -59,11 +59,11 @@ class RevenueHistorySeller(models.Model):
 
 
     def __str__(self):
-        return "Pagamentos - Vendedores"
+        return "Pag. - Vendedores"
 
     class Meta:
-        verbose_name = 'Pagamentos - Vendedor'
-        verbose_name_plural = 'Pagamentos - Vendedores'
+        verbose_name = 'Pag. - Vendedor'
+        verbose_name_plural = 'Pag. - Vendedores'
 
 
 
@@ -84,11 +84,11 @@ class RevenueHistoryManager(models.Model):
 
 
     def __str__(self):
-        return "Pagamentos - Gerentes"
+        return "Pag. - Gerentes"
 
     class Meta:
-        verbose_name = 'Pagamentos - Gerente'
-        verbose_name_plural = 'Pagamentos - Gerentes'
+        verbose_name = 'Pag. - Gerente'
+        verbose_name_plural = 'Pag. - Gerentes'
 
 
 class PunterPayedHistory(models.Model):
@@ -101,11 +101,11 @@ class PunterPayedHistory(models.Model):
     is_closed_for_manager = models.BooleanField(verbose_name='Gerente Prestou Conta?', default=False)
 
     def __str__(self):
-        return "Pagamentos - Apostadores"
+        return "Pag. - Apostadores"
 
     class Meta:
-        verbose_name = 'Pagamento - Apostador'
-        verbose_name_plural = 'Pagamentos - Apostadores'
+        verbose_name = 'Pag. - Apostador'
+        verbose_name_plural = 'Pag. - Apostadores'
 
 
 
@@ -116,10 +116,10 @@ class TicketCancelationHistory(models.Model):
     seller_of_payed = models.ForeignKey(Seller, on_delete=models.CASCADE, verbose_name='Vendedor')
 
     def __str__(self):
-        return "Cancelamento - Ticket"
+        return "Can. - Ticket"
 
     class Meta:
-        verbose_name = 'Cancelamento - Ticket'
-        verbose_name_plural = 'Cancelamentos - Tickets'
+        verbose_name = 'Can. - Ticket'
+        verbose_name_plural = 'Can. - Tickets'
         
         
