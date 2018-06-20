@@ -3,6 +3,13 @@
 {% load filters %}
 
 {% block content %}
+
+{% if user.is_authenticated %}
+<span id="is_authenticated" is="true"></span>
+{% else %}
+<span id="is_authenticated" is="false"></span>
+{% endif %}
+
 <div class="col s12 l8">
     <div class="games-table-container">
         <div class="th-championsip-header row">                          

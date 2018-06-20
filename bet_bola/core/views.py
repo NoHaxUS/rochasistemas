@@ -310,15 +310,15 @@ class CreateTicketView(View):
 		}
 
 		ticket_value = request.POST.get('ticket_value', None)
-		client_name = request.POST.get('nome', None)
+		client_name = request.POST.get('client_name', None)
 		cellphone = request.POST.get('telefone', None)
 		
-		if not request.user.is_authenticated and not client_name:
-			data['success'] =  False
-			data['action'] = 'Anon-user'
-			data['message'] = 'O nome do cliente é obrigatório.'
-			return UnicodeJsonResponse(data)
-		
+		if not request.user.is_authenticated or request.user.has_perm('be_seller'):
+			if not client_name or len(client_name) < 4:
+				data['success'] =  False
+				data['message'] =  "Digite o nome do cliente (4 dígitos ou mais)."
+				return UnicodeJsonResponse(data)
+
 		if request.user.is_superuser or request.user.has_perm('user.be_manager'):
 			data['success'] =  False
 			data['message'] =  """Desculpe, Contas administradoras ou Gerentes
@@ -329,7 +329,7 @@ class CreateTicketView(View):
 		if client_name and cellphone:
 			if len(client_name) > 40 or len(cellphone) > 14:
 				data['success'] =  False
-				data['message'] =  "Erro. O nome do cliente precisa ser menor que 40 dígitos e o telefone menor que 14"
+				data['message'] =  "Erro, O nome do cliente precisa ser menor que 40 dígitos e o telefone menor que 14."
 				return UnicodeJsonResponse(data)
 
 		if ticket_value == None:
@@ -347,7 +347,8 @@ class CreateTicketView(View):
 
 		if 'ticket' not in request.session:
 			data['success'] =  False
-			data['message'] =  "Selecionar Cotas antes de apostas."
+			data['message'] =  "Selecione algumas cotações."
+			data['clear_cookies'] = True
 			return UnicodeJsonResponse(data)
 
 		if ticket_bet_value <= 0:
@@ -384,7 +385,7 @@ class CreateTicketView(View):
 
 		if len(game_cotations) < min_number_of_choices_per_bet:
 			data['success'] =  False
-			data['message'] =  "Desculpe. Aposte em pelo menos " + str(min_number_of_choices_per_bet) + " jogo."
+			data['message'] =  "Desculpe, Aposte em pelo menos " + str(min_number_of_choices_per_bet) + " jogo."
 			return UnicodeJsonResponse(data)
 
 		if data['success']:
@@ -395,15 +396,14 @@ class CreateTicketView(View):
 				payment=Payment.objects.create(payment_date=None), 
 				reward=Reward.objects.create(reward_date=None)
 			)
-
 			ticket.save()
-			if request.user.has_perm('user.be_seller'):
-				ticket.seller=CustomUser.objects.get(pk=request.user.pk)
-				ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
 
+			if request.user.has_perm('user.be_seller'):
+				ticket.seller=request.user.seller
+				ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
 			else:
 				if request.user.is_authenticated:
-					ticket.user=CustomUser.objects.get(pk=request.user.pk)
+					ticket.user=request.user.punter
 				else:
 					ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
 			

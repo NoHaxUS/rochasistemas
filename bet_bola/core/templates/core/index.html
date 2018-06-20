@@ -4,6 +4,13 @@
 {% load static %}
 
 {% block content %}
+
+{% if user.is_authenticated and not perms.user.be_seller %}
+    <span id="open_anon_modal" is="false"></span>
+{% else %}
+    <span id="open_anon_modal" is="true"></span>
+{% endif %}
+
 <div class="col s12 l8">
     <div class="row">
         <div class="col s12">
