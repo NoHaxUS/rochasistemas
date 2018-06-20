@@ -290,7 +290,11 @@ $(document).ready(function () {
                 
                 if(data.success){
                     alertify.alert("Sucesso", data.message);
-                }else{                            
+                }else{
+                    if(data.clear_cookies){
+                        Cookies.set('ticket_cookie', {});
+                        window.location = '/'
+                    }                     
                     alertify.alert("Erro", data.message);                     
                 }
             }, 'json');
