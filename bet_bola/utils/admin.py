@@ -5,5 +5,5 @@ from django.contrib import messages
 
 @admin.register(Overview)
 class OverviewAdmin(admin.ModelAdmin):
-    list_display = ('pk','total_revenue','total_out_money','total_net_value','profit_result')
+    list_display = ('pk','total_revenue','total_out_money','total_net_value')
  

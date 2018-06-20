@@ -107,7 +107,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
     'payment__status_payment',
     'creation_date',
     'reward__status_reward')
-    list_display =('pk','get_punter_name','value','reward','cotation_sum','bet_ticket_status', payment_status,'creation_date', 'seller_related')
+    list_display =('pk','get_ticket_link','get_punter_name','value','reward','cotation_sum','bet_ticket_status', payment_status,'creation_date', 'seller_related')
     exclude = ('cotations','user','normal_user',)
     actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket]
     list_per_page = 20

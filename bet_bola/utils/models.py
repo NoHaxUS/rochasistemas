@@ -69,13 +69,14 @@ class Overview(models.Model):
         total_net_value_sum = 0
         for seller in sellers:
             total_net_value_sum += seller.net_value()
-        return total_net_value_sum
+        
+
+        return self.total_revenue() - (self.total_out_money() + total_net_value_sum)
+
+
     total_net_value.short_description = 'Líquido Total'
 
 
-    def profit_result(self):
-        return self.total_revenue() - self.total_out_money()
-    profit_result.short_description = 'Lucro Total'
 
 
     def __str__(self):

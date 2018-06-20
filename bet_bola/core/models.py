@@ -45,6 +45,13 @@ class BetTicket(models.Model):
             return self.normal_user.first_name
 
 
+
+    def get_ticket_link(self):
+        from django.utils.safestring import mark_safe
+        link = '<a href="/ticket/'+str(self.pk) + '/">Consultar<a/>'
+        return mark_safe(link)
+    get_ticket_link.short_description = 'Ver'
+
     def seller_related(self):
         return self.payment.who_set_payment
     seller_related.short_description = 'Vendedor'
