@@ -1,6 +1,7 @@
 from django import template
 from django.template import Library
 from django.conf import settings
+import os, re
 
 register = template.Library()
 
@@ -37,4 +38,6 @@ def app_name():
 def get_verbose_cotation(cotation_name):
     names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Visitante'}
     return names_mapping.get(cotation_name, cotation_name)
+
+
 

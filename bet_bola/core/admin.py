@@ -60,7 +60,9 @@ def validate_selected_tickets(modeladmin, request, queryset):
         for ticket in queryset:
             ticket_validation = ticket.validate_ticket(request.user)
             if ticket_validation['success']:
-                messages.success(request, ticket_validation['message'])
+                from django.utils.safestring import mark_safe
+
+                messages.success(request, mark_safe(ticket_validation['message']) )
             else:
                 messages.warning(request, ticket_validation['message'])
                 break
@@ -105,7 +107,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
     'payment__status_payment',
     'creation_date',
     'reward__status_reward')
-    list_display =('pk','get_punter_name','value','reward','cotation_sum','bet_ticket_status', payment_status,'creation_date')
+    list_display =('pk','get_punter_name','value','reward','cotation_sum','bet_ticket_status', payment_status,'creation_date', 'seller_related')
     exclude = ('cotations','user','normal_user',)
     actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket]
     list_per_page = 20

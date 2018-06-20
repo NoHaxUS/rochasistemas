@@ -4,10 +4,10 @@
 
 {% block content %}
 
-{% if user.is_authenticated %}
-<span id="is_authenticated" is="true"></span>
+{% if user.is_authenticated and not perms.user.be_seller %}
+    <span id="open_anon_modal" is="false"></span>
 {% else %}
-<span id="is_authenticated" is="false"></span>
+    <span id="open_anon_modal" is="true"></span>
 {% endif %}
 
 <div class="col s12 l8">

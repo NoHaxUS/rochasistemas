@@ -44,6 +44,11 @@ class BetTicket(models.Model):
         elif self.normal_user:
             return self.normal_user.first_name
 
+
+    def seller_related(self):
+        return self.payment.who_set_payment
+    seller_related.short_description = 'Vendedor'
+
     get_punter_name.short_description = 'Apostador'
 
     def cancel_ticket(self, user):
@@ -120,7 +125,7 @@ class BetTicket(models.Model):
         seller_after_balance=seller_after_balance)
         
         return {'success':True,
-            'message':'Ticket '+ str(self.pk) +' Pago com Sucesso.'}
+            'message':'Ticket '+ str(self.pk) +' Pago com Sucesso. Ver <a href="/ticket/'+ str(self.pk) + '/">' + "Imprimir"+ '</a>'}
 
 
     def pay_winner_punter(self, user):
