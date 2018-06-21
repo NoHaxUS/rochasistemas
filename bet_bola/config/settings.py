@@ -103,7 +103,6 @@ if DB_SWAP_LOCAL:
             'PORT': '5432',
         }
     }
-
 else:
     DATABASES = {
         'default': {
