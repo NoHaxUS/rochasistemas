@@ -9,7 +9,7 @@ class CustomUser(AbstractUser):
     email = models.EmailField(null=True, blank=True, verbose_name='E-mail')
 
     def __str__(self):
-        return self.first_name
+        return self.username
 
     def full_name(self):
         return self.first_name + ' ' + self.last_name
