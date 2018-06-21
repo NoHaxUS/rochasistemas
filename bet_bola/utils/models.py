@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import F, Q, When, Case
-from user.models import Seller
+from user.models import Seller, Manager
 
 
 class GeneralConfigurations(models.Model):
@@ -59,10 +59,10 @@ class Overview(models.Model):
         for seller in sellers:
             total_out_money_sum += seller.out_money()
         return total_out_money_sum
-    total_out_money.short_description = 'Pagamentos Total'
+    total_out_money.short_description = 'Gastos com Apostas'
 
 
-    def total_net_value(self):
+    def seller_out_money(self):
 
         sellers = Seller.objects.filter(is_active=True)
 
@@ -70,10 +70,24 @@ class Overview(models.Model):
         for seller in sellers:
             total_net_value_sum += seller.net_value()
         
+        return total_net_value_sum
+    seller_out_money.short_description = 'Gastos com Vendedores'
 
-        return self.total_revenue() - (self.total_out_money() + total_net_value_sum)
+
+    def manager_out_money(self):
+        
+        managers = Manager.objects.filter(is_active=True)
+
+        total_net_value_sum = 0
+        for manager in managers:
+            total_net_value_sum += manager.net_value()
+        
+        return total_net_value_sum
+    manager_out_money.short_description = 'Gastos com Gerentes'
 
 
+    def total_net_value(self):
+        return self.total_revenue() - (self.total_out_money() + self.seller_out_money() + self.manager_out_money())
     total_net_value.short_description = 'Líquido Total'
 
 
