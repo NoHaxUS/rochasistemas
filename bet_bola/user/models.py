@@ -160,6 +160,7 @@ class Seller(CustomUser):
 
 
     class Meta:
+        ordering = ('-pk',)
         verbose_name = 'Vendedor'
         verbose_name_plural = 'Vendedores'
 
@@ -322,6 +323,7 @@ class Manager(CustomUser):
         view_manager, view_ticket_perm, view_punter_perm, change_ticket_perm, view_ticketcancelationhistory)
 
     class Meta:
+        ordering = ('-pk',)
         verbose_name = 'Gerente'
         verbose_name_plural = 'Gerentes'
         permissions = (								
