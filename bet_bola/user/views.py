@@ -71,6 +71,10 @@ class UserLogin(View):
                 'success':True,
                 'message':'Logado com sucesso'
             }
+            
+            request.session['ticket'] = {}		
+			request.session.modified = True
+
             return UnicodeJsonResponse(data)
         else:
             data = {
