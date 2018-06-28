@@ -448,6 +448,7 @@ $(document).ready(function () {
                 
                 alertify.alert('Sucesso', response.message, function(){
                     window.location = '/';
+                    Cookies.set('ticket_cookie', {});
                 });
             }else{
                 alertify.alert('Erro', response.message );
