@@ -8,8 +8,8 @@ register = template.Library()
 @register.filter(name='standard_cotations_order_by')
 def standard_cotations_order_by(queryset):
 
-    standard_cotations = queryset.filter(is_standard=True).order_by('name')
-    
+    standard_cotations = queryset.filter(is_standard=True, kind__isnull=False).order_by('name')
+
     if standard_cotations.count() >=3:
         cotations_ordered = []
         cotations_ordered.append(standard_cotations[0])
