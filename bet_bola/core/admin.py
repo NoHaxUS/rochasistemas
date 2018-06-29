@@ -86,7 +86,8 @@ pay_winner_punter.short_description = 'Pagar Apostador'
 
 
 def payment_status(obj):
-    return ("%s" % obj.payment.status_payment)
+    if obj.payment:
+        return ("%s" % obj.payment.status_payment)
 payment_status.short_description = 'Status do Pagamento'
 
 

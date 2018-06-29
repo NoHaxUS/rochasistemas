@@ -53,13 +53,19 @@ class BetTicket(models.Model):
     get_ticket_link.short_description = 'Ver'
 
     def seller_related(self):
-        return self.payment.who_set_payment
+        if self.payment:
+            return self.payment.who_set_payment
     seller_related.short_description = 'Vendedor'
 
     get_punter_name.short_description = 'Apostador'
 
     def cancel_ticket(self, user):
         from history.models import TicketCancelationHistory
+
+        if not self.payment or not self.reward:
+            return {'success':False,
+                'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
+        
         
         who_cancelled  = str(user.pk) + ' - ' + user.username
         if not self.bet_ticket_status == 'Aguardando Resultados':
@@ -93,6 +99,10 @@ class BetTicket(models.Model):
     def validate_ticket(self, user):
         from history.models import SellerSalesHistory
 
+        if not self.payment or not self.reward:
+            return {'success':False,
+                'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
+        
         if not self.payment.status_payment == 'Aguardando Pagamento do Ticket':
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Aguardando Pagamento.'}
@@ -137,7 +147,11 @@ class BetTicket(models.Model):
 
     def pay_winner_punter(self, user):
         from history.models import PunterPayedHistory
-
+        
+        if not self.payment or not self.reward:
+            return {'success':False,
+                'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
+        
         if not self.bet_ticket_status == 'Venceu':
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não Venceu'}

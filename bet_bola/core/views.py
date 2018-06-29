@@ -483,8 +483,8 @@ class TicketDetail(TemplateResponseMixin, View):
 
 			content += "<CENTER> APOSTA: R$" + str("%.2f" % ticket.value) + "<BR>"
 			content += "<CENTER> COTA TOTAL: " + str("%.2f" % ticket.cotation_value_total) + "<BR>"
-			content += "<CENTER> GANHO POSSIVEL: R$" + str("%.2f" % ticket.reward.value) + "<BR>"
-			
+			if ticket.reward:
+				content += "<CENTER> GANHO POSSIVEL: R$" + str("%.2f" % ticket.reward.value) + "<BR>"
 			content += "<CENTER> DATA: " + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
 			content += "<BR><BR>"
 			

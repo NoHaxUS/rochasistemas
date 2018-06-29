@@ -50,7 +50,8 @@ class PDF(View):
         pdf.text(55,36, 'DATA: ' + ticket.creation_date.strftime('%d/%m/%Y %H:%M'))
         pdf.text(55,48, "APOSTA: R$" + str("%.2f" % ticket.value) )
         pdf.text(55,60, "COTA TOTAL: " + str("%.2f" % ticket.cotation_value_total) )
-        pdf.text(55,72, "GANHO POSSÍVEL: R$" + str("%.2f" % ticket.reward.value) )
+        if ticket.reward:
+            pdf.text(55,72, "GANHO POSSÍVEL: R$" + str("%.2f" % ticket.reward.value) )
         pdf.text(4,100,'APOSTAS')		
         pdf.text(0, 105,'--------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
         h = 110
