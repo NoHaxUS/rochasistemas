@@ -229,7 +229,7 @@ class CotationsView(View):
 
 		gameid = self.kwargs['gameid']
 		cotations_by_kind = {}
-		cotations_of_game = Cotation.objects.filter(game_id=gameid, is_standard=False)
+		cotations_of_game = Cotation.objects.filter(game_id=gameid, is_standard=False, kind__isnull=False)
 	
 		for cotation in cotations_of_game:
 			if cotation.kind:

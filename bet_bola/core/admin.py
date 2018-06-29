@@ -93,11 +93,19 @@ payment_status.short_description = 'Status do Pagamento'
 
 @admin.register(Reward)
 class RewardAdmin(admin.ModelAdmin):
-    pass
+
+    def has_delete_permission(self, request):
+        if request.user.is_superuser:
+            return False
+        return super().has_delete_permission(request)
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    pass
+
+    def has_delete_permission(self, request):
+        if request.user.is_superuser:
+            return False
+        return super().has_delete_permission(request)
 
 
 @admin.register(BetTicket)
@@ -210,6 +218,13 @@ class MarketAdmin(admin.ModelAdmin):
     list_display = ('pk','name',)
     list_display_links = ('pk','name')
     list_per_page = 20
+
+
+    def has_delete_permission(self, request):
+        if request.user.is_superuser:
+            return False
+        return super().has_delete_permission(request)
+    
 
 
 @admin.register(Cotation)
