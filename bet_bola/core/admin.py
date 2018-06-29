@@ -114,6 +114,10 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
     list_per_page = 20
 
 
+    def has_add_permission(self, request):
+        if request.user.is_superuser:
+            return False
+        return super().has_add_permission(request)
 
 
     def get_actions(self, request):
