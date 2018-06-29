@@ -357,9 +357,7 @@ class Cotation(models.Model):
             Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game)\
             .update(value=self.value, 
             original_value=self.original_value,
-            kind=self.kind,
             total=self.total,
-            is_standard=self.is_standard,
             game=self.game)
 
             
