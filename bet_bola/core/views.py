@@ -495,7 +495,8 @@ class TicketDetail(TemplateResponseMixin, View):
 				content += "<LEFT>" + cotation.game.name + "<BR>"
 				game_date = cotation.game.start_game_date.strftime('%d/%m/%Y %H:%M')
 				content += "<LEFT>" + game_date + "<BR>"
-				content += "<LEFT>"+ cotation.kind.name + "<BR>"
+				if cotation.kind:
+					content += "<LEFT>"+ cotation.kind.name + "<BR>"
 				content += "<LEFT>" + self.get_verbose_cotation(cotation.name) + " --> " + str("%.2f" % cotations_values[cotation.pk]) + "<BR>"
 
 				if cotation.winning == None:

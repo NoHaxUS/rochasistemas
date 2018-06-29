@@ -61,8 +61,9 @@ class PDF(View):
             pdf.text(4,h,c.game.name)
             h=h+14
             pdf.text(4,h, c.game.start_game_date.strftime('%d/%m/%Y %H:%M'))
-            h=h+14			
-            pdf.text(4,h,c.kind.name)
+            if c.kind:
+                h=h+14
+                pdf.text(4,h,c.kind.name)
             h=h+14
             pdf.text(4,h,"Cota:" + self.get_verbose_cotation(c.name))			
             pdf.text(190,h,str("%.2f" % cotations_values[c.pk]))
