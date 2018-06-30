@@ -442,7 +442,7 @@ def save_odds(game_id, odds, max_cotation_value):
     for market in odds_array:
 
         kind_name = MARKET_ID.get(market['id'], None)
-        print(kind_name)
+        
         if not kind_name:
             continue
         else:
