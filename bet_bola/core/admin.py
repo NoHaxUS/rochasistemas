@@ -83,29 +83,20 @@ def pay_winner_punter(modeladmin, request, queryset):
 pay_winner_punter.short_description = 'Pagar Apostador'
 
 
+def hide_ticket_action(modeladmin, request, queryset):
+
+    if request.user.is_superuser:
+        for ticket in queryset:
+            result = ticket.hide_ticket()
+            messages.success(request, result['message'])
+
+hide_ticket_action.short_description = 'Ocultar Tickets'
 
 
 def payment_status(obj):
     if obj.payment:
         return ("%s" % obj.payment.status_payment)
 payment_status.short_description = 'Status do Pagamento'
-
-
-@admin.register(Reward)
-class RewardAdmin(admin.ModelAdmin):
-
-    def has_delete_permission(self, request):
-        if request.user.is_superuser:
-            return False
-        return super().has_delete_permission(request)
-
-@admin.register(Payment)
-class PaymentAdmin(admin.ModelAdmin):
-
-    def has_delete_permission(self, request):
-        if request.user.is_superuser:
-            return False
-        return super().has_delete_permission(request)
 
 
 @admin.register(BetTicket)
@@ -118,7 +109,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
     'reward__status_reward')
     list_display =('pk','get_ticket_link','get_punter_name','value','reward','cotation_sum','bet_ticket_status', payment_status,'creation_date', 'seller_related')
     exclude = ('cotations','user','normal_user',)
-    actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket]
+    actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket, hide_ticket_action]
     list_per_page = 20
 
 
@@ -130,10 +121,9 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
 
     def get_actions(self, request):
         actions = super().get_actions(request)
-        from collections import OrderedDict
 
         if request.user.is_superuser:
-            valid_actions = ['cancel_ticket']
+            valid_actions = ['cancel_ticket', 'hide_ticket_action']
             actions_copy = actions.copy()
             for action in actions_copy:
                 if not action in valid_actions:
@@ -184,7 +174,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
-            return qs
+            return qs.filter(is_visible=True)
         if request.user.has_perm('user.be_seller'):
             return qs.filter(Q(payment__status_payment=Payment.PAYMENT_STATUS[0][1], 
             bet_ticket_status=BetTicket.BET_TICKET_STATUS[0][1]) | \
@@ -192,15 +182,44 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
             bet_ticket_status=BetTicket.BET_TICKET_STATUS[2][1], payment__who_set_payment=request.user.seller) | \
             Q(bet_ticket_status=BetTicket.BET_TICKET_STATUS[0][1], payment__status_payment=Payment.PAYMENT_STATUS[1][1], 
             payment__who_set_payment=request.user.seller ) )\
-            .exclude(reward__status_reward=Reward.REWARD_STATUS[1][1])
+            .exclude(reward__status_reward=Reward.REWARD_STATUS[1][1]).filter(is_visible=True)
 
         if request.user.has_perm('user.be_manager'):
-            return qs.filter(payment__who_set_payment__my_manager=request.user.manager)
+            return qs.filter(payment__who_set_payment__my_manager=request.user.manager, is_visible=True)
 
         if request.user.has_perm('user.be_punter'):
-            return qs.filter(user=request.user.punter)
+            return qs.filter(user=request.user.punter, is_visible=True)
         
 
+
+
+@admin.register(Reward)
+class RewardAdmin(admin.ModelAdmin):
+
+    def has_delete_permission(self, request):
+        if request.user.is_superuser:
+            return False
+        return super().has_delete_permission(request)
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+
+    def has_delete_permission(self, request):
+        if request.user.is_superuser:
+            return False
+        return super().has_delete_permission(request)
+
+
+
+
+def hide_game_action(modeladmin, request, queryset):
+
+    if request.user.is_superuser:
+        for game in queryset:
+            result = game.hide_game()
+            messages.success(request, result['message'])
+
+hide_game_action.short_description = 'Ocultar Jogos'
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
@@ -209,7 +228,46 @@ class GameAdmin(admin.ModelAdmin):
     list_display = ('pk','name',)
     list_display_links = ('pk','name',)
     autocomplete_fields = ['championship',]
+    actions = [hide_game_action,]
     list_per_page = 20
+
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+
+        if request.user.is_superuser:
+            valid_actions = ['hide_game_action',]
+            actions_copy = actions.copy()
+            for action in actions_copy:
+                if not action in valid_actions:
+                    del actions[action]
+            return actions
+
+        if request.user.has_perm('user.be_seller'):
+            return None
+        
+        if request.user.has_perm('user.be_manager'):
+            return None
+
+        if request.user.has_perm('user.be_punter'):
+            return None
+
+
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs.filter(is_visible=True)
+        if request.user.has_perm('user.be_seller'):
+            return qs
+
+        if request.user.has_perm('user.be_manager'):
+            return qs
+
+        if request.user.has_perm('user.be_punter'):
+            return qs
+        
+
 
 
 @admin.register(Market)

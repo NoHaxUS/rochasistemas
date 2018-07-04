@@ -33,7 +33,7 @@ class BetTicket(models.Model):
     payment = models.OneToOneField('Payment', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
     value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')
     bet_ticket_status = models.CharField(max_length=80, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][1],verbose_name='Status de Ticket')
-
+    is_visible = models.BooleanField(default=True)
 
     def __str__(self):
         return str(self.pk)
@@ -44,7 +44,10 @@ class BetTicket(models.Model):
         elif self.normal_user:
             return self.normal_user.first_name
 
-
+    def hide_ticket(self):
+        self.is_visible = False
+        self.save()
+        return {"message" :"Ticket "+ str(self.pk) +" Ocultado."}
 
     def get_ticket_link(self):
         from django.utils.safestring import mark_safe
@@ -256,6 +259,7 @@ class Game(models.Model):
     ht_score = models.CharField(max_length=80, null=True, blank=True, verbose_name='Placar até o meio-tempo', help_text="Placar meio-tempo Ex: 3-5 (Casa-Visita)")
     ft_score = models.CharField(max_length=80, null=True, blank=True, verbose_name='Placar no final do Jogo', help_text="Placar final Ex: 3-5 (Casa-Visita)")
     odds_processed = models.BooleanField(default=False, verbose_name='Foi processado?')
+    is_visible = models.BooleanField(default=True)
 
     objects = GamesManager()	
 
@@ -265,7 +269,13 @@ class Game(models.Model):
 
 
     def __str__(self):
-        return self.name	
+        return self.name
+
+    def hide_game(self):
+        self.is_visible = False
+        self.save()
+        return {"message" :"Jogo "+ str(self.pk) +" Ocultado."}
+
 
 
 class Championship(models.Model):
