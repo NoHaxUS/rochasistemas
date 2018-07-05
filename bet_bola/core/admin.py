@@ -52,6 +52,18 @@ def cancel_ticket(modeladmin, request, queryset):
         else:
             messages.warning(request, "Você não tem permissão pra cancelar Tickets.")
 
+    if request.user.has_perm('user.be_seller') and not request.user.is_superuser:
+        if request.user.seller.can_cancel_ticket:
+            for ticket in queryset:
+                ticket_cancelation = ticket.cancel_ticket(request.user)
+                if ticket_cancelation['success']:
+                    messages.success(request, ticket_cancelation['message'])
+                else:
+                    messages.warning(request, ticket_cancelation['message'])
+                    break
+        else:
+            messages.warning(request, "Você não tem permissão pra cancelar Tickets.")
+
 cancel_ticket.short_description = 'Cancelar Ticket'
 
 def validate_selected_tickets(modeladmin, request, queryset):
@@ -131,7 +143,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
             return actions
 
         if request.user.has_perm('user.be_seller'):
-            valid_actions = ['validate_selected_tickets', 'pay_winner_punter']
+            valid_actions = ['validate_selected_tickets', 'pay_winner_punter', 'cancel_ticket']
             actions_copy = actions.copy()
             for action in actions_copy:
                 if not action in valid_actions:

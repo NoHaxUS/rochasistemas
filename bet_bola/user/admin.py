@@ -58,7 +58,7 @@ pay_seller.short_description = 'Pagar Vendedores'
 @admin.register(Seller)
 class SellerAdmin(AdminViewPermissionModelAdmin):
     search_fields = ['pk','first_name','username','cpf']
-    fields = ('username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'commission', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active')
+    fields = ('username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'commission', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active', 'can_cancel_ticket', 'limit_time_to_cancel')
     list_editable = ('credit_limit',)
     list_display = ('pk','username','full_name','actual_revenue','get_commission','net_value','out_money','credit_limit','can_sell_unlimited')
     list_display_links = ('pk','username',)

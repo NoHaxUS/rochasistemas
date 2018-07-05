@@ -65,7 +65,8 @@ class Seller(CustomUser):
     commission = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Comissão')
     credit_limit = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Créditos')
     my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True, blank=True)
-
+    can_cancel_ticket = models.BooleanField(default=False, verbose_name='Cancela Ticket ?')
+    limit_time_to_cancel = models.FloatField(default=5, verbose_name="Tempo Limite de Cancelamento")
 
     def reset_revenue(self, who_reseted_revenue):
         from core.models import Payment

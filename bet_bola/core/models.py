@@ -11,6 +11,8 @@ from user.models import NormalUser
 from django.conf import settings
 import utils.timezone as tzlocal
 from .cotations_restrictions import is_excluded_cotation
+from django.utils import timezone
+import utils.timezone as tzlocal
 
 
 
@@ -69,7 +71,6 @@ class BetTicket(models.Model):
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
         
-        
         who_cancelled  = str(user.pk) + ' - ' + user.username
         if not self.bet_ticket_status == 'Aguardando Resultados':
             return {'success':False,
@@ -78,6 +79,12 @@ class BetTicket(models.Model):
         if not self.payment.status_payment == 'Pago':
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Pago para ser cancelado.'}
+
+        if user.has_perm('user.be_seller') and not user.is_superuser:
+            if self.payment.payment_date + timezone.timedelta(minutes=int(user.seller.limit_time_to_cancel)) < tzlocal.now():
+                return {'success':False,
+                    'message':' Tempo limite para cancelar o Ticket '+ str(self.pk) +' excedido.'}
+
         
         seller = self.payment.who_set_payment
         seller.credit_limit += self.value

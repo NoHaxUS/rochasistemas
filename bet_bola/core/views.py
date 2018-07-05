@@ -126,9 +126,7 @@ class AllGames(TemplateResponseMixin, View):
 			total_games += len(championship_games[championship])
 
 		links = (total_games // per_page) + 1
-
-		print(list(range(links)))
-					
+			
 		countries = no_repetition_list(countries)
 		
 		context = {'dict_championship_games': page_games,
