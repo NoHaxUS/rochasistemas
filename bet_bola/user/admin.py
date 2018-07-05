@@ -5,6 +5,7 @@ from .models import Punter, Seller, Manager
 from utils.models import GeneralConfigurations
 from django.contrib import messages
 from admin_view_permission.admin import AdminViewPermissionModelAdmin
+from core.decorators import confirm_action
 
 
 admin.site.register(GeneralConfigurations)
@@ -44,7 +45,7 @@ class PunterAdmin(admin.ModelAdmin):
     
 
 
-
+@confirm_action("Pagar Vendedor(es)")
 def pay_seller(modeladmin, request, queryset):
     who_reseted_revenue = str(request.user.pk) + ' - ' + request.user.username
 
@@ -115,7 +116,7 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
             super().save_model(request, obj, form, change)
 
 
-
+@confirm_action("Pagar Gerente(s)")
 def pay_manager(modeladmin, request, queryset):
     who_reseted_revenue = str(request.user.pk) + ' - ' + request.user.username
 

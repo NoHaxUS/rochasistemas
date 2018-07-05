@@ -11,6 +11,7 @@ import utils.timezone as tzlocal
 from history.models import PunterPayedHistory
 from django.contrib import messages
 from admin_view_permission.admin import AdminViewPermissionModelAdmin
+from .decorators import confirm_action
 
 
 admin.site.unregister(Group)
@@ -29,7 +30,7 @@ class GamesWithNoFinalResults(admin.SimpleListFilter):
         if self.value() == 'list_all':
             return queryset.filter(status_game='FT', ft_score__isnull=True)
 
-
+@confirm_action("Cancelar Ticket(s)")
 def cancel_ticket(modeladmin, request, queryset):
     if request.user.is_superuser:
         for ticket in queryset:
@@ -66,6 +67,8 @@ def cancel_ticket(modeladmin, request, queryset):
 
 cancel_ticket.short_description = 'Cancelar Ticket'
 
+
+@confirm_action("Validar Ticket(s)")
 def validate_selected_tickets(modeladmin, request, queryset):
     
     if request.user.has_perm('user.be_seller'):
@@ -81,7 +84,7 @@ def validate_selected_tickets(modeladmin, request, queryset):
 
 validate_selected_tickets.short_description = 'Validar Tickets'
 
-
+@confirm_action("Pagar Apostador(es)")
 def pay_winner_punter(modeladmin, request, queryset):
 
     if request.user.has_perm('user.be_seller'):
@@ -95,6 +98,7 @@ def pay_winner_punter(modeladmin, request, queryset):
 pay_winner_punter.short_description = 'Pagar Apostador'
 
 
+@confirm_action("Ocultar Ticket(s)")
 def hide_ticket_action(modeladmin, request, queryset):
 
     if request.user.is_superuser:
@@ -223,7 +227,7 @@ class PaymentAdmin(admin.ModelAdmin):
 
 
 
-
+@confirm_action("Ocultar Jogo(s)")
 def hide_game_action(modeladmin, request, queryset):
 
     if request.user.is_superuser:
