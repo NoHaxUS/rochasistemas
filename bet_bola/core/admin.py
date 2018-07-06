@@ -175,7 +175,9 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
             return None
 
         if request.user.has_perm('user.be_seller'):
-            return ('bet_ticket_status','payment__status_payment',)
+            list_filter = list(super().get_list_filter(request))
+            list_filter.remove('payment__who_set_payment_id')
+            return list_filter
 
         if request.user.has_perm('user.be_manager'):
             return super().get_list_filter(request)
@@ -184,21 +186,19 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
 
     def get_readonly_fields(self, request, obj):
         if request.user.has_perm('user.be_seller') and not request.user.is_superuser:
-            return ('value','reward','payment','creation_date','cotation_value_total', 'seller', 'bet_ticket_status')
+            return ('value','reward','payment','creation_date','cotation_value_total', 'seller', 'bet_ticket_status','is_visible')
         return super().get_readonly_fields(request, obj)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs.filter(is_visible=True)
+
         if request.user.has_perm('user.be_seller'):
-            return qs.filter(Q(payment__status_payment=Payment.PAYMENT_STATUS[0][1], 
-            bet_ticket_status=BetTicket.BET_TICKET_STATUS[0][1]) | \
-            Q(payment__status_payment=Payment.PAYMENT_STATUS[1][1],
-            bet_ticket_status=BetTicket.BET_TICKET_STATUS[2][1], payment__who_set_payment=request.user.seller) | \
-            Q(bet_ticket_status=BetTicket.BET_TICKET_STATUS[0][1], payment__status_payment=Payment.PAYMENT_STATUS[1][1], 
-            payment__who_set_payment=request.user.seller ) )\
-            .exclude(reward__status_reward=Reward.REWARD_STATUS[1][1]).filter(is_visible=True)
+            return qs.filter(Q(payment__status_payment=Payment.PAYMENT_STATUS[0][1],
+            bet_ticket_status=BetTicket.BET_TICKET_STATUS[0][1]) |
+            Q(payment__who_set_payment=request.user.seller,
+            is_visible=True))
 
         if request.user.has_perm('user.be_manager'):
             return qs.filter(payment__who_set_payment__my_manager=request.user.manager, is_visible=True)

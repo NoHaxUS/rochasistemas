@@ -35,7 +35,7 @@ class BetTicket(models.Model):
     payment = models.OneToOneField('Payment', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
     value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')
     bet_ticket_status = models.CharField(max_length=80, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][1],verbose_name='Status de Ticket')
-    is_visible = models.BooleanField(default=True)
+    is_visible = models.BooleanField(default=True, verbose_name='Visível?')
 
     def __str__(self):
         return str(self.pk)
@@ -266,7 +266,7 @@ class Game(models.Model):
     ht_score = models.CharField(max_length=80, null=True, blank=True, verbose_name='Placar até o meio-tempo', help_text="Placar meio-tempo Ex: 3-5 (Casa-Visita)")
     ft_score = models.CharField(max_length=80, null=True, blank=True, verbose_name='Placar no final do Jogo', help_text="Placar final Ex: 3-5 (Casa-Visita)")
     odds_processed = models.BooleanField(default=False, verbose_name='Foi processado?')
-    is_visible = models.BooleanField(default=True)
+    is_visible = models.BooleanField(default=True, verbose_name='Visível?')
 
     objects = GamesManager()	
 
