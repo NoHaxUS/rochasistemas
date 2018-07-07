@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import F, Q, When, Case
 from user.models import Seller, Manager
+from core.models import Cotation
 
 
 class GeneralConfigurations(models.Model):
@@ -134,12 +135,30 @@ class MarketReduction(models.Model):
         (975930, "Placar Impar/Par"),
     )
 
-    market_to_reduct = models.CharField(max_length=10, choices=MARKET_LIST, verbose_name='Tipo de Aposta', unique=True)
-    reduction_percentual = models.FloatField(default=100, verbose_name='Percentual de Redução')
+    market_to_reduct = models.IntegerField(choices=MARKET_LIST, verbose_name='Tipo de Aposta', unique=True)
+    reduction_percentual = models.IntegerField(default=100, verbose_name='Percentual de Redução')
 
+
+    def apply_reductions(self):
+        
+        cotations_to_reduct =  Cotation.objects.filter(kind__id=self.market_to_reduct)
+
+        cotations_to_reduct.update(value=F('original_value') * (self.reduction_percentual / 100) )
+        cotations_to_reduct.update(value=Case(When(value__lt=1,then=1.05),default=F('value')))
+        
+        if GeneralConfigurations.objects.filter(pk=1):
+            max_cotation_value = GeneralConfigurations.objects.get(pk=1).max_cotation_value
+        else:
+            max_cotation_value = 200
+        
+        cotations_to_reduct.filter(value__gt=max_cotation_value).update(value=max_cotation_value)
+
+    def save(self, *args, **kwargs):
+        self.apply_reductions()
+        super().save(args, kwargs)
 
     def __str__(self):
-        return 'Reduçao'
+        return str(self.market_to_reduct)
 
 
     class Meta:

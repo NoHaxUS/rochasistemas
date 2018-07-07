@@ -24,8 +24,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-DB_SWAP_LOCAL = False
+DEBUG = True
+DB_SWAP_LOCAL = True
 
 ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
@@ -169,10 +169,9 @@ LOCALE_PATHS = (
 
 LANGUAGES = (
     ('en', _('Inglês')),
-    ('pt-br', _('Português')),
 )
 
-LANGUAGE_CODE = 'pt-br'
+LANGUAGE_CODE = 'en'
 
 #Decimal
 DECIMAL_SEPARATOR = '.'

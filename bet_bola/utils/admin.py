@@ -9,4 +9,4 @@ class OverviewAdmin(admin.ModelAdmin):
  
 @admin.register(MarketReduction)
 class MarketReductionsAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('market_to_reduct','reduction_percentual')
