@@ -105,3 +105,45 @@ class Overview(models.Model):
         verbose_name_plural = "Visão Geral"
 
 
+
+class MarketReduction(models.Model):
+    MARKET_LIST = (
+        (1, "Vencedor do Encontro"),
+        (10, "Casa/Visitante"),
+        (37, "Vencedor do Primeiro Tempo"),
+        (80, "Vencedor do Segundo Tempo"), 
+        (976334, "Resultado/Total de Gol(s)"),
+        (975916, "Resultado Exato no Primeiro Tempo"),
+        (975909, "Resultado Exato do Jogo"),
+        (976241, "Número Exato de Gol(s)"),
+        (59, "Os Dois Times Marcam"),
+        (976360, "Time Visitante Marca"),
+        (976348, "Time da Casa Marca"),
+        (976096, "Time da Casa NÃO Tomará Gol(s)"),
+        (8594683, "Time Visitante NÃO Tomará Gol(s)"),
+        (976204, "Total de Gols do Visitante"),
+        (976198, "Total de Gols da Casa"),
+        (12, "Total de Gol(s) no Encontro, Acima/Abaixo"),
+        (47, "Total de Gol(s) no Segundo Tempo, Acima/Abaixo"),
+        (38, "Total de Gols do Primeiro Tempo, Acima/Abaixo"),
+        (976144, "Etapa com Mais Gol(s)"),
+        (976316, "Resultado/2 Times Marcam"),
+        (976193, "Vencedor nas Duas Etapas"),
+        (63, "Dupla Chance"),
+        (976236, "Vencer e não tomar Gol(s)"),
+        (975930, "Placar Impar/Par"),
+    )
+
+    market_to_reduct = models.CharField(max_length=10, choices=MARKET_LIST, verbose_name='Tipo de Aposta', unique=True)
+    reduction_percentual = models.FloatField(default=100, verbose_name='Percentual de Redução')
+
+
+    def __str__(self):
+        return 'Reduçao'
+
+
+    class Meta:
+        verbose_name = 'Redução'
+        verbose_name_plural = 'Reduções'
+
+
