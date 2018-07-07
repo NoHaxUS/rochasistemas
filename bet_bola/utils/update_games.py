@@ -10,7 +10,13 @@ from decimal import Decimal
 from .processing import processing_cotations_v2, process_tickets
 
 from .choices import MARKET_ID, MARKET_NAME_SMALL_TEAMS, INVALID_ALL_COTES_CHAMPIONSHIPS, COUNTRY_TRANSLATE
-from .aux_functions import get_country_translated, check_request_status, renaming_cotations, get_bet365_from_bookmakers, can_save_this_market
+from .aux_functions import (get_country_translated, 
+    check_request_status, 
+    renaming_cotations, 
+    get_bet365_from_bookmakers, 
+    can_save_this_market,
+    set_cotations_reductions)
+
 
 
 TOKEN = 'DLHVB3IPJuKN8dxfV5ju0ajHqxMl4zx91u5zxOwLS8rHd5w6SjJeLEOaHpR5'
@@ -70,6 +76,7 @@ def consuming_game_cotation_api():
     
     processing_cotations_v2()
     process_tickets()
+    set_cotations_reductions()
     
 
 
@@ -142,7 +149,6 @@ def process_json_games_cotations(json_response):
                     championship=Championship.objects.get(pk=game["league_id"])
                 )
             save_odds(game['id'], game['odds'], max_cotation_value)
-        
 
 
 
@@ -171,16 +177,12 @@ def save_odds(game_id, odds, max_cotation_value):
                 bookmaker = get_bet365_from_bookmakers(bookmakers)
                 cotations = bookmaker['odds']['data']
 
-                if GeneralConfigurations.objects.filter(pk=1):
-                    percentual_reduction = GeneralConfigurations.objects.get(pk=1).percentual_reduction
-                else:
-                    percentual_reduction = 100
-
                 for cotation in cotations:
 
                     cotation_value = max_cotation_value if Decimal(cotation['value']) > max_cotation_value else Decimal(cotation['value'])
                     cotation_name_renamed = renaming_cotations(cotation['label']).strip()
                     total_or_none = None if cotation['total'] == None else cotation['total'].strip()
+                    
                     if total_or_none:
                         cotation_name = cotation_name_renamed +" "+ total_or_none
                     else:
@@ -196,14 +198,10 @@ def save_odds(game_id, odds, max_cotation_value):
                         if len(cotation_total.split(',')) > 1:
                             continue
                     
-                    cotation_value_reduced = Decimal(cotation_value) * Decimal((percentual_reduction / 100))
-                    if cotation_value_reduced <= 1:
-                        cotation_value_reduced = 1.01
-
 
                     Cotation(
                         name=cotation_name,
-                        value=cotation_value_reduced,
+                        value=cotation_value,
                         original_value=cotation_value,
                         game=game_instance,
                         is_standard=is_standard,
@@ -213,4 +211,5 @@ def save_odds(game_id, odds, max_cotation_value):
                     ).save()
                     
                 processed_markets.append(kind_name)
+
 

@@ -1,6 +1,7 @@
 from .choices import COUNTRY_TRANSLATE, MARKET_ID, MARKET_NAME_SMALL_TEAMS, INVALID_ALL_COTES_CHAMPIONSHIPS
 import urllib3
 import socket
+from utils.models import GeneralConfigurations, MarketReduction
 
 def allowed_gai_family():
     family = socket.AF_INET
@@ -60,3 +61,15 @@ def can_save_this_market(kind_name, championship_id, processed_markets):
         elif kind_name not in processed_markets:
             return True
     return False
+
+
+def set_cotations_reductions():
+    if GeneralConfigurations.objects.filter(pk=1).exists():
+        print("Processando Redução de Cotas Geral")
+        GeneralConfigurations.objects.get(pk=1).apply_reductions()
+    
+    market_reductions = MarketReduction.objects.all()
+    for market_reduction in market_reductions:
+        print("Processando Redução: " + str(market_reduction.market_to_reduct))
+        market_reduction.apply_reductions() 
+        

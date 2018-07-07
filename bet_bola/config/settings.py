@@ -101,6 +101,7 @@ if DB_SWAP_LOCAL:
             'PASSWORD': 'postgres',
             'HOST': 'localhost',
             'PORT': '5432',
+            'client_encoding':'UTF8',
         }
     }
 else:
@@ -112,6 +113,7 @@ else:
             'PASSWORD': 'DBPASSWORD',
             'HOST': 'localhost',
             'PORT': '5432',
+            'client_encoding':'UTF8',
         }
     }
 

@@ -15,11 +15,8 @@ class GeneralConfigurations(models.Model):
     def __str__(self):
         return "Configuração Atual"
 
-    def save(self, *args, **kwargs):
+    def apply_reductions(self):
         from core.models import Game
-        
-        self.pk = 1
-
         able_games = Game.objects.able_games()
 
         reduction = self.percentual_reduction / 100
@@ -29,7 +26,12 @@ class GeneralConfigurations(models.Model):
             game.cotations.update(value=Case(When(value__lt=1,then=1.01),default=F('value')))
             game.cotations.filter(value__gt=self.max_cotation_value).update(value=self.max_cotation_value)
 
-        super().save()
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        self.apply_reductions()
+
+        super().save(args, kwargs)
 
 
     class Meta:
@@ -140,18 +142,23 @@ class MarketReduction(models.Model):
 
 
     def apply_reductions(self):
-        
-        cotations_to_reduct =  Cotation.objects.filter(kind__id=self.market_to_reduct)
+        from core.models import Game
+        able_games = Game.objects.able_games()
 
-        cotations_to_reduct.update(value=F('original_value') * (self.reduction_percentual / 100) )
-        cotations_to_reduct.update(value=Case(When(value__lt=1,then=1.05),default=F('value')))
+        reduction = self.reduction_percentual / 100
         
-        if GeneralConfigurations.objects.filter(pk=1):
-            max_cotation_value = GeneralConfigurations.objects.get(pk=1).max_cotation_value
-        else:
-            max_cotation_value = 200
-        
-        cotations_to_reduct.filter(value__gt=max_cotation_value).update(value=max_cotation_value)
+        for game in able_games:
+
+            cotations_to_reduct =  game.cotations.filter(kind__id=self.market_to_reduct)
+            cotations_to_reduct.update(value=F('original_value') * reduction )
+            cotations_to_reduct.update(value=Case(When(value__lt=1,then=1.05),default=F('value')))
+            
+            if GeneralConfigurations.objects.filter(pk=1):
+                max_cotation_value = GeneralConfigurations.objects.get(pk=1).max_cotation_value
+            else:
+                max_cotation_value = 200
+            
+            cotations_to_reduct.filter(value__gt=max_cotation_value).update(value=max_cotation_value)
 
     def save(self, *args, **kwargs):
         self.apply_reductions()
