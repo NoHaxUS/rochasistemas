@@ -171,9 +171,10 @@ LOCALE_PATHS = (
 
 LANGUAGES = (
     ('en', _('Inglês')),
+    ('pt-br', _('Português'))
 )
 
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = 'pt-br'
 
 #Decimal
 DECIMAL_SEPARATOR = '.'
