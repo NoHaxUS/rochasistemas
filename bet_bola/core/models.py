@@ -158,6 +158,10 @@ class BetTicket(models.Model):
     def pay_winner_punter(self, user):
         from history.models import PunterPayedHistory
         
+        if self.reward.status_reward == 'O apostador foi pago':
+            return {'success':False,
+                'message':'O Ticket '+ str(self.pk)+ ' já foi recompensado.'}
+
         if not self.payment or not self.reward:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
@@ -203,9 +207,13 @@ class BetTicket(models.Model):
         if not self.check_if_waiting_results():
             if self.cotations.filter(winning=False).count() > 0:
                 self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[1][1]
+                self.reward.status_reward = Reward.REWARD_STATUS[2][1]
+                self.reward.save()
                 self.save()
             else:
                 self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[2][1]
+                self.reward.status_reward = Reward.REWARD_STATUS[3][1]
+                self.reward.save()
                 self.save()
             
 
@@ -318,7 +326,7 @@ class Reward(models.Model):
         ('Aguardando Resultados', 'Aguardando Resultados'),
         ('O apostador foi pago', 'O apostador foi pago'),
         ('Esse ticket não venceu', 'Esse ticket não venceu'),
-        ('Venceu, Aguardando pagamento', 'Venceu, Aguardando pagamento'),
+        ('Venceu, Pagar Apostador', 'Venceu, Pagar Apostador'),
     )
 
     who_rewarded = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL)
