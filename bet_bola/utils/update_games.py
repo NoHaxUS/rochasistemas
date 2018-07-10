@@ -206,7 +206,6 @@ def save_odds(game_id, odds, max_cotation_value):
                         game=game_instance,
                         is_standard=is_standard,
                         total=cotation_total,
-                        winning=cotation['winning'],
                         kind=market_instance
                     ).save()
                     
