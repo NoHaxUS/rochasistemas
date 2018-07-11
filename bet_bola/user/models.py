@@ -181,7 +181,7 @@ class Manager(CustomUser):
     commission = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Comissão')
     credit_limit_to_add = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name="Crédito")
     can_cancel_ticket = models.BooleanField(default=True, verbose_name='Cancela Ticket ?')
-
+    can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
 
     def reset_revenue(self, who_reseted_revenue):
         from core.models import Payment
@@ -258,37 +258,51 @@ class Manager(CustomUser):
         seller = Seller.objects.get(pk=obj.pk)
         manager_before_balance = self.credit_limit_to_add
 
-        if is_new:
-            seller_before_balance = 0
-            diff = obj.credit_limit
-            seller_after_balance = obj.credit_limit
+        if not self.can_sell_unlimited:
+            if is_new:
+                seller_before_balance = 0
+                diff = obj.credit_limit
+                seller_after_balance = obj.credit_limit
+            else:
+                seller_before_balance = seller.credit_limit
+                diff = obj.credit_limit - seller.credit_limit
+                seller_after_balance = seller.credit_limit + diff
+
+            manager_balance_after = self.credit_limit_to_add - diff
+
+
+            if manager_balance_after < 0:
+                if is_new:
+                    return {'success': False,
+                    'message': 'Você não tem saldo suficiente para adicionar crédito, porém o vendedor foi criado.'}
+                else:
+                    return {'success': False,
+                    'message': 'Você não tem saldo suficiente.'}
+            
+            elif obj.credit_limit < 0:
+                return {'success': False,
+                'message': 'O Vendedor não pode ter saldo negativo.'}
+            else:
+                self.credit_limit_to_add -= diff
+                self.save()
+
+                if is_new:
+                    seller.credit_limit = obj.credit_limit
+                    seller.save()
         else:
+            if obj.credit_limit < 0:
+                return {'success': False,
+                    'message': 'O Vendedor não pode ter saldo negativo.'}
+
+            manager_balance_after = 0
+
             seller_before_balance = seller.credit_limit
             diff = obj.credit_limit - seller.credit_limit
             seller_after_balance = seller.credit_limit + diff
 
-        manager_balance_after = self.credit_limit_to_add - diff
-
-
-        if manager_balance_after < 0:
-            if is_new:
-                return {'success': False,
-                'message': 'Você não tem saldo suficiente para adicionar crédito, porém o vendedor foi criado.'}
-            else:
-                return {'success': False,
-                'message': 'Você não tem saldo suficiente'}
-        
-        elif obj.credit_limit < 0:
-            return {'success': False,
-            'message': 'O Vendedor não pode ter saldo negativo.'}
-        else:
-            self.credit_limit_to_add -= diff
             self.save()
 
-            if is_new:
-                seller.credit_limit = obj.credit_limit
-                seller.save()
-
+        if not self.can_sell_unlimited:
             if not manager_before_balance == manager_balance_after:
                 ManagerTransactions.objects.create(manager=self,
                 seller=seller,
@@ -297,8 +311,16 @@ class Manager(CustomUser):
                 manager_after_balance=manager_balance_after,
                 seller_before_balance=seller_before_balance,
                 seller_after_balance=seller_after_balance)
+        else:
+            ManagerTransactions.objects.create(manager=self,
+            seller=seller,
+            transferred_amount=diff,
+            manager_before_balance=manager_before_balance,
+            manager_after_balance=manager_balance_after,
+            seller_before_balance=seller_before_balance,
+            seller_after_balance=seller_after_balance)
 
-            return {'success': True,
+        return {'success': True,
             'message': 'Transação realizada.'}
         
 

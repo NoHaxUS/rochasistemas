@@ -130,7 +130,7 @@ pay_manager.short_description = 'Pagar Gerentes'
 @admin.register(Manager)
 class ManagerAdmin(AdminViewPermissionModelAdmin):
     search_fields = ['pk','first_name','username','cpf']
-    fields = ('username','password','first_name','last_name','email','cellphone','cpf','address','commission','credit_limit_to_add','is_active','can_cancel_ticket')
+    fields = ('username','password','first_name','last_name','email','cellphone','cpf','address','commission','credit_limit_to_add','is_active','can_cancel_ticket','can_sell_unlimited')
     list_display = ('pk','username','first_name','email','cellphone','actual_revenue','get_commission','net_value','out_money','real_net_value','credit_limit_to_add')
     list_editable = ('credit_limit_to_add',)
     list_display_links = ('pk','username',)
