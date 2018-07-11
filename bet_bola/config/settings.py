@@ -24,10 +24,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-DB_SWAP_LOCAL = False
+DEBUG = True
+DB_SWAP_LOCAL = True
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost']
+ALLOWED_HOSTS = ['127.0.0.1',
+                'localhost']
 
 APP_VERBOSE_NAME = 'SITENAME'
 
@@ -121,25 +122,27 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend', # this is default
 )
 
-#Logging 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'debug.log',
+#Logging
+LOG_ALL_ERRORS_DEFAULT = False
+if LOG_ALL_ERRORS_DEFAULT:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'file': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': 'debug.log',
+            },
         },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
+        'loggers': {
+            'django': {
+                'handlers': ['file'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
         },
-    },
-}
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
