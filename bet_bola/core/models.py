@@ -13,6 +13,7 @@ import utils.timezone as tzlocal
 from .cotations_restrictions import is_excluded_cotation
 from django.utils import timezone
 import utils.timezone as tzlocal
+from utils.models import GeneralConfigurations
 
 
 
@@ -215,6 +216,14 @@ class BetTicket(models.Model):
                 self.reward.status_reward = Reward.REWARD_STATUS[3][1]
                 self.reward.save()
                 self.save()
+
+                if GeneralConfigurations.objects.filter(pk=1):
+                    auto_pay_punter = GeneralConfigurations.objects.get(pk=1).auto_pay_punter
+                else:
+                    auto_pay_punter = False
+                
+                if auto_pay_punter and self.payment.who_set_payment:
+                    self.pay_winner_punter(self.payment.who_set_payment)
             
 
     def check_if_waiting_results(self):
