@@ -61,7 +61,7 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
     search_fields = ['pk','first_name','username','cpf']
     fields = ('username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'commission', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active', 'can_cancel_ticket', 'limit_time_to_cancel')
     list_editable = ('credit_limit',)
-    list_display = ('pk','username','full_name','actual_revenue','get_commission','net_value','out_money','credit_limit','can_sell_unlimited')
+    list_display = ('pk','username','full_name','actual_revenue','get_commission','net_value','out_money','real_net_value','credit_limit')
     list_display_links = ('pk','username',)
     autocomplete_fields = ['my_manager',]
     actions = [pay_seller]
@@ -131,7 +131,7 @@ pay_manager.short_description = 'Pagar Gerentes'
 class ManagerAdmin(AdminViewPermissionModelAdmin):
     search_fields = ['pk','first_name','username','cpf']
     fields = ('username','password','first_name','last_name','email','cellphone','cpf','address','commission','credit_limit_to_add','is_active','can_cancel_ticket')
-    list_display = ('pk','username','first_name','email','cellphone','actual_revenue','get_commission','net_value','out_money','credit_limit_to_add')
+    list_display = ('pk','username','first_name','email','cellphone','actual_revenue','get_commission','net_value','out_money','real_net_value','credit_limit_to_add')
     list_editable = ('credit_limit_to_add',)
     list_display_links = ('pk','username',)
     actions = [pay_manager]

@@ -98,6 +98,10 @@ class Seller(CustomUser):
         return round(total_net_value,2)
 
     net_value.short_description = 'A Receber'
+
+    def real_net_value(self):
+        return self.actual_revenue() -  (self.net_value() + self.out_money())
+    real_net_value.short_description = 'Líquido'
     
 
     def get_commission(self):
@@ -226,6 +230,12 @@ class Manager(CustomUser):
         
     net_value.short_description = 'A Receber'
 
+
+    def real_net_value(self):
+        return self.actual_revenue() -  (self.net_value() + self.out_money())
+    
+    real_net_value.short_description = 'Líquido'
+    
 
     def actual_revenue(self):
         from core.models import Seller,BetTicket
