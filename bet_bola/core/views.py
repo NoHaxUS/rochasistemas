@@ -311,7 +311,7 @@ class CreateTicketView(View):
 		client_name = request.POST.get('client_name', None)
 		cellphone = request.POST.get('telefone', None)
 		
-		if not request.user.is_authenticated or request.user.has_perm('be_seller'):
+		if not request.user.is_authenticated or request.user.has_perm('user.be_seller'):
 			if not client_name or len(client_name) < 4:
 				data['success'] =  False
 				data['message'] =  "Digite o nome do cliente (4 dígitos ou mais)."
@@ -507,7 +507,9 @@ class TicketDetail(TemplateResponseMixin, View):
 			content += "<CENTER> Prazo para Resgate do Prêmio: 48 horas."
 			content += "#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;"
 			
-			context = {'ticket': ticket, 'print': content,'cotations_values':cotations_values, 'show_ticket': True}
+			context = {'ticket': ticket, 
+			'print': content,'cotations_values':cotations_values, 
+			'show_ticket': True, 'base_url': request.get_host()}
 		else:
 			context = {'show_ticket': False}
 

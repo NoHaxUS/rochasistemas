@@ -34,13 +34,19 @@
     {% if show_ticket %}
     <div class="row">
         <div id="ticket-details-actions">
-            <div class="col s6">
+            <div class="col s4">
                 <a class="btn waves-effect waves-light blue-button" type="button" 
                     href="/utils/pdf/{{ticket.pk}}/" target="blank">Abrir PDF
                     <i class="material-icons right">picture_as_pdf</i>
                 </a>
             </div>
-            <div class="col s6">
+            <div class="col s4">
+                <a class="btn waves-effect waves-light green" type="button" 
+                    href="whatsapp://send?text=Ver PDF -> http://{{base_url}}/utils/pdf/{{ticket.pk}}/" target="blank">Enviar via Whats
+                    <i class="material-icons right">picture_as_pdf</i>
+                </a>
+            </div>
+            <div class="col s4">
                 <a id="print_ticket"
                 class="btn waves-effect waves-light yellow black-text"
                 command="{{print}}">Imprimir
