@@ -27,8 +27,7 @@ SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 DEBUG = False
 DB_SWAP_LOCAL = False
 
-ALLOWED_HOSTS = ['127.0.0.1',
-                'localhost']
+ALLOWED_HOSTS = ['*']
 
 APP_VERBOSE_NAME = 'SITENAME'
 
