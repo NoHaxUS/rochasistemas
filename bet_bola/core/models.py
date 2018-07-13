@@ -391,11 +391,7 @@ class Cotation(models.Model):
             Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game)\
             .update(value=self.value, 
             original_value=self.original_value,
-            winning=self.winning,
-            kind=self.kind,
-            is_standard=self.is_standard,
-            total=self.total,
-            game=self.game)
+            total=self.total)
 
             
     class Meta:
