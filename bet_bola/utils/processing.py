@@ -17,7 +17,10 @@ def processing_cotations_v2():
 
     games_to_process = Game.objects.annotate(cotations_count=Count('cotations')).filter(
         ft_score__isnull=False, cotations_count__gt=0, 
-        odds_processed=False).exclude(ft_score='').exclude(ft_score='-').exclude(ft_score='0').exclude(ht_score='0')
+        odds_processed=False).exclude(ft_score='')\
+        .exclude(ft_score='-')\
+        .exclude(ft_score='0')\
+        .exclude(ht_score='0')
         
     print(games_to_process.count(), '\n')
 
@@ -167,8 +170,8 @@ def vencedor_nas_duas_etapas(game, all_cotations,local_team_score,visitor_team_s
     
     if cotations.count() > 0:
 
-        casa_placar_1, visitante_placar_1 = (local_team_score,visitor_team_score)
-        casa_placar_2, visitante_placar_2 = game.ht_score.split('-')
+        casa_placar_1, visitante_placar_1 = (local_team_score, visitor_team_score)
+        casa_placar_2, visitante_placar_2 = game.ft_score.split('-')
         result_1_etapa = int(casa_placar_1) - int(visitante_placar_1)
         result_2_etapa = int(casa_placar_2) - int(visitante_placar_2)
         cotations.update(winning=False)
@@ -272,7 +275,7 @@ def resultado_exato_primeiro_tempo(game, all_cotations):
 
     if cotations.count() > 0:
         cotations.update(winning=False)
-        etapa_1_resultado = game.ht_score.replace('-',':')
+        etapa_1_resultado = game.ht_score.replace('-',':').strip()
         winners = cotations.filter(name=etapa_1_resultado)
         winners.update(winning=True)
 
