@@ -384,7 +384,7 @@ class CreateTicketView(View):
 			if Decimal(ticket_reward_value) > max_reward_to_pay_per_value:
 				data['success'] =  False
 				data['has_to_accept'] = True
-				data['message'] =  "O Valor máximo pago pela banca para o valor apostado é: R$" + str(max_reward_to_pay_per_value) + " seu prêmio será reajustado para esse valor."
+				data['message'] =  "O valor máximo pago pela banca para o valor apostado é: R$" + str(max_reward_to_pay_per_value) + ". Seu prêmio será reajustado para esse valor."
 				return UnicodeJsonResponse(data)
 
 		if len(game_cotations) < min_number_of_choices_per_bet:
