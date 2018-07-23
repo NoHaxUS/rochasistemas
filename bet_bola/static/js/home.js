@@ -226,7 +226,7 @@ $(document).ready(function () {
 
         }, function(){
             alertify.notify('Cancelado');
-        });
+        }).set('movable', false);
     });
 
     $('.btn-bet-submit').on('click', function(e){
@@ -289,18 +289,18 @@ $(document).ready(function () {
             function(data, status, rq){
                 
                 if(data.success){
-                    alertify.alert("Sucesso", data.message);
+                    alertify.alert("Sucesso", data.message).set('movable', false);
                 }else{
                     if(data.clear_cookies){
                         Cookies.set('ticket_cookie', {});
                         window.location = '/'
                     }                     
-                    alertify.alert("Erro", data.message);                     
+                    alertify.alert("Erro", data.message).set('movable', false);                     
                 }
             }, 'json');
         },function(){
             alertify.error('Cancelado');
-        }).set('labels',{ok:'OK',cancel:'Cancelar'});
+        }).set('labels', {ok:'OK',cancel:'Cancelar'}).set('movable', false);
     }
 
 
@@ -401,7 +401,7 @@ $(document).ready(function () {
         
         var ticket_num = $('.check-ticket-input').val();
         if (ticket_num == '') {
-            alertify.alert('Erro', 'Você deve informar o número do ticket.');
+            alertify.alert('Erro', 'Você deve informar o número do ticket.').set('movable', false);
         }else{
             var Url = '/ticket/' + ticket_num + '/';
             $(this).attr('action', Url);
@@ -421,7 +421,7 @@ $(document).ready(function () {
             .set('onok', 
             function(closeEvent){
                 window.location = '/';
-            } );
+            } ).set('movable', false);
             
 
         }).fail(function(rq, status, error){
@@ -431,7 +431,7 @@ $(document).ready(function () {
                 erros += rq.responseJSON.data[erro] + '<br>'
             }
             console.log(erros);
-            alertify.alert("Erro", erros )
+            alertify.alert("Erro", erros ).set('movable', false);
         });
     });
 
@@ -449,9 +449,9 @@ $(document).ready(function () {
                 alertify.alert('Sucesso', response.message, function(){
                     window.location = '/';
                     Cookies.set('ticket_cookie', {});
-                });
+                }).set('movable', false);
             }else{
-                alertify.alert('Erro', response.message );
+                alertify.alert('Erro', response.message ).set('movable', false);
             }
         },
         'json'
