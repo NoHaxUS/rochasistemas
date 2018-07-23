@@ -98,8 +98,15 @@ def is_excluded_cotation(cotation_name, kind):
             is_excluded = True
 
 
-    #elif kind.pk == 63:
-    #    is_excluded = True
+    elif kind.pk == 63:
+        excluded_cotations = [
+            'Casa/Empate',
+            'Casa/Visitante',
+            'Empate/Visitante'
+        ]
+
+        if not cotation_name in excluded_cotations:
+            is_excluded = True
 
     
     return is_excluded
