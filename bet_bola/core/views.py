@@ -310,6 +310,8 @@ class CreateTicketView(View):
 		ticket_value = request.POST.get('ticket_value', None)
 		client_name = request.POST.get('client_name', None)
 		cellphone = request.POST.get('telefone', None)
+
+		accepted_conditions = request.POST.get('accepted_conditions', False)
 		
 		if not request.user.is_authenticated or request.user.has_perm('user.be_seller'):
 			if not client_name or len(client_name) < 4:
@@ -376,10 +378,14 @@ class CreateTicketView(View):
 
 		ticket_reward_value = cotation_sum * ticket_bet_value
 
-		if Decimal(ticket_reward_value) > Decimal(max_reward_to_pay):
-			data['success'] =  False
-			data['message'] =  "Desculpe. <br /> Valor máximo da recompensa: R$" + str(max_reward_to_pay)
-			return UnicodeJsonResponse(data)
+		max_reward_to_pay_per_value = self.get_max_reward_by_value(ticket_bet_value, max_reward_to_pay)
+
+		if not accepted_conditions:
+			if Decimal(ticket_reward_value) > max_reward_to_pay_per_value:
+				data['success'] =  False
+				data['has_to_accept'] = True
+				data['message'] =  "O Valor máximo pago pela banca para o valor apostado é: R$" + str(max_reward_to_pay_per_value) + " seu prêmio será reajustado para esse valor."
+				return UnicodeJsonResponse(data)
 
 		if len(game_cotations) < min_number_of_choices_per_bet:
 			data['success'] =  False
@@ -405,7 +411,10 @@ class CreateTicketView(View):
 				else:
 					ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
 			
-			ticket.reward.value = ticket_reward_value
+			if accepted_conditions:
+				ticket.reward.value = Decimal(max_reward_to_pay_per_value)
+			else:
+				ticket.reward.value = ticket_reward_value
 			ticket.reward.save()
 			ticket.save()
 
@@ -443,7 +452,10 @@ class CreateTicketView(View):
 				return UnicodeJsonResponse(data)
 
 
-
+	def get_max_reward_by_value(self, value, actual_max_value):
+		from math import ceil
+		values_rewards = {}
+		return values_rewards.get(ceil(value), actual_max_value)
 
 class TicketDetail(TemplateResponseMixin, View):
 

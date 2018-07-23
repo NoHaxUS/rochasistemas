@@ -244,7 +244,9 @@ $(document).ready(function () {
         if(open_anon_modal == 'true'){
             $('#modal-anon-user').modal('open');
         }else{
-            CreateBetTicket(ticket_value);
+            var accepted_conditions = '';
+            var confirmation_message = 'Confirmar aposta ?';
+            CreateBetTicket(ticket_value, accepted_conditions, confirmation_message);
         }
     });
 
@@ -256,12 +258,14 @@ $(document).ready(function () {
             ticket_value = $('.ticket-bet-value-mobile').val();                
         }
 
-        CreateBetTicket(ticket_value);
+        var accepted_conditions = '';
+        var confirmation_message = 'Confirmar aposta ?';
+        CreateBetTicket(ticket_value, accepted_conditions, confirmation_message);
 
     });
 
 
-    function CreateBetTicket(ticket_value){
+    function CreateBetTicket(ticket_value, accepted_conditions, confirmation_message){
 
         $('#modal-anon-user').modal('close');
 
@@ -282,20 +286,32 @@ $(document).ready(function () {
             UpdateCotationTotal();
             return;
         }
-                                                         
-        alertify.confirm('Confirmação','Confirmar aposta?', function(){                        
+        console.log(confirmation_message);                               
+        alertify.confirm('Confirmação', confirmation_message, function(){                   
         $.post('/ticket/',
-        {'ticket_value': ticket_value, 'client_name':client_name, 'telefone':telefone},
+        {'ticket_value': ticket_value, 
+        'client_name':client_name, 
+        'telefone':telefone,
+        'accepted_conditions':accepted_conditions},
             function(data, status, rq){
                 
                 if(data.success){
                     alertify.alert("Sucesso", data.message).set('movable', false);
                 }else{
+
                     if(data.clear_cookies){
                         Cookies.set('ticket_cookie', {});
-                        window.location = '/'
-                    }                     
-                    alertify.alert("Erro", data.message).set('movable', false);                     
+                        window.location = '/';
+                    }
+
+                    if(data.has_to_accept){
+                        var accepted_conditions = 'True';
+                        var confirmation_message = data.message;
+                        CreateBetTicket(ticket_value, accepted_conditions, confirmation_message);
+                    }else{
+                        alertify.alert("Erro", data.message);
+                    }         
+                                      
                 }
             }, 'json');
         },function(){
