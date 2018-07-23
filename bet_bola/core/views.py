@@ -469,8 +469,8 @@ class TicketDetail(TemplateResponseMixin, View):
 			for i_cotation in cotations_history:
 				cotations_values[i_cotation.original_cotation] = i_cotation.value
 
-
-			content = "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
+			content = "<CENTER> -> " + settings.APP_VERBOSE_NAME.upper() + " <- <BR>"
+			content += "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
 			
 			if ticket.seller:
 				content += "<CENTER> VENDEDOR: " + ticket.seller.first_name + "<BR>"
@@ -483,6 +483,8 @@ class TicketDetail(TemplateResponseMixin, View):
 			content += "<CENTER> COTA TOTAL: " + str("%.2f" % ticket.cotation_value_total) + "<BR>"
 			if ticket.reward:
 				content += "<CENTER> GANHO POSSIVEL: R$" + str("%.2f" % ticket.reward.value) + "<BR>"
+			if ticket.payment:
+				content +=  "<CENTER> STATUS: " + ticket.payment.status_payment + "<BR>"
 			content += "<CENTER> DATA: " + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
 			content += "<BR><BR>"
 			

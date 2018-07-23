@@ -38,23 +38,33 @@ class PDF(View):
         pdf.add_page()
         pdf.add_font('DejaVu', '', 'DejaVuSansCondensed.ttf', uni=True)		
         pdf.set_font('DejaVu','',30)
-        pdf.text(55,12, 'TICKET:' + str(ticket.pk))
 
-        if ticket.seller:
-            pdf.text(55,84, 'VENDEDOR: ' + ticket.seller.first_name)
+        pdf.text(60,15, "-> "+ settings.APP_VERBOSE_NAME.upper() +" <-")
+        pdf.text(55,30, 'TICKET:' + str(ticket.pk))
+
+        if not ticket.seller:
+            #pdf.text(55,96, 'VENDEDOR: ' + ticket.seller.first_name)
+            pdf.text(55,96, 'VENDEDOR:')
         if ticket.normal_user:
-            pdf.text(55,24, 'CLIENTE:' + ticket.normal_user.first_name)
+            pdf.text(55,40, 'CLIENTE:' + ticket.normal_user.first_name)
         if ticket.user:
-            pdf.text(55,24, 'CLIENTE:' + ticket.user.first_name)
+            pdf.text(55,40, 'CLIENTE:' + ticket.user.first_name)
 								
-        pdf.text(55,36, 'DATA: ' + ticket.creation_date.strftime('%d/%m/%Y %H:%M'))
-        pdf.text(55,48, "APOSTA: R$" + str("%.2f" % ticket.value) )
-        pdf.text(55,60, "COTA TOTAL: " + str("%.2f" % ticket.cotation_value_total) )
+        pdf.text(55,50, 'DATA: ' + ticket.creation_date.strftime('%d/%m/%Y %H:%M'))
+        pdf.text(55,60, "APOSTA: R$" + str("%.2f" % ticket.value) )
+        pdf.text(55,72, "COTA TOTAL: " + str("%.2f" % ticket.cotation_value_total) )
         if ticket.reward:
-            pdf.text(55,72, "GANHO POSSÍVEL: R$" + str("%.2f" % ticket.reward.value) )
-        pdf.text(4,100,'APOSTAS')		
-        pdf.text(0, 105,'--------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
-        h = 110
+            pdf.text(55,84, "GANHO POSSÍVEL: R$" + str("%.2f" % ticket.reward.value) )
+        if ticket.payment:
+            payment_text = ticket.payment.status_payment
+            if len(payment_text) <= 5:
+                pdf.text(55,107, "STATUS: " + payment_text )
+            else:
+                pdf.text(10,107, "STATUS: " + payment_text )
+        
+        pdf.text(4,130,'APOSTAS')		
+        pdf.text(0, 135,'--------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
+        h = 140
         
         for c in ticket.cotations.all():
             h=h+8
