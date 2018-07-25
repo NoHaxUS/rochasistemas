@@ -204,7 +204,7 @@ USE_TZ = False
 
 #Statis Files
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = '/home/mushzinhooo/webapps/static_SITENAME'
+STATIC_ROOT = '/home/mushzinho3/webapps/static_SITENAME'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
