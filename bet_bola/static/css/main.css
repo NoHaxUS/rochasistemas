@@ -50,7 +50,7 @@ thead tr th {
     background-color: #f7f00e !important;
 }
 .green-text-button{
-    color: #334a40 !important;
+    color: #320b7e !important;
 }
 .blue-button{
     background-color: #1969a2;
@@ -59,7 +59,7 @@ thead tr th {
 
 
 .main-nav {
-    background-color: #334a40;
+    background-color: #320b7e;
 }
 
 nav .brand-logo{
@@ -70,7 +70,7 @@ nav .brand-logo{
 .section-header{
 
     font-family: 'Exo 2', sans-serif;
-    background-color: #334a40;
+    background-color: #320b7e;
     font-size: 1.6rem;
 }
 
@@ -139,7 +139,7 @@ nav .brand-logo{
 /* suvnav */
 .subnav{
     height: 16px;
-    background-color: #ffcc2a;
+    background-color: #35469a;
 }
 .main-section{
     margin-top: 10px;
@@ -182,11 +182,11 @@ nav .brand-logo{
 }
 
 .side-nav{
-    background-color: #334a40;
+    background-color: #320b7e;
 }
 .collapsible-header-mobile{
     font-family: 'Exo 2', sans-serif;
-    background-color: #334a40;
+    background-color: #320b7e;
     color: #ffffff;
     font-size: 1.4rem;
 }
@@ -344,7 +344,7 @@ span.step-links li.active a{
 .th-championsip-header{
     font-family: 'Exo 2', sans-serif;
     padding: 0;
-    background-color: #334a40;
+    background-color: #4655a1;
     color: #ffffff;
     font-size: 1.45rem;
 }
@@ -363,7 +363,7 @@ span.step-links li.active a{
     color:#ffffff;
     font-size: 1.4rem;
     font-weight: bold;
-    background: #334a40;
+    background: #4655a1;
     border-bottom: #eee 1px solid;
     border-radius: 2px 2px 0 0;
 }
@@ -423,7 +423,7 @@ span.step-links li.active a{
     margin-top: 50px;
     padding: 0px;
     font-family: 'Exo 2', sans-serif;
-    background-color: #334a40;
+    background-color: #467ba2;
 }
 
 #ticket-details-actions{
@@ -439,7 +439,7 @@ span.step-links li.active a{
     margin: auto;
     height: 100%;
     display: block;
-    background-color: #edb811;
+    background-color: #82af9a;
     border-radius: 30px;
     padding: 8px 0px;
     color:#ffffff;
@@ -453,7 +453,7 @@ span.step-links li.active a{
     margin: auto;
     height: 100%;
     display: block;
-    background-color: #919ad4;
+    background-color: #8191f7;
     border-radius: 30px;
     padding: 8px 0px;
     color:#ffffff;
@@ -470,7 +470,7 @@ span.step-links li.active a{
     margin: auto;
     height: 100%;
     display: block;
-    background-color: #289c6a;
+    background-color: #8191f7;
     border-radius: 30px;
     padding: 8px 0px;
     color:#ffffff;
@@ -500,11 +500,6 @@ span.step-links li.active a{
     margin-left: 10px;
 }
 
-.no_credit_message{
-    color: red;
-    font-weight: bold;
-}
-
 @media only screen and (max-width: 992px){
 
     .main-logo{
@@ -526,7 +521,7 @@ span.step-links li.active a{
         margin: auto;
         height: 100%;
         display: block;
-        background-color: #edb811;
+        background-color: #82af9a;
         border-radius: 30px;
         padding: 4px 4px;
         color:#ffffff;
@@ -538,7 +533,7 @@ span.step-links li.active a{
         margin: auto;
         height: 100%;
         display: block;
-        background-color: #289c6a;
+        background-color: #8191f7;
         border-radius: 30px;
         padding: 4px 4px;
         color:#ffffff;
@@ -548,7 +543,7 @@ span.step-links li.active a{
 
     nav .brand-logo{
         padding: 0px;
-        font-size: 1.6rem;
+        font-size: 1.8rem;
     }
 
     .modal {
