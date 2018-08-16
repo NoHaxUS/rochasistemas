@@ -86,7 +86,14 @@ def process_json_championship(json_response):
     if championship_array:
         for championship in championship_array:                                    
             id_country = championship['country']['data']['id']
-            not_allowed_championships = [1386, 1315, 636] 
+            not_allowed_championships = [
+                1386,
+                1315, 
+                636,
+                1385,
+                758,
+                462
+            ]
 
             if championship['id'] in not_allowed_championships:
                 continue
