@@ -94,8 +94,8 @@ class Seller(CustomUser):
     
     def net_value(self):
         
-        total_net_value = self.actual_revenue() * (self.commission / 100)
-        return round(total_net_value,2)
+        total_net_value = self.comissions.total_comission()
+        return round(total_net_value, 2)
 
     net_value.short_description = 'A Receber'
 
@@ -104,6 +104,14 @@ class Seller(CustomUser):
     real_net_value.short_description = 'Líquido'
     
 
+    def see_comissions(self):
+        from django.utils.html import format_html
+        return format_html(
+            '<a href="/admin/utils/comission/?q={}">Ver Comissões</a>',
+            self.username,
+        )
+    see_comissions.short_description = 'Comissões'
+    
     def get_commission(self):
         return str(round(self.commission,0)) + "%"
     get_commission.short_description = 'Comissão'
@@ -141,8 +149,12 @@ class Seller(CustomUser):
             self.set_password(self.password)
         self.is_superuser = False
         self.is_staff = True
+        from utils.models import Comission
         super().save()
 
+        comission = Comission.objects.filter(seller_related=self)
+        if not comission:
+            Comission(seller_related=self).save()
         self.define_default_permissions()
 
     def define_default_permissions(self):
@@ -156,11 +168,13 @@ class Seller(CustomUser):
         view_seller_perm = Permission.objects.get(codename='view_seller')
         view_punter_perm = Permission.objects.get(codename='view_punter')
         view_ticketcancelationhistory = Permission.objects.get(codename='view_ticketcancelationhistory')
+        view_comission = Permission.objects.get(codename='view_comission')
         
         self.user_permissions.add(be_seller_perm, change_ticket_perm, 
         view_managertransactions_perm, view_revenuehistoryseller_perm, 
         view_sellersaleshistory_perm, view_punterpayedhistory_perm,
-        view_seller_perm, view_punter_perm, view_ticketcancelationhistory)
+        view_seller_perm, view_punter_perm, view_ticketcancelationhistory, 
+        view_comission)
  
 
 

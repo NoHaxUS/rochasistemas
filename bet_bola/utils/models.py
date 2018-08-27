@@ -1,8 +1,76 @@
 from django.db import models
 from django.db.models import F, Q, When, Case
 from user.models import Seller, Manager
-from core.models import Cotation
+from core.models import Cotation, BetTicket
+from django.db.models import Count
+from decimal import Decimal
 
+class Comission(models.Model):
+    
+    seller_related = models.OneToOneField('user.Seller',related_name="comissions", on_delete=models.CASCADE, verbose_name="Vendedor Relacionado")
+    simple = models.IntegerField(default=4, verbose_name="Apostas Simples")
+    double = models.IntegerField(default=6, verbose_name="Apostas Duplas")
+    triple_amount = models.IntegerField(default=8, verbose_name="Apostas Triplas")
+    four_plus_amount = models.IntegerField(default=10, verbose_name="Mais de 3")
+
+
+    def total_simple(self):
+        
+        total_revenue = 0
+        tickets_not_rewarded = BetTicket.objects.filter(
+            payment__who_set_payment=self.seller_related, 
+            payment__seller_was_rewarded=False,
+            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=1)
+        for ticket in tickets_not_rewarded:
+            total_revenue += ticket.value
+        return round(total_revenue * (self.simple / Decimal(100)),2)
+
+    total_simple.short_description = "Simples"
+    
+    def total_double(self):
+        total_revenue = 0
+        tickets_not_rewarded = BetTicket.objects.filter(
+            payment__who_set_payment=self.seller_related, 
+            payment__seller_was_rewarded=False,
+            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=2)
+        for ticket in tickets_not_rewarded:
+            total_revenue += ticket.value
+        return round(total_revenue * (self.double / Decimal(100)),2)
+    total_double.short_description = "Dupla"
+    
+    def total_triple(self):
+        total_revenue = 0
+        tickets_not_rewarded = BetTicket.objects.filter(
+            payment__who_set_payment=self.seller_related, 
+            payment__seller_was_rewarded=False,
+            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=3)
+        for ticket in tickets_not_rewarded:
+            total_revenue += ticket.value
+        return round(total_revenue * (self.triple_amount / Decimal(100)),2)
+    total_triple.short_description = "Tripla"
+    
+    def total_plus(self):
+        total_revenue = 0
+        tickets_not_rewarded = BetTicket.objects.filter(
+            payment__who_set_payment=self.seller_related, 
+            payment__seller_was_rewarded=False,
+            ).annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=3)
+        for ticket in tickets_not_rewarded:
+            total_revenue += ticket.value
+        return round(total_revenue * (self.four_plus_amount / Decimal(100)),2)
+    total_plus.short_description = "Mais que 3"
+    
+
+    def total_comission(self):
+        return round(self.total_simple() + self.total_double() + self.total_triple() + self.total_plus(),2)
+    total_comission.short_description = "Comissão Total"
+
+    def __str__(self):
+        return "Comissões do Vendedor"
+
+    class Meta:
+        verbose_name = 'Comissão do Vendedor'
+        verbose_name_plural = 'Comissões dos Vendedores'
 
 class GeneralConfigurations(models.Model):
 
@@ -10,6 +78,7 @@ class GeneralConfigurations(models.Model):
     min_number_of_choices_per_bet = models.IntegerField(default=1, verbose_name="Número mínimo de escolhas por Aposta")
     max_reward_to_pay = models.DecimalField(max_digits=30, decimal_places=2,default=50000, verbose_name="Valor máximo pago pela Banca")
     min_bet_value = models.DecimalField(max_digits=30, decimal_places=2,default=1, verbose_name="Valor mínimo da aposta")
+    min_cotation_sum = models.DecimalField(max_digits=30, decimal_places=2,default=1, verbose_name="Valor mínimo da cota total")
     percentual_reduction = models.IntegerField(default=100, verbose_name="Redução Percentual")
     auto_pay_punter = models.BooleanField(default=False, verbose_name='Auto Pagar Vencedores')
 

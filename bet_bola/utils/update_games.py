@@ -86,7 +86,7 @@ def process_json_championship(json_response):
     if championship_array:
         for championship in championship_array:                                    
             id_country = championship['country']['data']['id']
-            not_allowed_championships = [1386,1315,636,1385,758,462]
+            not_allowed_championships = [1386,1315,636,1385,758,462,657]
 
             if championship['id'] in not_allowed_championships:
                 continue
@@ -112,7 +112,7 @@ def process_json_games_cotations(json_response):
     games_array = json_response.get('data')
     for game in games_array:
 
-        not_allowed_championships = [1386,1315,636,1385,758,462]
+        not_allowed_championships = [1386,1315,636,1385,758,462,657]
         if game["league_id"] in not_allowed_championships:
             continue
         else:

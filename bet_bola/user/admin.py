@@ -61,8 +61,8 @@ class SellerAdmin(AdminViewPermissionModelAdmin):
     search_fields = ['pk','first_name','username','cpf']
     fields = ('username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'commission', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active', 'can_cancel_ticket', 'limit_time_to_cancel')
     list_editable = ('credit_limit',)
-    list_display = ('pk','username','full_name','actual_revenue','get_commission','net_value','out_money','real_net_value','credit_limit')
-    list_display_links = ('pk','username',)
+    list_display = ('username','full_name','actual_revenue','out_money','net_value','real_net_value','credit_limit','see_comissions')
+    list_display_links = ('username',)
     autocomplete_fields = ['my_manager',]
     actions = [pay_seller]
     list_per_page = 20

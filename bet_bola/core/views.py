@@ -297,11 +297,13 @@ class CreateTicketView(View):
 			max_reward_to_pay = general_config.max_reward_to_pay
 			min_number_of_choices_per_bet = general_config.min_number_of_choices_per_bet
 			min_bet_value = general_config.min_bet_value
+			min_cotation_sum = general_config.min_cotation_sum
 
 		except GeneralConfigurations.DoesNotExist:
 			max_reward_to_pay = 50000
 			min_number_of_choices_per_bet = 1
 			min_bet_value = 1
+			min_cotation_sum = 1
 
 		data = {
 			'success': True
@@ -375,6 +377,11 @@ class CreateTicketView(View):
 				data['message'] =  "Erro, uma das cotas enviadas não existe."
 				return UnicodeJsonResponse(data)
 
+
+		if cotation_sum < min_cotation_sum:
+			data['success'] =  False
+			data['message'] =  "A soma das cotações deve ser maior que "+ str(min_cotation_sum)
+			return UnicodeJsonResponse(data)
 
 		ticket_reward_value = cotation_sum * ticket_bet_value
 
