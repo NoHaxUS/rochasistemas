@@ -8,9 +8,9 @@ from decimal import Decimal
 class Comission(models.Model):
     
     seller_related = models.OneToOneField('user.Seller',related_name="comissions", on_delete=models.CASCADE, verbose_name="Vendedor Relacionado")
-    simple = models.IntegerField(default=4, verbose_name="Apostas Simples")
-    double = models.IntegerField(default=6, verbose_name="Apostas Duplas")
-    triple_amount = models.IntegerField(default=8, verbose_name="Apostas Triplas")
+    simple = models.IntegerField(default=10, verbose_name="Apostas Simples")
+    double = models.IntegerField(default=10, verbose_name="Apostas Duplas")
+    triple_amount = models.IntegerField(default=10, verbose_name="Apostas Triplas")
     four_plus_amount = models.IntegerField(default=10, verbose_name="Mais de 3")
 
 
