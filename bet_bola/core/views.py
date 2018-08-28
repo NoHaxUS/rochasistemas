@@ -20,7 +20,7 @@ from django.utils import timezone
 
 
 
-class AllGames(TemplateResponseMixin, View):
+class AfterTomorrowGames(TemplateResponseMixin, View):
 
 	template_name = 'core/index.html'
 
