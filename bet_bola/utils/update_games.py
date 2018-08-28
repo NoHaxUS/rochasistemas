@@ -9,7 +9,10 @@ import time
 from decimal import Decimal
 from .processing import processing_cotations_v2, process_tickets
 
-from .choices import MARKET_ID, MARKET_NAME_SMALL_TEAMS, INVALID_ALL_COTES_CHAMPIONSHIPS, COUNTRY_TRANSLATE
+from .choices import (MARKET_ID, MARKET_NAME_SMALL_TEAMS, 
+    INVALID_ALL_COTES_CHAMPIONSHIPS, COUNTRY_TRANSLATE,
+    not_allowed_championships
+    )
 from .aux_functions import (get_country_translated, 
     check_request_status, 
     renaming_cotations, 
@@ -19,7 +22,7 @@ from .aux_functions import (get_country_translated,
 
 
 
-TOKEN = 'DLHVB3IPJuKN8dxfV5ju0ajHqxMl4zx91u5zxOwLS8rHd5w6SjJeLEOaHpR5'
+TOKEN = 'mnbJyKIOgJPb2LEQ1lCYolm8kKfhAJoQWkwqVhsD9dO48vhFPZw0F8CVDHQf'
 
 
 def consuming_championship_api():
@@ -43,13 +46,13 @@ def consuming_championship_api():
 
 def consuming_game_cotation_api():
 
-    before_time = tzlocal.now() - datetime.timedelta(days=3)
+    before_time = tzlocal.now() - datetime.timedelta(days=1)
 
     before_year = before_time.year
     before_month = before_time.month
     before_day = before_time.day
     
-    after_time = tzlocal.now() + datetime.timedelta(days=3)
+    after_time = tzlocal.now() + datetime.timedelta(days=4)
 
     after_year = after_time.year
     after_month = after_time.month
@@ -86,8 +89,8 @@ def process_json_championship(json_response):
     if championship_array:
         for championship in championship_array:                                    
             id_country = championship['country']['data']['id']
-            not_allowed_championships = [1386,1315,636,1385,758,462,657]
 
+            print("Processando Liga: " + str(championship['id']))
             if championship['id'] in not_allowed_championships:
                 continue
             else:
@@ -112,7 +115,7 @@ def process_json_games_cotations(json_response):
     games_array = json_response.get('data')
     for game in games_array:
 
-        not_allowed_championships = [1386,1315,636,1385,758,462,657]
+        print("Processando Jogo: " + str(game['id']))
         if game["league_id"] in not_allowed_championships:
             continue
         else:
@@ -125,6 +128,9 @@ def process_json_games_cotations(json_response):
                 ht_score = game['scores']['ht_score']
                 if not ht_score:
                     ht_score = F('ht_score')
+                
+                if not game.get('localTeam', None) or not game.get('visitorTeam', None):
+                    continue
 
                 Game.objects.filter(pk=game['id']).update(
                     name=get_country_translated(game['localTeam']['data']['name']) +
@@ -137,6 +143,10 @@ def process_json_games_cotations(json_response):
                     championship=Championship.objects.get(pk=game["league_id"])
                 )
             else:
+                if not game.get('localTeam', None) or not game.get('visitorTeam', None):
+                    continue
+
+                print("Criando jogo: " + str(game['id']))
                 Game.objects.create(
                     pk=game['id'],
                     name=get_country_translated(game['localTeam']['data']['name']) +

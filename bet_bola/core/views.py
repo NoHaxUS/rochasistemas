@@ -78,6 +78,19 @@ COUNTRY_TRANSLATE = {
 	"Indonesia":"Indonésia",
 	"Asia":"Ásia",
 	"World": "Copa do Mundo",
+	"Czech Republic":"República Checa",
+	"Northern Ireland":"Irlanda do Norte",
+	"Bosnia and Herzegovina":"Bósnia e Herzegovina",
+	"Hungary":"Hungria",
+	"Korea Republic":"Coreia do Sul",
+	"Faroe Islands":"Ilhas Feroe",
+	"Moldova":"Moldávia",
+	"Kazakhstan":"Cazaquistão",
+	"Azerbaijan":"Azerbaijão",
+	"New Zealand":"Nova Zelândia",
+	"Luxembourg":"Luxemburgo",
+	"Gabon":"Gabão",
+	"Dominican Republic":"República Dominicana"
 }
 
 
