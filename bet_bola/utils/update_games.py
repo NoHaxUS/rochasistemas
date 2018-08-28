@@ -46,13 +46,13 @@ def consuming_championship_api():
 
 def consuming_game_cotation_api():
 
-    before_time = tzlocal.now() - datetime.timedelta(days=1)
+    before_time = tzlocal.now() - datetime.timedelta(days=3)
 
     before_year = before_time.year
     before_month = before_time.month
     before_day = before_time.day
     
-    after_time = tzlocal.now() + datetime.timedelta(days=4)
+    after_time = tzlocal.now() + datetime.timedelta(days=3)
 
     after_year = after_time.year
     after_month = after_time.month
