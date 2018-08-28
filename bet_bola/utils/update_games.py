@@ -90,7 +90,6 @@ def process_json_championship(json_response):
         for championship in championship_array:                                    
             id_country = championship['country']['data']['id']
 
-            print("Processando Liga: " + str(championship['id']))
             if championship['id'] in not_allowed_championships:
                 continue
             else:
@@ -115,7 +114,6 @@ def process_json_games_cotations(json_response):
     games_array = json_response.get('data')
     for game in games_array:
 
-        print("Processando Jogo: " + str(game['id']))
         if game["league_id"] in not_allowed_championships:
             continue
         else:
@@ -145,8 +143,7 @@ def process_json_games_cotations(json_response):
             else:
                 if not game.get('localTeam', None) or not game.get('visitorTeam', None):
                     continue
-
-                print("Criando jogo: " + str(game['id']))
+                    
                 Game.objects.create(
                     pk=game['id'],
                     name=get_country_translated(game['localTeam']['data']['name']) +
