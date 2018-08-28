@@ -15,83 +15,9 @@ from django.urls import reverse_lazy
 import json
 import urllib
 from decimal import Decimal
+from django.db.models import Prefetch, Count
+from django.utils import timezone
 
-
-COUNTRY_TRANSLATE = {
-	"Brazil":"Brasil",
-	"England":"Inglaterra",
-	"Spain":"Espanha",
-	"France":"França",
-	"Germany":"Alemanha",
-	"Europe":"Europa",
-	"South America": "América do Sul",
-	"International":"Internacional",
-	"Italy":"Itália",
-	"Portugal":"Portugal",
-	"Belgium":"Bélgica",
-	"USA":"Estados Unidos",
-	"Turkey":"Turquia",
-	"Netherlands":"Holanda",
-	"Russia":"Rússia",
-	"Austria":"Áustria",
-	"Poland":"Polônia",
-	"Angola":"Ângola",
-	"Albania":"Albânia",
-	"Croatia":"Croácia",
-	"Sweden":"Suécia",
-	"Malta":"Malta",
-	"Saudi Arabia":"Arábia Saudita",
-	"Israel":"Israel",
-	"Denmark":"Dinamarca",
-	"Hong Kong":"Hong Kong",
-	"United Arab Emirates":"Emirados Árabes",
-	"Finland":"Finlândia",
-	"Norway":"Noruega",
-	"Greece":"Grécia",
-	"Switzerland": "Suíça",
-	"Mexico":"México",
-	"Ecuador":"Equador",
-	"Scotland":"Escócia",
-	"Iceland":"Islândia",
-	"Saudi Arabia": "Arábia Saudita",
-	"India":"Índia",
-	"Côte d'Ivoire":"Costa do Marfim",
-	"Ukraine":"Ucrânia",
-	"Iraq":"Iraque",
-	"Cyprus":"Chipre",
-	"Georgia":"Geórgia",
-	"South Africa":"África do Sul",
-	"Romania":"Romênia",
-	"Uruguay":"Uruguai",
-	"Republic of Ireland":"Irlanda",
-	"Bulgaria":"Bulgária",
-	"Belarus":"Bielorrússia",
-	"Serbia":"Sérvia",
-	"Japan":"Japão",
-	"Wales":"País de Gales",
-	"Cameroon":"Camarões",
-	"Egypt":"Egito",
-	"Paraguay":"Paraguai",
-	"Lithuania":"Lituânia",
-	"Estonia":"Estónia",
-	"Panama":"Panamá",
-	"Indonesia":"Indonésia",
-	"Asia":"Ásia",
-	"World": "Copa do Mundo",
-	"Czech Republic":"República Checa",
-	"Northern Ireland":"Irlanda do Norte",
-	"Bosnia and Herzegovina":"Bósnia e Herzegovina",
-	"Hungary":"Hungria",
-	"Korea Republic":"Coreia do Sul",
-	"Faroe Islands":"Ilhas Feroe",
-	"Moldova":"Moldávia",
-	"Kazakhstan":"Cazaquistão",
-	"Azerbaijan":"Azerbaijão",
-	"New Zealand":"Nova Zelândia",
-	"Luxembourg":"Luxemburgo",
-	"Gabon":"Gabão",
-	"Dominican Republic":"República Dominicana"
-}
 
 
 class AllGames(TemplateResponseMixin, View):
@@ -100,55 +26,30 @@ class AllGames(TemplateResponseMixin, View):
 
 	def get(self, request, *args, **kwargs):
 
-		championships = []
-		countries = []
-		championship_games = {}
-	
-		for championship in Championship.objects.all().order_by('-country__priority', '-priority'):
-			my_games = championship.my_games.able_games()
-			if my_games.count() > 0:
-				championships.append(championship)
-				countries.append(championship.country)
-				my_games_today = my_games.able_games()
+		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
-				if my_games_today.count() > 0:
-					games = my_games_today.filter(championship=championship)
-					championship_games[championship] = games
-
-
-		page = int(request.GET.get('page', 1))
-		count = 0
-		per_page = 40
-		start_count = ((page - 1) * per_page) + 1
-
-		max_count = page * per_page
+		my_qs = Cotation.objects.filter(is_standard=True)
+		games = Game.objects.filter(start_game_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
+		status_game="NS", 
+		is_visible=True)\
+		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+		.order_by('-championship__country__priority', '-championship__priority')
 		
-		page_games = {}
-
-		for championship in championship_games:
-			count += len(championship_games[championship])
-			if count >= start_count:
-				page_games[championship] = championship_games[championship]
-			else:
-				continue
-			if count >= max_count:
-				break
-
-		total_games = 0
-		for championship in championship_games:
-			total_games += len(championship_games[championship])
-
-		links = (total_games // per_page) + 1
-			
-		countries = no_repetition_list(countries)
+		from  collections import defaultdict
+		league_games = defaultdict(list)
+		country_leagues = defaultdict(set)
 		
-		context = {'dict_championship_games': page_games,
-		'championships': championships,
-		'other_thing': list(range(1,links+1)),
-		'actual_page': page,
-		'countries':countries, 'countries_dict':COUNTRY_TRANSLATE}
+		for game in games:
+			country_leagues[game.championship.country].add(game.championship)
+			league_games[game.championship].append(game)
+		
+		context = {'league_games': league_games, 
+			'country_leagues': country_leagues,
+			'after_tommorrow': after_tommorrow}
 		
 		return self.render_to_response(context)
+
 
 
 class TodayGames(TemplateResponseMixin, View):
@@ -156,25 +57,29 @@ class TodayGames(TemplateResponseMixin, View):
 	template_name = 'core/index.html'
 
 	def get(self, request, *args, **kwargs):
+		
+		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
-		championships = []
-		countries = []
-		championship_games = {}
-	
-		for championship in Championship.objects.all().order_by('-country__priority', '-priority'):
-			my_games = championship.my_games.able_games()
-			if my_games.count() > 0:
-				championships.append(championship)
-				countries.append(championship.country)
-				my_games_today = my_games.today_able_games()
-
-				if my_games_today.count() > 0:
-					games = my_games_today.filter(championship=championship)
-					championship_games[championship] = games
-					
-		countries = no_repetition_list(countries)
-		context = {'dict_championship_games': championship_games ,'championships': championships,
-		'countries':countries, 'countries_dict':COUNTRY_TRANSLATE}
+		my_qs = Cotation.objects.filter(is_standard=True)
+		games = Game.objects.filter(start_game_date__gt=tzlocal.now(), 
+		start_game_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+		status_game="NS", 
+		is_visible=True)\
+		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+		.order_by('-championship__country__priority', '-championship__priority')
+		
+		from  collections import defaultdict
+		league_games = defaultdict(list)
+		country_leagues = defaultdict(set)
+		
+		for game in games:
+			country_leagues[game.championship.country].add(game.championship)
+			league_games[game.championship].append(game)
+		
+		context = {'league_games': league_games, 
+			'country_leagues': country_leagues,
+			'after_tommorrow': after_tommorrow}
 		
 		return self.render_to_response(context)
 
@@ -183,21 +88,28 @@ class TomorrowGames(TemplateResponseMixin, View):
 	template_name = 'core/index.html'
 
 	def get(self, request, *args, **kwargs):
+		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
-		championships = []
-		countries = []
-		championship_games = {}
+		my_qs = Cotation.objects.filter(is_standard=True)
+		games = Game.objects.filter(start_game_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
+		status_game="NS", 
+		is_visible=True)\
+		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+		.order_by('-championship__country__priority', '-championship__priority')
 		
-		for championship in Championship.objects.all().order_by('-country__priority','-priority'):
-			if championship.my_games.able_games().count() > 0:
-				championships.append(championship)
-				countries.append(championship.country)
-				if championship.my_games.tomorrow_able_games().count() > 0:
-					championship_games[championship] = Game.objects.tomorrow_able_games().filter(championship=championship)		
+		from  collections import defaultdict
+		league_games = defaultdict(list)
+		country_leagues = defaultdict(set)
 		
-		countries = no_repetition_list(countries)
-		context = {'dict_championship_games': championship_games ,'championships': championships,
-		'countries':countries, 'countries_dict':COUNTRY_TRANSLATE}
+		for game in games:
+			country_leagues[game.championship.country].add(game.championship)
+			league_games[game.championship].append(game)
+		
+		context = {'league_games': league_games, 
+			'country_leagues': country_leagues,
+			'after_tommorrow': after_tommorrow}
+
 
 		return self.render_to_response(context)
 

@@ -23,10 +23,10 @@
         </div>
     </div>
     <div class="games-table-container">                          
-        {% for championship in dict_championship_games.keys %}
+        {% for league in league_games %}
         <div class="th-championsip-header row">                          
             <div class="center-align col s12">
-                {{championship.name}} - {{countries_dict|get_item:championship.country.name}}
+                {{league.name}} - {{league.country.name}}
             </div>
         </div>
         <div class="row">
@@ -39,7 +39,7 @@
             </div>
         </div>
         <div class="divider"></div>
-        {% for game in dict_championship_games|get_item:championship %}
+        {% for game in league_games|get_item:league %}
             <div class="game-item-wrapper">                      
                 {% if game.cotations.all.count > 0 %}
                 <div class="row">

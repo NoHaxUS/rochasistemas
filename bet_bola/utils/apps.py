@@ -16,5 +16,4 @@ class UtilsConfig(AppConfig):
     verbose_name = 'Utilidades'
 
     def ready(self):
-        #pass
         post_migrate.connect(create_comission_to_existing_sellers, sender=self)

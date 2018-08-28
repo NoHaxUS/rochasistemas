@@ -332,19 +332,19 @@
                     </ul>
     
                     <ul class="collapsible ul-collapsible" data-collapsible="accordion">
-                        {% for country in countries%}
+                        {% for country in country_leagues %}
                         <li>
                             <div class="collapsible-header championship-collapse-header">
                                 <i class="large material-icons green-text-button">chevron_right</i>
-                                {{countries_dict|get_item:country.name}}
+                                {{country.name}}
                             </div>
                             <div class="collapsible-body championship-collapse-body">
                                 <ul class='ul-championship-title'>
-                                    {%for championship in championships%} {% if championship.country.name == country.name%}
+                                    {% for championship in country_leagues|get_item:country %}
                                     <li class="center-align">
-                                        <a href="{% url 'core:core_championship_get' pk=championship.pk %}" class="championship-li">{{ championship }}</a>
+                                        <a href="{% url 'core:core_championship_get' pk=championship.pk %}" class="championship-li">{{ championship.name }}</a>
                                     </li>
-                                    {%endif%} {%endfor%}
+                                    {%endfor%}
                                 </ul>
                             </div>
                         </li>
@@ -414,23 +414,23 @@
             <a href="{% url 'core:core_tomorrow_games' %}" class="">Jogos de Amanhã</a>
         </li>
         <li class="center-align">
-            <a href="{% url 'core:core_all_games' %}" class="">Todos os Jogos</a>
+            <a href="{% url 'core:core_all_games' %}" class="">{{after_tommorrow}}</a>
         </li>
     </ul>
     <ul class="collapsible ul-collapsible" data-collapsible="accordion">
-        {% for country in countries%}
+        {% for country in country_leagues %}
         <li>
             <div class="collapsible-header championship-collapse-header">
                 <i class="large material-icons green-text-button">chevron_right</i>
-                {{countries_dict|get_item:country.name}}
+                {{country.name}}
             </div>
             <div class="collapsible-body championship-collapse-body">
                 <ul class='ul-championship-title'>
-                    {%for championship in championships%} {% if championship.country.name == country.name%}
+                    {%for championship in country_leagues|get_item:country %}
                     <li class="center-align">
-                        <a href="{% url 'core:core_championship_get' pk=championship.pk%}" class="championship-li">{{ championship }}</a>
+                        <a href="{% url 'core:core_championship_get' pk=championship.pk%}" class="championship-li">{{ championship.name }}</a>
                     </li>
-                    {%endif%} {%endfor%}
+                    {%endfor%}
                 </ul>
             </div>
         </li>

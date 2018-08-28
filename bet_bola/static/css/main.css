@@ -113,7 +113,9 @@ nav .brand-logo{
 .championship-color{
     background-color: #2d9639;
 }
-
+.championship-list{
+    padding-right: 10px;
+}
 .championship-list-mobile{
     margin-bottom: 20px;
 }
@@ -130,6 +132,7 @@ nav .brand-logo{
 .championship-list li a:hover{
     font-style: italic;
 }
+
 /* end championship */
 
 .slider-wrapper{

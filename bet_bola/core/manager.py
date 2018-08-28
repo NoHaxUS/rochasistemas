@@ -9,7 +9,8 @@ from django.utils import timezone
 class GamesQuerySet(QuerySet):
 
 	def able_games(self):
-		return self.annotate(cotations_count=Count('cotations', filter=Q(cotations__is_standard=True))).filter(cotations_count__gte=3).filter(Q(status_game="NS") | Q(status_game="POSTP")).filter(start_game_date__gt=tzlocal.now()).filter(is_visible=True)
+		return self.annotate(cotations_count=Count('cotations', 
+		filter=Q(cotations__is_standard=True))).filter(cotations_count__gte=3).filter(Q(status_game="NS")).filter(start_game_date__gt=tzlocal.now()).filter(is_visible=True)
 
 	def today_able_games(self):
 		return self.annotate(cotations_count=Count('cotations' , filter=Q(cotations__is_standard=True))).filter(cotations_count__gte=3).filter(Q(status_game="NS") | Q(status_game="POSTP")).filter(start_game_date__gt=tzlocal.now()).filter(start_game_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)) ).filter(is_visible=True)
