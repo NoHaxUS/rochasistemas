@@ -119,26 +119,33 @@ class GameChampionship(TemplateResponseMixin, View):
 	template_name = 'core/championship_games.html'
 
 	def get(self, request, *args, **kwargs):
-		
-		championships = []
-		countries = []
-		
 
-		for championship in Championship.objects.order_by('-country__priority','-priority'):
-			if championship.my_games.able_games().count() > 0:
-				championships.append(championship)
-				countries.append(championship.country)
-				
-				
-		championship = Championship.objects.get( pk=self.kwargs["pk"] )
-		championship_country = championship.name +" - "+ COUNTRY_TRANSLATE.get(championship.country.name, championship.country.name)
-		games = Game.objects.able_games().filter(championship=championship)
+		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
-		countries = no_repetition_list(countries)
-
-		context = {'games': games ,'championships': championships,
-		'countries':countries, 'countries_dict':COUNTRY_TRANSLATE,'championship_country':championship_country }
+		my_qs = Cotation.objects.filter(is_standard=True)
+		games = Game.objects.filter(start_game_date__gt=tzlocal.now(),
+		status_game="NS", 
+		is_visible=True)\
+		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+		.order_by('-championship__country__priority', '-championship__priority')
 		
+		
+		from  collections import defaultdict
+		country_leagues = defaultdict(set)
+		
+		for game in games:
+			country_leagues[game.championship.country].add(game.championship)
+
+		games_selected_league = games.filter(championship_id=self.kwargs["pk"])
+		
+		first_game = games_selected_league.first()
+		country_league = str(first_game.championship.country.name) + " - " + str(first_game.championship.name)
+		context = {'games_selected_league': games_selected_league, 
+			'country_leagues': country_leagues,
+			'country_league' : country_league,
+			'after_tommorrow': after_tommorrow}
+
 		return self.render_to_response(context)
 
 

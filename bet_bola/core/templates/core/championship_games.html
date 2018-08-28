@@ -14,7 +14,7 @@
     <div class="games-table-container">
         <div class="th-championsip-header row">                          
             <div class="center-align col s12">
-                {{ championship_country }}
+                {{ country_league }}
             </div>
         </div>
         <div class="row">
@@ -27,9 +27,8 @@
             </div>
         </div>
         <div class="divider"></div>
-        {% for game in games|order_by:"start_game_date" %}
-            <div class="game-item-wrapper">                      
-                {% if game.cotations.all.count > 0 %}
+        {% for game in games_selected_league %}
+            <div class="game-item-wrapper">
                 <div class="row">
                     <div class="col s12 l8 center-align">
                         <div class="hide table-game-id">{{game.pk}}</div>
@@ -56,7 +55,6 @@
                         <span class="more_cotations_button">+</span>
                     </div>
                 </div>
-                {% endif %}
             </div>
             <div class="divider"></div>
         {% endfor %}
