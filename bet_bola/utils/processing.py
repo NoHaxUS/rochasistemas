@@ -13,23 +13,26 @@ from decimal import Decimal
 
 def processing_cotations_v2():
 
-    print("Processando resultados.")
+    print("Processando resultados")
 
-    games_to_process = Game.objects.annotate(cotations_count=Count('cotations')).filter(
-        ft_score__isnull=False, cotations_count__gt=0, 
-        odds_processed=False).exclude(ft_score='')\
+    games_to_process = Game.objects.annotate(cotations_count=Count('cotations'))\
+        .filter(cotations_count__gt=0,
+        ft_score__isnull=False,
+        odds_processed=False)\
+        .exclude(ft_score='')\
         .exclude(ft_score='-')\
         .exclude(ft_score='0')\
-        .exclude(ht_score='0')
+
         
     print(games_to_process.count(), '\n')
 
     for game in games_to_process:
 
         print("Jogo:" + str(game.name) + " ID: " + str(game.pk))
-        not_calculaded_cotations = game.cotations
 
+        not_calculaded_cotations = game.cotations
         if game.ft_score and game.ft_score.strip() != '-':
+            
             local_score_ft = int(game.ft_score.split('-')[0])
             visitor_score_ft = int(game.ft_score.split('-')[1])
 
@@ -52,7 +55,7 @@ def processing_cotations_v2():
             time_casa_marca(game, not_calculaded_cotations, local_score_ft, visitor_score_ft)
 
         
-        if game.ht_score and game.ht_score.strip() != '-':
+        if game.ht_score and game.ht_score.strip() != '-' and game.ht_score.strip() != '0':
 
             local_score_ht = int(game.ht_score.split('-')[0])
             visitor_score_ht = int(game.ht_score.split('-')[1])

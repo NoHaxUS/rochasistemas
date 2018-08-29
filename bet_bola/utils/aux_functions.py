@@ -1,4 +1,8 @@
-from .choices import COUNTRY_TRANSLATE, MARKET_ID, MARKET_NAME_SMALL_TEAMS, INVALID_ALL_COTES_CHAMPIONSHIPS
+from .choices import (
+    COUNTRY_TRANSLATE, MARKET_ID, 
+    MARKET_NAME_SMALL_TEAMS, INVALID_ALL_COTES_CHAMPIONSHIPS
+)
+
 import urllib3
 import socket
 from utils.models import GeneralConfigurations, MarketReduction
@@ -9,8 +13,6 @@ def allowed_gai_family():
 
 urllib3.util.connection.allowed_gai_family = allowed_gai_family
 
-def get_country_translated(country_name):
-    return COUNTRY_TRANSLATE.get(country_name, country_name)
 
 def renaming_cotations(string):
 
@@ -47,18 +49,20 @@ def check_request_status(request):
 def get_bet365_from_bookmakers(bookmakers):
 
     for bookmaker in bookmakers:
-        if int(bookmaker['id']) == 2:
+        if bookmaker['id'] == 2:
             return bookmaker
     return bookmakers[0]
 
 
 def can_save_this_market(kind_name, championship_id, processed_markets):
 
-    if kind_name in MARKET_ID.values():
+    if kind_name not in processed_markets:
         if championship_id in INVALID_ALL_COTES_CHAMPIONSHIPS:
-            if kind_name in MARKET_NAME_SMALL_TEAMS.values() and kind_name not in processed_markets:                
+            if kind_name in MARKET_NAME_SMALL_TEAMS.values():                
                 return True
-        elif kind_name not in processed_markets:
+            else:
+                return False
+        elif kind_name in MARKET_ID.values():
             return True
     return False
 
@@ -71,5 +75,5 @@ def set_cotations_reductions():
     market_reductions = MarketReduction.objects.all()
     for market_reduction in market_reductions:
         print("Processando Redução: " + str(market_reduction.market_to_reduct))
-        market_reduction.apply_reductions() 
-        
+        market_reduction.apply_reductions()
+          

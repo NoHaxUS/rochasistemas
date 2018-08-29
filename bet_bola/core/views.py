@@ -137,7 +137,7 @@ class GameChampionship(TemplateResponseMixin, View):
 		for game in games:
 			country_leagues[game.championship.country].add(game.championship)
 
-		games_selected_league = games.filter(championship_id=self.kwargs["pk"])
+		games_selected_league = games.filter(championship__id=self.kwargs["pk"])
 		
 		first_game = games_selected_league.first()
 		country_league = str(first_game.championship.country.name) + " - " + str(first_game.championship.name)

@@ -48,7 +48,7 @@ MARKET_NAME_SMALL_TEAMS = {
 }
 
 
-INVALID_ALL_COTES_CHAMPIONSHIPS = [
+INVALID_ALL_COTES_CHAMPIONSHIPS = {
     1288,
     1289,
     1290,
@@ -149,9 +149,9 @@ INVALID_ALL_COTES_CHAMPIONSHIPS = [
     130,
     1497,
     1195
-]
+}
 
-not_allowed_championships = [
+NOT_ALLOWED_CHAMPIONSHIPS = {
     48,
     815,
     1406,
@@ -185,7 +185,7 @@ not_allowed_championships = [
     462,
     657,
     24
-]
+}
 
 COUNTRY_TRANSLATE = {
 	"Brazil":"Brasil",
