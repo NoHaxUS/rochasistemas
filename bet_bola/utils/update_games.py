@@ -26,10 +26,7 @@ from .aux_functions import (
     set_cotations_reductions
     )
 
-import time
-
-from multiprocessing import Process
-from multiprocessing import Pool
+from multiprocessing.pool import ThreadPool
 
 TOKEN = 'mnbJyKIOgJPb2LEQ1lCYolm8kKfhAJoQWkwqVhsD9dO48vhFPZw0F8CVDHQf'
 
@@ -50,7 +47,7 @@ def consuming_championship_api():
 
     response_data = request.json()
 
-    pool = Pool()
+    pool = ThreadPool()
     pool.apply_async(process_json_championship, args=(response_data,), error_callback = error_callback)
 
     total_pages = request.json().get('meta')['pagination']['total_pages']
@@ -126,7 +123,7 @@ def consuming_game_cotation_api():
 
     request_data = request.json()
 
-    pool = Pool()
+    pool = ThreadPool()
     pool.apply_async(process_json_games_cotations, args=(request_data, max_cotation_value), error_callback = error_callback)
     
     
