@@ -61,6 +61,3 @@ target/
 #virtualenv
 Include/
 Scripts/
-
-
-static/img/slider/*
