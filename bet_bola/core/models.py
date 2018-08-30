@@ -288,6 +288,7 @@ class Game(models.Model):
     objects = GamesManager()	
 
     class Meta:
+        ordering = ('-pk',)
         verbose_name = 'Jogo'
         verbose_name_plural = 'Jogos'
 

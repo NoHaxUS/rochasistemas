@@ -58,8 +58,15 @@ class TodayGames(TemplateResponseMixin, View):
 
 	def get(self, request, *args, **kwargs):
 		
-		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
+		
+		
+		page = int(request.GET.get('page')) if request.GET.get('page') else 1
 
+		results_per_page = 15
+		start_offset = 0 if page == 1 else (page * results_per_page) - results_per_page
+		end_offset = (page * results_per_page)
+		
+		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 		my_qs = Cotation.objects.filter(is_standard=True)
 		games = Game.objects.filter(start_game_date__gt=tzlocal.now(), 
 		start_game_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
@@ -67,7 +74,7 @@ class TodayGames(TemplateResponseMixin, View):
 		is_visible=True)\
 		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
 		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
-		.order_by('-championship__country__priority', '-championship__priority')
+		.order_by('-championship__country__priority', '-championship__priority')[start_offset:end_offset]
 		
 		from  collections import defaultdict
 		league_games = defaultdict(list)
