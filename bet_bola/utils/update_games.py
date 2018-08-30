@@ -33,6 +33,8 @@ from multiprocessing import Pool
 
 TOKEN = 'mnbJyKIOgJPb2LEQ1lCYolm8kKfhAJoQWkwqVhsD9dO48vhFPZw0F8CVDHQf'
 
+def error_callback(error):
+    print(error)
 
 def make_championship_request_async(actual_page):
     request = requests.get("https://soccer.sportmonks.com/api/v2.0/leagues/?api_token=" +
@@ -49,15 +51,16 @@ def consuming_championship_api():
     response_data = request.json()
 
     pool = Pool()
-    pool.apply_async(process_json_championship, args=(response_data,))
+    pool.apply_async(process_json_championship, args=(response_data,), error_callback = error_callback)
 
     total_pages = request.json().get('meta')['pagination']['total_pages']
     
     for actual_page in range(1, total_pages):
-        pool.apply_async(make_championship_request_async, args=(actual_page,))
+        pool.apply_async(make_championship_request_async, args=(actual_page,), error_callback = error_callback)
 
     pool.close()
     pool.join()
+    
     consuming_game_cotation_api()
 
 
@@ -73,7 +76,7 @@ def process_json_championship(json_response):
             if championship_id not in NOT_ALLOWED_CHAMPIONSHIPS:
                 country_name = championship['country']['data']['name']
                 if not Country.objects.filter(pk=country_id).exists():     
-                    Country.objects.create(pk=country_id, name=country_name)
+                    country = Country.objects.create(pk=country_id, name=country_name)
                 else:
                     country = Country.objects.get(pk=country_id)
                 
@@ -89,7 +92,7 @@ def make_game_request_async(actual_page, first_date, second_date, max_cotation_v
     request = requests.get(next_url)
     request_data = request.json()
     process_json_games_cotations(request_data, max_cotation_value)
-    
+
 
 def consuming_game_cotation_api():
 
@@ -124,11 +127,11 @@ def consuming_game_cotation_api():
     request_data = request.json()
 
     pool = Pool()
-    #pool.apply_async(process_json_games_cotations, args=(request_data, max_cotation_value))
+    pool.apply_async(process_json_games_cotations, args=(request_data, max_cotation_value), error_callback = error_callback)
     
     
     for actual_page in range(1, total_pages):
-        pool.apply_async(make_game_request_async, args = (actual_page, first_date, second_date, max_cotation_value))
+        pool.apply_async(make_game_request_async, args = (actual_page, first_date, second_date, max_cotation_value), error_callback = error_callback)
 
     
     pool.close()
@@ -143,10 +146,9 @@ def consuming_game_cotation_api():
 
 def process_json_games_cotations(json_response, max_cotation_value):
     
-    print("INICIO Processar Jogos")
     games_array = json_response.get('data')
     for game in games_array:
-
+        
         if game["league_id"] not in NOT_ALLOWED_CHAMPIONSHIPS:
             
             local_team = game.get('localTeam', None)
@@ -162,7 +164,6 @@ def process_json_games_cotations(json_response, max_cotation_value):
                     ht_score = game['scores']['ht_score']
                     if not ht_score:
                         ht_score = F('ht_score')
-                    
                     Game.objects.filter(pk=game_id).update(
                         status_game=game['time']['status'],                
                         ht_score=ht_score,
@@ -181,12 +182,11 @@ def process_json_games_cotations(json_response, max_cotation_value):
                     )
                 save_odds(game['id'], game['odds'], max_cotation_value)
     
-    print("FIM Processar Jogos")
 
 
 
 def save_odds(game_id, odds, max_cotation_value):
-
+    
     odds_array = odds.get('data')
     game_instance = Game.objects.get(pk=game_id)
     championship_id = game_instance.championship_id
