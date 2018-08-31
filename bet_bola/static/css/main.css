@@ -113,9 +113,7 @@ nav .brand-logo{
 .championship-color{
     background-color: #2d9639;
 }
-.championship-list{
-    padding-right: 10px;
-}
+
 .championship-list-mobile{
     margin-bottom: 20px;
 }
@@ -505,6 +503,10 @@ span.step-links li.active a{
 
 .pagination li a{
     background-color: #ffffff;
+}
+
+.championship-list{
+    padding-right: 10px;
 }
 
 @media only screen and (max-width: 992px){
