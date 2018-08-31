@@ -7,6 +7,7 @@ def create_comission_to_existing_sellers(sender, **kwargs):
 
     updateBool = input("Create Comissions for Users? Say: y or n: ")
     if updateBool == "y":
+        print("Creating Comission for Users")
         for seller in Seller.objects.all():
             comission = Comission.objects.filter(seller_related=seller)
             if not comission:
