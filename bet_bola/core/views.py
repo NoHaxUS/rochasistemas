@@ -21,39 +21,6 @@ from math import ceil
 from  collections import defaultdict
 
 
-
-class AfterTomorrowGames(TemplateResponseMixin, View):
-
-	template_name = 'core/index.html'
-
-	def get(self, request, *args, **kwargs):
-
-		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
-
-		my_qs = Cotation.objects.filter(is_standard=True)
-		games = Game.objects.filter(start_game_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
-		status_game="NS", 
-		is_visible=True)\
-		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
-		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
-		.order_by('-championship__country__priority', '-championship__priority')
-		
-		
-		league_games = defaultdict(list)
-		country_leagues = defaultdict(set)
-		
-		for game in games:
-			country_leagues[game.championship.country].add(game.championship)
-			league_games[game.championship].append(game)
-		
-		context = {'league_games': league_games, 
-			'country_leagues': country_leagues,
-			'after_tommorrow': after_tommorrow}
-		
-		return self.render_to_response(context)
-
-
-
 class TodayGames(TemplateResponseMixin, View):
 
 	template_name = 'core/index.html'
@@ -77,7 +44,7 @@ class TodayGames(TemplateResponseMixin, View):
 		is_visible=True)\
 		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
 		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
-		.order_by('-championship__country__priority', '-championship__priority')[start_offset:end_offset]
+		.order_by('-championship__pk')[start_offset:end_offset]
 
 
 		games_total = Game.objects.filter(start_game_date__gt=tzlocal.now(), 
@@ -100,7 +67,7 @@ class TodayGames(TemplateResponseMixin, View):
 		context = {'league_games': league_games, 
 			'country_leagues': country_leagues,
 			'after_tommorrow': after_tommorrow,
-			'num_of_pages': num_of_pages,
+			'range_pages': range(1, num_of_pages + 1),
 			'current_page': page}
 		
 		return self.render_to_response(context)
@@ -110,6 +77,13 @@ class TomorrowGames(TemplateResponseMixin, View):
 	template_name = 'core/index.html'
 
 	def get(self, request, *args, **kwargs):
+
+		page = int(request.GET.get('page')) if request.GET.get('page') else 1
+
+		results_per_page = 50
+		start_offset = 0 if page == 1 else (page * results_per_page) - results_per_page
+		end_offset = (page * results_per_page)
+
 		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
 		my_qs = Cotation.objects.filter(is_standard=True)
@@ -118,7 +92,16 @@ class TomorrowGames(TemplateResponseMixin, View):
 		is_visible=True)\
 		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
 		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
-		.order_by('-championship__country__priority', '-championship__priority')
+		.order_by('-championship__pk')[start_offset:end_offset]
+
+
+		games_total = Game.objects.filter(start_game_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
+		status_game="NS", 
+		is_visible=True)\
+		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+		.count()
+
+		num_of_pages =  ceil(games_total / results_per_page)
 		
 		league_games = defaultdict(list)
 		country_leagues = defaultdict(set)
@@ -129,10 +112,63 @@ class TomorrowGames(TemplateResponseMixin, View):
 		
 		context = {'league_games': league_games, 
 			'country_leagues': country_leagues,
-			'after_tommorrow': after_tommorrow}
+			'after_tommorrow': after_tommorrow,
+			'range_pages': range(1, num_of_pages + 1),
+			'current_page': page
+			}
 
 
 		return self.render_to_response(context)
+
+
+
+class AfterTomorrowGames(TemplateResponseMixin, View):
+
+	template_name = 'core/index.html'
+
+	def get(self, request, *args, **kwargs):
+
+		page = int(request.GET.get('page')) if request.GET.get('page') else 1
+
+		results_per_page = 50
+		start_offset = 0 if page == 1 else (page * results_per_page) - results_per_page
+		end_offset = (page * results_per_page)
+
+		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
+
+		my_qs = Cotation.objects.filter(is_standard=True)
+		games = Game.objects.filter(start_game_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
+		status_game="NS", 
+		is_visible=True)\
+		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+		.order_by('-championship__pk')[start_offset:end_offset]
+
+
+		games_total = Game.objects.filter(start_game_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
+		status_game="NS", 
+		is_visible=True)\
+		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+		.count()
+
+		num_of_pages =  ceil(games_total / results_per_page)
+
+		league_games = defaultdict(list)
+		country_leagues = defaultdict(set)
+		
+		for game in games:
+			country_leagues[game.championship.country].add(game.championship)
+			league_games[game.championship].append(game)
+		
+		context = {'league_games': league_games, 
+			'country_leagues': country_leagues,
+			'after_tommorrow': after_tommorrow,
+			'range_pages': range(1, num_of_pages + 1),
+			'current_page': page
+			}
+		
+		return self.render_to_response(context)
+
 
 
 class GameChampionship(TemplateResponseMixin, View):
