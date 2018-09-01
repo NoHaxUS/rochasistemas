@@ -45,7 +45,7 @@ class TodayGames(TemplateResponseMixin, View):
 		
 		page = int(request.GET.get('page')) if request.GET.get('page') else 1
 
-		results_per_page = 50
+		results_per_page = 30
 		start_offset = 0 if page == 1 else (page * results_per_page) - results_per_page
 		end_offset = (page * results_per_page)
 		
@@ -92,7 +92,7 @@ class TomorrowGames(TemplateResponseMixin, View):
 
 		page = int(request.GET.get('page')) if request.GET.get('page') else 1
 
-		results_per_page = 50
+		results_per_page = 30
 		start_offset = 0 if page == 1 else (page * results_per_page) - results_per_page
 		end_offset = (page * results_per_page)
 
@@ -141,7 +141,7 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
 
 		page = int(request.GET.get('page')) if request.GET.get('page') else 1
 
-		results_per_page = 50
+		results_per_page = 30
 		start_offset = 0 if page == 1 else (page * results_per_page) - results_per_page
 		end_offset = (page * results_per_page)
 
@@ -190,21 +190,21 @@ class GameChampionship(TemplateResponseMixin, View):
 		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
 		my_qs = Cotation.objects.filter(is_standard=True)
+
 		games = Game.objects.filter(start_game_date__gt=tzlocal.now(),
-		status_game="NS", 
+		status_game="NS",
+		championship__id=self.kwargs["pk"],
 		is_visible=True)\
 		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
 		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
-		.order_by('-championship__country__priority', '-championship__priority')
+		.order_by('-championship__priority')
 		
 		
 		country_leagues = get_main_menu()
-		
-		games_selected_league = games.filter(championship__id=self.kwargs["pk"])
-		
-		first_game = games_selected_league.first()
+
+		first_game = games.first()
 		country_league = str(first_game.championship.country.name) + " - " + str(first_game.championship.name)
-		context = {'games_selected_league': games_selected_league, 
+		context = {'games_selected_league': games, 
 			'country_leagues': country_leagues,
 			'country_league' : country_league,
 			'after_tommorrow': after_tommorrow}
