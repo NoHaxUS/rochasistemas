@@ -20,6 +20,20 @@ from django.utils import timezone
 from math import ceil
 from  collections import defaultdict
 
+def get_main_menu():
+
+	games = Game.objects.filter(start_game_date__gt=tzlocal.now(),
+	status_game="NS",
+	is_visible=True)\
+	.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+	.order_by('-championship__country__priority', '-championship__priority')
+
+
+	country_leagues = defaultdict(set)
+
+	for game in games:
+		country_leagues[game.championship.country].add(game.championship)
+	return country_leagues
 
 class TodayGames(TemplateResponseMixin, View):
 
@@ -56,12 +70,10 @@ class TodayGames(TemplateResponseMixin, View):
 		
 		num_of_pages =  ceil(games_total / results_per_page)
 
-
 		league_games = defaultdict(list)
-		country_leagues = defaultdict(set)
+		country_leagues = get_main_menu()
 		
 		for game in games:
-			country_leagues[game.championship.country].add(game.championship)
 			league_games[game.championship].append(game)
 		
 		context = {'league_games': league_games, 
@@ -104,10 +116,9 @@ class TomorrowGames(TemplateResponseMixin, View):
 		num_of_pages =  ceil(games_total / results_per_page)
 		
 		league_games = defaultdict(list)
-		country_leagues = defaultdict(set)
+		country_leagues = get_main_menu()
 		
 		for game in games:
-			country_leagues[game.championship.country].add(game.championship)
 			league_games[game.championship].append(game)
 		
 		context = {'league_games': league_games, 
@@ -154,10 +165,9 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
 		num_of_pages =  ceil(games_total / results_per_page)
 
 		league_games = defaultdict(list)
-		country_leagues = defaultdict(set)
+		country_leagues = get_main_menu()
 		
 		for game in games:
-			country_leagues[game.championship.country].add(game.championship)
 			league_games[game.championship].append(game)
 		
 		context = {'league_games': league_games, 
@@ -188,11 +198,8 @@ class GameChampionship(TemplateResponseMixin, View):
 		.order_by('-championship__country__priority', '-championship__priority')
 		
 		
-		country_leagues = defaultdict(set)
+		country_leagues = get_main_menu()
 		
-		for game in games:
-			country_leagues[game.championship.country].add(game.championship)
-
 		games_selected_league = games.filter(championship__id=self.kwargs["pk"])
 		
 		first_game = games_selected_league.first()
