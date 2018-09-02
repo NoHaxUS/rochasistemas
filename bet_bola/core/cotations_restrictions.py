@@ -80,9 +80,9 @@ def is_excluded_cotation(cotation_name, kind):
 
     elif kind.pk == 63:
         excluded_cotations = [
-            'Casa/Empate',
-            'Casa/Visitante',
-            'Empate/Visitante'
+            '1X',
+            '12',
+            'X2'
         ]
 
         if not cotation_name in excluded_cotations:

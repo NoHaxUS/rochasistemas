@@ -385,14 +385,14 @@ class Cotation(models.Model):
 
 
     def save(self, *args, **kwargs):
-        if not Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).exists():
-            if not is_excluded_cotation(self.name, self.kind):
-                super().save(*args, **kwargs)
-        else:
+        if Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).exists():
             Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game)\
             .update(value=self.value, 
             original_value=self.original_value,
             total=self.total)
+        else:
+            if not is_excluded_cotation(self.name, self.kind):
+                super().save(*args, **kwargs)
 
             
     class Meta:
