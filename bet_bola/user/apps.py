@@ -6,18 +6,18 @@ def update_users_permissions_to_defaulf(sender, **kwargs):
     
     updateBool = input("Update Users? Say: y or n: ")
     if updateBool == "y":
-        print("Updating Users Permissions")
+        print("Updating Sellers and Managers Permissions")
         for seller in Seller.objects.all():
             #seller.is_staff = True
             seller.define_default_permissions()
             seller.save()
-        """
+        
         for manager in Manager.objects.all():
-            manager.is_staff = True
+            #manager.is_staff = True
             manager.define_default_permissions()
             manager.save()
 
-
+        """
         for punter in Punter.objects.all():
             punter.is_staff = True
             punter.define_default_permissions()
