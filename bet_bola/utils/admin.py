@@ -15,6 +15,8 @@ class ComissionAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
+        if request.user.has_perm('user.be_manager'):
+            return qs.filter(seller_related__my_manager=request.user.manager)
         if request.user.has_perm('user.be_seller'):
             return qs.filter(seller_related__id=request.user.pk)
 
