@@ -30,9 +30,8 @@ class Punter(CustomUser):
 
     def save(self, *args, **kwargs):
         self.clean()
-        if not self.has_usable_password():
+        if not self.password.startswith('pbkdf2'):
             self.set_password(self.password)
-        
         self.is_superuser = False
         self.is_staff = True
         
@@ -145,7 +144,7 @@ class Seller(CustomUser):
 
     def save(self, *args, **kwargs):
         self.clean()
-        if not self.has_usable_password():					
+        if not self.password.startswith('pbkdf2'):			
             self.set_password(self.password)
         self.is_superuser = False
         self.is_staff = True
@@ -340,7 +339,7 @@ class Manager(CustomUser):
 
     def save(self, *args, **kwargs):
         self.clean()
-        if not self.has_usable_password():
+        if not self.password.startswith('pbkdf2'):
             self.set_password(self.password)
         self.is_superuser = False
         self.is_staff = True
