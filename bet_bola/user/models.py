@@ -145,13 +145,13 @@ class Seller(CustomUser):
 
     def save(self, *args, **kwargs):
         self.clean()
-        if not self.has_usable_password():
+        if not self.has_usable_password():					
             self.set_password(self.password)
         self.is_superuser = False
         self.is_staff = True
-        from utils.models import Comission
         super().save()
 
+        from utils.models import Comission
         comission = Comission.objects.filter(seller_related=self)
         if not comission:
             Comission(seller_related=self).save()
@@ -340,7 +340,7 @@ class Manager(CustomUser):
 
     def save(self, *args, **kwargs):
         self.clean()
-        if not self.has_usable_password():					
+        if not self.has_usable_password():
             self.set_password(self.password)
         self.is_superuser = False
         self.is_staff = True
