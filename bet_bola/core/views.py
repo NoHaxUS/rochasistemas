@@ -300,7 +300,7 @@ class CreateTicketView(View):
 			min_number_of_choices_per_bet = 1
 			min_bet_value = 1
 			min_cotation_sum = 1
-			max_cotation_sum = 1000
+			max_cotation_sum = 10000
 
 		data = {
 			'success': True
