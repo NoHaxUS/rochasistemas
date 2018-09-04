@@ -300,7 +300,7 @@ class CreateTicketView(View):
 			min_number_of_choices_per_bet = 1
 			min_bet_value = 1
 			min_cotation_sum = 1
-			max_cotation_sum = 10000
+			max_cotation_sum = 100000
 
 		data = {
 			'success': True
@@ -377,12 +377,12 @@ class CreateTicketView(View):
 
 		if cotation_sum < min_cotation_sum:
 			data['success'] =  False
-			data['message'] =  "A soma das cotações deve ser maior que "+ str(min_cotation_sum)
+			data['message'] =  "A cotação total deve ser maior que "+ str(min_cotation_sum)
 			return UnicodeJsonResponse(data)
 
 		if cotation_sum > max_cotation_sum:
 			data['success'] =  False
-			data['message'] =  "A soma das cotações deve ser menor que "+ str(max_cotation_sum)
+			data['message'] =  "A cotação total deve ser menor que "+ str(max_cotation_sum)
 			return UnicodeJsonResponse(data)
 
 		ticket_reward_value = cotation_sum * ticket_bet_value
