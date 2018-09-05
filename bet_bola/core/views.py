@@ -23,6 +23,7 @@ from  collections import defaultdict
 def get_main_menu():
 
 	games = Game.objects.filter(start_game_date__gt=tzlocal.now(),
+	championship__isnull=False,
 	status_game="NS",
 	is_visible=True)\
 	.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
