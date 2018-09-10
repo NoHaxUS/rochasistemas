@@ -28,7 +28,7 @@ from .aux_functions import (
 
 from multiprocessing.pool import ThreadPool
 
-TOKEN = 'mnbJyKIOgJPb2LEQ1lCYolm8kKfhAJoQWkwqVhsD9dO48vhFPZw0F8CVDHQf'
+TOKEN = 'lg9jUW7exqsIA9a2oEBwog3rW06l58pWoCLL9clqzA1TUG7kBjUQSghiGig3'
 
 def error_callback(error):
     print(error)
