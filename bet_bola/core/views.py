@@ -59,7 +59,7 @@ class TodayGames(TemplateResponseMixin, View):
 		is_visible=True)\
 		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
 		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
-		.order_by('-championship__pk')[start_offset:end_offset]
+		.order_by('-championship__country__priority','-championship__priority')[start_offset:end_offset]
 
 
 		games_total = Game.objects.filter(start_game_date__gt=tzlocal.now(), 
@@ -105,7 +105,7 @@ class TomorrowGames(TemplateResponseMixin, View):
 		is_visible=True)\
 		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
 		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
-		.order_by('-championship__pk')[start_offset:end_offset]
+		.order_by('-championship__country__priority','-championship__priority')[start_offset:end_offset]
 
 
 		games_total = Game.objects.filter(start_game_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
@@ -154,7 +154,7 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
 		is_visible=True)\
 		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
 		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
-		.order_by('-championship__pk')[start_offset:end_offset]
+		.order_by('-championship__country__priority','-championship__priority')[start_offset:end_offset]
 
 
 		games_total = Game.objects.filter(start_game_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
