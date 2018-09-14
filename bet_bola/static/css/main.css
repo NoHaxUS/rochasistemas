@@ -50,7 +50,7 @@ thead tr th {
     background-color: #f7f00e !important;
 }
 .green-text-button{
-    color: #320b7e !important;
+    color: #334a40 !important;
 }
 .blue-button{
     background-color: #1969a2;
@@ -59,7 +59,7 @@ thead tr th {
 
 
 .main-nav {
-    background-color: #320b7e;
+    background-color: #334a40;
 }
 
 nav .brand-logo{
@@ -70,7 +70,7 @@ nav .brand-logo{
 .section-header{
 
     font-family: 'Exo 2', sans-serif;
-    background-color: #320b7e;
+    background-color: #334a40;
     font-size: 1.6rem;
 }
 
@@ -130,7 +130,6 @@ nav .brand-logo{
 .championship-list li a:hover{
     font-style: italic;
 }
-
 /* end championship */
 
 .slider-wrapper{
@@ -140,7 +139,7 @@ nav .brand-logo{
 /* suvnav */
 .subnav{
     height: 16px;
-    background-color: #35469a;
+    background-color: #ffcc2a;
 }
 .main-section{
     margin-top: 10px;
@@ -183,11 +182,11 @@ nav .brand-logo{
 }
 
 .side-nav{
-    background-color: #320b7e;
+    background-color: #334a40;
 }
 .collapsible-header-mobile{
     font-family: 'Exo 2', sans-serif;
-    background-color: #320b7e;
+    background-color: #334a40;
     color: #ffffff;
     font-size: 1.4rem;
 }
@@ -345,7 +344,7 @@ span.step-links li.active a{
 .th-championsip-header{
     font-family: 'Exo 2', sans-serif;
     padding: 0;
-    background-color: #4655a1;
+    background-color: #334a40;
     color: #ffffff;
     font-size: 1.45rem;
 }
@@ -364,7 +363,7 @@ span.step-links li.active a{
     color:#ffffff;
     font-size: 1.4rem;
     font-weight: bold;
-    background: #4655a1;
+    background: #334a40;
     border-bottom: #eee 1px solid;
     border-radius: 2px 2px 0 0;
 }
@@ -424,7 +423,7 @@ span.step-links li.active a{
     margin-top: 50px;
     padding: 0px;
     font-family: 'Exo 2', sans-serif;
-    background-color: #467ba2;
+    background-color: #334a40;
 }
 
 #ticket-details-actions{
@@ -440,7 +439,7 @@ span.step-links li.active a{
     margin: auto;
     height: 100%;
     display: block;
-    background-color: #82af9a;
+    background-color: #edb811;
     border-radius: 30px;
     padding: 8px 0px;
     color:#ffffff;
@@ -454,7 +453,7 @@ span.step-links li.active a{
     margin: auto;
     height: 100%;
     display: block;
-    background-color: #8191f7;
+    background-color: #919ad4;
     border-radius: 30px;
     padding: 8px 0px;
     color:#ffffff;
@@ -471,7 +470,7 @@ span.step-links li.active a{
     margin: auto;
     height: 100%;
     display: block;
-    background-color: #8191f7;
+    background-color: #289c6a;
     border-radius: 30px;
     padding: 8px 0px;
     color:#ffffff;
@@ -500,13 +499,16 @@ span.step-links li.active a{
     margin-top: 6px;
     margin-left: 10px;
 }
+
 .no_credit_message{
-    color: #ff0000;
+    color: red;
     font-weight: bold;
 }
+
 .pagination li a{
     background-color: #ffffff;
 }
+
 .championship-list{
     padding-right: 10px;
 }
@@ -532,7 +534,7 @@ span.step-links li.active a{
         margin: auto;
         height: 100%;
         display: block;
-        background-color: #82af9a;
+        background-color: #edb811;
         border-radius: 30px;
         padding: 4px 4px;
         color:#ffffff;
@@ -544,7 +546,7 @@ span.step-links li.active a{
         margin: auto;
         height: 100%;
         display: block;
-        background-color: #8191f7;
+        background-color: #289c6a;
         border-radius: 30px;
         padding: 4px 4px;
         color:#ffffff;
