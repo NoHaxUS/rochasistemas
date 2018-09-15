@@ -36,7 +36,7 @@ APP_VERBOSE_NAME = 'SITENAME'
 
 INSTALLED_APPS = [
     'bootstrap_admin',
-    'admin_view_permission',
+    #'admin_view_permission',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
