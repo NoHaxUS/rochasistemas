@@ -41,8 +41,8 @@ def renaming_cotations(string):
 
 def check_request_status(request):
     if not request.status_code == 200:
-        print('Falha: Url:' + request.url)
-        print('Status: ' + request.status_code)
+        print('Falha: Url:' + str(request.url))
+        print('Status: ' + str(request.status_code))
 
 
 
