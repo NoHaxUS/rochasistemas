@@ -46,7 +46,7 @@ class TodayGames(TemplateResponseMixin, View):
 		
 		page = int(request.GET.get('page')) if request.GET.get('page') else 1
 
-		results_per_page = 30
+		results_per_page = 80
 		start_offset = 0 if page == 1 else (page * results_per_page) - results_per_page
 		end_offset = (page * results_per_page)
 		
@@ -93,7 +93,7 @@ class TomorrowGames(TemplateResponseMixin, View):
 
 		page = int(request.GET.get('page')) if request.GET.get('page') else 1
 
-		results_per_page = 30
+		results_per_page = 80
 		start_offset = 0 if page == 1 else (page * results_per_page) - results_per_page
 		end_offset = (page * results_per_page)
 
@@ -142,7 +142,7 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
 
 		page = int(request.GET.get('page')) if request.GET.get('page') else 1
 
-		results_per_page = 30
+		results_per_page = 80
 		start_offset = 0 if page == 1 else (page * results_per_page) - results_per_page
 		end_offset = (page * results_per_page)
 
