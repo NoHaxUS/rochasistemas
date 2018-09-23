@@ -182,10 +182,60 @@ $(document).ready(function () {
 
     });
 
+    function LightenDarkenColor(col, amt) {
+  
+        var usePound = false;
+      
+        if (col[0] == "#") {
+            col = col.slice(1);
+            usePound = true;
+        }
+     
+        var num = parseInt(col,16);
+     
+        var r = (num >> 16) + amt;
+     
+        if (r > 255) r = 255;
+        else if  (r < 0) r = 0;
+     
+        var b = ((num >> 8) & 0x00FF) + amt;
+     
+        if (b > 255) b = 255;
+        else if  (b < 0) b = 0;
+     
+        var g = (num & 0x0000FF) + amt;
+     
+        if (g > 255) g = 255;
+        else if (g < 0) g = 0;
+     
+        return (usePound?"#":"") + String("000000" + (g | (b << 8) | (r << 16)).toString(16)).slice(-6);
+    }
+
+    function rgb2hex(rgb) {
+        rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+        return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+       }
+       
+    function hex(x) {
+        var hexDigits = new Array
+        ("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"); 
+        return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
+    }
+
+    ORIGINAL_COTATION_COLOR = $('span.cotation').first().css('background-color');
+
+    function selectOnClick(actualElement){
+
+        var actual_color_hex = rgb2hex(ORIGINAL_COTATION_COLOR);
+        var new_color = LightenDarkenColor(actual_color_hex, -100)
+        actualElement.parent().parent().find('div > span.cotation').css('background-color', ORIGINAL_COTATION_COLOR);
+        actualElement.css('background-color', new_color);
+    }
+
     $('.cotation').click(function (e) {
 
-        var game_id = $(this).parent().siblings().first().children('.table-game-id').text().trim();
-        var game_name = $(this).parent().siblings().first().children('.table-game-name').text().trim();
+        var game_id = $(this).parent().parent().siblings().first().children('.table-game-id').text().trim();
+        var game_name = $(this).parent().parent().siblings().first().children('.table-game-name').text().trim();
         var cotation_id = $(this).siblings().first().text();
         var cotation_name = $(this).siblings().eq(1).text().trim();
         var cotation_value = $(this).text().trim();
@@ -202,6 +252,7 @@ $(document).ready(function () {
         }
 
         AddBetToTicket(bet_info);
+        //selectOnClick($(this));
 
     });
 
