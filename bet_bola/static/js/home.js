@@ -274,6 +274,8 @@ $(document).ready(function () {
             UpdateCotationTotal();
             $('.ticket-bet-value').trigger('keyup');
             alertify.notify('Feito');
+            location.reload(true);
+            
 
         }, function(){
             alertify.notify('Cancelado');
@@ -457,7 +459,7 @@ $(document).ready(function () {
         var href = $(e).attr('href');
         if(url_array == href){
 
-            $(e).css('color','#35469a');
+            $(e).css('color', $('.nav-wrapper').css('background-color'));
             $(e).css('font-weight','bold');
         }
 
