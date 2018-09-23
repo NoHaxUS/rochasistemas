@@ -252,7 +252,7 @@ $(document).ready(function () {
         }
 
         AddBetToTicket(bet_info);
-        //selectOnClick($(this));
+        selectOnClick($(this));
 
     });
 
