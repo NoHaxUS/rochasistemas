@@ -12,6 +12,7 @@ from history.models import PunterPayedHistory
 from django.contrib import messages
 from admin_view_permission.admin import AdminViewPermissionModelAdmin
 from .decorators import confirm_action
+from django.utils.html import format_html
 
 
 admin.site.unregister(Group)
@@ -115,6 +116,25 @@ def payment_status(obj):
 payment_status.short_description = 'Status do Pagamento'
 
 
+def bet_ticket_status(obj):
+    if obj.bet_ticket_status == 'Venceu':
+        return format_html (
+            '<div class="winner_ticket">{}</div>',
+            obj.bet_ticket_status
+        )
+    elif obj.bet_ticket_status == 'Não Venceu':
+        return format_html (
+            '<div class="loser_ticket">{}</div>',
+            obj.bet_ticket_status
+        )
+
+    return format_html (
+            '<div class="">{}</div>',
+            obj.bet_ticket_status
+        )
+
+bet_ticket_status.short_description = 'Status'
+
 @admin.register(BetTicket)
 class BetTicketAdmin(AdminViewPermissionModelAdmin):
     search_fields = ['id']
@@ -123,7 +143,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
     'payment__status_payment',
     'creation_date',
     'reward__status_reward')
-    list_display =('pk','get_ticket_link','get_punter_name','value','reward','cotation_sum','bet_ticket_status', payment_status,'creation_date', 'seller_related')
+    list_display =('pk', bet_ticket_status, 'get_ticket_link','get_punter_name','value','reward','cotation_sum', payment_status,'creation_date', 'seller_related')
     exclude = ('cotations','user','normal_user',)
     actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket, hide_ticket_action]
     list_per_page = 20
