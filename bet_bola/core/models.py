@@ -203,31 +203,26 @@ class BetTicket(models.Model):
 
 
     def update_ticket_status(self):
-        
-        if not self.check_if_waiting_results():
-            if self.cotations.filter(winning=False).count() > 0:
-                self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[1][1]
-                self.reward.status_reward = Reward.REWARD_STATUS[2][1]
-                self.reward.save()
-                self.save()
-            else:
-                self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[2][1]
-                self.reward.status_reward = Reward.REWARD_STATUS[3][1]
-                self.reward.save()
-                self.save()
-                
-                from utils.models import GeneralConfigurations
-                if GeneralConfigurations.objects.filter(pk=1):
-                    auto_pay_punter = GeneralConfigurations.objects.get(pk=1).auto_pay_punter
-                else:
-                    auto_pay_punter = False
-                
-                if auto_pay_punter and self.payment.who_set_payment:
-                    self.pay_winner_punter(self.payment.who_set_payment)
-            
 
-    def check_if_waiting_results(self):
-        return self.cotations.filter(winning=None).count() > 0
+        if self.cotations.filter(winning=False).count() > 0:
+            self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[1][1]
+            self.reward.status_reward = Reward.REWARD_STATUS[2][1]
+            self.reward.save()
+            self.save()
+        elif not self.cotations.filter(winning=None).count() > 0:
+            self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[2][1]
+            self.reward.status_reward = Reward.REWARD_STATUS[3][1]
+            self.reward.save()
+            self.save()
+            
+            from utils.models import GeneralConfigurations
+            if GeneralConfigurations.objects.filter(pk=1):
+                auto_pay_punter = GeneralConfigurations.objects.get(pk=1).auto_pay_punter
+            else:
+                auto_pay_punter = False
+            
+            if auto_pay_punter and self.payment.who_set_payment:
+                self.pay_winner_punter(self.payment.who_set_payment)
 
 
     class Meta:
