@@ -162,7 +162,9 @@ def process_json_games_cotations(json_response, max_cotation_value):
                     if not ht_score:
                         ht_score = F('ht_score')
                     Game.objects.filter(pk=game_id).update(
-                        status_game=game['time']['status'],                
+                        status_game=game['time']['status'],
+                        start_game_date=datetime.datetime.strptime(
+                        game["time"]["starting_at"]["date_time"], "%Y-%m-%d %H:%M:%S"),
                         ht_score=ht_score,
                         ft_score=ft_score
                     )
