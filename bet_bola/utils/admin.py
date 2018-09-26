@@ -28,3 +28,6 @@ class OverviewAdmin(admin.ModelAdmin):
 @admin.register(MarketReduction)
 class MarketReductionsAdmin(admin.ModelAdmin):
     list_display = ('market_to_reduct','reduction_percentual')
+
+    def has_delete_permission(self, request, obj=None):
+        return False
