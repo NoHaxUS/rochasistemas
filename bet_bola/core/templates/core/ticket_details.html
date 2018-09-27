@@ -154,12 +154,16 @@
                             
                             </td>
                             <td>
-                            {% if cotation.winning %}
-                                Acertou
-                            {% elif cotation.winning ==  None %}
-                                Em Aberto
+                            {% if cotation.game.status_game == 'NS' or cotation.game.status_game == 'FT' or cotation.game.status_game == 'FT_PEN' or cotation.game.status_game == 'AET' or cotation.game.status_game == 'LIVE' %}
+                                {% if cotation.winning %}
+                                    Acertou
+                                {% elif cotation.winning ==  None %}
+                                    Em Aberto
+                                {% else %}
+                                    Não acertou
+                                {% endif %}
                             {% else %}
-                                Não acertou
+                                Adiado ou Cancelado
                             {% endif %}
                             </td>
                         </tr>

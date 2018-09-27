@@ -405,7 +405,6 @@ class CreateTicketView(View):
 		if data['success']:
 			ticket = BetTicket(				
 				value=ticket_bet_value,
-				cotation_value_total=cotation_sum,
 				creation_date = tzlocal.now(),
 				payment=Payment.objects.create(payment_date=None), 
 				reward=Reward.objects.create(reward_date=None)
@@ -502,7 +501,7 @@ class TicketDetail(TemplateResponseMixin, View):
 				content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
 
 			content += "<CENTER> APOSTA: R$" + str("%.2f" % ticket.value) + "<BR>"
-			content += "<CENTER> COTA TOTAL: " + str("%.2f" % ticket.cotation_value_total) + "<BR>"
+			content += "<CENTER> COTA TOTAL: " + str("%.2f" % ticket.cotation_sum() ) + "<BR>"
 			if ticket.reward:
 				content += "<CENTER> GANHO POSSIVEL: R$" + str("%.2f" % ticket.reward.value) + "<BR>"
 			if ticket.payment:

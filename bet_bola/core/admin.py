@@ -206,7 +206,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
 
     def get_readonly_fields(self, request, obj):
         if request.user.has_perm('user.be_seller') and not request.user.is_superuser:
-            return ('value','reward','payment','creation_date','cotation_value_total', 'seller', 'bet_ticket_status','is_visible')
+            return ('value','reward','payment','creation_date','cotation_sum', 'seller', 'bet_ticket_status','is_visible')
         return super().get_readonly_fields(request, obj)
 
     def get_queryset(self, request):

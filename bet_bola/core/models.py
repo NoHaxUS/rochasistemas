@@ -29,8 +29,7 @@ class BetTicket(models.Model):
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Vendedor')
     normal_user = models.ForeignKey(NormalUser, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cliente')
     cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
-    cotation_value_total = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Cota Total da Aposta')
-    creation_date = models.DateTimeField(verbose_name='Data da Aposta')	
+    creation_date = models.DateTimeField(verbose_name='Data da Aposta')
     reward = models.OneToOneField('Reward', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
     payment = models.OneToOneField('Payment', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
     value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')
@@ -198,7 +197,13 @@ class BetTicket(models.Model):
 
 
     def cotation_sum(self):
-        return self.cotation_value_total
+        valid_cotations = self.cotations.filter(game__status_game__in = ('NS','FT','FT_PEN','AET','LIVE'))
+    
+        cotation_sum = 1
+        for cotation in valid_cotations:
+            cotation_sum *= cotation.value
+
+        return round(cotation_sum,2)
     cotation_sum.short_description = 'Cota Total'
 
 
