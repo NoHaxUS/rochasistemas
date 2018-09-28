@@ -32,6 +32,3 @@ class UserConfig(AppConfig):
     def ready(self):
         pass
         #post_migrate.connect(update_users_permissions_to_defaulf, sender=self)
- 
-        
-
