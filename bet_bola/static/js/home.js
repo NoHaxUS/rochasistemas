@@ -468,9 +468,9 @@ $(document).ready(function () {
 
     $('#check-ticket-form').on('submit', function(e){
         
-        e.preventDefault();
         var ticket_num = $('.check-ticket-input').val();
         if (ticket_num == '') {
+            e.preventDefault();
             alertify.alert('Erro', 'Você deve informar o número do ticket.').set('movable', false);
         }else{
             var Url = '/ticket/' + ticket_num + '/';
