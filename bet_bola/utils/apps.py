@@ -31,5 +31,6 @@ class UtilsConfig(AppConfig):
     verbose_name = 'Utilidades'
 
     def ready(self):
-        post_migrate.connect(create_comission_to_existing_sellers, sender=self)
-        post_migrate.connect(create_default_priority, sender=self)
+        pass
+        #post_migrate.connect(create_comission_to_existing_sellers, sender=self)
+        #post_migrate.connect(create_default_priority, sender=self)

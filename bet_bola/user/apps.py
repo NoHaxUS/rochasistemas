@@ -30,7 +30,8 @@ class UserConfig(AppConfig):
     verbose_name = "Usuários"
     
     def ready(self):
-        post_migrate.connect(update_users_permissions_to_defaulf, sender=self)
+        pass
+        #post_migrate.connect(update_users_permissions_to_defaulf, sender=self)
  
         
 
