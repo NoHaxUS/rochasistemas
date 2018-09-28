@@ -197,8 +197,8 @@ class BetTicket(models.Model):
 
 
     def cotation_sum(self):
-        valid_cotations = self.cotations.filter(game__status_game__in = ('NS','FT','FT_PEN','AET','LIVE'))
-    
+        valid_cotations = CotationHistory.objects.filter(bet_ticket=self, game__status_game__in = ('NS','FT','FT_PEN','AET','LIVE'))
+        
         cotation_sum = 1
         for cotation in valid_cotations:
             cotation_sum *= cotation.value
