@@ -13,6 +13,10 @@ import urllib
 import json
 
 
+class ValidateTicket(View):
+
+    def post(self, request, *args, **kwargs):
+        ticket_id = request.POST['ticket_id']
 
 class PDF(View):
 
