@@ -190,7 +190,7 @@ class BetTicket(models.Model):
         PunterPayedHistory.objects.create(punter_payed=punter_payed,
             seller=user.seller,
             ticket_winner=self,
-            payed_value=self.reward.value)
+            payed_value=self.reward.real_value)
 
         return {'success':True,
                 'message':'O Apostador ' + punter_payed  + ' foi marcado como Pago'}
@@ -343,6 +343,28 @@ class Reward(models.Model):
     reward_date = models.DateTimeField(null=True, blank=True)
     value = models.DecimalField(max_digits=50, decimal_places=2, default=0)
     status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1], verbose_name='Status do Prêmio')
+
+    @property
+    def real_value(self):
+        from utils.models import GeneralConfigurations
+
+        try:
+            general_config = GeneralConfigurations.objects.get(pk=1)
+            max_reward_to_pay = general_config.max_reward_to_pay
+        except GeneralConfigurations.DoesNotExist:
+            max_reward_to_pay = 50000
+
+
+        from core.views import get_max_reward_by_value
+        max_value = get_max_reward_by_value(self.ticket.value, max_reward_to_pay)
+
+        reward_total = round(self.ticket.value * self.ticket.cotation_sum(), 2)
+
+        if reward_total > max_value:
+            return max_value
+        else:
+            return reward_total
+
 
     def __str__(self):
         return str(self.value)

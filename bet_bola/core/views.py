@@ -243,6 +243,11 @@ class CotationsView(View):
 		return HttpResponse( data, content_type='application/json' )
 
 
+def get_max_reward_by_value(value, actual_max_value):
+	from math import ceil
+	values_rewards = {}
+	return values_rewards.get(ceil(value), actual_max_value)
+
 class BetView(View):
 
 	def post(self, request, *args, **kwargs):		
@@ -388,7 +393,7 @@ class CreateTicketView(View):
 
 		ticket_reward_value = cotation_sum * ticket_bet_value
 
-		max_reward_to_pay_per_value = self.get_max_reward_by_value(ticket_bet_value, max_reward_to_pay)
+		max_reward_to_pay_per_value = get_max_reward_by_value(ticket_bet_value, max_reward_to_pay)
 
 		if not accepted_conditions:
 			if Decimal(ticket_reward_value) > max_reward_to_pay_per_value:
@@ -420,10 +425,6 @@ class CreateTicketView(View):
 				else:
 					ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
 			
-			if accepted_conditions:
-				ticket.reward.value = Decimal(max_reward_to_pay_per_value)
-			else:
-				ticket.reward.value = ticket_reward_value
 			ticket.reward.save()
 			ticket.save()
 
@@ -460,11 +461,6 @@ class CreateTicketView(View):
 			else:
 				return UnicodeJsonResponse(data)
 
-
-	def get_max_reward_by_value(self, value, actual_max_value):
-		from math import ceil
-		values_rewards = {}
-		return values_rewards.get(ceil(value), actual_max_value)
 
 class TicketDetail(TemplateResponseMixin, View):
 
@@ -503,7 +499,7 @@ class TicketDetail(TemplateResponseMixin, View):
 			content += "<CENTER> APOSTA: R$" + str("%.2f" % ticket.value) + "<BR>"
 			content += "<CENTER> COTA TOTAL: " + str("%.2f" % ticket.cotation_sum() ) + "<BR>"
 			if ticket.reward:
-				content += "<CENTER> GANHO POSSIVEL: R$" + str("%.2f" % ticket.reward.value) + "<BR>"
+				content += "<CENTER> GANHO POSSIVEL: R$" + str("%.2f" % ticket.reward.real_value) + "<BR>"
 			if ticket.payment:
 				content +=  "<CENTER> STATUS: " + ticket.payment.status_payment + "<BR>"
 			content += "<CENTER> DATA: " + ticket.creation_date.strftime('%d/%m/%Y %H:%M')

@@ -53,7 +53,7 @@ class PDF(View):
         pdf.text(55,60, "APOSTA: R$" + str("%.2f" % ticket.value) )
         pdf.text(55,72, "COTA TOTAL: " + str("%.2f" % ticket.cotation_sum() ))
         if ticket.reward:
-            pdf.text(55,84, "GANHO POSSÍVEL: R$" + str("%.2f" % ticket.reward.value) )
+            pdf.text(55,84, "GANHO POSSÍVEL: R$" + str("%.2f" % ticket.reward.real_value) )
         if ticket.payment:
             payment_text = ticket.payment.status_payment
             if len(payment_text) <= 5:
