@@ -232,7 +232,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
 @admin.register(Reward)
 class RewardAdmin(admin.ModelAdmin):
 
-    def has_delete_permission(self, request):
+    def has_delete_permission(self, request, obj=None):
         if request.user.is_superuser:
             return False
         return super().has_delete_permission(request)
