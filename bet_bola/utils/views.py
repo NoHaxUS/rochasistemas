@@ -11,12 +11,23 @@ from fpdf import FPDF
 from django.db.models import F, Q, When, Case
 import urllib
 import json
+from utils.response import UnicodeJsonResponse
 
 
 class ValidateTicket(View):
 
     def post(self, request, *args, **kwargs):
         ticket_id = request.POST['ticket_id']
+
+        ticket = BetTicket.objects.filter(pk=ticket_id)
+
+        if ticket.count() > 0:
+            return UnicodeJsonResponse(ticket.first().validate_ticket(request.user.seller))
+        else:
+            return UnicodeJsonResponse({
+                'sucess':False,
+                'message': 'Esse ticket não existe.'
+            })
 
 class PDF(View):
 

@@ -489,7 +489,16 @@ $(document).ready(function () {
 
             alertify.confirm("Confirmação", "Deseja validar o Ticket: " + ticket_num, 
             function(){
-                alert("OK");
+                $.post('/utils/validate_ticket/', {'ticket_id': ticket_num}, function(data, status, rq){
+                    
+                    if(data.success){
+                        alertify.success(data.message);
+                    }else{
+                        alertify.error(data.message);
+                    }
+    
+        
+                });
             },
             function(){
                 

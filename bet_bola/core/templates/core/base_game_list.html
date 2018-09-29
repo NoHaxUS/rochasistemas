@@ -243,12 +243,10 @@
             <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
                 Consultar Bilhete</a>
         </li>
-        <!--
         <li>
             <a href="#modal-validate-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
                 Validar Bilhete</a>
         </li>
-        -->
         {% endif %}
         
         {% if not perms.user.be_seller and not user.is_superuser and not perms.user.be_manager %}
@@ -310,12 +308,10 @@
             <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
                 Consultar Bilhete</a>
         </li>
-        <!--
         <li>
             <a href="#modal-validate-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
                 Validar Bilhete</a>
         </li>
-        -->
         {% endif %} {% if not perms.user.be_seller and not user.is_superuser and not perms.user.be_manager %}
         <li>
             <a href="{% url 'admin:index' %}" class="waves-effect waves-light btn white green-text-button ">
