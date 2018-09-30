@@ -23,6 +23,7 @@ class BetTicket(models.Model):
         ('Aguardando Resultados', 'Aguardando Resultados'),
         ('Não Venceu', 'Não Venceu'),
         ('Venceu', 'Venceu'),
+        ('Venceu e não foi pago','Venceu e não foi pago')
     )
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Apostador')
@@ -215,8 +216,12 @@ class BetTicket(models.Model):
             self.reward.save()
             self.save()
         elif not self.cotations.filter(winning=None).count() > 0:
-            self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[2][1]
-            self.reward.status_reward = Reward.REWARD_STATUS[3][1]
+            if self.payment.status_payment == 'Pago':
+                self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[2][1]
+                self.reward.status_reward = Reward.REWARD_STATUS[3][1]
+            else:
+                self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[3][1]
+                self.reward.status_reward = Reward.REWARD_STATUS[4][1]
             self.reward.save()
             self.save()
             
@@ -337,6 +342,7 @@ class Reward(models.Model):
         ('O apostador foi pago', 'O apostador foi pago'),
         ('Esse ticket não venceu', 'Esse ticket não venceu'),
         ('Venceu, Pagar Apostador', 'Venceu, Pagar Apostador'),
+        ('Venceu e não foi pago','Venceu e não foi pago')
     )
 
     who_rewarded = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL)
