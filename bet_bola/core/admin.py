@@ -146,7 +146,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
     list_display =('pk', bet_ticket_status, 'get_ticket_link','get_punter_name','value','reward','cotation_sum', payment_status,'creation_date', 'seller_related')
     exclude = ('cotations','user','normal_user',)
     actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket, hide_ticket_action]
-    list_per_page = 20
+    list_per_page = 50
 
 
     def has_add_permission(self, request):

@@ -23,7 +23,8 @@ class BetTicket(models.Model):
         ('Aguardando Resultados', 'Aguardando Resultados'),
         ('Não Venceu', 'Não Venceu'),
         ('Venceu', 'Venceu'),
-        ('Venceu e não foi pago','Venceu e não foi pago')
+        ('Venceu e não foi pago','Venceu e não foi pago'),
+        ('Cancelado', 'Cancelado')
     )
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Apostador')
@@ -89,8 +90,9 @@ class BetTicket(models.Model):
         seller = self.payment.who_set_payment
         seller.credit_limit += self.value
         seller.save()
-        self.payment.status_payment = 'Aguardando Pagamento do Ticket'
-        self.payment.who_set_payment = None
+
+        self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[4][1]
+        self.payment.status_payment = BetTicket.BET_TICKET_STATUS[4][1]
         self.payment.payment_date = None
         self.payment.save()
         self.save()
