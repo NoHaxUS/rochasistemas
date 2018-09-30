@@ -52,6 +52,11 @@ class BetTicket(models.Model):
         self.save()
         return {"message" :"Ticket "+ str(self.pk) +" Ocultado."}
 
+    def show_ticket(self):
+        self.is_visible = True
+        self.save()
+        return {"message" :"Ticket "+ str(self.pk) +" Exibido."}
+
     def get_ticket_link(self):
         from django.utils.safestring import mark_safe
         link = '<a href="/ticket/'+str(self.pk) + '/">Consultar<a/>'
@@ -307,6 +312,12 @@ class Game(models.Model):
         self.is_visible = False
         self.save()
         return {"message" :"Jogo "+ str(self.pk) +" Ocultado."}
+
+
+    def show_game(self):
+        self.is_visible = True
+        self.save()
+        return {"message" :"Jogo "+ str(self.pk) +" Exibido."}
 
 
 

@@ -480,7 +480,7 @@ class TicketDetail(TemplateResponseMixin, View):
 
 		cotations_history = CotationHistory.objects.filter(bet_ticket=ticket.pk)
 		
-		if cotations_history.count() > 0:
+		if cotations_history.count() > 0 and ticket.is_visible == True:
 
 			cotations_values = {}
 			for i_cotation in cotations_history:
