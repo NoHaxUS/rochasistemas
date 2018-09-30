@@ -33,4 +33,5 @@ class UtilsConfig(AppConfig):
     def ready(self):
         pass
         #post_migrate.connect(create_comission_to_existing_sellers, sender=self)
-        post_migrate.connect(create_default_priority, sender=self)
+        #post_migrate.connect(create_default_priority, sender=self)
+        
