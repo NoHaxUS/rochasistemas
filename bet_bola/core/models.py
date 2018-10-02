@@ -99,6 +99,7 @@ class BetTicket(models.Model):
         self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[4][1]
         self.payment.status_payment = BetTicket.BET_TICKET_STATUS[4][1]
         self.payment.payment_date = None
+        self.payment.seller_was_rewarded = True
         self.payment.save()
         self.save()
 
