@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from user.models import CustomUser
-from .models import BetTicket,Cotation,Payment,Game,Championship,Reward,Country,Market
+from .models import BetTicket,Cotation,Payment,Game,League,Reward,Location,Market
 from user.models import CustomUser
 from django.contrib.auth.models import Group
 from django.db.models import Q
@@ -326,7 +326,7 @@ class GameAdmin(admin.ModelAdmin):
     list_filter = (GamesWithNoFinalResults, HiddenGamesFilter)
     list_display = ('pk','name',)
     list_display_links = ('pk','name',)
-    autocomplete_fields = ['championship',]
+    autocomplete_fields = ['league',]
     actions = [hide_game_action, show_game_action]
     list_per_page = 20
 
@@ -385,25 +385,25 @@ class MarketAdmin(admin.ModelAdmin):
 @admin.register(Cotation)
 class CotationAdmin(admin.ModelAdmin):
     search_fields = ['id','name','game__name']
-    autocomplete_fields = ['game','kind',]
-    list_display = ('pk','name', 'original_value', 'value', 'game', 'kind')
+    autocomplete_fields = ['game','market',]
+    list_display = ('pk','name', 'start_price', 'price', 'game', 'market')
     list_display_links = ('pk','name',)
     list_per_page = 20
 
 
-@admin.register(Country)
-class CountryAdmin(admin.ModelAdmin):
+@admin.register(Location)
+class LocationAdmin(admin.ModelAdmin):
     search_fields = ['id','name']
     list_display = ('pk','name', 'priority')
     list_display_links = ('pk','name')
     list_per_page = 20
 
 
-@admin.register(Championship)
-class ChampionshipAdmin(admin.ModelAdmin):
+@admin.register(League)
+class LeagueAdmin(admin.ModelAdmin):
     search_fields = ['id','name']
-    list_display = ('pk','name','country','priority')
+    list_display = ('pk','name','location','priority')
     list_display_links = ('pk','name')
-    autocomplete_fields = ['country',]
+    autocomplete_fields = ['location',]
     list_per_page = 20
 

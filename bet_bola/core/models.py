@@ -264,38 +264,41 @@ class CotationHistory(models.Model):
     is_standard = models.BooleanField(default=False, verbose_name='Cota Padrão ?')
     kind = models.ForeignKey('Market', related_name='cotations_history', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
     total = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True)
-  
+ 
+
+class Sport(models.Model):
+    name = models.CharField(max_length=45)
+    games = models.ForeignKey('Game', related_name='my_games', on_delete=models.SET_NULL, null=True)
+
 
 class Game(models.Model):
 
     GAME_STATUS = (
-        ('NS', 'Não Iniciado'),
-        ('LIVE','Ao Vivo'),
-        ('HT', 'Meio Tempo'),
-        ('FT', 'Tempo Total')	,	
-        ('ET', 'Tempo Extra'),
-        ('PEN_LIVE', 'Penaltis'),
-        ('AET', 'Terminou após tempo extra'),
-        ('BREAK', 'Esperando tempo extra'),
-        ('FT_PEN', 'Tempo total após os penaltis'),
-        ('CANCL', 'Cancelado'),
-        ('POSTP', 'Adiado'),
-        ('INT', 'Interrompindo'),
-        ('ABAN', 'Abandonado'),
-        ('SUSP', 'Suspendido'),
-        ('AWARDED', 'Premiado'),
-        ('DELAYED', 'Atrasado'),
-        ('TBA', 'A ser anunciado'),
-        ('WO', 'WO'),
+        (1, 'Não Iniciado'),
+        (2,'Ao Vivo'),
+        (3, 'Terminado') ,   
+        (4, 'Cancelado'),        
+        (5, "Adiado"),
+        (6, 'Interrompindo'),
+        (7, "Abandonado"),
+        (8, "Pré-jogo")
+        # ('FT_PEN', 'Tempo total após os penaltis'),
+        # ('CANCL', 'Cancelado'),
+        # ('POSTP', 'Adiado'),
+        # ('INT', 'Interrompindo'),
+        # ('ABAN', 'Abandonado'),
+        # ('SUSP', 'Suspendido'),
+        # ('AWARDED', 'Premiado'),
+        # ('DELAYED', 'Atrasado'),
+        # ('TBA', 'A ser anunciado'),
+        # ('WO', 'WO'),
     )
 
     name = models.CharField(max_length=80, verbose_name='Nome do Jogo')
-    start_game_date = models.DateTimeField(verbose_name='Início da Partida')
-    championship = models.ForeignKey('Championship',related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL,verbose_name='Campeonato')
-    status_game = models.CharField(max_length=80,default=GAME_STATUS[0][1], choices=GAME_STATUS,verbose_name='Status do Jogo')
-    ht_score = models.CharField(max_length=80, null=True, blank=True, verbose_name='Placar até o meio-tempo', help_text="Placar meio-tempo Ex: 3-5 (Casa-Visita)")
-    ft_score = models.CharField(max_length=80, null=True, blank=True, verbose_name='Placar no final do Jogo', help_text="Placar final Ex: 3-5 (Casa-Visita)")
-    odds_processed = models.BooleanField(default=False, verbose_name='Foi processado?')
+    start_date = models.DateTimeField(verbose_name='Início da Partida')
+    league = models.ForeignKey('League',related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL,verbose_name='Campeonato')
+    status_game = models.IntegerField(choices=GAME_STATUS,verbose_name='Status do Jogo')   
+    date_update = models.DateTimeField(verbose_name='Ultima Atualização')
     is_visible = models.BooleanField(default=True, verbose_name='Visível?')
 
     objects = GamesManager()	
@@ -321,11 +324,31 @@ class Game(models.Model):
         return {"message" :"Jogo "+ str(self.pk) +" Exibido."}
 
 
+class Period(models.Model):
+    
+    PERIOD_STATUS = (
+        (10,"Primeiro Tempo"),
+        (20,"Segundo Tempo"),
+        (30,"Primeiro Tempo (Prorrogacao)"),
+        (35,"Segundo Tempo (Prorrogacao)"),
+        (50,"Penaltis"),
+        (100,"Termino"),
+        (101,"Termino (Prorrogacao)"),
+        (102,"Termino (Penaltis")
+        )
 
-class Championship(models.Model):
+    period_type = models.IntegerField(choices=PERIOD_STATUS)
+    is_fineshed = models.BooleanField(default=False)
+    is_confirmed = models.BooleanField(default=False)
+    game = models.ForeignKey('Game',related_name='periods', on_delete=models.CASCADE)
+    home_score = models.IntegerField(default=0)
+    away_score = models.IntegerField(default=0)
+
+
+class League(models.Model):
 
     name = models.CharField(max_length=80, verbose_name='Nome', help_text='Campeonato')
-    country = models.ForeignKey('Country', related_name='my_championships',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pais')
+    location = models.ForeignKey('Location', related_name='my_leagues',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Local')
     priority = models.IntegerField(default=1, verbose_name='Prioridade')
 
     def __str__(self):
@@ -337,9 +360,9 @@ class Championship(models.Model):
         verbose_name_plural = 'Campeonatos'
 
 
-class Country(models.Model):
+class Location(models.Model):
 
-    name = models.CharField(max_length=45, verbose_name='País')
+    name = models.CharField(max_length=45, verbose_name='Local')
     priority = models.IntegerField(default=1, verbose_name='Prioridade')
 
     def __str__(self):
@@ -348,6 +371,7 @@ class Country(models.Model):
     class Meta:
         verbose_name = 'País'
         verbose_name_plural = 'Países'
+
 
 class Reward(models.Model):
 
@@ -410,15 +434,30 @@ class Market(models.Model):
 
 
 class Cotation(models.Model):
+    SETTLEMENT_STATUS = (
+            (-1, "Cancelada"),
+            (1, "Perdeu"),
+            (2, "Ganhou"),
+            (3, "Reembolso"),
+            (4, "Metade Perdida"),
+            (3, "Metade Ganha")
+        )
+
+    COTATION_STATUS = (
+            (1,"Em aberto"),
+            (2,"Suspensa"),
+            (3, "Finalizada")
+        )
 
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
-    original_value = models.DecimalField(max_digits=30, decimal_places=2, default=0,verbose_name='Valor Original')
-    value = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
+    start_price = models.DecimalField(max_digits=30, decimal_places=2, default=0,verbose_name='Valor Original')
+    price = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
     game = models.ForeignKey('Game', related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
-    winning = models.NullBooleanField(verbose_name='Vencedor ?')
-    is_standard = models.BooleanField(default=False, verbose_name='Cota Padrão ?')
-    kind = models.ForeignKey(Market, related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
-    total = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True)
+    settlement = models.IntegerField(choices=SETTLEMENT_STATUS)
+    status = models.IntegerField(choices=COTATION_STATUS)    
+    market = models.ForeignKey(Market, related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
+    base_line = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True)
+    last_update = models.DateTimeField(null=True, blank=True)
     objects = GamesManager()
 
 
