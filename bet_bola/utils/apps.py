@@ -25,11 +25,24 @@ def create_default_priority(sender, **kwargs):
         Country.objects.filter(pk=32).update(priority=97)
         Country.objects.filter(pk=17).update(priority=95)
 
+def correct_cancelled_tickets(sender, **kwargs):
+    from core.models import BetTicket
+
+    print("Correcting cancelled Tickets.")
+    cancelled_tickets = BetTicket.objects.filter(bet_ticket_status = BetTicket.BET_TICKET_STATUS[4][1])
+
+    for ticket in cancelled_tickets:
+        ticket.payment.seller_was_rewarded = True
+        ticket.payment.save()
+        
 
 class UtilsConfig(AppConfig):
     name = 'utils'
     verbose_name = 'Utilidades'
 
     def ready(self):
-        post_migrate.connect(create_comission_to_existing_sellers, sender=self)
-        post_migrate.connect(create_default_priority, sender=self)
+        pass
+        #post_migrate.connect(correct_cancelled_tickets, sender=self)
+        #post_migrate.connect(create_comission_to_existing_sellers, sender=self)
+        #post_migrate.connect(create_default_priority, sender=self)
+        

@@ -31,6 +31,41 @@ class GamesWithNoFinalResults(admin.SimpleListFilter):
         if self.value() == 'list_all':
             return queryset.filter(status_game='FT', ft_score__isnull=True)
 
+
+class HiddenGamesFilter(admin.SimpleListFilter):
+
+    title = _('Visibilidade')
+    parameter_name = 'visibility'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('list_all_hidden', _('Jogos Ocultos')),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'list_all_hidden':
+            return queryset.filter(is_visible=False)
+        elif self.value() == None:
+            return queryset.filter(is_visible=True)
+
+
+class HiddenTicketFilter(admin.SimpleListFilter):
+
+    title = _('Visibilidade')
+    parameter_name = 'visibility'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('list_all_hidden', _('Tickets Ocultos')),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'list_all_hidden':
+            return queryset.filter(is_visible=False)
+        elif self.value() == None:
+            return queryset.filter(is_visible=True)
+
+
 @confirm_action("Cancelar Ticket(s)")
 def cancel_ticket(modeladmin, request, queryset):
     if request.user.is_superuser:
@@ -110,6 +145,17 @@ def hide_ticket_action(modeladmin, request, queryset):
 hide_ticket_action.short_description = 'Ocultar Tickets'
 
 
+@confirm_action("Ocultar Ticket(s)")
+def show_ticket_action(modeladmin, request, queryset):
+
+    if request.user.is_superuser:
+        for ticket in queryset:
+            result = ticket.show_ticket()
+            messages.success(request, result['message'])
+
+show_ticket_action.short_description = 'Exibir Tickets'
+
+
 def payment_status(obj):
     if obj.payment:
         return ("%s" % obj.payment.status_payment)
@@ -123,6 +169,11 @@ def bet_ticket_status(obj):
             obj.bet_ticket_status
         )
     elif obj.bet_ticket_status == 'Não Venceu':
+        return format_html (
+            '<div class="loser_ticket">{}</div>',
+            obj.bet_ticket_status
+        )
+    elif obj.bet_ticket_status == 'Cancelado':
         return format_html (
             '<div class="loser_ticket">{}</div>',
             obj.bet_ticket_status
@@ -141,12 +192,13 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
     list_filter = ('bet_ticket_status',
     'payment__who_set_payment_id',
     'payment__status_payment',
+    HiddenTicketFilter,
     'creation_date',
     'reward__status_reward')
     list_display =('pk', bet_ticket_status, 'get_ticket_link','get_punter_name','value','reward','cotation_sum', payment_status,'creation_date', 'seller_related')
     exclude = ('cotations','user','normal_user',)
-    actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket, hide_ticket_action]
-    list_per_page = 20
+    actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket, hide_ticket_action, show_ticket_action]
+    list_per_page = 50
 
 
     def has_add_permission(self, request):
@@ -159,7 +211,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
         actions = super().get_actions(request)
 
         if request.user.is_superuser:
-            valid_actions = ['cancel_ticket', 'hide_ticket_action']
+            valid_actions = ['cancel_ticket', 'hide_ticket_action','show_ticket_action']
             actions_copy = actions.copy()
             for action in actions_copy:
                 if not action in valid_actions:
@@ -206,13 +258,13 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
 
     def get_readonly_fields(self, request, obj):
         if request.user.has_perm('user.be_seller') and not request.user.is_superuser:
-            return ('value','reward','payment','creation_date','cotation_value_total', 'seller', 'bet_ticket_status','is_visible')
+            return ('value','reward','payment','creation_date','cotation_sum', 'seller', 'bet_ticket_status','is_visible')
         return super().get_readonly_fields(request, obj)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
-            return qs.filter(is_visible=True)
+            return qs
 
         if request.user.has_perm('user.be_seller'):
             return qs.filter(Q(payment__status_payment=Payment.PAYMENT_STATUS[0][1],
@@ -232,7 +284,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
 @admin.register(Reward)
 class RewardAdmin(admin.ModelAdmin):
 
-    def has_delete_permission(self, request):
+    def has_delete_permission(self, request, obj=None):
         if request.user.is_superuser:
             return False
         return super().has_delete_permission(request)
@@ -257,14 +309,25 @@ def hide_game_action(modeladmin, request, queryset):
 
 hide_game_action.short_description = 'Ocultar Jogos'
 
+
+@confirm_action("Exibir Jogo(s)")
+def show_game_action(modeladmin, request, queryset):
+
+    if request.user.is_superuser:
+        for game in queryset:
+            result = game.show_game()
+            messages.success(request, result['message'])
+
+show_game_action.short_description = 'Exibir Jogos'
+
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
     search_fields = ['id','name']
-    list_filter = (GamesWithNoFinalResults,)
+    list_filter = (GamesWithNoFinalResults, HiddenGamesFilter)
     list_display = ('pk','name',)
     list_display_links = ('pk','name',)
     autocomplete_fields = ['championship',]
-    actions = [hide_game_action,]
+    actions = [hide_game_action, show_game_action]
     list_per_page = 20
 
 
@@ -272,7 +335,7 @@ class GameAdmin(admin.ModelAdmin):
         actions = super().get_actions(request)
 
         if request.user.is_superuser:
-            valid_actions = ['hide_game_action',]
+            valid_actions = ['hide_game_action','show_game_action']
             actions_copy = actions.copy()
             for action in actions_copy:
                 if not action in valid_actions:
@@ -293,13 +356,11 @@ class GameAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
-            return qs.filter(is_visible=True)
+            return qs
         if request.user.has_perm('user.be_seller'):
             return qs
-
         if request.user.has_perm('user.be_manager'):
             return qs
-
         if request.user.has_perm('user.be_punter'):
             return qs
         

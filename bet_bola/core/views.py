@@ -46,7 +46,7 @@ class TodayGames(TemplateResponseMixin, View):
 		
 		page = int(request.GET.get('page')) if request.GET.get('page') else 1
 
-		results_per_page = 30
+		results_per_page = 80
 		start_offset = 0 if page == 1 else (page * results_per_page) - results_per_page
 		end_offset = (page * results_per_page)
 		
@@ -93,7 +93,7 @@ class TomorrowGames(TemplateResponseMixin, View):
 
 		page = int(request.GET.get('page')) if request.GET.get('page') else 1
 
-		results_per_page = 30
+		results_per_page = 80
 		start_offset = 0 if page == 1 else (page * results_per_page) - results_per_page
 		end_offset = (page * results_per_page)
 
@@ -142,7 +142,7 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
 
 		page = int(request.GET.get('page')) if request.GET.get('page') else 1
 
-		results_per_page = 30
+		results_per_page = 80
 		start_offset = 0 if page == 1 else (page * results_per_page) - results_per_page
 		end_offset = (page * results_per_page)
 
@@ -243,6 +243,11 @@ class CotationsView(View):
 		return HttpResponse( data, content_type='application/json' )
 
 
+def get_max_reward_by_value(value, actual_max_value):
+	from math import ceil
+	values_rewards = {}
+	return values_rewards.get(ceil(value), actual_max_value)
+
 class BetView(View):
 
 	def post(self, request, *args, **kwargs):		
@@ -293,10 +298,12 @@ class CreateTicketView(View):
 			max_reward_to_pay = general_config.max_reward_to_pay
 			min_number_of_choices_per_bet = general_config.min_number_of_choices_per_bet
 			min_bet_value = general_config.min_bet_value
+			max_bet_value = general_config.max_bet_value
 			min_cotation_sum = general_config.min_cotation_sum
 			max_cotation_sum = general_config.max_cotation_sum
 
 		except GeneralConfigurations.DoesNotExist:
+			max_bet_value = 1000000
 			max_reward_to_pay = 50000
 			min_number_of_choices_per_bet = 1
 			min_bet_value = 1
@@ -345,6 +352,11 @@ class CreateTicketView(View):
 			data['message'] =  "A aposta mínima é: R$ " + str(min_bet_value)
 			return UnicodeJsonResponse(data)
 
+		if ticket_bet_value > max_bet_value:
+			data['success'] =  False
+			data['message'] =  "A aposta máxima é: R$ " + str(max_bet_value)
+			return UnicodeJsonResponse(data)
+
 		if 'ticket' not in request.session:
 			data['success'] =  False
 			data['message'] =  "Selecione algumas cotações."
@@ -388,7 +400,7 @@ class CreateTicketView(View):
 
 		ticket_reward_value = cotation_sum * ticket_bet_value
 
-		max_reward_to_pay_per_value = self.get_max_reward_by_value(ticket_bet_value, max_reward_to_pay)
+		max_reward_to_pay_per_value = get_max_reward_by_value(ticket_bet_value, max_reward_to_pay)
 
 		if not accepted_conditions:
 			if Decimal(ticket_reward_value) > max_reward_to_pay_per_value:
@@ -405,7 +417,6 @@ class CreateTicketView(View):
 		if data['success']:
 			ticket = BetTicket(				
 				value=ticket_bet_value,
-				cotation_value_total=cotation_sum,
 				creation_date = tzlocal.now(),
 				payment=Payment.objects.create(payment_date=None), 
 				reward=Reward.objects.create(reward_date=None)
@@ -421,10 +432,6 @@ class CreateTicketView(View):
 				else:
 					ticket.normal_user=NormalUser.objects.create(first_name=client_name, cellphone=cellphone)
 			
-			if accepted_conditions:
-				ticket.reward.value = Decimal(max_reward_to_pay_per_value)
-			else:
-				ticket.reward.value = ticket_reward_value
 			ticket.reward.save()
 			ticket.save()
 
@@ -462,11 +469,6 @@ class CreateTicketView(View):
 				return UnicodeJsonResponse(data)
 
 
-	def get_max_reward_by_value(self, value, actual_max_value):
-		from math import ceil
-		values_rewards = {}
-		return values_rewards.get(ceil(value), actual_max_value)
-
 class TicketDetail(TemplateResponseMixin, View):
 
 
@@ -485,7 +487,7 @@ class TicketDetail(TemplateResponseMixin, View):
 
 		cotations_history = CotationHistory.objects.filter(bet_ticket=ticket.pk)
 		
-		if cotations_history.count() > 0:
+		if cotations_history.count() > 0 and ticket.is_visible == True:
 
 			cotations_values = {}
 			for i_cotation in cotations_history:
@@ -502,9 +504,9 @@ class TicketDetail(TemplateResponseMixin, View):
 				content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
 
 			content += "<CENTER> APOSTA: R$" + str("%.2f" % ticket.value) + "<BR>"
-			content += "<CENTER> COTA TOTAL: " + str("%.2f" % ticket.cotation_value_total) + "<BR>"
+			content += "<CENTER> COTA TOTAL: " + str("%.2f" % ticket.cotation_sum() ) + "<BR>"
 			if ticket.reward:
-				content += "<CENTER> GANHO POSSIVEL: R$" + str("%.2f" % ticket.reward.value) + "<BR>"
+				content += "<CENTER> GANHO POSSIVEL: R$" + str("%.2f" % ticket.reward.real_value) + "<BR>"
 			if ticket.payment:
 				content +=  "<CENTER> STATUS: " + ticket.payment.status_payment + "<BR>"
 			content += "<CENTER> DATA: " + ticket.creation_date.strftime('%d/%m/%Y %H:%M')

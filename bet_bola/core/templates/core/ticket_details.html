@@ -118,7 +118,7 @@
                     <div class="row"><span class='bold'>Status do Ticket:</span> {{ticket.bet_ticket_status}}</div>
                     <div class="row"><span class='bold'>Valor apostado:</span> R$ {{ticket.value}}</div>
                     <div class="row"><span class='bold'>Cota Total:</span> {{ticket.cotation_sum}}</div>
-                    <div class="row"><span class='bold'>Ganho Possível:</span> R$ {{ ticket.reward.value }}</div>
+                    <div class="row"><span class='bold'>Ganho Possível:</span> R$ {{ ticket.reward.real_value }}</div>
                 </div>
             </div>
             <div class="row white">
@@ -154,12 +154,16 @@
                             
                             </td>
                             <td>
-                            {% if cotation.winning %}
-                                Acertou
-                            {% elif cotation.winning ==  None %}
-                                Em Aberto
+                            {% if cotation.game.status_game == 'NS' or cotation.game.status_game == 'FT' or cotation.game.status_game == 'FT_PEN' or cotation.game.status_game == 'AET' or cotation.game.status_game == 'LIVE' %}
+                                {% if cotation.winning %}
+                                    Acertou
+                                {% elif cotation.winning ==  None %}
+                                    Em Aberto
+                                {% else %}
+                                    Não acertou
+                                {% endif %}
                             {% else %}
-                                Não acertou
+                                Adiado ou Cancelado
                             {% endif %}
                             </td>
                         </tr>

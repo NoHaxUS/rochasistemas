@@ -23,14 +23,15 @@ class BetTicket(models.Model):
         ('Aguardando Resultados', 'Aguardando Resultados'),
         ('Não Venceu', 'Não Venceu'),
         ('Venceu', 'Venceu'),
+        ('Venceu e não foi pago','Venceu e não foi pago'),
+        ('Cancelado', 'Cancelado')
     )
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Apostador')
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Vendedor')
     normal_user = models.ForeignKey(NormalUser, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cliente')
     cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
-    cotation_value_total = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Cota Total da Aposta')
-    creation_date = models.DateTimeField(verbose_name='Data da Aposta')	
+    creation_date = models.DateTimeField(verbose_name='Data da Aposta')
     reward = models.OneToOneField('Reward', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
     payment = models.OneToOneField('Payment', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
     value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')
@@ -50,6 +51,11 @@ class BetTicket(models.Model):
         self.is_visible = False
         self.save()
         return {"message" :"Ticket "+ str(self.pk) +" Ocultado."}
+
+    def show_ticket(self):
+        self.is_visible = True
+        self.save()
+        return {"message" :"Ticket "+ str(self.pk) +" Exibido."}
 
     def get_ticket_link(self):
         from django.utils.safestring import mark_safe
@@ -89,9 +95,11 @@ class BetTicket(models.Model):
         seller = self.payment.who_set_payment
         seller.credit_limit += self.value
         seller.save()
-        self.payment.status_payment = 'Aguardando Pagamento do Ticket'
-        self.payment.who_set_payment = None
+
+        self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[4][1]
+        self.payment.status_payment = BetTicket.BET_TICKET_STATUS[4][1]
         self.payment.payment_date = None
+        self.payment.seller_was_rewarded = True
         self.payment.save()
         self.save()
 
@@ -191,43 +199,48 @@ class BetTicket(models.Model):
         PunterPayedHistory.objects.create(punter_payed=punter_payed,
             seller=user.seller,
             ticket_winner=self,
-            payed_value=self.reward.value)
+            payed_value=self.reward.real_value)
 
         return {'success':True,
                 'message':'O Apostador ' + punter_payed  + ' foi marcado como Pago'}
 
 
     def cotation_sum(self):
-        return self.cotation_value_total
+        valid_cotations = CotationHistory.objects.filter(bet_ticket=self, game__status_game__in = ('NS','FT','FT_PEN','AET','LIVE'))
+        
+        cotation_sum = 1
+        for cotation in valid_cotations:
+            cotation_sum *= cotation.value
+
+        return round(cotation_sum,2)
     cotation_sum.short_description = 'Cota Total'
 
 
     def update_ticket_status(self):
-        
-        if not self.check_if_waiting_results():
-            if self.cotations.filter(winning=False).count() > 0:
-                self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[1][1]
-                self.reward.status_reward = Reward.REWARD_STATUS[2][1]
-                self.reward.save()
-                self.save()
-            else:
+
+        if self.cotations.filter(winning=False).count() > 0:
+            self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[1][1]
+            self.reward.status_reward = Reward.REWARD_STATUS[2][1]
+            self.reward.save()
+            self.save()
+        elif not self.cotations.filter(winning=None).count() > 0:
+            if self.payment.status_payment == 'Pago':
                 self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[2][1]
                 self.reward.status_reward = Reward.REWARD_STATUS[3][1]
-                self.reward.save()
-                self.save()
-                
-                from utils.models import GeneralConfigurations
-                if GeneralConfigurations.objects.filter(pk=1):
-                    auto_pay_punter = GeneralConfigurations.objects.get(pk=1).auto_pay_punter
-                else:
-                    auto_pay_punter = False
-                
-                if auto_pay_punter and self.payment.who_set_payment:
-                    self.pay_winner_punter(self.payment.who_set_payment)
+            else:
+                self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[3][1]
+                self.reward.status_reward = Reward.REWARD_STATUS[4][1]
+            self.reward.save()
+            self.save()
             
-
-    def check_if_waiting_results(self):
-        return self.cotations.filter(winning=None).count() > 0
+            from utils.models import GeneralConfigurations
+            if GeneralConfigurations.objects.filter(pk=1):
+                auto_pay_punter = GeneralConfigurations.objects.get(pk=1).auto_pay_punter
+            else:
+                auto_pay_punter = False
+            
+            if auto_pay_punter and self.payment.who_set_payment:
+                self.pay_winner_punter(self.payment.who_set_payment)
 
 
     class Meta:
@@ -302,6 +315,12 @@ class Game(models.Model):
         return {"message" :"Jogo "+ str(self.pk) +" Ocultado."}
 
 
+    def show_game(self):
+        self.is_visible = True
+        self.save()
+        return {"message" :"Jogo "+ str(self.pk) +" Exibido."}
+
+
 
 class Championship(models.Model):
 
@@ -337,6 +356,7 @@ class Reward(models.Model):
         ('O apostador foi pago', 'O apostador foi pago'),
         ('Esse ticket não venceu', 'Esse ticket não venceu'),
         ('Venceu, Pagar Apostador', 'Venceu, Pagar Apostador'),
+        ('Venceu e não foi pago','Venceu e não foi pago')
     )
 
     who_rewarded = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL)
@@ -344,8 +364,30 @@ class Reward(models.Model):
     value = models.DecimalField(max_digits=50, decimal_places=2, default=0)
     status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1], verbose_name='Status do Prêmio')
 
+    @property
+    def real_value(self):
+        from utils.models import GeneralConfigurations
+
+        try:
+            general_config = GeneralConfigurations.objects.get(pk=1)
+            max_reward_to_pay = general_config.max_reward_to_pay
+        except GeneralConfigurations.DoesNotExist:
+            max_reward_to_pay = 50000
+
+
+        from core.views import get_max_reward_by_value
+        max_value = get_max_reward_by_value(self.ticket.value, max_reward_to_pay)
+
+        reward_total = round(self.ticket.value * self.ticket.cotation_sum(), 2)
+
+        if reward_total > max_value:
+            return max_value
+        else:
+            return reward_total
+
+
     def __str__(self):
-        return str(self.value)
+        return str(self.real_value)
 
     class Meta:
         verbose_name = 'Recompensa'

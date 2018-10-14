@@ -11,8 +11,23 @@ from fpdf import FPDF
 from django.db.models import F, Q, When, Case
 import urllib
 import json
+from utils.response import UnicodeJsonResponse
 
 
+class ValidateTicket(View):
+
+    def post(self, request, *args, **kwargs):
+        ticket_id = request.POST['ticket_id']
+
+        ticket = BetTicket.objects.filter(pk=ticket_id)
+
+        if ticket.count() > 0:
+            return UnicodeJsonResponse(ticket.first().validate_ticket(request.user.seller))
+        else:
+            return UnicodeJsonResponse({
+                'sucess':False,
+                'message': 'Esse ticket não existe.'
+            })
 
 class PDF(View):
 
@@ -51,9 +66,9 @@ class PDF(View):
 								
         pdf.text(55,50, 'DATA: ' + ticket.creation_date.strftime('%d/%m/%Y %H:%M'))
         pdf.text(55,60, "APOSTA: R$" + str("%.2f" % ticket.value) )
-        pdf.text(55,72, "COTA TOTAL: " + str("%.2f" % ticket.cotation_value_total) )
+        pdf.text(55,72, "COTA TOTAL: " + str("%.2f" % ticket.cotation_sum() ))
         if ticket.reward:
-            pdf.text(55,84, "GANHO POSSÍVEL: R$" + str("%.2f" % ticket.reward.value) )
+            pdf.text(55,84, "GANHO POSSÍVEL: R$" + str("%.2f" % ticket.reward.real_value) )
         if ticket.payment:
             payment_text = ticket.payment.status_payment
             if len(payment_text) <= 5:

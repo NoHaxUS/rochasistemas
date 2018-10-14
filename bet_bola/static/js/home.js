@@ -466,15 +466,43 @@ $(document).ready(function () {
     });
 
 
-    $('#check-ticket-form').on('submit', function(){
+    $('#check-ticket-form').on('submit', function(e){
         
         var ticket_num = $('.check-ticket-input').val();
         if (ticket_num == '') {
+            e.preventDefault();
             alertify.alert('Erro', 'Você deve informar o número do ticket.').set('movable', false);
         }else{
             var Url = '/ticket/' + ticket_num + '/';
             $(this).attr('action', Url);
             $(this).submit();
+        }
+    });
+
+    $('#validate-ticket-form').on('submit', function(e){
+
+        e.preventDefault();
+        var ticket_num = $('#validate-ticket-input').val();
+        if (ticket_num == '') {
+            alertify.alert('Erro', 'Você deve informar o número do ticket.').set('movable', false);
+        }else{
+
+            alertify.confirm("Confirmação", "Deseja validar o Ticket: " + ticket_num, 
+            function(){
+                $.post('/utils/validate_ticket/', {'ticket_id': ticket_num}, function(data, status, rq){
+                    
+                    if(data.success){
+                        alertify.success(data.message);
+                    }else{
+                        alertify.error(data.message);
+                    }
+    
+        
+                });
+            },
+            function(){
+                
+            });
         }
     });
 
