@@ -112,8 +112,6 @@ class BetTicket(models.Model):
 
 
 
-
-
     def validate_ticket(self, user):
         from history.models import SellerSalesHistory
 
