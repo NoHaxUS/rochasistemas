@@ -63,7 +63,7 @@ def get_events():
     # second_date = str(after_year) + "-" +str(after_month) + "-" + str(after_day)
 
     print("Atualizango Jogos e Cotas")
-    request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate=1539540801&ToDate=1539627201&Lang=pt&Sports=6046")
+    request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate=1539612805&ToDate=1539785605&Lang=pt&Sports=6046")
     process_events(request.json())
 
 
@@ -78,6 +78,20 @@ def process_events(content):
 
             game_name = get_game_name(fixture['Participants'])
             
+            game_instance = Game.objects.get_or_create(
+                pk=game['FixtureId'],
+                defaults={
+                    'name':game_name,
+                    'start_date': fixture['StartDate'],
+                    'game_status': fixture['Status'],
+                    'last_update': fixture['LastUpdate'],
+                    'league': League.objects.get_or_create(pk=fixture['League']['Id'], defaults={'name':fixture['League']['Name']})[0],
+                    'location' : Location.objects.get_or_create(pk=fixture['Location']['Id'], defaults={'name': fixture['Location']['Name']})[0],
+                    'sport' : Sport.objects.get_or_create(pk=fixture['Sport']['Id'], defaults={'name': fixture['Sport']['Name']})[0]
+                }
+            )[0]
+
+            """
             if Game.objects.filter(pk=game['FixtureId']):
                 g = Game.objects.get(pk=game['FixtureId'])
             else:
@@ -93,51 +107,46 @@ def process_events(content):
                     league = League.objects.get(pk=fixture['League']['Id'])
                     league.location = Location.objects.get(pk=fixture['Location']['Id'])
                     league.save()
- 
-            periods = []
-            if game['Livescore']:
-                periods = game['Livescore']['Periods']
-
-            for period in periods:
-                if period['Results'][0]['Position'] == 1:
-                    home_score= period['Results'][0]['Value']
-                    away_score= period['Results'][1]['Value']
-                else:
-                    home_score= period['Results'][1]['Value']
-                    away_score= period['Results'][0]['Value']                
-
-                Period(period_type=period['Type'],
-                is_fineshed=period['IsFinished'],
-                is_confirmed=period['IsConfirmed'],
-                home_score=home_score,
-                away_score=away_score,
-                game = g
-                ).save()
-
+            """
             
+            if game['Livescore'] and game['Livescore']['Periods']:
+                for period in game['Livescore']['Periods']:
+                    if period['Results'][0]['Position'] == 1:
+                        home_score= period['Results'][0]['Value']
+                        away_score= period['Results'][1]['Value']
+                    else:
+                        home_score= period['Results'][1]['Value']
+                        away_score= period['Results'][0]['Value']                
+
+                    Period(period_type=period['Type'],
+                    is_fineshed=period['IsFinished'],
+                    is_confirmed=period['IsConfirmed'],
+                    home_score=home_score,
+                    away_score=away_score,
+                    game = game_instance
+                    ).save()
+
             if game['Markets']:
-                process_markets(game['Markets'])                
+                process_markets(game['Markets'], game_instance)                
 
 
 
-def process_markets(markets):
+def process_markets(markets, game_instance):
+    print("Entrou aqui")
+
     for market in markets:
-
-        obj, created = Market.objects.get_or_create(
-            pk=market['Id'],
-            name=market['Name']
-        )
-
         for cotation in market['Providers'][0]['Bets']:
             Cotation(id=cotation['Id'],
-            name=cotation['Name'],  
-            status=cotation['Status'],
-            start_price=cotation['StartPrice'],
-            price=cotation['Price'],
-            settlement=cotation.get('Settlement',None),
-            market=obj).save()
-    
-
+                name=cotation['Name'],
+                game=game_instance,
+                line=cotation.get('Line',None),
+                base_line=cotation.get('BaseLine', None),
+                status=cotation['Status'],
+                start_price=cotation['StartPrice'],
+                price=cotation['Price'],
+                settlement=cotation.get('Settlement',None),
+                market=Market.objects.get_or_create(pk=market['Id'], defaults={'name':market['Name']})[0]
+            ).save()
 
 
 
