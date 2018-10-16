@@ -90,24 +90,6 @@ def process_events(content):
                     'sport' : Sport.objects.get_or_create(pk=fixture['Sport']['Id'], defaults={'name': fixture['Sport']['Name']})[0]
                 }
             )[0]
-
-            """
-            if Game.objects.filter(pk=game['FixtureId']):
-                g = Game.objects.get(pk=game['FixtureId'])
-            else:
-                g = Game.objects.create(pk=game['FixtureId'],             
-                league=League.objects.get_or_create(pk=fixture['League']['Id'], defaults={'name':fixture['League']['Name']})[0] ,            
-                start_date=fixture['StartDate'],
-                last_update=fixture['LastUpdate'],
-                status_game=fixture['Status'],
-                name=game_name
-                )
-
-                if Location.objects.filter(pk=fixture['Location']['Id']):
-                    league = League.objects.get(pk=fixture['League']['Id'])
-                    league.location = Location.objects.get(pk=fixture['Location']['Id'])
-                    league.save()
-            """
             
             if game['Livescore'] and game['Livescore']['Periods']:
                 for period in game['Livescore']['Periods']:
