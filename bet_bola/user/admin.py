@@ -4,7 +4,6 @@ from core.models import Ticket
 from .models import Punter, Seller, Manager
 from utils.models import GeneralConfigurations
 from django.contrib import messages
-from admin_view_permission.admin import AdminViewPermissionModelAdmin
 from core.decorators import confirm_action
 
 
@@ -45,19 +44,19 @@ class PunterAdmin(admin.ModelAdmin):
     
 
 
-@confirm_action("Pagar Vendedor(es)")
+@confirm_action("Pagar Cambista(s)")
 def pay_seller(modeladmin, request, queryset):
     who_reseted_revenue = str(request.user.pk) + ' - ' + request.user.username
 
     for seller in queryset:
         seller.reset_revenue(who_reseted_revenue)
     
-    messages.success(request, 'Vendedores Pagos')
+    messages.success(request, 'Cambistas Pagos')
 
-pay_seller.short_description = 'Pagar Vendedores'
+pay_seller.short_description = 'Pagar Cambistas'
 
 @admin.register(Seller)
-class SellerAdmin(AdminViewPermissionModelAdmin):
+class SellerAdmin(admin.ModelAdmin):
     search_fields = ['pk','first_name','username','cpf']
     fields = ('username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'commission', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active', 'can_cancel_ticket', 'limit_time_to_cancel')
     list_editable = ('credit_limit',)
@@ -128,7 +127,7 @@ def pay_manager(modeladmin, request, queryset):
 pay_manager.short_description = 'Pagar Gerentes'
 
 @admin.register(Manager)
-class ManagerAdmin(AdminViewPermissionModelAdmin):
+class ManagerAdmin(admin.ModelAdmin):
     search_fields = ['pk','first_name','username','cpf']
     fields = ('username','password','first_name','last_name','email','cellphone','cpf','address','commission','credit_limit_to_add','is_active','can_cancel_ticket','can_sell_unlimited')
     list_display = ('pk','username','first_name','email','cellphone','actual_revenue','get_commission','net_value','out_money','real_net_value','credit_limit_to_add')

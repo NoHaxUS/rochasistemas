@@ -10,7 +10,6 @@ from django.contrib.admin.views.main import ChangeList
 import utils.timezone as tzlocal
 from history.models import PunterPayedHistory
 from django.contrib import messages
-from admin_view_permission.admin import AdminViewPermissionModelAdmin
 from .decorators import confirm_action
 from django.utils.html import format_html
 
@@ -187,7 +186,7 @@ def bet_ticket_status(obj):
 bet_ticket_status.short_description = 'Status'
 
 @admin.register(Ticket)
-class BetTicketAdmin(AdminViewPermissionModelAdmin):
+class TicketAdmin(admin.ModelAdmin):
     search_fields = ['id']
     list_filter = ('bet_ticket_status',
     'payment__who_set_payment_id',

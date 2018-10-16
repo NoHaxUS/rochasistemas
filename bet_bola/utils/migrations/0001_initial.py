@@ -21,11 +21,11 @@ class Migration(migrations.Migration):
                 ('double', models.IntegerField(default=10, verbose_name='Apostas Duplas')),
                 ('triple_amount', models.IntegerField(default=10, verbose_name='Apostas Triplas')),
                 ('four_plus_amount', models.IntegerField(default=10, verbose_name='Mais de 3')),
-                ('seller_related', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='comissions', to='user.Seller', verbose_name='Vendedor Relacionado')),
+                ('seller_related', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='comissions', to='user.Seller', verbose_name='Cambista Relacionado')),
             ],
             options={
-                'verbose_name': 'Comissão do Vendedor',
-                'verbose_name_plural': 'Comissões dos Vendedores',
+                'verbose_name': 'Comissão do Cambista',
+                'verbose_name_plural': 'Comissões dos Cambistas',
             },
         ),
         migrations.CreateModel(

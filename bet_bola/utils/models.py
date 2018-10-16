@@ -7,7 +7,7 @@ from decimal import Decimal
 
 class Comission(models.Model):
     
-    seller_related = models.OneToOneField('user.Seller',related_name="comissions", on_delete=models.CASCADE, verbose_name="Vendedor Relacionado")
+    seller_related = models.OneToOneField('user.Seller',related_name="comissions", on_delete=models.CASCADE, verbose_name="Cambista Relacionado")
     simple = models.IntegerField(default=10, verbose_name="Apostas Simples")
     double = models.IntegerField(default=10, verbose_name="Apostas Duplas")
     triple_amount = models.IntegerField(default=10, verbose_name="Apostas Triplas")
@@ -66,11 +66,11 @@ class Comission(models.Model):
     total_comission.short_description = "Comissão Total"
 
     def __str__(self):
-        return "Comissões do Vendedor"
+        return "Comissões dos Cambistas"
 
     class Meta:
-        verbose_name = 'Comissão do Vendedor'
-        verbose_name_plural = 'Comissões dos Vendedores'
+        verbose_name = 'Comissão do Cambista'
+        verbose_name_plural = 'Comissões dos Cambistas'
 
 class GeneralConfigurations(models.Model):
 
@@ -146,7 +146,7 @@ class Overview(models.Model):
             total_net_value_sum += seller.net_value()
         
         return total_net_value_sum
-    seller_out_money.short_description = 'Gastos com Vendedores'
+    seller_out_money.short_description = 'Gastos com Cambistas'
 
 
     def manager_out_money(self):

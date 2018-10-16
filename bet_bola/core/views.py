@@ -330,7 +330,7 @@ class CreateTicketView(View):
 			data['success'] =  False
 			data['message'] =  """Desculpe, Contas administradoras ou Gerentes
 			não são apropriados para criarem apostas. <br /> 
-			Use contas normais ou conta de vendedor."""
+			Use contas normais ou conta de cambista."""
 			return UnicodeJsonResponse(data)
 
 		if client_name and cellphone:
@@ -452,7 +452,7 @@ class CreateTicketView(View):
 		
 
 			data['message'] = """
-				Ticket N° <span class='ticket-number-after-create'> """ +  str(ticket.pk) + """</span>
+				Bilhete N° <span class='ticket-number-after-create'> """ +  str(ticket.pk) + """</span>
                 <br /> Para acessar detalhes do Ticket, entre no painel do cliente
             	<br /> Realize o pagamento com um de nossos colaboradoes usando o número do Ticket
                 <br /><br />
@@ -497,7 +497,7 @@ class TicketDetail(TemplateResponseMixin, View):
 			content += "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
 			
 			if ticket.seller:
-				content += "<CENTER> VENDEDOR: " + ticket.seller.first_name + "<BR>"
+				content += "<CENTER> CAMBISTA: " + ticket.seller.first_name + "<BR>"
 			if ticket.normal_user:
 				content += "<CENTER> CLIENTE: " + ticket.normal_user.first_name + "<BR>"
 			if ticket.user:

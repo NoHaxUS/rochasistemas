@@ -1,24 +1,16 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
 django = "*"
 "psycopg2" = "*"
 requests = "*"
 fpdf = "*"
 bootstrap-admin = "*"
-django-admin-view-permission = "*"
-
 
 [dev-packages]
 
-
-
 [requires]
-
 python_version = "3.6"

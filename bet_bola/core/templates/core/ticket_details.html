@@ -61,7 +61,7 @@
             {% if show_ticket %}
             <div class="row white">
                 <div class="details-header">
-                    <h5>Detalhes do Ticket: {{ticket.pk}}</h5>
+                    <h5>Detalhes do Bilhete: {{ticket.pk}}</h5>
                 </div>
             </div>
             <div class="row white">
@@ -70,7 +70,7 @@
 
                         {% if ticket.seller %}
                         <div class="row">
-                            <span class='bold'>Vendedor:</span> {{ ticket.seller.first_name }}
+                            <span class='bold'>Cambista:</span> {{ ticket.seller.first_name }}
                         </div>
                         {% endif %}
                         {% if ticket.normal_user %}
@@ -115,7 +115,7 @@
                     </div>
                     {% endif %}
 
-                    <div class="row"><span class='bold'>Status do Ticket:</span> {{ticket.bet_ticket_status}}</div>
+                    <div class="row"><span class='bold'>Status do Bilhete:</span> {{ticket.bet_ticket_status}}</div>
                     <div class="row"><span class='bold'>Valor apostado:</span> R$ {{ticket.value}}</div>
                     <div class="row"><span class='bold'>Cota Total:</span> {{ticket.cotation_sum}}</div>
                     <div class="row"><span class='bold'>Ganho Possível:</span> R$ {{ ticket.reward.real_value }}</div>
@@ -176,7 +176,7 @@
 
         <div class="row white">
                 <div class="details-header">
-                    <h5>A visualização desse Ticket não está disponível, consulte a versão impressa.</h5>
+                    <h5>A visualização desse Bilhete não está disponível, consulte a versão impressa.</h5>
                 </div>
             </div>
 

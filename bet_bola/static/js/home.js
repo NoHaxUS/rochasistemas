@@ -471,7 +471,7 @@ $(document).ready(function () {
         var ticket_num = $('.check-ticket-input').val();
         if (ticket_num == '') {
             e.preventDefault();
-            alertify.alert('Erro', 'Você deve informar o número do ticket.').set('movable', false);
+            alertify.alert('Erro', 'Você deve informar o número do bilhete.').set('movable', false);
         }else{
             var Url = '/ticket/' + ticket_num + '/';
             $(this).attr('action', Url);
@@ -484,10 +484,10 @@ $(document).ready(function () {
         e.preventDefault();
         var ticket_num = $('#validate-ticket-input').val();
         if (ticket_num == '') {
-            alertify.alert('Erro', 'Você deve informar o número do ticket.').set('movable', false);
+            alertify.alert('Erro', 'Você deve informar o número do bilhete.').set('movable', false);
         }else{
 
-            alertify.confirm("Confirmação", "Deseja validar o Ticket: " + ticket_num, 
+            alertify.confirm("Confirmação", "Deseja validar o bilhete: " + ticket_num, 
             function(){
                 $.post('/utils/validate_ticket/', {'ticket_id': ticket_num}, function(data, status, rq){
                     

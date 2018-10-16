@@ -26,7 +26,7 @@ class ValidateTicket(View):
         else:
             return UnicodeJsonResponse({
                 'sucess':False,
-                'message': 'Esse ticket não existe.'
+                'message': 'Esse bilhete não existe.'
             })
 
 class PDF(View):
@@ -55,10 +55,10 @@ class PDF(View):
         pdf.set_font('DejaVu','',30)
 
         pdf.text(60,15, "-> "+ settings.APP_VERBOSE_NAME.upper() +" <-")
-        pdf.text(55,30, 'TICKET:' + str(ticket.pk))
+        pdf.text(55,30, 'BILHETE:' + str(ticket.pk))
 
         if ticket.seller:
-            pdf.text(55,96, 'VENDEDOR: ' + ticket.seller.first_name)
+            pdf.text(55,96, 'CAMBISTA: ' + ticket.seller.first_name)
         if ticket.normal_user:
             pdf.text(55,40, 'CLIENTE:' + ticket.normal_user.first_name)
         if ticket.user:

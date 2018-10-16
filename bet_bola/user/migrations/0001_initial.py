@@ -101,8 +101,8 @@ class Migration(migrations.Migration):
                 ('my_manager', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='manager_assoc', to='user.Manager', verbose_name='Gerente')),
             ],
             options={
-                'verbose_name': 'Vendedor',
-                'verbose_name_plural': 'Vendedores',
+                'verbose_name': 'Cambista',
+                'verbose_name_plural': 'Cambistas',
                 'ordering': ('-pk',),
                 'permissions': (('be_seller', 'Be a seller, permission.'),),
             },

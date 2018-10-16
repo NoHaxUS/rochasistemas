@@ -64,7 +64,7 @@ class Seller(CustomUser):
     commission = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Comissão')
     credit_limit = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Créditos')
     my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True, blank=True)
-    can_cancel_ticket = models.BooleanField(default=False, verbose_name='Cancela Ticket ?')
+    can_cancel_ticket = models.BooleanField(default=False, verbose_name='Cancela Bilhete ?')
     limit_time_to_cancel = models.FloatField(default=5, verbose_name="Tempo Limite de Cancelamento")
 
     def reset_revenue(self, who_reseted_revenue):
@@ -179,8 +179,8 @@ class Seller(CustomUser):
 
     class Meta:
         ordering = ('-pk',)
-        verbose_name = 'Vendedor'
-        verbose_name_plural = 'Vendedores'
+        verbose_name = 'Cambista'
+        verbose_name_plural = 'Cambistas'
 
         permissions = (
             ('be_seller', 'Be a seller, permission.'),
@@ -193,7 +193,7 @@ class Manager(CustomUser):
     address = models.CharField(max_length=75, verbose_name='Endereço', null=True, blank=True)
     commission = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Comissão')
     credit_limit_to_add = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name="Crédito")
-    can_cancel_ticket = models.BooleanField(default=True, verbose_name='Cancela Ticket ?')
+    can_cancel_ticket = models.BooleanField(default=True, verbose_name='Cancela Bilhete ?')
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
 
     def reset_revenue(self, who_reseted_revenue):
@@ -287,14 +287,14 @@ class Manager(CustomUser):
             if manager_balance_after < 0:
                 if is_new:
                     return {'success': False,
-                    'message': 'Você não tem saldo suficiente para adicionar crédito, porém o vendedor foi criado.'}
+                    'message': 'Você não tem saldo suficiente para adicionar crédito, porém o cambista foi criado.'}
                 else:
                     return {'success': False,
                     'message': 'Você não tem saldo suficiente.'}
             
             elif obj.credit_limit < 0:
                 return {'success': False,
-                'message': 'O Vendedor não pode ter saldo negativo.'}
+                'message': 'O cambista não pode ter saldo negativo.'}
             else:
                 self.credit_limit_to_add -= diff
                 self.save()
@@ -305,7 +305,7 @@ class Manager(CustomUser):
         else:
             if obj.credit_limit < 0:
                 return {'success': False,
-                    'message': 'O Vendedor não pode ter saldo negativo.'}
+                    'message': 'O cambista não pode ter saldo negativo.'}
 
             manager_balance_after = 0
 

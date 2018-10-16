@@ -3,7 +3,6 @@ from user.models import CustomUser
 from .models import SellerSalesHistory,ManagerTransactions,RevenueHistorySeller,RevenueHistoryManager, PunterPayedHistory, TicketCancelationHistory
 from user.models import CustomUser
 from django.utils.translation import gettext_lazy as _
-from admin_view_permission.admin import AdminViewPermissionModelAdmin
 
 
 @admin.register(SellerSalesHistory)
@@ -30,7 +29,7 @@ class SellerSalesHistoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(ManagerTransactions)
-class ManagerTransactionsAdmin(AdminViewPermissionModelAdmin):
+class ManagerTransactionsAdmin(admin.ModelAdmin):
     search_fields = ['manager__username','manager__first_name','seller__username','seller__first_name']
     list_display = ('pk','manager','seller','transaction_date','transferred_amount','manager_before_balance','manager_after_balance','seller_before_balance','seller_after_balance')
     list_display_links = ('pk','manager')
@@ -53,7 +52,7 @@ class ManagerTransactionsAdmin(AdminViewPermissionModelAdmin):
         
 
 @admin.register(RevenueHistorySeller)
-class RevenueHistorySellerAdmin(AdminViewPermissionModelAdmin):
+class RevenueHistorySellerAdmin(admin.ModelAdmin):
     search_fields = ['seller__username','seller__first_name']
     list_display = ('pk','who_reseted_revenue','seller','revenue_reseted_date','final_revenue','get_commission','earned_value', 'final_out_value', 'profit')
     list_display_links = ('pk','seller')
@@ -100,7 +99,7 @@ class RevenueHistoryManagerAdmin(admin.ModelAdmin):
 
 
 @admin.register(PunterPayedHistory)
-class PunterPayedHistoryAdmin(AdminViewPermissionModelAdmin):
+class PunterPayedHistoryAdmin(admin.ModelAdmin):
     search_fields = ['punter_payed','seller__username','seller__first_name', 'ticket_winner__id']
     list_display = ('pk','punter_payed','seller','ticket_winner','payment_date','payed_value')
     list_display_links = ('pk','punter_payed')
@@ -125,7 +124,7 @@ class PunterPayedHistoryAdmin(AdminViewPermissionModelAdmin):
 
 
 @admin.register(TicketCancelationHistory)
-class TicketCancelationHistoryHistoryAdmin(AdminViewPermissionModelAdmin):
+class TicketCancelationHistoryHistoryAdmin(admin.ModelAdmin):
     search_fields = ['who_cancelled','ticket_cancelled__id']
     list_display = ('pk','ticket_cancelled','who_cancelled','cancelation_date','seller_of_payed')
     fields = ('ticket_cancelled','who_cancelled','seller_of_payed')

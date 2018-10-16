@@ -28,7 +28,7 @@ class Ticket(models.Model):
     )
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Apostador')
-    seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Vendedor')
+    seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
     normal_user = models.ForeignKey(NormalUser, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cliente')
     cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
     creation_date = models.DateTimeField(verbose_name='Data da Aposta')
@@ -66,7 +66,7 @@ class Ticket(models.Model):
     def seller_related(self):
         if self.payment:
             return self.payment.who_set_payment
-    seller_related.short_description = 'Vendedor'
+    seller_related.short_description = 'Cambista'
 
     get_punter_name.short_description = 'Apostador'
 
@@ -477,10 +477,10 @@ class Payment(models.Model):
         ('Pago', 'Pago'),
     )
 
-    who_set_payment = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Vendedor')
+    who_set_payment = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
     status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1], verbose_name='Status do Pagamento')
     payment_date = models.DateTimeField(null=True, blank=True, verbose_name='Data do Pagamento')
-    seller_was_rewarded = models.BooleanField(default=False, verbose_name='Vendedor foi pago?')
+    seller_was_rewarded = models.BooleanField(default=False, verbose_name='Cambista foi pago?')
     manager_was_rewarded = models.BooleanField(default=False, verbose_name='Gerente foi pago?')
 
     def __str__(self):
