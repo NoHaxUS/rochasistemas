@@ -1,17 +1,19 @@
 import os
 import django
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
-django.setup()
-
 import requests
 #from core.models import Game, Cotation, Championship, BetTicket, Country, Market
 
 from multiprocessing.pool import ThreadPool
+from core.models import Location, League, Sport, Market, Period, Game, Cotation
 
-def get_locations(actual_page):
+def get_locations():
     request = requests.get("http://prematch.lsports.eu/OddService/GetLocations?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&Lang=pt")
     process_locations(request.json())
+
+def get_sports():
+    print('Criando Sports')
+    request = requests.get("http://prematch.lsports.eu/OddService/GetSports?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&Lang=pt")
+    process_sports(request.json())
 
 def get_leagues():
     print('Atualizando Ligas.')
@@ -20,13 +22,13 @@ def get_leagues():
 
 
 def process_locations(content):
-    for location in content.body:
-        if location['Id'] and locatation['Name']:
+    for location in content.get('Body'):
+        if location['Id'] and location['Name']:
             Location(pk=location['Id'], 
             name=location['Name']).save()
 
 def process_leagues(content):
-    for league in content.body:
+    for league in content.get('Body'):
         if league['Id'] and league['Name'] and league['LocationId'] and league['SportId']:
             League(pk=league['Id'], 
             name=league['Name'], 
@@ -34,34 +36,40 @@ def process_leagues(content):
             sport=Sport.objects.get(pk=league['SportId'])
             ).save()
 
-
+def process_sports(content):
+    for sport in content.get('Body'):
+        if sport['Id'] and sport['Name']:
+            Sport(
+                pk=sport['Id'],
+                name=sport['Name']
+                ).save()    
 
 def get_events():
 
-    before_time = tzlocal.now() - datetime.timedelta(days=3)
+    # before_time = tzlocal.now() - datetime.timedelta(days=3)
 
-    before_year = before_time.year
-    before_month = before_time.month
-    before_day = before_time.day
+    # before_year = before_time.year
+    # before_month = before_time.month
+    # before_day = before_time.day
     
-    after_time = tzlocal.now() + datetime.timedelta(days=3)
+    # after_time = tzlocal.now() + datetime.timedelta(days=3)
 
-    after_year = after_time.year
-    after_month = after_time.month
-    after_day = after_time.day
+    # after_year = after_time.year
+    # after_month = after_time.month
+    # after_day = after_time.day
 
 
-    first_date = str(before_year) + "-" + str(before_month) + "-" + str(before_day)
-    second_date = str(after_year) + "-" +str(after_month) + "-" + str(after_day)
+    # first_date = str(before_year) + "-" + str(before_month) + "-" + str(before_day)
+    # second_date = str(after_year) + "-" +str(after_month) + "-" + str(after_day)
 
     print("Atualizango Jogos e Cotas")
-    request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate=1539540801&ToDate=1539627201&Lang=pt")
+    request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate=1539540801&ToDate=1539627201&Lang=pt&Sports=6046")
     process_events(request.json())
 
 
 def process_events(content):
 
-    for game in content.body:
+    for game in content.get('Body'):
         fixture = game['Fixture']
         if game['FixtureId'] and fixture['Sport'] and fixture['Location'] and game['Fixture']['League']:
 
@@ -70,7 +78,26 @@ def process_events(content):
             else:
                 game_name = fixture['Participants'][1]['Name'] + 'x' + fixture['Participants'][0]['Name']
 
-            periods = fixture['Periods']
+            periods = []
+            if game['Livescore']:
+                periods = game['Livescore']['Periods']
+            
+            g = ''
+            if Game.objects.filter(pk=game['FixtureId']):
+                g = Game.objects.get(pk=game['FixtureId'])
+            else:
+                g = Game.objects.create(pk=game['FixtureId'],             
+                league=League.objects.get_or_create(pk=fixture['League']['Id'],name=fixture['League']['Name'])[0],            
+                start_date=fixture['StartDate'],
+                last_update=fixture['LastUpdate'],
+                status_game=fixture['Status'],
+                name=game_name
+                )
+
+                if Location.objects.filter(pk=fixture['Location']['Id']):
+                    league = League.objects.get(pk=fixture['League']['Id'])
+                    league.location = Location.objects.get(pk=fixture['Location']['Id'])
+                    league.save()
 
             for period in periods:
                 if period['Results'][0]['Position'] == 1:
@@ -82,23 +109,16 @@ def process_events(content):
 
 
                 Period(period_type=period['Type'],
-                IsFinished=period['IsFinished'],
-                IsConfirmed=period['IsConfirmed'],
+                is_fineshed=period['IsFinished'],
+                is_confirmed=period['IsConfirmed'],
                 home_score=home_score,
-                away_score=away_score
+                away_score=away_score,
+                game = g
                 ).save()
 
-            Game(pk=game['FixtureId'], 
-            location=Location.objects.get(fixture['Location']['Id']),
-            league=League.objects.get(fixture['League']['Id']),
-            sport=Sport.objects.get(fixture['Sport']['Id']),
-            start_date=fixture['StartDate'],
-            last_update=fixture['LastUpdate'],
-            status=fixture['Status'],
-            name=game_name
-            ).save()
-
-            process_markets(game['Markets'])
+            
+            if game['Markets']:
+                process_markets(game['Markets'])                
 
 
 
@@ -111,12 +131,12 @@ def process_markets(markets):
         )
 
         for cotation in market['Providers'][0]['Bets']:
-            Cotation(pk=cotation['Id'],
-            name=cotation['Name'],
+            Cotation(id=cotation['Id'],
+            name=cotation['Name'],  
             status=cotation['Status'],
             start_price=cotation['StartPrice'],
             price=cotation['Price'],
-            settlement=cotation['Settlement'],
+            settlement=cotation.get('Settlement',None),
             market=obj).save()
     
 

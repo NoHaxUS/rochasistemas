@@ -6,11 +6,14 @@ def main():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
     django.setup()
 
-    from utils import update_games
+    from utils.new_update import get_locations, get_leagues, get_events, get_sports
     from utils.timezone import now
     
     print("Update Started.." + str(now()))
-    update_games.consuming_championship_api()
+    # get_locations()
+    # get_sports()
+    # get_leagues()
+    get_events()
     print("Finished Succesfully.")
 
 

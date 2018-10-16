@@ -266,7 +266,7 @@ class CotationHistory(models.Model):
 
 class Sport(models.Model):
     name = models.CharField(max_length=45)
-    games = models.ForeignKey('Game', related_name='my_games', on_delete=models.SET_NULL, null=True)
+    # games = models.ForeignKey('Game', related_name='my_games', on_delete=models.SET_NULL, null=True)
 
 
 class Game(models.Model):
@@ -296,7 +296,7 @@ class Game(models.Model):
     start_date = models.DateTimeField(verbose_name='Início da Partida')
     league = models.ForeignKey('League',related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL,verbose_name='Campeonato')
     status_game = models.IntegerField(choices=GAME_STATUS,verbose_name='Status do Jogo')   
-    date_update = models.DateTimeField(verbose_name='Ultima Atualização')
+    last_update = models.DateTimeField(verbose_name='Ultima Atualização')
     is_visible = models.BooleanField(default=True, verbose_name='Visível?')
 
     objects = GamesManager()	
@@ -345,8 +345,9 @@ class Period(models.Model):
 
 class League(models.Model):
 
-    name = models.CharField(max_length=80, verbose_name='Nome', help_text='Campeonato')
+    name = models.CharField(max_length=120, verbose_name='Nome', help_text='Campeonato')
     location = models.ForeignKey('Location', related_name='my_leagues',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Local')
+    sport = models.ForeignKey('Sport', related_name='my_leagues', null=True, on_delete=models.CASCADE)
     priority = models.IntegerField(default=1, verbose_name='Prioridade')
 
     def __str__(self):
@@ -447,11 +448,12 @@ class Cotation(models.Model):
             (3, "Finalizada")
         )
 
+    id = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
     start_price = models.DecimalField(max_digits=30, decimal_places=2, default=0,verbose_name='Valor Original')
     price = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
     game = models.ForeignKey('Game', related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
-    settlement = models.IntegerField(choices=SETTLEMENT_STATUS)
+    settlement = models.IntegerField(choices=SETTLEMENT_STATUS, null=True)
     status = models.IntegerField(choices=COTATION_STATUS)    
     market = models.ForeignKey(Market, related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
     base_line = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True)
@@ -464,13 +466,12 @@ class Cotation(models.Model):
 
 
     def save(self, *args, **kwargs):
-        if Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game).exists():
-            Cotation.objects.filter(name=self.name, kind=self.kind, game=self.game)\
-            .update(value=self.value, 
-            original_value=self.original_value,
-            total=self.total)
+        if Cotation.objects.filter(name=self.name, market=self.market, game=self.game).exists():
+            Cotation.objects.filter(name=self.name, market=self.market, game=self.game)\
+            .update(price=self.price, 
+            start_price=self.start_price)
         else:
-            if not is_excluded_cotation(self.name, self.kind):
+            if not is_excluded_cotation(self.name, self.market):
                 super().save(*args, **kwargs)
 
             
