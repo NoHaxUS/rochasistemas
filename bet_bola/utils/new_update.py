@@ -68,7 +68,7 @@ def get_events():
 
 
 def get_game_name(participants):
-    return participants[0]['Name'] + ' x ' + participants[1]['Name'] if participants[0]['Position'] == 1 else participants[1]['Name'] + 'x' + participants[0]['Name']
+    return participants[0]['Name'] + ' x ' + participants[1]['Name'] if int(participants[0]['Position']) == 1 else participants[1]['Name'] + ' x ' + participants[0]['Name']
 
 def process_events(content):
 
@@ -93,7 +93,7 @@ def process_events(content):
             
             if game['Livescore'] and game['Livescore']['Periods']:
                 for period in game['Livescore']['Periods']:
-                    if period['Results'][0]['Position'] == 1:
+                    if int(period['Results'][0]['Position']) == 1:
                         home_score= period['Results'][0]['Value']
                         away_score= period['Results'][1]['Value']
                     else:
