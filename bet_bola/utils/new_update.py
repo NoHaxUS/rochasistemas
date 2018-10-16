@@ -68,7 +68,7 @@ def get_events():
 
 
 def get_game_name(participants):
-    return participants[0]['Name'] + 'x' + participants[1]['Name'] if participants[0]['Position'] == 1 else participants[1]['Name'] + 'x' + participants[0]['Name']
+    return participants[0]['Name'] + ' x ' + participants[1]['Name'] if participants[0]['Position'] == 1 else participants[1]['Name'] + 'x' + participants[0]['Name']
 
 def process_events(content):
 
