@@ -26,10 +26,10 @@ def create_default_priority(sender, **kwargs):
         Country.objects.filter(pk=17).update(priority=95)
 
 def correct_cancelled_tickets(sender, **kwargs):
-    from core.models import BetTicket
+    from core.models import Ticket
 
     print("Correcting cancelled Tickets.")
-    cancelled_tickets = BetTicket.objects.filter(bet_ticket_status = BetTicket.BET_TICKET_STATUS[4][1])
+    cancelled_tickets = Ticket.objects.filter(bet_ticket_status = Ticket.BET_TICKET_STATUS[4][1])
 
     for ticket in cancelled_tickets:
         ticket.payment.seller_was_rewarded = True

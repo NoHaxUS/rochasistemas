@@ -130,10 +130,10 @@ class Seller(CustomUser):
 
     def actual_revenue(self):
 
-        from core.models import BetTicket
+        from core.models import Ticket
         
         total_revenue = 0
-        tickets_not_rewarded = BetTicket.objects.filter(payment__who_set_payment=self, payment__seller_was_rewarded=False)
+        tickets_not_rewarded = Ticket.objects.filter(payment__who_set_payment=self, payment__seller_was_rewarded=False)
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
 
@@ -251,13 +251,13 @@ class Manager(CustomUser):
     
 
     def actual_revenue(self):
-        from core.models import Seller,BetTicket
+        from core.models import Seller,Ticket
 
         sellers = Seller.objects.filter(my_manager=self)
 
         total_revenue = 0
         for seller in sellers:
-            tickets_not_rewarded = BetTicket.objects.filter(payment__who_set_payment=seller, payment__manager_was_rewarded=False)
+            tickets_not_rewarded = Ticket.objects.filter(payment__who_set_payment=seller, payment__manager_was_rewarded=False)
             for ticket in tickets_not_rewarded:
                 total_revenue += ticket.value
         return total_revenue

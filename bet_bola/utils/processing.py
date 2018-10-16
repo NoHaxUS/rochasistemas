@@ -1,5 +1,5 @@
 import requests
-from core.models import Game, Cotation, Championship, BetTicket, Country, Market
+from core.models import Game, Cotation, Championship, Ticket, Country, Market
 from utils.models import GeneralConfigurations
 import utils.timezone as tzlocal
 import datetime
@@ -471,6 +471,6 @@ def total_gols_segundo_tempo_acima_abaixo(game, all_cotations):
 
 
 def process_tickets():
-    tickets_to_process = BetTicket.objects.filter(bet_ticket_status='Aguardando Resultados')
+    tickets_to_process = Ticket.objects.filter(bet_ticket_status='Aguardando Resultados')
     for ticket in tickets_to_process:
         ticket.update_ticket_status()

@@ -4,7 +4,7 @@ from django.template.loader import get_template
 from django.views.generic import View
 from django.utils import timezone
 from django.core import serializers
-from core.models import BetTicket,Cotation,CotationHistory
+from core.models import Ticket,Cotation,CotationHistory
 from user.models import Seller
 from django.conf import settings
 from fpdf import FPDF
@@ -19,7 +19,7 @@ class ValidateTicket(View):
     def post(self, request, *args, **kwargs):
         ticket_id = request.POST['ticket_id']
 
-        ticket = BetTicket.objects.filter(pk=ticket_id)
+        ticket = Ticket.objects.filter(pk=ticket_id)
 
         if ticket.count() > 0:
             return UnicodeJsonResponse(ticket.first().validate_ticket(request.user.seller))
@@ -37,7 +37,7 @@ class PDF(View):
 
 
     def get(self, request, *args, **kwargs):
-        ticket = get_object_or_404(BetTicket, pk=self.kwargs["pk"])
+        ticket = get_object_or_404(Ticket, pk=self.kwargs["pk"])
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = 'inline; filename="ticket.pdf"'
 

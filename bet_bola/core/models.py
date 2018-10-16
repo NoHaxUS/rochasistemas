@@ -17,7 +17,7 @@ import utils.timezone as tzlocal
 
 
 
-class BetTicket(models.Model):
+class Ticket(models.Model):
 
     BET_TICKET_STATUS = (
         ('Aguardando Resultados', 'Aguardando Resultados'),
@@ -96,8 +96,8 @@ class BetTicket(models.Model):
         seller.credit_limit += self.value
         seller.save()
 
-        self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[4][1]
-        self.payment.status_payment = BetTicket.BET_TICKET_STATUS[4][1]
+        self.bet_ticket_status = Ticket.BET_TICKET_STATUS[4][1]
+        self.payment.status_payment = Ticket.BET_TICKET_STATUS[4][1]
         self.payment.payment_date = None
         self.payment.seller_was_rewarded = True
         self.payment.save()
@@ -217,16 +217,16 @@ class BetTicket(models.Model):
     def update_ticket_status(self):
 
         if self.cotations.filter(winning=False).count() > 0:
-            self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[1][1]
+            self.bet_ticket_status = Ticket.BET_TICKET_STATUS[1][1]
             self.reward.status_reward = Reward.REWARD_STATUS[2][1]
             self.reward.save()
             self.save()
         elif not self.cotations.filter(winning=None).count() > 0:
             if self.payment.status_payment == 'Pago':
-                self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[2][1]
+                self.bet_ticket_status = Ticket.BET_TICKET_STATUS[2][1]
                 self.reward.status_reward = Reward.REWARD_STATUS[3][1]
             else:
-                self.bet_ticket_status = BetTicket.BET_TICKET_STATUS[3][1]
+                self.bet_ticket_status = Ticket.BET_TICKET_STATUS[3][1]
                 self.reward.status_reward = Reward.REWARD_STATUS[4][1]
             self.reward.save()
             self.save()
@@ -253,7 +253,7 @@ class BetTicket(models.Model):
 class CotationHistory(models.Model):
 
     original_cotation = models.IntegerField()
-    bet_ticket = models.ForeignKey('BetTicket', on_delete=models.CASCADE, verbose_name='Ticket', related_name='cotations_history')
+    bet_ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, verbose_name='Ticket', related_name='cotations_history')
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
     original_value = models.DecimalField(max_digits=30, decimal_places=2,default=0,verbose_name='Valor Original')
     value = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')

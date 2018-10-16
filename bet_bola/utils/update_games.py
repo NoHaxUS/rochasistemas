@@ -5,7 +5,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
 import requests
-from core.models import Game, Cotation, Championship, BetTicket, Country, Market
+from core.models import Game, Cotation, Championship, Ticket, Country, Market
 from utils.models import GeneralConfigurations
 import utils.timezone as tzlocal
 import datetime

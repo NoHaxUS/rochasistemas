@@ -1,13 +1,13 @@
 from django.db import models
 from django.conf import settings
-from core.models import BetTicket
+from core.models import Ticket
 from user.models import Seller, Manager
 
 
 
 class SellerSalesHistory(models.Model):
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, verbose_name='Vendedor')
-    bet_ticket = models.ForeignKey(BetTicket, on_delete=models.CASCADE, verbose_name='Ticket Pago')
+    bet_ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, verbose_name='Ticket Pago')
     sell_date = models.DateTimeField(verbose_name='Data da Venda', auto_now_add=True)
     value = models.DecimalField(max_digits=30, decimal_places=2,verbose_name='Valor Apostado')
     seller_before_balance = models.DecimalField(max_digits=30, decimal_places=2,null=True,blank=True, verbose_name='Saldo Anterior')
@@ -94,7 +94,7 @@ class RevenueHistoryManager(models.Model):
 class PunterPayedHistory(models.Model):
     punter_payed = models.CharField(max_length=200, verbose_name='Apostador')
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, verbose_name='Vendedor')
-    ticket_winner = models.ForeignKey(BetTicket, on_delete=models.CASCADE, verbose_name='Ticket Vencedor')
+    ticket_winner = models.ForeignKey(Ticket, on_delete=models.CASCADE, verbose_name='Ticket Vencedor')
     payment_date = models.DateTimeField(verbose_name='Data do Pagamento', auto_now_add=True)
     payed_value = models.DecimalField(max_digits=30, decimal_places=2,verbose_name='Valor Pago')
     is_closed_for_seller = models.BooleanField(verbose_name='Vendedor Prestou Conta?', default=False)
@@ -111,7 +111,7 @@ class PunterPayedHistory(models.Model):
 
 class TicketCancelationHistory(models.Model):
     who_cancelled = models.CharField(max_length=200, verbose_name='Quem Cancelou ?')
-    ticket_cancelled = models.ForeignKey(BetTicket, on_delete=models.CASCADE, verbose_name='Ticket Cancelado')
+    ticket_cancelled = models.ForeignKey(Ticket, on_delete=models.CASCADE, verbose_name='Ticket Cancelado')
     cancelation_date = models.DateTimeField(verbose_name='Data do Pagamento', auto_now_add=True)
     seller_of_payed = models.ForeignKey(Seller, on_delete=models.CASCADE, verbose_name='Vendedor')
 

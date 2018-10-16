@@ -3,7 +3,7 @@ from django.views import View
 from django.core.paginator import Paginator
 from django.views.generic.base import TemplateResponseMixin
 from django.http import HttpResponse, JsonResponse
-from .models import Cotation,BetTicket,Game,Championship,Payment,Reward,Country,CotationHistory
+from .models import Cotation,Ticket,Game,Championship,Payment,Reward,Country,CotationHistory
 from user.models import Seller
 from django.core import serializers
 from django.conf import settings
@@ -415,7 +415,7 @@ class CreateTicketView(View):
 			return UnicodeJsonResponse(data)
 
 		if data['success']:
-			ticket = BetTicket(				
+			ticket = Ticket(				
 				value=ticket_bet_value,
 				creation_date = tzlocal.now(),
 				payment=Payment.objects.create(payment_date=None), 
@@ -480,8 +480,8 @@ class TicketDetail(TemplateResponseMixin, View):
 
 	def get(self, request, *args, **kwargs):
 		try:
-			ticket = BetTicket.objects.get(pk=self.kwargs["pk"])
-		except BetTicket.DoesNotExist:
+			ticket = Ticket.objects.get(pk=self.kwargs["pk"])
+		except Ticket.DoesNotExist:
 			self.template_name = 'core/ticket_not_found.html'
 			return self.render_to_response(context={})
 

@@ -1,7 +1,7 @@
 import os
 import django
 import requests
-#from core.models import Game, Cotation, Championship, BetTicket, Country, Market
+#from core.models import Game, Cotation, Championship, Ticket, Country, Market
 
 from multiprocessing.pool import ThreadPool
 from core.models import Location, League, Sport, Market, Period, Game, Cotation
@@ -67,27 +67,22 @@ def get_events():
     process_events(request.json())
 
 
+def get_game_name(participants):
+    return participants[0]['Name'] + 'x' + participants[1]['Name'] if participants[0]['Position'] == 1 else participants[1]['Name'] + 'x' + participants[0]['Name']
+
 def process_events(content):
 
     for game in content.get('Body'):
         fixture = game['Fixture']
-        if game['FixtureId'] and fixture['Sport'] and fixture['Location'] and game['Fixture']['League']:
+        if game['FixtureId'] and fixture['Sport'] and fixture['Location'] and fixture['League']:
 
-            if fixture['Participants'][0]['Position'] == 1:
-                game_name = fixture['Participants'][0]['Name'] + 'x' + fixture['Participants'][1]['Name']
-            else:
-                game_name = fixture['Participants'][1]['Name'] + 'x' + fixture['Participants'][0]['Name']
-
-            periods = []
-            if game['Livescore']:
-                periods = game['Livescore']['Periods']
+            game_name = get_game_name(fixture['Participants'])
             
-            g = ''
             if Game.objects.filter(pk=game['FixtureId']):
                 g = Game.objects.get(pk=game['FixtureId'])
             else:
                 g = Game.objects.create(pk=game['FixtureId'],             
-                league=League.objects.get_or_create(pk=fixture['League']['Id'],name=fixture['League']['Name'])[0],            
+                league=League.objects.get_or_create(pk=fixture['League']['Id'], defaults={'name':fixture['League']['Name']})[0] ,            
                 start_date=fixture['StartDate'],
                 last_update=fixture['LastUpdate'],
                 status_game=fixture['Status'],
@@ -98,6 +93,10 @@ def process_events(content):
                     league = League.objects.get(pk=fixture['League']['Id'])
                     league.location = Location.objects.get(pk=fixture['Location']['Id'])
                     league.save()
+ 
+            periods = []
+            if game['Livescore']:
+                periods = game['Livescore']['Periods']
 
             for period in periods:
                 if period['Results'][0]['Position'] == 1:
@@ -106,7 +105,6 @@ def process_events(content):
                 else:
                     home_score= period['Results'][1]['Value']
                     away_score= period['Results'][0]['Value']                
-
 
                 Period(period_type=period['Type'],
                 is_fineshed=period['IsFinished'],

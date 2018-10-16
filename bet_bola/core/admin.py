@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from user.models import CustomUser
-from .models import BetTicket,Cotation,Payment,Game,League,Reward,Location,Market
+from .models import Ticket,Cotation,Payment,Game,League,Reward,Location,Market
 from user.models import CustomUser
 from django.contrib.auth.models import Group
 from django.db.models import Q
@@ -186,7 +186,7 @@ def bet_ticket_status(obj):
 
 bet_ticket_status.short_description = 'Status'
 
-@admin.register(BetTicket)
+@admin.register(Ticket)
 class BetTicketAdmin(AdminViewPermissionModelAdmin):
     search_fields = ['id']
     list_filter = ('bet_ticket_status',
@@ -268,7 +268,7 @@ class BetTicketAdmin(AdminViewPermissionModelAdmin):
 
         if request.user.has_perm('user.be_seller'):
             return qs.filter(Q(payment__status_payment=Payment.PAYMENT_STATUS[0][1],
-            bet_ticket_status=BetTicket.BET_TICKET_STATUS[0][1]) |
+            bet_ticket_status=Ticket.BET_TICKET_STATUS[0][1]) |
             Q(payment__who_set_payment=request.user.seller,
             is_visible=True))
 

@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import F, Q, When, Case
 from user.models import Seller, Manager
-from core.models import Cotation, BetTicket
+from core.models import Cotation, Ticket
 from django.db.models import Count
 from decimal import Decimal
 
@@ -17,7 +17,7 @@ class Comission(models.Model):
     def total_simple(self):
         
         total_revenue = 0
-        tickets_not_rewarded = BetTicket.objects.filter(
+        tickets_not_rewarded = Ticket.objects.filter(
             payment__who_set_payment=self.seller_related, 
             payment__seller_was_rewarded=False,
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=1)
@@ -29,7 +29,7 @@ class Comission(models.Model):
     
     def total_double(self):
         total_revenue = 0
-        tickets_not_rewarded = BetTicket.objects.filter(
+        tickets_not_rewarded = Ticket.objects.filter(
             payment__who_set_payment=self.seller_related, 
             payment__seller_was_rewarded=False,
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=2)
@@ -40,7 +40,7 @@ class Comission(models.Model):
     
     def total_triple(self):
         total_revenue = 0
-        tickets_not_rewarded = BetTicket.objects.filter(
+        tickets_not_rewarded = Ticket.objects.filter(
             payment__who_set_payment=self.seller_related, 
             payment__seller_was_rewarded=False,
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=3)
@@ -51,7 +51,7 @@ class Comission(models.Model):
     
     def total_plus(self):
         total_revenue = 0
-        tickets_not_rewarded = BetTicket.objects.filter(
+        tickets_not_rewarded = Ticket.objects.filter(
             payment__who_set_payment=self.seller_related, 
             payment__seller_was_rewarded=False,
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=3)
