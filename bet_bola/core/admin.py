@@ -161,40 +161,40 @@ def payment_status(obj):
 payment_status.short_description = 'Status do Pagamento'
 
 
-def bet_ticket_status(obj):
-    if obj.bet_ticket_status == 'Venceu':
+def ticket_status(obj):
+    if obj.ticket_status == 'Venceu':
         return format_html (
             '<div class="winner_ticket">{}</div>',
-            obj.bet_ticket_status
+            obj.ticket_status
         )
-    elif obj.bet_ticket_status == 'Não Venceu':
+    elif obj.ticket_status == 'Não Venceu':
         return format_html (
             '<div class="loser_ticket">{}</div>',
-            obj.bet_ticket_status
+            obj.ticket_status
         )
-    elif obj.bet_ticket_status == 'Cancelado':
+    elif obj.ticket_status == 'Cancelado':
         return format_html (
             '<div class="loser_ticket">{}</div>',
-            obj.bet_ticket_status
+            obj.ticket_status
         )
 
     return format_html (
             '<div class="">{}</div>',
-            obj.bet_ticket_status
+            obj.ticket_status
         )
 
-bet_ticket_status.short_description = 'Status'
+ticket_status.short_description = 'Status'
 
 @admin.register(Ticket)
 class TicketAdmin(admin.ModelAdmin):
     search_fields = ['id']
-    list_filter = ('bet_ticket_status',
+    list_filter = ('ticket_status',
     'payment__who_set_payment_id',
     'payment__status_payment',
     HiddenTicketFilter,
     'creation_date',
-    'reward__status_reward')
-    list_display =('pk', bet_ticket_status, 'get_ticket_link','get_punter_name','value','reward','cotation_sum', payment_status,'creation_date', 'seller_related')
+    'reward__reward_status')
+    list_display =('pk', ticket_status, 'get_ticket_link','get_punter_name','value','reward','cotation_sum', payment_status,'creation_date', 'seller_related')
     exclude = ('cotations','user','normal_user',)
     actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket, hide_ticket_action, show_ticket_action]
     list_per_page = 50
@@ -257,7 +257,7 @@ class TicketAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj):
         if request.user.has_perm('user.be_seller') and not request.user.is_superuser:
-            return ('value','reward','payment','creation_date','cotation_sum', 'seller', 'bet_ticket_status','is_visible')
+            return ('value','reward','payment','creation_date','cotation_sum', 'seller', 'ticket_status','is_visible')
         return super().get_readonly_fields(request, obj)
 
     def get_queryset(self, request):
@@ -267,7 +267,7 @@ class TicketAdmin(admin.ModelAdmin):
 
         if request.user.has_perm('user.be_seller'):
             return qs.filter(Q(payment__status_payment=Payment.PAYMENT_STATUS[0][1],
-            bet_ticket_status=Ticket.BET_TICKET_STATUS[0][1]) |
+            ticket_status=Ticket.TICKET_STATUS[0][1]) |
             Q(payment__who_set_payment=request.user.seller,
             is_visible=True))
 

@@ -29,7 +29,7 @@ def correct_cancelled_tickets(sender, **kwargs):
     from core.models import Ticket
 
     print("Correcting cancelled Tickets.")
-    cancelled_tickets = Ticket.objects.filter(bet_ticket_status = Ticket.BET_TICKET_STATUS[4][1])
+    cancelled_tickets = Ticket.objects.filter(ticket_status = Ticket.TICKET_STATUS[4][1])
 
     for ticket in cancelled_tickets:
         ticket.payment.seller_was_rewarded = True

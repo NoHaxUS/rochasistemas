@@ -19,7 +19,7 @@ import utils.timezone as tzlocal
 
 class Ticket(models.Model):
 
-    BET_TICKET_STATUS = (
+    TICKET_STATUS = (
         ('Aguardando Resultados', 'Aguardando Resultados'),
         ('Não Venceu', 'Não Venceu'),
         ('Venceu', 'Venceu'),
@@ -27,15 +27,15 @@ class Ticket(models.Model):
         ('Cancelado', 'Cancelado')
     )
     
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_bet_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Apostador')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Apostador')
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
     normal_user = models.ForeignKey(NormalUser, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cliente')
-    cotations = models.ManyToManyField('Cotation', related_name='bet_ticket', verbose_name='Cota')
+    cotations = models.ManyToManyField('Cotation', related_name='ticket', verbose_name='Cota')
     creation_date = models.DateTimeField(verbose_name='Data da Aposta')
     reward = models.OneToOneField('Reward', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
     payment = models.OneToOneField('Payment', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
     value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')
-    bet_ticket_status = models.CharField(max_length=80, choices=BET_TICKET_STATUS,default=BET_TICKET_STATUS[0][1],verbose_name='Status de Ticket')
+    ticket_status = models.CharField(max_length=80, choices=TICKET_STATUS,default=TICKET_STATUS[0][1],verbose_name='Status de Ticket')
     is_visible = models.BooleanField(default=True, verbose_name='Visível?')
 
     def __str__(self):
@@ -78,7 +78,7 @@ class Ticket(models.Model):
                 'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
         
         who_cancelled  = str(user.pk) + ' - ' + user.username
-        if not self.bet_ticket_status == 'Aguardando Resultados':
+        if not self.ticket_status == 'Aguardando Resultados':
             return {'success':False,
                 'message':' Ticket '+ str(self.pk)+ ' não cancelado, pois não está aguardando resultados.'}
         
@@ -96,8 +96,8 @@ class Ticket(models.Model):
         seller.credit_limit += self.value
         seller.save()
 
-        self.bet_ticket_status = Ticket.BET_TICKET_STATUS[4][1]
-        self.payment.status_payment = Ticket.BET_TICKET_STATUS[4][1]
+        self.ticket_status = Ticket.TICKET_STATUS[4][1]
+        self.payment.status_payment = Ticket.TICKET_STATUS[4][1]
         self.payment.payment_date = None
         self.payment.seller_was_rewarded = True
         self.payment.save()
@@ -111,7 +111,6 @@ class Ticket(models.Model):
             'message':'O Ticket '+ str(self.pk) +' foi cancelado.'}
 
 
-
     def validate_ticket(self, user):
         from history.models import SellerSalesHistory
 
@@ -123,7 +122,7 @@ class Ticket(models.Model):
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Aguardando Pagamento.'}
 
-        if not self.bet_ticket_status == 'Aguardando Resultados':
+        if not self.ticket_status == 'Aguardando Resultados':
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Aguardando Resultados.'}
 
@@ -172,7 +171,7 @@ class Ticket(models.Model):
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
         
-        if not self.bet_ticket_status == 'Venceu':
+        if not self.ticket_status == 'Venceu':
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não Venceu'}
 
@@ -217,16 +216,16 @@ class Ticket(models.Model):
     def update_ticket_status(self):
 
         if self.cotations.filter(winning=False).count() > 0:
-            self.bet_ticket_status = Ticket.BET_TICKET_STATUS[1][1]
+            self.ticket_status = Ticket.TICKET_STATUS[1][1]
             self.reward.status_reward = Reward.REWARD_STATUS[2][1]
             self.reward.save()
             self.save()
         elif not self.cotations.filter(winning=None).count() > 0:
             if self.payment.status_payment == 'Pago':
-                self.bet_ticket_status = Ticket.BET_TICKET_STATUS[2][1]
+                self.ticket_status = Ticket.TICKET_STATUS[2][1]
                 self.reward.status_reward = Reward.REWARD_STATUS[3][1]
             else:
-                self.bet_ticket_status = Ticket.BET_TICKET_STATUS[3][1]
+                self.ticket_status = Ticket.TICKET_STATUS[3][1]
                 self.reward.status_reward = Reward.REWARD_STATUS[4][1]
             self.reward.save()
             self.save()
@@ -252,16 +251,20 @@ class Ticket(models.Model):
 
 class CotationHistory(models.Model):
 
-    original_cotation = models.IntegerField()
+    id = models.BigIntegerField(primary_key=True)
+    original_cotation = models.BigIntegerField()
     bet_ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, verbose_name='Ticket', related_name='cotations_history')
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
-    original_value = models.DecimalField(max_digits=30, decimal_places=2,default=0,verbose_name='Valor Original')
-    value = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
-    game = models.ForeignKey('Game', related_name='cotations_history', null=True,blank=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
-    winning = models.NullBooleanField(verbose_name='Vencedor ?')
-    is_standard = models.BooleanField(default=False, verbose_name='Cota Padrão ?')
-    kind = models.ForeignKey('Market', related_name='cotations_history', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
-    total = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True)
+    start_price = models.DecimalField(max_digits=30, decimal_places=2, default=0,verbose_name='Valor Original')
+    price = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
+    game = models.ForeignKey('Game', related_name='cotations_history', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
+    settlement = models.IntegerField(null=True, blank=True)
+    status = models.IntegerField()
+    market = models.ForeignKey('Market', related_name='cotations_history', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
+    line = models.CharField(max_length=30, null=True, blank=True)
+    base_line = models.CharField(max_length=30, null=True, blank=True)
+    last_update = models.DateTimeField(null=True, blank=True)
+
  
 
 class Sport(models.Model):
@@ -373,8 +376,8 @@ class Reward(models.Model):
 
     who_rewarded = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL)
     reward_date = models.DateTimeField(null=True, blank=True)
-    value = models.DecimalField(max_digits=50, decimal_places=2, default=0)
-    status_reward = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1], verbose_name='Status do Prêmio')
+    reward_value = models.DecimalField(max_digits=50, decimal_places=2, default=0, verbose_name="Valor da Recompensa")
+    reward_status = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1], verbose_name='Status do Prêmio')
 
     @property
     def real_value(self):
@@ -444,25 +447,21 @@ class Cotation(models.Model):
     game = models.ForeignKey('Game', related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
     settlement = models.IntegerField(choices=SETTLEMENT_STATUS, null=True, blank=True)
     status = models.IntegerField(choices=COTATION_STATUS)
-    market = models.ForeignKey(Market, related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
+    market = models.ForeignKey('Market', related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
     line = models.CharField(max_length=30, null=True, blank=True)
     base_line = models.CharField(max_length=30, null=True, blank=True)
     last_update = models.DateTimeField(null=True, blank=True)
+
     objects = GamesManager()
 
 
     def __str__(self):
-        return str(self.value)
+        return str(self.price)
 
 
     def save(self, *args, **kwargs):
-        if Cotation.objects.filter(name=self.name, market=self.market, game=self.game).exists():
-            Cotation.objects.filter(name=self.name, market=self.market, game=self.game)\
-            .update(price=self.price, 
-            start_price=self.start_price)
-        else:
-            if not is_excluded_cotation(self.name, self.market):
-                super().save(*args, **kwargs)
+        if not Cotation.objects.filter(name=self.name, market=self.market, game=self.game).exists():
+            super().save(*args, **kwargs)
 
             
     class Meta:

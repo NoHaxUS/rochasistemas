@@ -84,10 +84,10 @@ def process_events(content):
                     'name':game_name,
                     'start_date': fixture['StartDate'],
                     'game_status': fixture['Status'],
-                    'last_update': fixture['LastUpdate'],
                     'league': League.objects.get_or_create(pk=fixture['League']['Id'], defaults={'name':fixture['League']['Name']})[0],
                     'location' : Location.objects.get_or_create(pk=fixture['Location']['Id'], defaults={'name': fixture['Location']['Name']})[0],
-                    'sport' : Sport.objects.get_or_create(pk=fixture['Sport']['Id'], defaults={'name': fixture['Sport']['Name']})[0]
+                    'sport' : Sport.objects.get_or_create(pk=fixture['Sport']['Id'], defaults={'name': fixture['Sport']['Name']})[0],
+                    'last_update': fixture['LastUpdate']
                 }
             )[0]
             
@@ -114,7 +114,6 @@ def process_events(content):
 
 
 def process_markets(markets, game_instance):
-    print("Entrou aqui")
 
     for market in markets:
         for cotation in market['Providers'][0]['Bets']:
@@ -127,7 +126,8 @@ def process_markets(markets, game_instance):
                 start_price=cotation['StartPrice'],
                 price=cotation['Price'],
                 settlement=cotation.get('Settlement',None),
-                market=Market.objects.get_or_create(pk=market['Id'], defaults={'name':market['Name']})[0]
+                market=Market.objects.get_or_create(pk=market['Id'], defaults={'name':market['Name']})[0],
+                last_update=cotation['LastUpdate']
             ).save()
 
 
