@@ -100,7 +100,7 @@ class TomorrowGames(TemplateResponseMixin, View):
 
 		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
-		my_qs = Cotation.objects.filter(is_standard=True)
+		my_qs = Cotation.objects.filter(market__name="1X2")
 		games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
 		game_status=1, 
 		is_visible=True)\
@@ -149,7 +149,7 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
 
 		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
-		my_qs = Cotation.objects.filter(is_standard=True)
+		my_qs = Cotation.objects.filter(market__name="1X2")
 		games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
 		game_status=1, 
 		is_visible=True)\

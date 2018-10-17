@@ -31,7 +31,8 @@ def process_leagues(content):
     for league in content.get('Body'):
         if league['Id'] and league['Name'] and league['LocationId'] and league['SportId']:
             League(pk=league['Id'], 
-            name=league['Name'],                         
+            name=league['Name'],
+            location=Location.objects.get(pk=league['LocationId'])                         
             ).save()
 
 def process_sports(content):
