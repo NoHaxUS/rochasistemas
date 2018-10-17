@@ -340,6 +340,7 @@ class Period(models.Model):
 class League(models.Model):
 
     name = models.CharField(max_length=120, verbose_name='Nome', help_text='Campeonato')
+    location = models.ForeignKey('Location', related_name='my_leagues',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Local')
     priority = models.IntegerField(default=1, verbose_name='Prioridade')
 
     def __str__(self):

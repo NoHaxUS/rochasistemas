@@ -3,38 +3,39 @@ from django.views import View
 from django.core.paginator import Paginator
 from django.views.generic.base import TemplateResponseMixin
 from django.http import HttpResponse, JsonResponse
-from .models import Cotation,Ticket,Game,Championship,Payment,Reward,Country,CotationHistory
-from user.models import Seller
+from django.urls import reverse_lazy
 from django.core import serializers
 from django.conf import settings
+from .models import Cotation,Ticket,Game,League,Payment,Reward,Location,CotationHistory
+from django.db.models import Prefetch, Count
+from django.utils import timezone
+from django.db.models import Q
+from user.models import Seller
 from user.models import CustomUser, NormalUser
 import utils.timezone as tzlocal
 from utils.utils import no_repetition_list
 from utils.response import UnicodeJsonResponse
-from django.urls import reverse_lazy
 import json
 import urllib
 from decimal import Decimal
-from django.db.models import Prefetch, Count
-from django.utils import timezone
 from math import ceil
 from  collections import defaultdict
 
 def get_main_menu():
 
-	games = Game.objects.filter(start_game_date__gt=tzlocal.now(),
-	championship__isnull=False,
-	status_game="NS",
+	games = Game.objects.filter(start_date__gt=tzlocal.now(),
+	league__isnull=False,
+	game_status=1,
 	is_visible=True)\
 	.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
-	.order_by('-championship__country__priority', '-championship__priority')
+	.order_by('-league__location__priority', '-league__priority')
 
 
-	country_leagues = defaultdict(set)
+	location_leagues = defaultdict(set)
 
 	for game in games:
-		country_leagues[game.championship.country].add(game.championship)
-	return country_leagues
+		location_leagues[game.league.location].add(game.league)
+	return location_leagues
 
 class TodayGames(TemplateResponseMixin, View):
 
@@ -51,20 +52,20 @@ class TodayGames(TemplateResponseMixin, View):
 		end_offset = (page * results_per_page)
 		
 		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
-		my_qs = Cotation.objects.filter(is_standard=True)
+		my_qs = Cotation.objects.filter(market__name="1X2")
 		
-		games = Game.objects.filter(start_game_date__gt=tzlocal.now(), 
-		start_game_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
-		status_game="NS", 
+		games = Game.objects.filter(start_date__gt=tzlocal.now(), 
+		start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+		game_status=1, 
 		is_visible=True)\
 		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
 		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
-		.order_by('-championship__country__priority','-championship__priority')[start_offset:end_offset]
+		.order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
 
 
-		games_total = Game.objects.filter(start_game_date__gt=tzlocal.now(), 
-		start_game_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
-		status_game="NS", 
+		games_total = Game.objects.filter(start_date__gt=tzlocal.now(), 
+		start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+		game_status=1, 
 		is_visible=True)\
 		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
 		.count()
@@ -72,13 +73,13 @@ class TodayGames(TemplateResponseMixin, View):
 		num_of_pages =  ceil(games_total / results_per_page)
 
 		league_games = defaultdict(list)
-		country_leagues = get_main_menu()
+		location_leagues = get_main_menu()
 		
 		for game in games:
-			league_games[game.championship].append(game)
+			league_games[game.league].append(game)
 		
 		context = {'league_games': league_games, 
-			'country_leagues': country_leagues,
+			'location_leagues': location_leagues,
 			'after_tommorrow': after_tommorrow,
 			'range_pages': range(1, num_of_pages + 1),
 			'current_page': page}
@@ -100,16 +101,16 @@ class TomorrowGames(TemplateResponseMixin, View):
 		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
 		my_qs = Cotation.objects.filter(is_standard=True)
-		games = Game.objects.filter(start_game_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
-		status_game="NS", 
+		games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
+		game_status=1, 
 		is_visible=True)\
 		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
 		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
-		.order_by('-championship__country__priority','-championship__priority')[start_offset:end_offset]
+		.order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
 
 
-		games_total = Game.objects.filter(start_game_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
-		status_game="NS", 
+		games_total = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
+		game_status=1, 
 		is_visible=True)\
 		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
 		.count()
@@ -117,13 +118,13 @@ class TomorrowGames(TemplateResponseMixin, View):
 		num_of_pages =  ceil(games_total / results_per_page)
 		
 		league_games = defaultdict(list)
-		country_leagues = get_main_menu()
+		location_leagues = get_main_menu()
 		
 		for game in games:
-			league_games[game.championship].append(game)
+			league_games[game.League].append(game)
 		
 		context = {'league_games': league_games, 
-			'country_leagues': country_leagues,
+			'location_leagues': location_leagues,
 			'after_tommorrow': after_tommorrow,
 			'range_pages': range(1, num_of_pages + 1),
 			'current_page': page
@@ -149,16 +150,16 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
 		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
 		my_qs = Cotation.objects.filter(is_standard=True)
-		games = Game.objects.filter(start_game_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
-		status_game="NS", 
+		games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
+		game_status=1, 
 		is_visible=True)\
 		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
 		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
-		.order_by('-championship__country__priority','-championship__priority')[start_offset:end_offset]
+		.order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
 
 
-		games_total = Game.objects.filter(start_game_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
-		status_game="NS", 
+		games_total = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
+		game_status=1, 
 		is_visible=True)\
 		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
 		.count()
@@ -166,13 +167,13 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
 		num_of_pages =  ceil(games_total / results_per_page)
 
 		league_games = defaultdict(list)
-		country_leagues = get_main_menu()
+		location_leagues = get_main_menu()
 		
 		for game in games:
-			league_games[game.championship].append(game)
+			league_games[game.League].append(game)
 		
 		context = {'league_games': league_games, 
-			'country_leagues': country_leagues,
+			'location_leagues': location_leagues,
 			'after_tommorrow': after_tommorrow,
 			'range_pages': range(1, num_of_pages + 1),
 			'current_page': page
@@ -182,7 +183,7 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
 
 
 
-class GameChampionship(TemplateResponseMixin, View):
+class GameLeague(TemplateResponseMixin, View):
 
 	template_name = 'core/championship_games.html'
 
@@ -190,24 +191,24 @@ class GameChampionship(TemplateResponseMixin, View):
 
 		after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
-		my_qs = Cotation.objects.filter(is_standard=True)
+		my_qs = Cotation.objects.filter(market__name='1X2')
 
-		games = Game.objects.filter(start_game_date__gt=tzlocal.now(),
-		status_game="NS",
-		championship__id=self.kwargs["pk"],
+		games = Game.objects.filter(start_date__gt=tzlocal.now(),
+		game_status=1,
+		League__id=self.kwargs["pk"],
 		is_visible=True)\
 		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
 		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
-		.order_by('-championship__priority')
+		.order_by('-league__priority')
 		
 		
-		country_leagues = get_main_menu()
+		location_leagues = get_main_menu()
 
 		first_game = games.first()
-		country_league = str(first_game.championship.country.name) + " - " + str(first_game.championship.name)
+		location_league = str(first_game.League.location.name) + " - " + str(first_game.league.name)
 		context = {'games_selected_league': games, 
-			'country_leagues': country_leagues,
-			'country_league' : country_league,
+			'location_leagues': location_leagues,
+			'location_league' : location_league,
 			'after_tommorrow': after_tommorrow}
 
 		return self.render_to_response(context)
@@ -223,7 +224,7 @@ class CotationsView(View):
 
 		gameid = self.kwargs['gameid']
 		cotations_by_kind = {}
-		cotations_of_game = Cotation.objects.filter(game_id=gameid, is_standard=False, kind__isnull=False)
+		cotations_of_game = Cotation.objects.filter(Q(game_id=gameid) and ~Q(market__name='1X2') and Q(market__isnull=False))
 	
 		for cotation in cotations_of_game:
 			if cotation.kind:
@@ -375,7 +376,7 @@ class CreateTicketView(View):
 			game_contation = None
 			try:
 				game_contation = Cotation.objects.get(pk=int(request.session['ticket'][game_id]))
-				if game_contation.game.start_game_date < tzlocal.now():
+				if game_contation.game.start_date < tzlocal.now():
 					data['success'] =  False
 					data['message'] =  "Desculpe, o jogo:" + game_contation.game.name + " já começou, remova-o"
 					return UnicodeJsonResponse(data)
@@ -441,13 +442,11 @@ class CreateTicketView(View):
 					original_cotation=i_cotation.pk,
 					bet_ticket=ticket,
 					name=i_cotation.name,
-					original_value=i_cotation.original_value,
-					value=i_cotation.value,
+					start_price=i_cotation.start_price,
+					price=i_cotation.price,
 					game=i_cotation.game,
 					winning=i_cotation.winning,
-					is_standard=i_cotation.is_standard,
-					kind=i_cotation.kind,
-					total=i_cotation.total
+					market=i_cotation.market,										
 				).save()
 		
 
@@ -517,7 +516,7 @@ class TicketDetail(TemplateResponseMixin, View):
 
 			for cotation in ticket.cotations.all():
 				content += "<LEFT>" + cotation.game.name + "<BR>"
-				game_date = cotation.game.start_game_date.strftime('%d/%m/%Y %H:%M')
+				game_date = cotation.game.start_date.strftime('%d/%m/%Y %H:%M')
 				content += "<LEFT>" + game_date + "<BR>"
 				if cotation.kind:
 					content += "<LEFT>"+ cotation.kind.name + "<BR>"

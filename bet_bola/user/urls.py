@@ -19,8 +19,8 @@ from . import views
 
 app_name = 'user'
 
-# urlpatterns = [
-#     path('punter/register/', views.PunterRegister.as_view(), name='user_punter_register'),
-#     path('login/', views.UserLogin.as_view(), name='user_login'),
-#     path('logout/',views.UserLogout.as_view(), name='user_logout'),
-# ]
+urlpatterns = [
+    path('punter/register/', views.PunterRegister.as_view(), name='user_punter_register'),
+    path('login/', views.UserLogin.as_view(), name='user_login'),
+    path('logout/',views.UserLogout.as_view(), name='user_logout'),
+]

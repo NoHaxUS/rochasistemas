@@ -18,7 +18,7 @@ from . import views
 
 app_name = 'utils'
 
-# urlpatterns = [
-#     path('pdf/<int:pk>/', views.PDF.as_view(), name='pdf'),
-#     path('validate_ticket/', views.ValidateTicket.as_view(), name='validate_ticket'),
-# ]
+urlpatterns = [
+    path('pdf/<int:pk>/', views.PDF.as_view(), name='pdf'),
+    path('validate_ticket/', views.ValidateTicket.as_view(), name='validate_ticket'),
+]
