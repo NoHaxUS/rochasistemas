@@ -10,9 +10,9 @@ def main():
     from utils.timezone import now
     
     print("Update Started.." + str(now()))
-    get_locations()
-    get_sports()
-    get_leagues()
+    # get_locations()
+    # get_sports()
+    # get_leagues()
     get_events()
     print("Finished Succesfully.")
 

@@ -406,14 +406,14 @@ $(document).ready(function () {
 
                 var array_cotations = jQuery.parseJSON( dataJSON[key] )
                 var array_cotations_length = array_cotations.length;
-
+                
                 for (var i = 0; i < array_cotations_length; i++) {
                     
                     full_html += '<tr>' +
                     '<td class="hide">'+ array_cotations[i].pk + '</td>' +
                     '<td class="more-cotation-name">'+ array_cotations[i].fields.name + '</td>' +
-                    '<td class="more-cotation">'+ array_cotations[i].fields.value +'</td>' +
-                    '<td class="more-cotation-kind hide">' + array_cotations[i].fields.kind + '</td>' +
+                    '<td class="more-cotation">'+ array_cotations[i].fields.price +'</td>' +
+                    '<td class="more-cotation-kind hide">' + array_cotations[i].fields.marktet.name + '</td>' +
                         '</tr>';
 
                 }

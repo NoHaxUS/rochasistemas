@@ -2,7 +2,8 @@ import os
 import django
 import requests
 #from core.models import Game, Cotation, Championship, Ticket, Country, Market
-
+import time
+import datetime
 from multiprocessing.pool import ThreadPool
 from core.models import Location, League, Sport, Market, Period, Game, Cotation
 
@@ -60,9 +61,11 @@ def get_events():
 
     # first_date = str(before_year) + "-" + str(before_month) + "-" + str(before_day)
     # second_date = str(after_year) + "-" +str(after_month) + "-" + str(after_day)
+    from_date = str(time.time())
+    to_date = str((datetime.datetime.now() + datetime.timedelta(days=2)).timestamp())
 
     print("Atualizango Jogos e Cotas")
-    request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate=1539612805&ToDate=1539785605&Lang=pt&Sports=6046")
+    request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate="+from_date+"&ToDate="+to_date+"&Lang=pt&Sports=6046")
     process_events(request.json())
 
 
@@ -90,7 +93,7 @@ def process_events(content):
                 }
             )[0]
             
-            if game['Livescore'] and game['Livescore']['Periods']:
+            if game['Livescore'] and game['Livescore'].get('Periods',None):
                 for period in game['Livescore']['Periods']:
                     if int(period['Results'][0]['Position']) == 1:
                         home_score= period['Results'][0]['Value']

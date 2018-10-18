@@ -226,22 +226,23 @@ class CotationsView(View):
 		cotations_by_kind = {}
 		cotations_of_game = Cotation.objects.filter(Q(game_id=gameid) and ~Q(market__name='1X2') and Q(market__isnull=False))
 	
-		for cotation in cotations_of_game:
-			if cotation.kind:
-				if cotation.kind.pk != 976241:
-					cotation.name = self.get_verbose_cotation(cotation.name)
-				if cotation.kind.name not in cotations_by_kind:
-					cotations_by_kind[cotation.kind.name] = []
-					cotations_by_kind[cotation.kind.name].append(cotation)
+		for cotation in cotations_of_game:			
+			if cotation.market:
+				# if cotation.kind.pk != 976241:
+				# 	cotation.name = self.get_verbose_cotation(cotation.name)
+				if cotation.market.name not in cotations_by_kind:
+					cotations_by_kind[cotation.market.name] = []
+					print(cotation.market.name)
+					cotations_by_kind[cotation.market.name].append(cotation)
 				else:
-					cotations_by_kind[cotation.kind.name].append(cotation)
+					cotations_by_kind[cotation.market.name].append(cotation)
 			
-		cotations_serialized = {}
-		for cotation_market in cotations_by_kind:
-			cotations_serialized[cotation_market] = serializers.serialize("json", cotations_by_kind[cotation_market], use_natural_foreign_keys=True)
+		# cotations_serialized = {}
+		# for cotation_market in cotations_by_kind:
+		# 	cotations_serialized[cotation_market] = serializers.serialize("json", cotations_by_kind[cotation_market], use_natural_foreign_keys=True)
 
-		data = json.dumps(cotations_serialized)
-		return HttpResponse( data, content_type='application/json' )
+		# data = json.dumps(cotations_serialized)
+		# return HttpResponse( data, content_type='application/json' )
 
 
 def get_max_reward_by_value(value, actual_max_value):
