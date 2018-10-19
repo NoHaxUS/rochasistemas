@@ -393,12 +393,12 @@ $(document).ready(function () {
 
         $.get('/cotations/'+ game_id, function(data, status, rq){
             
-            var dataJSON = jQuery.parseJSON(data);
+            var dataJSON = jQuery.parseJSON(data);            
 
             var full_html = '';
 
             for( key in dataJSON){
-
+                
                 full_html += '<tr>' +
                 '<td class="cotation-market-label">'+ key + '</td>' +
                 '<td class="cotation-market-label"></td>' +
@@ -407,13 +407,12 @@ $(document).ready(function () {
                 var array_cotations = jQuery.parseJSON( dataJSON[key] )
                 var array_cotations_length = array_cotations.length;
                 
-                for (var i = 0; i < array_cotations_length; i++) {
-                    
+                for (var i = 0; i < array_cotations_length; i++) {                    
                     full_html += '<tr>' +
                     '<td class="hide">'+ array_cotations[i].pk + '</td>' +
                     '<td class="more-cotation-name">'+ array_cotations[i].fields.name + '</td>' +
                     '<td class="more-cotation">'+ array_cotations[i].fields.price +'</td>' +
-                    '<td class="more-cotation-kind hide">' + array_cotations[i].fields.marktet.name + '</td>' +
+                    '<td class="more-cotation-kind hide">' + array_cotations[i].fields.marktet + '</td>' +
                         '</tr>';
 
                 }

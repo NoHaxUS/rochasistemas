@@ -33,7 +33,7 @@
                     <div class="col s12 l8 center-align">
                         <div class="hide table-game-id">{{game.pk}}</div>
                         <div class="table-game-name">{{game.name}}</div>
-                        <div class="table-game-start-date">{{game.start_game_date}}</div>
+                        <div class="table-game-start-date">{{game.start_date}}</div>
                     </div>
 
                     <div class="cotations-desc-wrapper-mobile hide-on-large-only">
@@ -47,8 +47,8 @@
                         <div class="col s3 l1 center-align">
                             <span class="hide cotation_pk">{{cotation.pk}}</span>
                             <span class="hide cotation_name">{{cotation.name | get_verbose_cotation}}</span>
-                            <span class="cotation">{{cotation.value }}</span>
-                            <span class="hide cotation_kind">{{cotation.kind}}</span>
+                            <span class="cotation">{{cotation.price}}</span>
+                            <span class="hide cotation_kind">{{cotation.market.name}}</span>
                         </div>
                         {% endfor %}
                     </div>

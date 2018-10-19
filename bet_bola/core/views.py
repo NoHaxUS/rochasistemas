@@ -6,7 +6,7 @@ from django.http import HttpResponse, JsonResponse
 from django.urls import reverse_lazy
 from django.core import serializers
 from django.conf import settings
-from .models import Cotation,Ticket,Game,League,Payment,Reward,Location,CotationHistory
+from .models import Cotation,Ticket,Game, Market,League,Payment,Reward,Location,CotationHistory
 from django.db.models import Prefetch, Count
 from django.utils import timezone
 from django.db.models import Q
@@ -74,7 +74,7 @@ class TodayGames(TemplateResponseMixin, View):
 
 		league_games = defaultdict(list)
 		location_leagues = get_main_menu()
-		
+		print(location_leagues)
 		for game in games:
 			league_games[game.league].append(game)
 		
@@ -121,7 +121,7 @@ class TomorrowGames(TemplateResponseMixin, View):
 		location_leagues = get_main_menu()
 		
 		for game in games:
-			league_games[game.League].append(game)
+			league_games[game.league].append(game)
 		
 		context = {'league_games': league_games, 
 			'location_leagues': location_leagues,
@@ -195,7 +195,7 @@ class GameLeague(TemplateResponseMixin, View):
 
 		games = Game.objects.filter(start_date__gt=tzlocal.now(),
 		game_status=1,
-		League__id=self.kwargs["pk"],
+		league__id=self.kwargs["pk"],
 		is_visible=True)\
 		.annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
 		.prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
@@ -205,7 +205,7 @@ class GameLeague(TemplateResponseMixin, View):
 		location_leagues = get_main_menu()
 
 		first_game = games.first()
-		location_league = str(first_game.League.location.name) + " - " + str(first_game.league.name)
+		location_league = str(first_game.league.location.name) + " - " + str(first_game.league.name)
 		context = {'games_selected_league': games, 
 			'location_leagues': location_leagues,
 			'location_league' : location_league,
@@ -224,25 +224,19 @@ class CotationsView(View):
 
 		gameid = self.kwargs['gameid']
 		cotations_by_kind = {}
-		cotations_of_game = Cotation.objects.filter(Q(game_id=gameid) and ~Q(market__name='1X2') and Q(market__isnull=False))
-	
-		for cotation in cotations_of_game:			
-			if cotation.market:
-				# if cotation.kind.pk != 976241:
-				# 	cotation.name = self.get_verbose_cotation(cotation.name)
-				if cotation.market.name not in cotations_by_kind:
-					cotations_by_kind[cotation.market.name] = []
-					print(cotation.market.name)
-					cotations_by_kind[cotation.market.name].append(cotation)
-				else:
-					cotations_by_kind[cotation.market.name].append(cotation)
-			
-		# cotations_serialized = {}
-		# for cotation_market in cotations_by_kind:
-		# 	cotations_serialized[cotation_market] = serializers.serialize("json", cotations_by_kind[cotation_market], use_natural_foreign_keys=True)
 
-		# data = json.dumps(cotations_serialized)
-		# return HttpResponse( data, content_type='application/json' )
+		cotations_of_game = Cotation.objects.filter(game_id=gameid).filter(~Q(market__name='1X2')).filter(Q(market__isnull=False))			
+		
+		markets = Market.objects.all().prefetch_related(Prefetch('cotations', queryset=cotations_of_game, to_attr='my_cotations')).order_by('name')
+								
+		cotations_serialized = {}
+		for market in markets:
+			if market.my_cotations:		
+				cotations_serialized[market.name] = serializers.serialize("json", market.my_cotations, use_natural_foreign_keys=True)
+
+		data = json.dumps(cotations_serialized)
+		print(data)
+		return HttpResponse( data, content_type='application/json' )
 
 
 def get_max_reward_by_value(value, actual_max_value):
@@ -383,7 +377,7 @@ class CreateTicketView(View):
 					return UnicodeJsonResponse(data)
 
 				game_cotations.append(game_contation)
-				cotation_sum *= game_contation.value
+				cotation_sum *= game_contation.price
 			except Cotation.DoesNotExist:
 				data['success'] =  False
 				data['message'] =  "Erro, uma das cotas enviadas não existe."
@@ -440,13 +434,15 @@ class CreateTicketView(View):
 			for i_cotation in game_cotations:
 				ticket.cotations.add(i_cotation)
 				CotationHistory(
+					pk=i_cotation.pk,
 					original_cotation=i_cotation.pk,
 					bet_ticket=ticket,
 					name=i_cotation.name,
+					status=i_cotation.status,
 					start_price=i_cotation.start_price,
 					price=i_cotation.price,
 					game=i_cotation.game,
-					winning=i_cotation.winning,
+					settlement=i_cotation.settlement,
 					market=i_cotation.market,										
 				).save()
 		
@@ -491,7 +487,7 @@ class TicketDetail(TemplateResponseMixin, View):
 
 			cotations_values = {}
 			for i_cotation in cotations_history:
-				cotations_values[i_cotation.original_cotation] = i_cotation.value
+				cotations_values[i_cotation.original_cotation] = i_cotation.price
 
 			content = "<CENTER> -> " + settings.APP_VERBOSE_NAME.upper() + " <- <BR>"
 			content += "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
@@ -519,14 +515,14 @@ class TicketDetail(TemplateResponseMixin, View):
 				content += "<LEFT>" + cotation.game.name + "<BR>"
 				game_date = cotation.game.start_date.strftime('%d/%m/%Y %H:%M')
 				content += "<LEFT>" + game_date + "<BR>"
-				if cotation.kind:
-					content += "<LEFT>"+ cotation.kind.name + "<BR>"
+				if cotation.market:
+					content += "<LEFT>"+ cotation.market.name + "<BR>"
 				content += "<LEFT>" + self.get_verbose_cotation(cotation.name) + " --> " + str("%.2f" % cotations_values[cotation.pk]) + "<BR>"
 
-				if cotation.winning == None:
+				if cotation.status == None or cotation.status == 1:
 					content += "<RIGHT> Status: Em Aberto <BR>"
 				else:
-					content += "<RIGHT> Status: " + ("Acertou" if cotation.winning else "Não acertou") + "<BR>"
+					content += "<RIGHT> Status: " + ("Acertou" if cotation.settlement != 2 else "Não acertou") + "<BR>"
 				
 				content += "<CENTER>-------------------------------> <BR>"
 			content += "<CENTER> "+ settings.APP_VERBOSE_NAME + "<BR>"
