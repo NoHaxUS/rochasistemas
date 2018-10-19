@@ -45,24 +45,8 @@ def process_sports(content):
                 ).save()    
 
 def get_events():
-
-    # before_time = tzlocal.now() - datetime.timedelta(days=3)
-
-    # before_year = before_time.year
-    # before_month = before_time.month
-    # before_day = before_time.day
-    
-    # after_time = tzlocal.now() + datetime.timedelta(days=3)
-
-    # after_year = after_time.year
-    # after_month = after_time.month
-    # after_day = after_time.day
-
-
-    # first_date = str(before_year) + "-" + str(before_month) + "-" + str(before_day)
-    # second_date = str(after_year) + "-" +str(after_month) + "-" + str(after_day)
-    from_date = str(time.time())
-    to_date = str((datetime.datetime.now() + datetime.timedelta(days=2)).timestamp())
+    from_date = str(int(time.time()))
+    to_date = str(int((datetime.datetime.now() + datetime.timedelta(days=2)).timestamp()) )
 
     print("Atualizango Jogos e Cotas")
     request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate="+from_date+"&ToDate="+to_date+"&Lang=pt&Sports=6046")
@@ -76,6 +60,7 @@ def process_events(content):
 
     for game in content.get('Body'):
         fixture = game['Fixture']
+        print(game['FixtureId'])
         if game['FixtureId'] and fixture['Sport'] and fixture['Location'] and fixture['League']:
 
             game_name = get_game_name(fixture['Participants'])
