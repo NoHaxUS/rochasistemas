@@ -1,11 +1,11 @@
-import os
-import django
 import requests
-#from core.models import Game, Cotation, Championship, Ticket, Country, Market
 import time
 import datetime
-from multiprocessing.pool import ThreadPool
+import pika
+import json
+#from multiprocessing.pool import ThreadPool
 from core.models import Location, League, Sport, Market, Period, Game, Cotation
+from .real_time import process_fixture_metadata, process_markets_realtime, process_settlements
 
 def get_locations():
     request = requests.get("http://prematch.lsports.eu/OddService/GetLocations?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&Lang=pt")
@@ -20,6 +20,58 @@ def get_leagues():
     print('Atualizando Ligas.')
     request = requests.get("http://prematch.lsports.eu/OddService/GetLeagues?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&Lang=pt")
     process_leagues(request.json())
+
+def get_events():
+    from_date = str(int(time.time()))
+    to_date = str(int((datetime.datetime.now() + datetime.timedelta(days=2)).timestamp()) )
+
+    print("Atualizango Jogos e Cotas")
+    request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate="+from_date+"&ToDate="+to_date+"&Lang=pt&Sports=6046")
+    process_events(request.json())
+
+
+def activate_package():
+    requests.get("http://prematch.lsports.eu/OddService/EnablePackage?username=pabllobeg1@gmail.com&password=cdfxscsdf45f23&guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54")
+
+def on_message(channel, method_frame, header_frame, body):
+
+    json_parsed = json.loads(body.decode())
+
+
+    type_res = int(json_parsed['Header']['Type'])
+    print(str(type_res))
+    if type_res == 1:
+        process_fixture_metadata(json_parsed)
+    elif type_res == 3:
+        process_markets_realtime(json_parsed)
+    elif type_res == 35:
+        process_settlements(json_parsed)
+    
+    channel.basic_ack(method_frame.delivery_tag)
+
+
+def start_consuming_updates():
+    parameters = pika.ConnectionParameters(host='localhost')
+    connection = pika.BlockingConnection(parameters=parameters)
+    channel = connection.channel()
+
+    channel.exchange_declare(exchange='relay',
+                            exchange_type='fanout')
+
+    result = channel.queue_declare(exclusive=True)
+
+    queue_name = result.method.queue
+
+    channel.queue_bind(exchange='relay', queue=queue_name)
+
+    channel.basic_consume(on_message, queue=queue_name)
+
+    try:
+        channel.start_consuming()
+    except KeyboardInterrupt:
+        channel.stop_consuming()
+    connection.close()
+
 
 
 def process_locations(content):
@@ -43,14 +95,6 @@ def process_sports(content):
                 pk=sport['Id'],
                 name=sport['Name']
                 ).save()    
-
-def get_events():
-    from_date = str(int(time.time()))
-    to_date = str(int((datetime.datetime.now() + datetime.timedelta(days=2)).timestamp()) )
-
-    print("Atualizango Jogos e Cotas")
-    request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate="+from_date+"&ToDate="+to_date+"&Lang=pt&Sports=6046")
-    process_events(request.json())
 
 
 def get_game_name(participants):
@@ -119,16 +163,6 @@ def process_markets(markets, game_instance):
 
 
 
-
-
-
-
-
-
-
 #processing_cotations_v2()
 #process_tickets()
 #set_cotations_reductions()
-    
-    
-
