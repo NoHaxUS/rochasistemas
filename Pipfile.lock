@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4f1f8e4a8084066fd74ef2fd2a19c7b05cd64a2850f8e5995fbe87824b6adbe7"
+            "sha256": "212fe553259845891843f41225f869e971245ea26f7824a03bab00eee6cbedd9"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,13 @@
         ]
     },
     "default": {
+        "apscheduler": {
+            "hashes": [
+                "sha256:6599bc78901ee7e9be85cbd073d9cc155c42d2bc867c5cde4d4d1cc339ebfbeb",
+                "sha256:a8fe0c82d1c21bcf4a1b0e00aa35709f1f63fdd36446e406fa56cc0d51d3acc6"
+            ],
+            "version": "==3.5.3"
+        },
         "bootstrap-admin": {
             "hashes": [
                 "sha256:21747448e7bd71ac45b0534596b45f3226cacd7db85c948b944a36b2cd107a17",
@@ -45,6 +52,13 @@
             ],
             "index": "pypi",
             "version": "==2.1.2"
+        },
+        "django-apscheduler": {
+            "hashes": [
+                "sha256:b661a5933d54a4c1b1fa06559fb030564d4f0e0a33012769bc927f2472b1d2da"
+            ],
+            "index": "pypi",
+            "version": "==0.2.13"
         },
         "fpdf": {
             "hashes": [
@@ -118,6 +132,19 @@
             ],
             "index": "pypi",
             "version": "==2.20.0"
+        },
+        "six": {
+            "hashes": [
+                "sha256:70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9",
+                "sha256:832dc0e10feb1aa2c68dcc57dbb658f1c7e65b9b61af69048abc87a2db00a0eb"
+            ],
+            "version": "==1.11.0"
+        },
+        "tzlocal": {
+            "hashes": [
+                "sha256:4ebeb848845ac898da6519b9b31879cf13b6626f7184c496037b818e238f2c4e"
+            ],
+            "version": "==1.5.1"
         },
         "urllib3": {
             "hashes": [

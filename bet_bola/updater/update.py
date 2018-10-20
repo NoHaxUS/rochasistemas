@@ -29,57 +29,13 @@ def get_events():
     process_events(request.json())
 
 
-def activate_package():
-    requests.get("http://prematch.lsports.eu/OddService/EnablePackage?username=pabllobeg1@gmail.com&password=cdfxscsdf45f23&guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54")
-
-def on_message(channel, method_frame, header_frame, body):
-
-    json_parsed = json.loads(body.decode())
-
-
-    type_res = int(json_parsed['Header']['Type'])
-    print(str(type_res))
-
-    if type_res == 1:
-        process_fixture_metadata(json_parsed)
-    elif type_res == 3:
-        process_markets_realtime(json_parsed)
-    elif type_res == 35:
-        process_settlements(json_parsed)
-    
-    channel.basic_ack(method_frame.delivery_tag)
-
-
-def start_consuming_updates():
-    parameters = pika.ConnectionParameters(host='localhost')
-    connection = pika.BlockingConnection(parameters=parameters)
-    channel = connection.channel()
-
-    channel.exchange_declare(exchange='relay',
-                            exchange_type='fanout')
-
-    result = channel.queue_declare(exclusive=True)
-
-    queue_name = result.method.queue
-
-    channel.queue_bind(exchange='relay', queue=queue_name)
-
-    channel.basic_consume(on_message, queue=queue_name)
-
-    try:
-        channel.start_consuming()
-        activate_package()
-    except KeyboardInterrupt:
-        channel.stop_consuming()
-    connection.close()
-
-
-
 def process_locations(content):
     for location in content.get('Body'):
         if location['Id'] and location['Name']:
-            Location(pk=location['Id'], 
-            name=location['Name']).save()
+            Location(
+                pk=location['Id'], 
+                name=location['Name']
+            ).save()
 
 def process_leagues(content):
     for league in content.get('Body'):
@@ -162,8 +118,3 @@ def process_markets(markets, game_instance):
                 last_update=cotation['LastUpdate']
             ).save()
 
-
-
-#processing_cotations_v2()
-#process_tickets()
-#set_cotations_reductions()
