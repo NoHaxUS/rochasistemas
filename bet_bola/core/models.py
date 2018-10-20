@@ -35,11 +35,20 @@ class Ticket(models.Model):
     reward = models.OneToOneField('Reward', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
     payment = models.OneToOneField('Payment', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
     value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')
-    ticket_status = models.CharField(max_length=80, choices=TICKET_STATUS,default=TICKET_STATUS[0][1],verbose_name='Status de Ticket')
+    # ticket_status = models.CharField(max_length=80, choices=TICKET_STATUS,default=TICKET_STATUS[0][1],verbose_name='Status de Ticket')
     is_visible = models.BooleanField(default=True, verbose_name='Visível?')
 
     def __str__(self):
         return str(self.pk)
+
+    @property
+    def ticket_status(self):            
+        if self.cotations.filter(~Q(status=3)).exclude(status=2):
+            return "Aguardando Resultados"
+        elif self.cotations.filter(~Q(settlement=2)).exclude(status=2).exclude(settlement=-1).exclude(settlement=3):
+            return "Não Venceu"
+        else:
+            return "Venceu"        
 
     def get_punter_name(self):
         if self.user:
@@ -203,11 +212,11 @@ class Ticket(models.Model):
 
 
     def cotation_sum(self):
-        valid_cotations = CotationHistory.objects.filter(bet_ticket=self, game__status_game__in = ('NS','FT','FT_PEN','AET','LIVE'))
+        valid_cotations = CotationHistory.objects.filter(bet_ticket=self, game__game_status__in = (1,3,2))
         
         cotation_sum = 1
         for cotation in valid_cotations:
-            cotation_sum *= cotation.value
+            cotation_sum *= cotation.price
 
         return round(cotation_sum,2)
     cotation_sum.short_description = 'Cota Total'
@@ -432,7 +441,7 @@ class Cotation(models.Model):
             (2, "Ganhou"),
             (3, "Reembolso"),
             (4, "Metade Perdida"),
-            (3, "Metade Ganha")
+            (5, "Metade Ganha")
         )
 
     COTATION_STATUS = (

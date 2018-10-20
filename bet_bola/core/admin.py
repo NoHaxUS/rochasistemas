@@ -188,13 +188,13 @@ ticket_status.short_description = 'Status'
 @admin.register(Ticket)
 class TicketAdmin(admin.ModelAdmin):
     search_fields = ['id']
-    list_filter = ('ticket_status',
+    list_filter = (
     'payment__who_set_payment_id',
     'payment__status_payment',
     HiddenTicketFilter,
     'creation_date',
     'reward__reward_status')
-    list_display =('pk', ticket_status, 'get_ticket_link','get_punter_name','value','reward','cotation_sum', payment_status,'creation_date', 'seller_related')
+    list_display =('pk', 'get_ticket_link','get_punter_name','value','reward','cotation_sum', payment_status,'creation_date', 'seller_related')
     exclude = ('cotations','user','normal_user',)
     actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket, hide_ticket_action, show_ticket_action]
     list_per_page = 50
