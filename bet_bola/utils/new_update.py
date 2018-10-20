@@ -40,6 +40,7 @@ def on_message(channel, method_frame, header_frame, body):
 
     type_res = int(json_parsed['Header']['Type'])
     print(str(type_res))
+
     if type_res == 1:
         process_fixture_metadata(json_parsed)
     elif type_res == 3:
@@ -68,6 +69,7 @@ def start_consuming_updates():
 
     try:
         channel.start_consuming()
+        activate_package()
     except KeyboardInterrupt:
         channel.stop_consuming()
     connection.close()
