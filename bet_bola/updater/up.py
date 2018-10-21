@@ -27,7 +27,7 @@ def on_message(channel, method_frame, header_frame, body):
 
     type_res = int(json_parsed['Header']['Type'])
 
-    print(str(type_res))
+    #print(str(type_res))
 
     if type_res == 1:
         process_fixture_metadata(json_parsed)
@@ -60,7 +60,7 @@ def start_consuming_updates():
     channel.basic_consume(on_message, queue=queue_name)
 
     try:
-        activate_package()
+        #activate_package()
         channel.start_consuming()
     except KeyboardInterrupt:
         channel.stop_consuming()

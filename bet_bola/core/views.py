@@ -13,7 +13,6 @@ from django.db.models import Q
 from user.models import Seller
 from user.models import CustomUser, NormalUser
 import utils.timezone as tzlocal
-from utils.utils import no_repetition_list
 from utils.response import UnicodeJsonResponse
 import json
 import urllib
