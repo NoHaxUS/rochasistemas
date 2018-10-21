@@ -469,9 +469,9 @@ class Cotation(models.Model):
         return str(self.price)
 
 
-    def save(self, *args, **kwargs):
-        if not Cotation.objects.filter(name=self.name, market=self.market, game=self.game).exists():
-            super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if not Cotation.objects.filter(name=self.name, market=self.market, game=self.game).exists():
+    #         super().save(*args, **kwargs)
 
             
     class Meta:
