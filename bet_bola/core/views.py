@@ -13,7 +13,6 @@ from django.db.models import Q
 from user.models import Seller
 from user.models import CustomUser, NormalUser
 import utils.timezone as tzlocal
-from utils.utils import no_repetition_list
 from utils.response import UnicodeJsonResponse
 import json
 import urllib
@@ -74,7 +73,7 @@ class TodayGames(TemplateResponseMixin, View):
 
 		league_games = defaultdict(list)
 		location_leagues = get_main_menu()
-		print(location_leagues)
+		#print(location_leagues)
 		for game in games:
 			league_games[game.league].append(game)
 		
@@ -235,7 +234,7 @@ class CotationsView(View):
 				cotations_serialized[market.name] = serializers.serialize("json", market.my_cotations, use_natural_foreign_keys=True)
 
 		data = json.dumps(cotations_serialized)
-		print(data)
+		#print(data)
 		return HttpResponse( data, content_type='application/json' )
 
 

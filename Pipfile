@@ -9,6 +9,8 @@ django = "*"
 requests = "*"
 fpdf = "*"
 bootstrap-admin = "*"
+pika = "*"
+django-apscheduler = "*"
 
 [dev-packages]
 
