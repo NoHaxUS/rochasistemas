@@ -2,8 +2,6 @@ from django import template
 from django.template import Library
 from django.conf import settings
 import os, re
-from utils.choices import COUNTRY_TRANSLATE
-
 
 register = template.Library()
 
@@ -26,9 +24,9 @@ def standard_cotations_order_by(queryset):
 def get_item(dictionary, key):
     return dictionary.get(key,key)
 
-@register.filter(name='translate_country')
-def translate_country(country_name):
-    return COUNTRY_TRANSLATE.get(country_name, country_name)
+#@register.filter(name='translate_country')
+#def translate_country(country_name):
+#    return COUNTRY_TRANSLATE.get(country_name, country_name)
 
 
 @register.simple_tag

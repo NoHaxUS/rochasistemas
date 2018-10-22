@@ -46,7 +46,7 @@ class PDF(View):
 
         cotations_values = {}
         for i_cotation in cotations_history:
-            cotations_values[i_cotation.original_cotation] = i_cotation.value
+            cotations_values[i_cotation.original_cotation] = i_cotation.price
 
 
         pdf = FPDF('P', 'mm', (231, 297 + ticket.cotations.count() * 84))
@@ -84,20 +84,18 @@ class PDF(View):
             h=h+8
             pdf.text(4,h,c.game.name)
             h=h+14
-            pdf.text(4,h, c.game.start_game_date.strftime('%d/%m/%Y %H:%M'))
-            if c.kind:
+            pdf.text(4,h, c.game.start_date.strftime('%d/%m/%Y %H:%M'))
+            if c.market:
                 h=h+14
-                pdf.text(4,h,c.kind.name)
+                pdf.text(4,h, c.market.name)
             h=h+14
             pdf.text(4,h,"Cota:" + self.get_verbose_cotation(c.name))			
             pdf.text(190,h,str("%.2f" % cotations_values[c.pk]))
             h=h+14
-            if not c.winning == None:
-                pdf.text(4,h,"Status:")			
-                pdf.text(170,h, ("Acertou" if c.winning else "Não acertou"))				
-            else:
-                pdf.text(4,h,"Status:")			
-                pdf.text(180,h,"Em Aberto")
+
+            pdf.text(4,h,"Status:")			
+            pdf.text(170,h, c.get_settlement_display() )				
+
 
             h=h+14
             pdf.text(0,h,'---------------------------------------------------------------------------------------------------------------------------------------------------------')			

@@ -8,6 +8,7 @@ class CustomUser(AbstractUser):
     cellphone = models.CharField(max_length=14, verbose_name='Celular')
     email = models.EmailField(null=True, blank=True, verbose_name='E-mail')
 
+
     def __str__(self):
         return self.username
 
@@ -65,7 +66,8 @@ class Seller(CustomUser):
     credit_limit = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Créditos')
     my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True, blank=True)
     can_cancel_ticket = models.BooleanField(default=False, verbose_name='Cancela Bilhete ?')
-    limit_time_to_cancel = models.FloatField(default=5, verbose_name="Tempo Limite de Cancelamento")
+    limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento")
+
 
     def reset_revenue(self, who_reseted_revenue):
         from core.models import Payment
@@ -159,7 +161,7 @@ class Seller(CustomUser):
     def define_default_permissions(self):
 
         be_seller_perm = Permission.objects.get(codename='be_seller')
-        change_ticket_perm = Permission.objects.get(codename='change_betticket')
+        change_ticket_perm = Permission.objects.get(codename='change_ticket')
         view_managertransactions_perm = Permission.objects.get(codename='view_managertransactions')
         view_revenuehistoryseller_perm = Permission.objects.get(codename='view_revenuehistoryseller')
         view_sellersaleshistory_perm = Permission.objects.get(codename='view_sellersaleshistory')
@@ -358,9 +360,9 @@ class Manager(CustomUser):
         change_seller = Permission.objects.get(codename='change_seller')
         add_seller = Permission.objects.get(codename='add_seller')
         view_manager = Permission.objects.get(codename='view_manager')
-        view_ticket_perm = Permission.objects.get(codename='view_betticket')
+        view_ticket_perm = Permission.objects.get(codename='view_ticket')
         view_punter_perm = Permission.objects.get(codename='view_punter')
-        change_ticket_perm = Permission.objects.get(codename='change_betticket')
+        change_ticket_perm = Permission.objects.get(codename='change_ticket')
         view_ticketcancelationhistory = Permission.objects.get(codename='view_ticketcancelationhistory')
         change_comission = Permission.objects.get(codename='change_comission')
         

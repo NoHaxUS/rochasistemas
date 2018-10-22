@@ -144,31 +144,11 @@
                                 <span>{{cotation.game.start_date}}</span>
                             </td>
                             <td>
-                            {{cotation.kind}} <br>
-
-                            {% if cotation.kind.pk != 976241 %}
+                            {{cotation.market.name}} <br>
                             Cota: {{cotation.name | get_verbose_cotation}} : {{ cotations_values|get_item:cotation.pk }}
-                            {% else %}
-                            Cota: {{cotation.name}} : {{ cotations_values|get_item:cotation.pk }}
-                            {% endif %}
-                            
                             </td>
                             <td>
-                            {% if cotation.game.game_status == 1 or cotation.game.game_status == 3 or cotation.game.game_status == 2 %}
-                                {% if cotation.status == 1 %}
-                                    Em Aberto
-                                {% elif cotation.settlement ==  None%}
-                                    Em Aberto
-                                {% elif cotation.settlement == 2 %}
-                                    Acertou
-                                {% elif cotation.settlement == 1 %}
-                                    Perdeu
-                                {% elif cotation.settlement == -1 %}
-                                    Cancelada
-                                {% endif %}
-                            {% else %}
-                                Adiado ou Cancelado
-                            {% endif %}
+                                {{ cotation.get_settlement_display }}
                             </td>
                         </tr>
                         {%endfor%}

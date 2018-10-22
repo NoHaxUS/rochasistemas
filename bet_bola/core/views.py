@@ -518,10 +518,7 @@ class TicketDetail(TemplateResponseMixin, View):
 					content += "<LEFT>"+ cotation.market.name + "<BR>"
 				content += "<LEFT>" + self.get_verbose_cotation(cotation.name) + " --> " + str("%.2f" % cotations_values[cotation.pk]) + "<BR>"
 
-				if cotation.status == None or cotation.status == 1:
-					content += "<RIGHT> Status: Em Aberto <BR>"
-				else:
-					content += "<RIGHT> Status: " + ("Acertou" if cotation.settlement != 2 else "Não acertou") + "<BR>"
+				content += "<RIGHT> Status: " +  cotation.get_settlement_display() + "<BR>"
 				
 				content += "<CENTER>-------------------------------> <BR>"
 			content += "<CENTER> "+ settings.APP_VERBOSE_NAME + "<BR>"
