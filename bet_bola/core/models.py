@@ -436,6 +436,7 @@ class Market(models.Model):
 
 class Cotation(models.Model):
     SETTLEMENT_STATUS = (
+            (None, "Em Aberto"),
             (-1, "Cancelada"),
             (1, "Perdeu"),
             (2, "Ganhou"),
