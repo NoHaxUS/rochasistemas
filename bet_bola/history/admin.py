@@ -22,9 +22,9 @@ class SellerSalesHistoryAdmin(admin.ModelAdmin):
         elif request.user.has_perm('user.be_manager'):
             return SellerSalesHistory.objects.filter(seller__my_manager=request.user.manager)
     
-    def get_list_filter(self, request):
-        if request.user.is_superuser:
-            return ('seller','sell_date')
+    #def get_list_filter(self, request):
+    #    if request.user.is_superuser:
+    #        return ('seller','sell_date')
 
 
 

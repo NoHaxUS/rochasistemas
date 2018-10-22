@@ -162,25 +162,25 @@ payment_status.short_description = 'Status do Pagamento'
 
 
 def ticket_status(obj):
-    if obj.ticket_status == 'Venceu':
+    if obj.status == 'Venceu':
         return format_html (
             '<div class="winner_ticket">{}</div>',
-            obj.ticket_status
+            obj.status
         )
-    elif obj.ticket_status == 'Não Venceu':
+    elif obj.status == 'Não Venceu':
         return format_html (
             '<div class="loser_ticket">{}</div>',
-            obj.ticket_status
+            obj.status
         )
-    elif obj.ticket_status == 'Cancelado':
+    elif obj.status == 'Cancelado':
         return format_html (
             '<div class="loser_ticket">{}</div>',
-            obj.ticket_status
+            obj.status
         )
 
     return format_html (
             '<div class="">{}</div>',
-            obj.ticket_status
+            obj.status
         )
 
 ticket_status.short_description = 'Status'
@@ -262,14 +262,20 @@ class TicketAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
+        
+        #
+        return qs
+
         if request.user.is_superuser:
             return qs
-
+        
+        
         if request.user.has_perm('user.be_seller'):
             return qs.filter(Q(payment__status_payment=Payment.PAYMENT_STATUS[0][1],
             ticket_status=Ticket.TICKET_STATUS[0][1]) |
             Q(payment__who_set_payment=request.user.seller,
             is_visible=True))
+        
 
         if request.user.has_perm('user.be_manager'):
             return qs.filter(payment__who_set_payment__my_manager=request.user.manager, is_visible=True)
@@ -280,7 +286,7 @@ class TicketAdmin(admin.ModelAdmin):
 
 
 
-@admin.register(Reward)
+#@admin.register(Reward)
 class RewardAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
@@ -288,7 +294,7 @@ class RewardAdmin(admin.ModelAdmin):
             return False
         return super().has_delete_permission(request)
 
-@admin.register(Payment)
+#@admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request):
@@ -366,7 +372,7 @@ class GameAdmin(admin.ModelAdmin):
 
 
 
-@admin.register(Market)
+#@admin.register(Market)
 class MarketAdmin(admin.ModelAdmin):
     search_fields = ['id','name']
     list_display = ('pk','name',)
@@ -384,10 +390,11 @@ class MarketAdmin(admin.ModelAdmin):
 @admin.register(Cotation)
 class CotationAdmin(admin.ModelAdmin):
     search_fields = ['id','name','game__name']
-    autocomplete_fields = ['game','market',]
+    autocomplete_fields = ['game',]
     list_display = ('pk','name', 'start_price', 'price', 'game', 'market')
     list_display_links = ('pk','name',)
     list_per_page = 20
+
 
 
 @admin.register(Location)

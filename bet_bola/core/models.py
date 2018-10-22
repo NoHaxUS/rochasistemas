@@ -137,7 +137,7 @@ class Ticket(models.Model):
 
 
         for cotation in self.cotations.all():
-            if cotation.game.start_game_date < tzlocal.now():
+            if cotation.game.start_date < tzlocal.now():
                 return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não pode ser pago, pois tem jogo(s) que já começaram.'}
 
@@ -278,6 +278,9 @@ class CotationHistory(models.Model):
 
 class Sport(models.Model):
     name = models.CharField(max_length=80)
+
+    def __str__(self):
+        return self.name
 
 
 class Game(models.Model):
