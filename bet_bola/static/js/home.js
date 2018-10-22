@@ -106,7 +106,7 @@ $(document).ready(function () {
         $('.ticket-list').empty();
 
         for (var key in ticket) {
-
+            console.log(ticket[key])
             var bet_html = '<div class="divider"></div>' +
                 '<li class="center-align bet">' +
                 '<div class="game-id hide">'+
@@ -412,7 +412,7 @@ $(document).ready(function () {
                     '<td class="hide">'+ array_cotations[i].pk + '</td>' +
                     '<td class="more-cotation-name">'+ array_cotations[i].fields.name + '</td>' +
                     '<td class="more-cotation">'+ array_cotations[i].fields.price +'</td>' +
-                    '<td class="more-cotation-kind hide">' + array_cotations[i].fields.marktet + '</td>' +
+                    '<td class="more-cotation-kind hide">' + array_cotations[i].fields.market + '</td>' +
                         '</tr>';
 
                 }
