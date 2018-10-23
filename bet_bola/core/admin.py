@@ -236,7 +236,7 @@ class TicketAdmin(admin.ModelAdmin):
         if request.user.has_perm('user.be_punter'):
             return None
 
-
+    """
     def get_list_filter(self, request):
 
         if request.user.is_superuser:
@@ -252,6 +252,7 @@ class TicketAdmin(admin.ModelAdmin):
 
         if request.user.has_perm('user.be_manager'):
             return super().get_list_filter(request)
+    """
 
         
 

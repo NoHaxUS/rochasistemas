@@ -42,7 +42,7 @@ class Punter(CustomUser):
 
     def define_default_permissions(self):
 
-        view_ticket_perm = Permission.objects.get(codename='view_betticket')
+        view_ticket_perm = Permission.objects.get(codename='view_ticket')
         be_punter = Permission.objects.get(codename='be_punter')
         change_punter = Permission.objects.get(codename='change_punter')
 
