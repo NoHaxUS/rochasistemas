@@ -112,7 +112,7 @@ class PunterPayedHistory(models.Model):
 class TicketCancelationHistory(models.Model):
     who_cancelled = models.CharField(max_length=200, verbose_name='Quem Cancelou ?')
     ticket_cancelled = models.ForeignKey(Ticket, on_delete=models.CASCADE, verbose_name='Bilhete Cancelado')
-    cancelation_date = models.DateTimeField(verbose_name='Data do Pagamento', auto_now_add=True)
+    cancelation_date = models.DateTimeField(verbose_name='Data do Cancelamento', auto_now_add=True)
     seller_of_payed = models.ForeignKey(Seller, on_delete=models.CASCADE, verbose_name='Cambista')
 
     def __str__(self):

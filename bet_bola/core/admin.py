@@ -162,25 +162,25 @@ payment_status.short_description = 'Status do Pagamento'
 
 
 def ticket_status(obj):
-    if obj.status == 'Venceu':
+    if obj.ticket_status == 'Venceu':
         return format_html (
             '<div class="winner_ticket">{}</div>',
-            obj.status
+            obj.ticket_status
         )
-    elif obj.status == 'Não Venceu':
+    elif obj.ticket_status == 'Não Venceu':
         return format_html (
             '<div class="loser_ticket">{}</div>',
-            obj.status
+            obj.ticket_status
         )
-    elif obj.status == 'Cancelado':
+    elif obj.ticket_status == 'Cancelado':
         return format_html (
             '<div class="loser_ticket">{}</div>',
-            obj.status
+            obj.ticket_status
         )
 
     return format_html (
             '<div class="">{}</div>',
-            obj.status
+            obj.ticket_status
         )
 
 ticket_status.short_description = 'Status'
@@ -194,8 +194,8 @@ class TicketAdmin(admin.ModelAdmin):
     HiddenTicketFilter,
     'creation_date',
     'reward__reward_status')
-    list_display =('pk', 'get_ticket_link','get_punter_name','value','reward','cotation_sum', payment_status,'creation_date', 'seller_related')
-    exclude = ('cotations','user','normal_user',)
+    list_display =('pk', ticket_status, 'get_ticket_link','get_punter_name','value','reward','cotation_sum', payment_status,'creation_date', 'seller_related')
+    exclude = ('cotations','user','normal_user', 'payment', 'reward', 'value')
     actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket, hide_ticket_action, show_ticket_action]
     list_per_page = 50
 
@@ -263,7 +263,7 @@ class TicketAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         
-        #
+        #SOLVE
         return qs
 
         if request.user.is_superuser:

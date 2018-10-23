@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import datetime
-from .manager import GamesManager, CotationsManager
 from user.models import Seller
 from django.contrib.auth.models import User
 from user.models import NormalUser
@@ -23,7 +22,7 @@ class Ticket(models.Model):
         ('Aguardando Resultados', 'Aguardando Resultados'),
         ('Não Venceu', 'Não Venceu'),
         ('Venceu', 'Venceu'),
-        ('Venceu e não foi pago','Venceu e não foi pago'),
+        ('Venceu, não pago','Venceu, não pago'),
         ('Cancelado', 'Cancelado')
     )
     
@@ -44,7 +43,7 @@ class Ticket(models.Model):
     def ticket_status(self):         
         if self.payment.status_payment == 'Cancelado':
             return "Cancelado"   
-        if self.cotations.filter(~Q(status=3)).exclude(status=2):
+        elif self.cotations.filter(~Q(status=3)).exclude(status=2):
             return "Aguardando Resultados"
         elif self.cotations.filter(~Q(settlement=2)).exclude(status=2).exclude(settlement=-1).exclude(settlement=3):
             return "Não Venceu"
@@ -58,6 +57,7 @@ class Ticket(models.Model):
             return self.user.first_name
         elif self.normal_user:
             return self.normal_user.first_name
+    get_punter_name.short_description = 'Apostador'
 
     def hide_ticket(self):
         self.is_visible = False
@@ -80,7 +80,6 @@ class Ticket(models.Model):
             return self.payment.who_set_payment
     seller_related.short_description = 'Cambista'
 
-    get_punter_name.short_description = 'Apostador'
 
     def cancel_ticket(self, user):
         from history.models import TicketCancelationHistory
@@ -109,7 +108,6 @@ class Ticket(models.Model):
         seller.credit_limit += self.value
         seller.save()
 
-        # self.ticket_status = Ticket.TICKET_STATUS[4][1]
         self.payment.status_payment = Ticket.TICKET_STATUS[4][1]
         self.payment.payment_date = None
         self.payment.seller_was_rewarded = True
@@ -176,7 +174,7 @@ class Ticket(models.Model):
     def pay_winner_punter(self, user):
         from history.models import PunterPayedHistory
         
-        if self.reward.status_reward == 'O apostador foi pago':
+        if self.reward.reward_status == 'O apostador foi pago':
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk)+ ' já foi recompensado.'}
 
@@ -201,7 +199,7 @@ class Ticket(models.Model):
         elif self.user:
             punter_payed = str(self.user.pk) +' - '+ str(self.user.first_name)
 
-        self.reward.status_reward = Reward.REWARD_STATUS[1][1]
+        self.reward.reward_status = Reward.REWARD_STATUS[1][1]
         self.reward.reward_date = tzlocal.now()
         self.reward.who_rewarded = Seller.objects.get(pk=user.pk)
         self.reward.save()
@@ -309,7 +307,6 @@ class Game(models.Model):
     last_update = models.DateTimeField(verbose_name='Ultima Atualização')
     is_visible = models.BooleanField(default=True, verbose_name='Visível?')
 
-    objects = GamesManager()	
 
     class Meta:
         ordering = ('-pk',)
@@ -393,7 +390,6 @@ class Reward(models.Model):
 
     who_rewarded = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL)
     reward_date = models.DateTimeField(null=True, blank=True)
-    reward_value = models.DecimalField(max_digits=50, decimal_places=2, default=0, verbose_name="Valor da Recompensa")
     reward_status = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1], verbose_name='Status do Prêmio')
 
     @property
@@ -469,8 +465,6 @@ class Cotation(models.Model):
     line = models.CharField(max_length=30, null=True, blank=True)
     base_line = models.CharField(max_length=30, null=True, blank=True)
     last_update = models.DateTimeField(null=True, blank=True)
-
-    objects = GamesManager()
 
 
     def __str__(self):

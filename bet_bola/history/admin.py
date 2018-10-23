@@ -46,9 +46,9 @@ class ManagerTransactionsAdmin(admin.ModelAdmin):
         elif request.user.has_perm('user.be_manager'):
             return ManagerTransactions.objects.filter(manager=request.user.manager)
 
-    def get_list_filter(self, request):
-        if request.user.is_superuser:
-            return ('manager','seller','transaction_date')
+    #def get_list_filter(self, request):
+    #    if request.user.is_superuser:
+    #        return ('manager','seller','transaction_date')
         
 
 @admin.register(RevenueHistorySeller)
@@ -69,9 +69,9 @@ class RevenueHistorySellerAdmin(admin.ModelAdmin):
         elif request.user.has_perm('user.be_manager'):
             return RevenueHistorySeller.objects.filter(seller__my_manager=request.user.manager)
 
-    def get_list_filter(self, request):
-        if request.user.is_superuser:
-            return ('who_reseted_revenue','seller','revenue_reseted_date')
+    #def get_list_filter(self, request):
+    #    if request.user.is_superuser:
+    #        return ('who_reseted_revenue','seller','revenue_reseted_date')
         
 
 
@@ -85,6 +85,7 @@ class RevenueHistoryManagerAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
+        return qs
         if request.user.is_superuser:
             return qs
 
@@ -92,9 +93,9 @@ class RevenueHistoryManagerAdmin(admin.ModelAdmin):
             return RevenueHistoryManager.objects.filter(manager=request.user.manager)
 
 
-    def get_list_filter(self, request):
-        if request.user.is_superuser:
-            return ('who_reseted_revenue','manager','revenue_reseted_date')
+    #def get_list_filter(self, request):
+    #    if request.user.is_superuser:
+    #        return ('who_reseted_revenue','manager','revenue_reseted_date')
 
 
 
@@ -108,6 +109,7 @@ class PunterPayedHistoryAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
+        return qs
         if request.user.is_superuser:
             return qs
         elif request.user.has_perm('user.be_seller'):
@@ -118,9 +120,9 @@ class PunterPayedHistoryAdmin(admin.ModelAdmin):
 
 
         
-    def get_list_filter(self, request):
-        if request.user.is_superuser:
-            return ('seller','payment_date')
+    #def get_list_filter(self, request):
+    #    if request.user.is_superuser:
+    #        return ('seller','payment_date')
 
 
 @admin.register(TicketCancelationHistory)
