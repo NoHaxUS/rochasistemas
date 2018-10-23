@@ -169,7 +169,7 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
 		location_leagues = get_main_menu()
 		
 		for game in games:
-			league_games[game.League].append(game)
+			league_games[game.league].append(game)
 		
 		context = {'league_games': league_games, 
 			'location_leagues': location_leagues,

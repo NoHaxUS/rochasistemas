@@ -34,21 +34,24 @@ class Ticket(models.Model):
     creation_date = models.DateTimeField(verbose_name='Data da Aposta')
     reward = models.OneToOneField('Reward', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
     payment = models.OneToOneField('Payment', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
-    value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')
-    # ticket_status = models.CharField(max_length=80, choices=TICKET_STATUS,default=TICKET_STATUS[0][1],verbose_name='Status de Ticket')
+    value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')    
     is_visible = models.BooleanField(default=True, verbose_name='Visível?')
 
     def __str__(self):
         return str(self.pk)
 
     @property
-    def ticket_status(self):            
+    def ticket_status(self):         
+        if self.payment.status_payment == 'Cancelado':
+            return "Cancelado"   
         if self.cotations.filter(~Q(status=3)).exclude(status=2):
             return "Aguardando Resultados"
         elif self.cotations.filter(~Q(settlement=2)).exclude(status=2).exclude(settlement=-1).exclude(settlement=3):
             return "Não Venceu"
         else:
-            return "Venceu"        
+            if self.payment.status_payment == 'Pago':
+                return "Venceu"        
+            return "Venceu e não foi pago"
 
     def get_punter_name(self):
         if self.user:
@@ -101,11 +104,12 @@ class Ticket(models.Model):
                     'message':' Tempo limite para cancelar o Ticket '+ str(self.pk) +' excedido.'}
 
         
+
         seller = self.payment.who_set_payment
         seller.credit_limit += self.value
         seller.save()
 
-        self.ticket_status = Ticket.TICKET_STATUS[4][1]
+        # self.ticket_status = Ticket.TICKET_STATUS[4][1]
         self.payment.status_payment = Ticket.TICKET_STATUS[4][1]
         self.payment.payment_date = None
         self.payment.seller_was_rewarded = True
@@ -488,6 +492,7 @@ class Payment(models.Model):
     PAYMENT_STATUS = (
         ('Aguardando Pagamento do Ticket', 'Aguardando Pagamento do Ticket'),
         ('Pago', 'Pago'),
+        ('Cancelado', 'Cancelado'),
     )
 
     who_set_payment = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
