@@ -289,8 +289,8 @@ nav .brand-logo{
 }
 
 .alertify-notifier .ajs-message.ajs-visible{
-    width: 250px;
-    padding: 10px;
+    width: 150px;
+    padding: 5px;
 }
 
 .empty_game_set{

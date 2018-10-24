@@ -245,23 +245,20 @@ def get_max_reward_by_value(value, actual_max_value):
 
 class BetView(View):
 
-	def post(self, request, *args, **kwargs):		
-		if int(request.POST['cotation_id']) < 0:			
+	def post(self, request, *args, **kwargs):
+
+		if int(request.POST['cotation_id']) < 0:
 			request.session['ticket'] = {}		
 			request.session.modified = True
 			return JsonResponse({}, status=204)
 
-		if 'ticket' not in request.session:						
+		if 'ticket' not in request.session:
 			request.session['ticket'] = {}
 			request.session['ticket'][request.POST['game_id']] = request.POST['cotation_id']
 			request.session.modified = True
-
-			response = HttpResponse()
-			response.status_code = 201
-			return response
+			return JsonResponse({}, status=201)
 		else:
 			if request.session['ticket'].get(request.POST['game_id'], None) == request.POST['cotation_id']:
-				#request.session['ticket'][request.POST['game_id']] = request.POST['cotation_id']
 				del request.session['ticket'][request.POST['game_id']]
 				request.session.modified = True
 				return JsonResponse({}, status=202)

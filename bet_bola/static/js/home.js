@@ -36,12 +36,8 @@ $(document).ready(function () {
 
     var csrftoken = getCookie('csrftoken');
 
-    if (Cookies.get('ticket_cookie') == undefined) {
-        Cookies.set('ticket_cookie', {});
-    }
-
     RenderTicket();
-    UpdateCotationTotal();
+
 
     $('.carousel.carousel-slider').carousel(
         {
@@ -64,38 +60,28 @@ $(document).ready(function () {
         }
     });
 
-    function UpdateCotationTotal(){
-        ticket = Cookies.getJSON('ticket_cookie');
-        var total = 1;
-    
-        for (var key in ticket){
-            var cotation_value = parseFloat( (ticket[key]['cotation_value']).replace(',','.') );
-            total = total * cotation_value;
-        }
-        if(total == 1) total = 0;
 
-        $('.cotation-total').text( parseFloat( total.toFixed(2) ) );
 
-        COTATION_TOTAL = parseFloat( total.toFixed(2) );
-
-    }
-
-    function AddBetToTicket(bet_info) {
+    function AddBetToTicket(bet_info, actualElement) {
 
         $.post('/bet/', bet_info, function(data, status, rq){
             console.log(rq.status);
             if(rq.status == '201'){
                 alertify.notify("Adicionado");
-                UpdateCotationTotal();
+
                 var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
                 updateRewardTotal(ticket_bet_value);
                 RenderTicket();
+                IS_COTATION_SELECTED = true;
+                selectOnClick(actualElement);
             }else{
                 alertify.notify("Removido");
-                UpdateCotationTotal();
+
                 var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
                 updateRewardTotal(ticket_bet_value);
                 RenderTicket();
+                IS_COTATION_SELECTED = false;
+                selectOnClick(actualElement);
             }
         }, 'json');
         
@@ -103,11 +89,12 @@ $(document).ready(function () {
     }
 
     function RenderTicket() {
+         
+        console.log("Inside");
+        $('.ticket-list').empty();
 
         $.get('/bet/', function(ticket, status, rq){
-  
-            $('.ticket-list').empty();
-
+            var cotation_sum = 1
             for (var key in ticket) {
 
                 var bet_html = '<div class="divider"></div>' +
@@ -130,10 +117,16 @@ $(document).ready(function () {
                     '</span>' +
                     '</div>' +
                     '</li>';
-    
+
+                cotation_sum = cotation_sum * ticket[key]['price']
+                
                 $('.ticket-list').append(bet_html);
+                console.log(bet_html);
                 $('.ticket-list').append('<div class="divider"></div>');
             }
+            COTATION_TOTAL = cotation_sum.toFixed(2);
+            
+            $(".cotation-total").html(COTATION_TOTAL);
             
         },
     'json');
@@ -177,7 +170,6 @@ $(document).ready(function () {
             method: 'DELETE',
             complete: function(jqXR) {
                 RenderTicket();
-                UpdateCotationTotal();
                 $('.ticket-bet-value').trigger('keyup');
             }
         });
@@ -225,13 +217,19 @@ $(document).ready(function () {
     }
 
     ORIGINAL_COTATION_COLOR = $('span.cotation').first().css('background-color');
+    IS_COTATION_SELECTED = false;
 
     function selectOnClick(actualElement){
 
         var actual_color_hex = rgb2hex(ORIGINAL_COTATION_COLOR);
         var new_color = LightenDarkenColor(actual_color_hex, -100)
+        
         actualElement.parent().parent().find('div > span.cotation').css('background-color', ORIGINAL_COTATION_COLOR);
-        actualElement.css('background-color', new_color);
+        console.log(IS_COTATION_SELECTED);
+        if(IS_COTATION_SELECTED == true){
+            actualElement.css('background-color', new_color);
+        }
+
     }
 
     $('.cotation').click(function (e) {
@@ -252,8 +250,8 @@ $(document).ready(function () {
             'cotation_kind' : cotation_kind
         }
 
-        AddBetToTicket(bet_info);
-        selectOnClick($(this));
+        console.log("COTATION CLICK OK");
+        AddBetToTicket(bet_info, $(this)  );
 
     });
 
@@ -269,10 +267,9 @@ $(document).ready(function () {
                 'cotation_kind' : '-1'
             }            
 
-            AddBetToTicket(bet_info);            
-            Cookies.set('ticket_cookie', {});
+            AddBetToTicket(bet_info);
             RenderTicket();
-            UpdateCotationTotal();
+
             $('.ticket-bet-value').trigger('keyup');
             alertify.notify('Feito');
             location.reload(true);
@@ -325,21 +322,14 @@ $(document).ready(function () {
 
         var client_name = $('.client_name').val();
         var telefone = $('.telefone').val();
-        var ticket = Cookies.get('ticket_cookie');
 
 
         if (ticket_value <= 0 || ticket_value == ''){
-            alertify.error("Você deve apostar um valor maior que 0");
+            alertify.error("Você deve apostar um valor maior que 0.");
             return;
         }
 
-        if(ticket == '{}'){
-            alertify.error("Nenhuma cota selecionada nessa sessão");
-            COTATION_TOTAL = 0;
-            RenderTicket();
-            UpdateCotationTotal();
-            return;
-        }
+
         console.log(confirmation_message);                               
         alertify.confirm('Confirmação', confirmation_message, function(){                   
         $.post('/ticket/',
@@ -354,7 +344,6 @@ $(document).ready(function () {
                 }else{
 
                     if(data.clear_cookies){
-                        Cookies.set('ticket_cookie', {});
                         window.location = '/';
                     }
 
@@ -448,6 +437,7 @@ $(document).ready(function () {
         }
 
         AddBetToTicket(bet_info);
+        
 
         $('#more-cotations').modal('close');
 
@@ -545,7 +535,7 @@ $(document).ready(function () {
                 
                 alertify.alert('Sucesso', response.message, function(){
                     window.location = '/';
-                    Cookies.set('ticket_cookie', {});
+
                 }).set('movable', false);
             }else{
                 alertify.alert('Erro', response.message ).set('movable', false);
