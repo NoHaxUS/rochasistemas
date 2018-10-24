@@ -260,18 +260,27 @@ class BetView(View):
 			response.status_code = 201
 			return response
 		else:
-			request.session['ticket'][request.POST['game_id']] = request.POST['cotation_id']
-			request.session.modified = True
+			if request.session['ticket'].get(request.POST['game_id'], None) == request.POST['cotation_id']:
+				#request.session['ticket'][request.POST['game_id']] = request.POST['cotation_id']
+				del request.session['ticket'][request.POST['game_id']]
+				request.session.modified = True
+				return JsonResponse({}, status=202)
+			else:
+				request.session['ticket'][request.POST['game_id']] = request.POST['cotation_id']
+				request.session.modified = True
+				return JsonResponse({}, status=201)
 			
-			response = HttpResponse()
-			response.status_code = 201
-			return response		
 
 	def get(self, request, *args, **kwargs):
 		if 'ticket' not in request.session:
 			return HttpResponse("Empty")
 		else:
-			return JsonResponse( {'ticket': request.session['ticket']})
+			itens = []
+			for key, value in request.session['ticket'].items():
+				cotation = Cotation.objects.filter(pk=value).values('pk','game__id','game__name','name', 'price', 'market__name')
+				itens.append(cotation[0])
+
+			return JsonResponse( itens , safe=False)
 	
 	def delete(self, request, *args, **kwargs):
 		pk = self.kwargs["pk"]

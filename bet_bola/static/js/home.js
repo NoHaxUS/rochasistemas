@@ -39,6 +39,7 @@ $(document).ready(function () {
     if (Cookies.get('ticket_cookie') == undefined) {
         Cookies.set('ticket_cookie', {});
     }
+
     RenderTicket();
     UpdateCotationTotal();
 
@@ -81,56 +82,61 @@ $(document).ready(function () {
 
     function AddBetToTicket(bet_info) {
 
-        var ticket = Cookies.getJSON('ticket_cookie'); // {}
-        ticket[bet_info['game_id']] = bet_info;
-        Cookies.set('ticket_cookie', ticket);
-
         $.post('/bet/', bet_info, function(data, status, rq){
             console.log(rq.status);
             if(rq.status == '201'){
                 alertify.notify("Adicionado");
+                UpdateCotationTotal();
+                var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
+                updateRewardTotal(ticket_bet_value);
+                RenderTicket();
+            }else{
+                alertify.notify("Removido");
+                UpdateCotationTotal();
+                var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
+                updateRewardTotal(ticket_bet_value);
+                RenderTicket();
             }
-        }, 'text');
+        }, 'json');
         
-        UpdateCotationTotal();
-        var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
-        updateRewardTotal(ticket_bet_value);
-        RenderTicket();
 
     }
 
     function RenderTicket() {
 
-        ticket = Cookies.getJSON('ticket_cookie');
+        $.get('/bet/', function(ticket, status, rq){
+  
+            $('.ticket-list').empty();
 
-        $('.ticket-list').empty();
+            for (var key in ticket) {
 
-        for (var key in ticket) {
-            console.log(ticket[key])
-            var bet_html = '<div class="divider"></div>' +
-                '<li class="center-align bet">' +
-                '<div class="game-id hide">'+
-                    ticket[key]['game_id'] +
-                '</div>'+
-                '<div class="game-name">' +
-                    ticket[key]['game_name'] +
-                '</div>' +
-                '<div>' +
-                    ticket[key]['cotation_kind'] +
-                '</div>' +
-                '<div class="game-cotation">' +
-                    ticket[key]['cotation_name'] + ' : ' + ticket[key]['cotation_value'] +
-                '</div>' +
-                '<div class="bet-delete">' +
-                '<span class="valign-wrapper red-text">Remover' +
-                '<i class="small material-icons red-text">delete</i>' +
-                '</span>' +
-                '</div>' +
-                '</li>';
-
-            $('.ticket-list').append(bet_html);
-            $('.ticket-list').append('<div class="divider"></div>');
-        }
+                var bet_html = '<div class="divider"></div>' +
+                    '<li class="center-align bet">' +
+                    '<div class="game-id hide">'+
+                        ticket[key]['game__id'] +
+                    '</div>'+
+                    '<div class="game-name">' +
+                        ticket[key]['game__name'] +
+                    '</div>' +
+                    '<div>' +
+                        ticket[key]['market__name'] +
+                    '</div>' +
+                    '<div class="game-cotation">' +
+                        ticket[key]['name'] + ' : ' + ticket[key]['price'] +
+                    '</div>' +
+                    '<div class="bet-delete">' +
+                    '<span class="valign-wrapper red-text">Remover' +
+                    '<i class="small material-icons red-text">delete</i>' +
+                    '</span>' +
+                    '</div>' +
+                    '</li>';
+    
+                $('.ticket-list').append(bet_html);
+                $('.ticket-list').append('<div class="divider"></div>');
+            }
+            
+        },
+    'json');
 
     }
 
@@ -162,21 +168,17 @@ $(document).ready(function () {
     });
 
     $(document).on("click",'.bet-delete', function(){
-        ticket = Cookies.getJSON('ticket_cookie');
 
         game_id_to_delete = $(this).siblings().first().text().trim();
 
-        delete ticket[game_id_to_delete];
-        Cookies.set('ticket_cookie', ticket);
-        RenderTicket();
-        UpdateCotationTotal();
-        $('.ticket-bet-value').trigger('keyup');
 
         $.ajax({
             url: '/bet/' + game_id_to_delete,
             method: 'DELETE',
             complete: function(jqXR) {
-                console.log(jqXR.status);
+                RenderTicket();
+                UpdateCotationTotal();
+                $('.ticket-bet-value').trigger('keyup');
             }
         });
 
@@ -240,7 +242,6 @@ $(document).ready(function () {
         var cotation_name = $(this).siblings().eq(1).text().trim();
         var cotation_value = $(this).text().trim();
         var cotation_kind = $(this).siblings().eq(2).text().trim();
-        console.log(cotation_kind);
 
         bet_info = {
             'game_id': game_id,
