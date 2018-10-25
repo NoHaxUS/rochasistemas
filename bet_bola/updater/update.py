@@ -100,6 +100,53 @@ def process_events(content):
                 process_markets(game['Markets'], game_instance)                
 
 
+REAL_COTATION_NAMES = {
+    "1":"Casa",
+    "2":"Fora",
+    "X":"Empate",
+    "Odd":"Ímpar",
+    "Even":"Par",
+    "12":"Casa/Fora",
+    "X2":"Empate/Fora",
+    "1X":"Casa/Empate",
+    "No Goal":"Sem Gols",
+    "X/X":"Empate/Empate",
+    "X/2":"Empate/Fora",
+    "X/1":"Empate/Casa",
+    "1/X":"Casa/Empate",
+    "1/1":"Casa/Casa",
+    "2/1":"Fora/Casa",
+    "2/X":"Fora/Empate",
+    "2/2":"Fora/Fora",
+    "1/2":"Casa/Fora",
+    "All Periods The Same":"O mesmo em ambos",
+    "1st Half":"1° Tempo"
+}
+
+REAL_MARKET_NAMES = {
+    "12":"Casa/Fora",
+    "1st Period Winner":"Vencedor 1° Tempo",
+    "2nd Period Odd/Even":"2° Tempo Par/Ímpar",
+    "Correct Score":"Placar Correto",
+    "Correct Score 1st Period":"Placar Correto 2° Tempo",
+    "Double Chance":"Dupla Chance",
+    "Double Chance Halftime":"Dupla Chance 1° Tempo",
+    "First Team To Score":"Primeiro Time a Marcar",
+    "HT/FT":"1° Tempo / 2° Tempo",
+    "In Which Half Away Team Will Score More Goals?":"Em qual etapa o time de Fora vai fazer mais Gols?",
+    "In Which Half Home Team Will Score More Goals?":"Em qual etapa o time de Casa vai fazer mais Gols?",
+    "Odd/Even":"Ímpar/Par",
+    "Odd/Even Halftime":"Ímpar/Par 1° Tempo",
+    "2nd Period Odd/Even":"Ímpar/Par 2°  Tempo",
+    "Corners - Under/Exactly/Over":"Escanteios Abaixo/Exatamente/Acima",
+    "Total Corners":"Total de Escanteios",
+    "Under/Over":"Abaixo/Acima",
+    "Under/Over 1st Period":"Abaixo/Acima 1° Tempo",
+    "Under/Over Corners - 1st Half":"Abaixo/Acima Escanteios 1° Tempo",
+    "Asian Handicap 1st Period":"Asian Handicap 1° Tempo"
+
+
+}
 
 def process_markets(markets, game_instance):
 

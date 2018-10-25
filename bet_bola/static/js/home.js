@@ -121,7 +121,7 @@ $(document).ready(function () {
                 cotation_sum = cotation_sum * ticket[key]['price']
                 
                 $('.ticket-list').append(bet_html);
-                console.log(bet_html);
+                //console.log(bet_html);
                 $('.ticket-list').append('<div class="divider"></div>');
             }
             if (cotation_sum == 1){
@@ -401,11 +401,12 @@ $(document).ready(function () {
                 var array_cotations = jQuery.parseJSON( dataJSON[key] )
                 var array_cotations_length = array_cotations.length;
                 
-                for (var i = 0; i < array_cotations_length; i++) {                    
+                for (var i = 0; i < array_cotations_length; i++) {  
+                    var base_line = array_cotations[i].fields.base_line ? ' ' + array_cotations[i].fields.base_line : ''                  
                     full_html += '<tr>' +
                     '<td class="hide">'+ array_cotations[i].pk + '</td>' +
-                    '<td class="more-cotation-name">'+ array_cotations[i].fields.name + '</td>' +
-                    '<td class="more-cotation">'+ array_cotations[i].fields.price +'</td>' +
+                    '<td class="more-cotation-name">'+ array_cotations[i].fields.name + base_line + '</td>' +
+                    '<td class="more-cotation">'+ array_cotations[i].fields.price + '</td>' +
                     '<td class="more-cotation-kind hide">' + array_cotations[i].fields.market + '</td>' +
                         '</tr>';
 
