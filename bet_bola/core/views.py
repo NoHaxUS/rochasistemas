@@ -33,7 +33,8 @@ def get_main_menu():
 	location_leagues = defaultdict(set)
 
 	for game in games:
-		location_leagues[game.league.location].add(game.league)
+		if game.league.location:
+			location_leagues[game.league.location].add(game.league)
 	return location_leagues
 
 class TodayGames(TemplateResponseMixin, View):
@@ -73,7 +74,7 @@ class TodayGames(TemplateResponseMixin, View):
 
 		league_games = defaultdict(list)
 		location_leagues = get_main_menu()
-		#print(location_leagues)
+		
 		for game in games:
 			league_games[game.league].append(game)
 		

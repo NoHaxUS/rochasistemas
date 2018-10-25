@@ -28,7 +28,7 @@ class GamesWithNoFinalResults(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == 'list_all':
-            return queryset.filter(status_game='FT', ft_score__isnull=True)
+            return queryset.filter(status_game=3, periods__isnull=False)
 
 
 class HiddenGamesFilter(admin.SimpleListFilter):
@@ -261,21 +261,18 @@ class TicketAdmin(admin.ModelAdmin):
             return ('value','reward','payment','creation_date','cotation_sum', 'seller', 'ticket_status','is_visible')
         return super().get_readonly_fields(request, obj)
 
-    def get_queryset(self, request):
+    def get_queryset(self, request):        
         qs = super().get_queryset(request)
         
         #SOLVE
-        return qs
+        # return qs
 
-        if request.user.is_superuser:
+        if request.user.is_superuser:            
             return qs
-        
-        
-        if request.user.has_perm('user.be_seller'):
-            return qs.filter(Q(payment__status_payment=Payment.PAYMENT_STATUS[0][1],
-            ticket_status=Ticket.TICKET_STATUS[0][1]) |
-            Q(payment__who_set_payment=request.user.seller,
-            is_visible=True))
+                
+        if request.user.has_perm('user.be_seller'):            
+            return qs.filter(payment__who_set_payment=request.user.seller,
+            is_visible=True)
         
 
         if request.user.has_perm('user.be_manager'):

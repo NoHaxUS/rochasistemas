@@ -5,6 +5,10 @@ from django.db.models import F, Q, When, Case
 
 
 class CustomUser(AbstractUser):
+    def __init__(self, *args, **kwargs):
+        self.first_name = models.CharField(max_length=45, verbose_name='Primeiro Nome')
+        super(CustomUser, self).__init__(*args, **kwargs)        
+
     cellphone = models.CharField(max_length=14, verbose_name='Celular')
     email = models.EmailField(null=True, blank=True, verbose_name='E-mail')
 
