@@ -124,7 +124,11 @@ $(document).ready(function () {
                 console.log(bet_html);
                 $('.ticket-list').append('<div class="divider"></div>');
             }
-            COTATION_TOTAL = cotation_sum.toFixed(2);
+            if (cotation_sum == 1){
+                COTATION_TOTAL = 0
+            }else{
+                COTATION_TOTAL = cotation_sum.toFixed(2);
+            }
             
             $(".cotation-total").html(COTATION_TOTAL);
             

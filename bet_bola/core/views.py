@@ -235,7 +235,6 @@ class CotationsView(View):
 				cotations_serialized[market.name] = serializers.serialize("json", market.my_cotations, use_natural_foreign_keys=True)
 
 		data = json.dumps(cotations_serialized)
-		#print(data)
 		return HttpResponse( data, content_type='application/json' )
 
 
