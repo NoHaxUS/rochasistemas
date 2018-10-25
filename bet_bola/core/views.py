@@ -234,9 +234,8 @@ class CotationsView(View):
 			if market.my_cotations:		
 				cotations_serialized[market.name] = serializers.serialize("json", market.my_cotations, use_natural_foreign_keys=True)
 
-		data = json.dumps(cotations_serialized)
-		return HttpResponse( data, content_type='application/json' )
-
+		#print(cotations_serialized)
+		return UnicodeJsonResponse(cotations_serialized, safe=False)
 
 def get_max_reward_by_value(value, actual_max_value):
 	from math import ceil
