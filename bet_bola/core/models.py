@@ -394,7 +394,7 @@ class Reward(models.Model):
 
     @property
     def real_value(self):
-        from utils.models import GeneralConfigurations
+        from utils.models import GeneralConfigurations, RewardRelated        
 
         try:
             general_config = GeneralConfigurations.objects.get(pk=1)
@@ -407,11 +407,17 @@ class Reward(models.Model):
         max_value = get_max_reward_by_value(self.ticket.value, max_reward_to_pay)
 
         reward_total = round(self.ticket.value * self.ticket.cotation_sum(), 2)
+        
+
+        for reward_related in RewardRelated.objects.all().order_by('value_max'):
+            if self.ticket.value <= reward_related.value_max:
+                return reward_related.reward_value_max
 
         if reward_total > max_value:
             return max_value
         else:
             return reward_total
+
 
 
     def __str__(self):

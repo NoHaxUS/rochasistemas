@@ -111,6 +111,14 @@ class GeneralConfigurations(models.Model):
         verbose_name_plural = "Configurar Restrições"
 
 
+class RewardRelated(models.Model):
+    value_max = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name="Valor da Aposta")
+    reward_value_max = models.DecimalField(max_digits=30, decimal_places=2, default=100000, verbose_name="Valor Máximo da Recompensa")        
+
+    class Meta:
+        verbose_name = "Limitar Prêmios"
+        verbose_name_plural = "Limitação de Prêmios"
+
 
 class Overview(models.Model):
     overview = models.BooleanField(default=True, verbose_name='Gerar Visão Geral')
