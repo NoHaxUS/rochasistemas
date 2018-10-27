@@ -411,7 +411,7 @@ class CreateTicketView(View):
 				data['message'] =  "O valor máximo pago pela banca para o valor apostado é: R$" + str(max_reward_to_pay_per_value) + ". Seu prêmio será reajustado para esse valor."
 				return UnicodeJsonResponse(data)
 
-		for reward_related in RewardRelated.objects.all().order_by('value_max'):
+		for reward_related in RewardRelated.objects.all().order_by('value_max','pk'):
 			if ticket_bet_value <= reward_related.value_max:
 				data['success'] =  False
 				data['has_to_accept'] = True
