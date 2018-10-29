@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.core import serializers
 from core.models import Ticket,Cotation,CotationHistory
 from user.models import Seller
+from .models import TicketCustomMessage
 from django.conf import settings
 from fpdf import FPDF
 from django.db.models import F, Q, When, Case
@@ -101,7 +102,23 @@ class PDF(View):
             pdf.text(0,h,'---------------------------------------------------------------------------------------------------------------------------------------------------------')			
 
         pdf.text(80,h+20, settings.APP_VERBOSE_NAME)
-        pdf.text(20,h+36, "Prazo para Resgate do Prêmio: 48 horas.")
+        h+=36
+        if TicketCustomMessage.objects.first():
+            
+            phrases = TicketCustomMessage.objects.first().text.replace("\r","").split("\n")
+
+            while True in [len(phrase) >= 40 for phrase in phrases]:
+                for i in range(len(phrases)):
+                    if len(phrases[i]) >= 40:
+                        phrase = phrases[i]
+                        phrases[i:i] += (phrase[:len(phrase)-5] + "-\n" + phrase[len(phrase)-5:]).split("\n")
+                        phrases.pop(len((phrase[:len(phrase)-5] + "-\n" + phrase[len(phrase)-5:]).split("\n")))                    
+
+            for phrase in phrases:                
+                v = 80 - (len(phrase) + 20 if len(phrase) >= 25 else len(phrase))
+                pdf.text(v,h, phrase)
+                h+=10
+
         buffer = pdf.output(dest='S').encode('latin-1')
         response.write(buffer)
         return response

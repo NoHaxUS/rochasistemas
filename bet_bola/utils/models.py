@@ -120,6 +120,18 @@ class RewardRelated(models.Model):
         verbose_name_plural = "Limitação de Prêmios"
 
 
+class TicketCustomMessage(models.Model):
+    text = models.TextField(max_length=75, verbose_name="Mensagem customizada")
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save( *args, **kwargs)
+
+    class Meta:
+        verbose_name = "Mensagem a ser mostrada no ticket"        
+        verbose_name_plural = "Mensagem a ser mostrada no ticket"
+
+
 class Overview(models.Model):
     overview = models.BooleanField(default=True, verbose_name='Gerar Visão Geral')
 
