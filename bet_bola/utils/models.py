@@ -214,8 +214,8 @@ class Overview(models.Model):
         super().save( *args, **kwargs)
 
     class Meta:
-        verbose_name = "Visão Geral"
-        verbose_name_plural = "Visão Geral"
+        verbose_name = "Visão Geral - Caixa"
+        verbose_name_plural = "Visão Geral - Caixa"
 
 
 
