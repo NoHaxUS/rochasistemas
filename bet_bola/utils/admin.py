@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Overview, MarketReduction, Comission, RewardRelated, TicketCustomMessage
+from .models import Overview, MarketReduction, Comission, RewardRelated, TicketCustomMessage, RulesMessage
 from django.contrib import messages
 
 
@@ -42,5 +42,11 @@ class RewardRelatedAdmin(admin.ModelAdmin):
 
 @admin.register(TicketCustomMessage)
 class TicketCustomMessageAdmin(admin.ModelAdmin):
+    list_display = ('pk','text')
+    list_editable = ('text', )
+
+
+@admin.register(RulesMessage)
+class RulesMessageAdmin(admin.ModelAdmin):
     list_display = ('pk','text')
     list_editable = ('text', )

@@ -30,4 +30,5 @@ urlpatterns = [
     path('bet/<str:pk>/', views.BetView.as_view(), name='core_bet_post'),
     path('cotations/<int:gameid>/', views.CotationsView.as_view(), name='core_cotations_get'),
     path('app/', views.AppDownload.as_view(), name='core_app_download'),
+    path('rules/', views.RulesView.as_view(), name='core_rules'),
 ]

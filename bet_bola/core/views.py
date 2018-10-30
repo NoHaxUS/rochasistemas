@@ -566,3 +566,16 @@ class AppDownload(View, TemplateResponseMixin):
 
     def get(self, request):
         return self.render_to_response({})
+
+
+class RulesView(View, TemplateResponseMixin):
+
+    template_name = 'core/rules.html'
+
+    def get(self, request):
+        from utils.models import RulesMessage
+        rules_text = RulesMessage.objects.first()
+        if rules_text:
+            return self.render_to_response({'rules': rules_text.text})
+        return self.render_to_response({'rules':"Sem regulamento ainda."})
+        

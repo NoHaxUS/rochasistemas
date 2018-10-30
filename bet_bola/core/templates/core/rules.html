@@ -1,0 +1,47 @@
+{% extends './base_main.html' %}
+
+{% block modals %}
+{% endblock %}
+
+{% block nav_links_desktop %}
+<ul class="right hide-on-med-and-down">
+    <li>
+        <a href="{% url 'core:core_home' %}" class="waves-effect waves-light btn white green-text-button modal-trigger hoverable">
+            Início</a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block nav_links_mobile %}
+<ul class="side-nav" id="mobile-menu">
+    <li>
+        <a href="{% url 'core:core_home' %}" class="waves-effect waves-light btn white green-text-button round">
+            Início</a>
+    </li>
+</ul>
+{% endblock %}
+
+
+{% block mobile_menus %}
+{% endblock %}
+
+{% block left_section_desktop %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col s12 center-align">
+        
+        <div class="row">
+            <div id="rules">
+                <h2>Regulamento</h2>
+                {{rules}}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block right_section_desktop %}
+{% endblock %}
