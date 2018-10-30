@@ -368,13 +368,13 @@ class Manager(CustomUser):
         view_punter_perm = Permission.objects.get(codename='view_punter')
         change_ticket_perm = Permission.objects.get(codename='change_ticket')
         view_ticketcancelationhistory = Permission.objects.get(codename='view_ticketcancelationhistory')
-        change_comission = Permission.objects.get(codename='change_comission')
+        view_comission = Permission.objects.get(codename='view_comission')
         
         self.user_permissions.add(be_manager_perm,view_managertransactions_perm,
         view_revenuehistoryseller_perm,view_sellersaleshistory_perm,
         view_punterpayedhistory_perm, view_revenuehistorymanager, change_seller, add_seller,
         view_manager, view_ticket_perm, view_punter_perm, change_ticket_perm, 
-        view_ticketcancelationhistory, change_comission)
+        view_ticketcancelationhistory, view_comission)
 
     class Meta:
         ordering = ('-pk',)
