@@ -538,6 +538,12 @@ class TicketDetail(TemplateResponseMixin, View):
 			content += "<CENTER> "+ settings.APP_VERBOSE_NAME + "<BR>"
 			content += "<CENTER> Prazo para Resgate do Prêmio: 48 horas."
 			content += "#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;"
+
+			if TicketCustomMessage.objects.first():            
+            	phrases = TicketCustomMessage.objects.first().text.replace("\r","").split("\n")
+
+            	for phrase in phrases:                
+            		content += "<CENTER> " + phrase + "<BR>"	                
 			
 			context = {'ticket': ticket, 
 			'print': content,'cotations_values':cotations_values, 
