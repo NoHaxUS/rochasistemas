@@ -105,23 +105,10 @@ class PDF(View):
         h+=36
         if TicketCustomMessage.objects.first():
             
-            phrases = TicketCustomMessage.objects.first().text.replace("\r","").split("\n")
-            # print(phrases)
-            # for i in range(len(phrases)):
-            #     subs = []
-            #     if len(phrases[i]) >= 33:
-            #         sub = phrases[i].split(" ")
-            #         sub[(len(sub) - 1)] = "\n" + sub[(len(sub) - 1)] 
-            #         print(sub)                   
-            #         sub += " ".join(sub[(len(sub) - 1)]).split("\n")
-                    
-            #         sub.pop(len(" ".join(sub).split("\n")))
-            #         phrases = sub
-            # print(phrases)
+            phrases = TicketCustomMessage.objects.first().text.replace("\r","").split("\n")            
 
-
-            for phrase in phrases:                
-                v = 80 - (len(phrase) + 20 if len(phrase) >= 25 else len(phrase))
+            for phrase in phrases:                                
+                v = 20
                 pdf.text(v,h, phrase)
                 h+=10
 
