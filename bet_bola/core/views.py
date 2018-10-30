@@ -468,10 +468,17 @@ class CreateTicketView(View):
                 if not ticket.validate_ticket(request.user)['success']:
                     data['not_validated'] =  "<span class='no_credit_message'> Você não tem saldo para validar o Ticket !!! <br /></span>"
                     data['message'] = data['not_validated'] + data['message']
+
+                    request.session['ticket'] = {}
+                    request.session.modified = True
+
                     return UnicodeJsonResponse(data)
                 else:
                     return UnicodeJsonResponse(data)
             else:
+                request.session['ticket'] = {}
+                request.session.modified = True
+
                 return UnicodeJsonResponse(data)
 
 
@@ -491,6 +498,8 @@ class TicketDetail(TemplateResponseMixin, View):
             self.template_name = 'core/ticket_not_found.html'
             return self.render_to_response(context={})
 
+        from utils.models import TicketCustomMessage
+        
         cotations_history = CotationHistory.objects.filter(bet_ticket=ticket.pk)
         
         if cotations_history.count() > 0 and ticket.is_visible == True:
