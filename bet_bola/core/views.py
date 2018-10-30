@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.core import serializers
 from django.conf import settings
 from .models import Cotation,Ticket,Game, Market,League,Payment,Reward,Location,CotationHistory
+from utils.models import TicketCustomMessage
 from django.db.models import Prefetch, Count
 from django.utils import timezone
 from django.db.models import Q
