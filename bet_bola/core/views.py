@@ -7,7 +7,6 @@ from django.urls import reverse_lazy
 from django.core import serializers
 from django.conf import settings
 from .models import Cotation,Ticket,Game, Market,League,Payment,Reward,Location,CotationHistory
-from utils.models import TicketCustomMessage
 from django.db.models import Prefetch, Count
 from django.utils import timezone
 from django.db.models import Q
@@ -500,7 +499,7 @@ class TicketDetail(TemplateResponseMixin, View):
             return self.render_to_response(context={})
 
         from utils.models import TicketCustomMessage
-        
+
         cotations_history = CotationHistory.objects.filter(bet_ticket=ticket.pk)
         
         if cotations_history.count() > 0 and ticket.is_visible == True:
