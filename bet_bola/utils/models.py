@@ -1,9 +1,11 @@
 from django.db import models
 from django.db.models import F, Q, When, Case
+from django.db.models import Count
+from django.utils import timezone
 from user.models import Seller, Manager
 from core.models import Cotation, Ticket
-from django.db.models import Count
 from decimal import Decimal
+import utils.timezone as tzlocal
 
 class Comission(models.Model):
     
@@ -89,14 +91,17 @@ class GeneralConfigurations(models.Model):
 
     def apply_reductions(self):
         from core.models import Game
-        able_games = Game.objects.able_games()
+        able_games =  games = Game.objects.filter(start_date__gt=tzlocal.now(), 
+        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+        game_status=1, 
+        is_visible=True)
 
         reduction = self.percentual_reduction / 100
         
         for game in able_games:
-            game.cotations.update(value=F('original_value') * reduction )
-            game.cotations.update(value=Case(When(value__lt=1,then=1.01),default=F('value')))
-            game.cotations.filter(value__gt=self.max_cotation_value).update(value=self.max_cotation_value)
+            game.cotations.update(price=F('start_price') * reduction )
+            game.cotations.update(price=Case(When(price__lt=1,then=1.01),default=F('price')))
+            game.cotations.filter(price__gt=self.max_cotation_value).update(price=self.max_cotation_value)
 
 
     def save(self, *args, **kwargs):
@@ -235,22 +240,25 @@ class MarketReduction(models.Model):
 
     def apply_reductions(self):
         from core.models import Game
-        able_games = Game.objects.able_games()
+        able_games = Game.objects.filter(start_date__gt=tzlocal.now(), 
+        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+        game_status=1, 
+        is_visible=True)
 
         reduction = self.reduction_percentual / 100
         
         for game in able_games:
 
             cotations_to_reduct =  game.cotations.filter(kind__id=self.market_to_reduct)
-            cotations_to_reduct.update(value=F('original_value') * reduction )
-            cotations_to_reduct.update(value=Case(When(value__lt=1,then=1.05),default=F('value')))
+            cotations_to_reduct.update(price=F('start_price') * reduction )
+            cotations_to_reduct.update(price=Case(When(price__lt=1,then=1.05),default=F('price')))
             
             if GeneralConfigurations.objects.filter(pk=1):
                 max_cotation_value = GeneralConfigurations.objects.get(pk=1).max_cotation_value
             else:
                 max_cotation_value = 200
             
-            cotations_to_reduct.filter(value__gt=max_cotation_value).update(value=max_cotation_value)
+            cotations_to_reduct.filter(price__gt=max_cotation_value).update(price=max_cotation_value)
 
     def save(self, *args, **kwargs):
         self.apply_reductions()
