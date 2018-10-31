@@ -269,6 +269,10 @@ nav .brand-logo{
     font-size: 1.2rem;
 }
 
+#more-cotations{
+    max-height: 85%;
+}
+
 .more-cotations-thead{
     font-size: 1.5rem;
 }
