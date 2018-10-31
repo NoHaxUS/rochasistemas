@@ -344,7 +344,10 @@ $(document).ready(function () {
             function(data, status, rq){
                 
                 if(data.success){
-                    alertify.alert("Sucesso", data.message).set('movable', false);
+                    alertify.alert("Sucesso", data.message).set('onok', 
+                    function(closeEvent){
+                        window.location = '/';
+                    } ).set('movable', false);
                 }else{
 
                     if(data.clear_cookies){

@@ -128,6 +128,9 @@ class RewardRelated(models.Model):
 class TicketCustomMessage(models.Model):
     text = models.TextField(max_length=75, verbose_name="Mensagem customizada")
 
+    def __str__(self):
+        return "Mensagem a ser mostrada no ticket"
+
     def save(self, *args, **kwargs):
         self.pk = 1
         super().save( *args, **kwargs)
@@ -135,6 +138,21 @@ class TicketCustomMessage(models.Model):
     class Meta:
         verbose_name = "Mensagem a ser mostrada no ticket"        
         verbose_name_plural = "Mensagem a ser mostrada no ticket"
+
+
+class RulesMessage(models.Model):
+    text = models.TextField(max_length=999999, verbose_name="Texto de Regras")
+
+    def __str__(self):
+        return "Texto de Regras"
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save( *args, **kwargs)
+
+    class Meta:
+        verbose_name = "Texto de Regras"        
+        verbose_name_plural = "Texto de Regras"
 
 
 class Overview(models.Model):
@@ -201,8 +219,8 @@ class Overview(models.Model):
         super().save( *args, **kwargs)
 
     class Meta:
-        verbose_name = "Visão Geral"
-        verbose_name_plural = "Visão Geral"
+        verbose_name = "Visão Geral - Caixa"
+        verbose_name_plural = "Visão Geral - Caixa"
 
 
 
