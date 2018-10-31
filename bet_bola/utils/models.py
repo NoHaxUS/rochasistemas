@@ -112,8 +112,8 @@ class GeneralConfigurations(models.Model):
 
 
     class Meta:
-        verbose_name = "Configurar Restrições"
-        verbose_name_plural = "Configurar Restrições"
+        verbose_name = "Configurações Gerais"
+        verbose_name_plural = "Configurações Gerais"
 
 
 class RewardRelated(models.Model):
