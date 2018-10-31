@@ -226,30 +226,65 @@ class Overview(models.Model):
 
 class MarketReduction(models.Model):
     MARKET_LIST = (
-        (1, "Vencedor do Encontro"),
-        (10, "Casa/Visitante"),
-        (37, "Vencedor do Primeiro Tempo"),
-        (80, "Vencedor do Segundo Tempo"), 
-        (976334, "Resultado/Total de Gol(s)"),
-        (975916, "Resultado Exato no Primeiro Tempo"),
-        (975909, "Resultado Exato do Jogo"),
-        (976241, "Número Exato de Gol(s)"),
-        (59, "Os Dois Times Marcam"),
-        (976360, "Time Visitante Marca"),
-        (976348, "Time da Casa Marca"),
-        (976096, "Time da Casa NÃO Tomará Gol(s)"),
-        (8594683, "Time Visitante NÃO Tomará Gol(s)"),
-        (976204, "Total de Gols do Visitante"),
-        (976198, "Total de Gols da Casa"),
-        (12, "Total de Gol(s) no Encontro, Acima/Abaixo"),
-        (47, "Total de Gol(s) no Segundo Tempo, Acima/Abaixo"),
-        (38, "Total de Gols do Primeiro Tempo, Acima/Abaixo"),
-        (976144, "Etapa com Mais Gol(s)"),
-        (976316, "Resultado/2 Times Marcam"),
-        (976193, "Vencedor nas Duas Etapas"),
-        (63, "Dupla Chance"),
-        (976236, "Vencer e não tomar Gol(s)"),
-        (975930, "Placar Impar/Par"),
+        (1,"1X2"),
+        (2,"Abaixo/Acima"),
+        (3,"Asian Handicap"),
+        (4,"1° Tempo/2° Tempo"),
+        (5,"Ímpar/Par"),
+        (6,"Placar Correto"),
+        (7,"Dupla Chance"),
+        (9,"Placar Correto 1° Tempo"),
+        (11,"Total de Escanteios"),
+        (13,"Handicap Europeu"),
+        (16,"Primeiro Time a Marcar"),
+        (17,"Ambos marcam?"),
+        (21,"Abaixo/Acima 1° Tempo"),
+        (25,"Dupla Chance 1° Tempo"),
+        (41,"Vencedor 1° Tempo"),
+        (42,"Vencedor 2° Tempo"),
+        (45,"Abaixo/Acima 2° Tempo"),
+        (52,"Casa/Fora"),
+        (56,"Último time a marcar"),
+        (61,"Handicap Europeu 1° Tempo"),
+        (62,"Ímpar/Par 1° Tempo"),
+        (64,"Asian Handicap 1° Tempo"),
+        (71,"Metade com maior placar"),
+        (73,"2° Tempo Ímpar/Par"),
+        (79,"Haverá Pênalti?"),
+        (84,"Vencer em ambas etapas"),
+        (85,"Ganhar de Virada"),
+        (86,"Vencer sem tomar Gol"),
+        (95,"Handicap - Escanteios"),
+        (98,"Time de casa não toma gol?"),
+        (99,"Time de fora não toma gol?"),
+        (101,"Abaixo/Acima - Time de Casa"),
+        (102,"Abaixo/Acima - Time de Fora"),
+        (113,"Ambos marcam no 1° Tempo?"),
+        (128,"Número de Gols"),
+        (129,"Abaixo/Acima Escanteios 1° Tempo"),
+        (134,"Número de Gols 1° Tempo"),
+        (143,"Em qual etapa o time de Casa vai fazer mais Gols?"),
+        (144,"Em qual etapa o time de Fora vai fazer mais Gols?"),
+        (149,"Número de gols Casa"),
+        (150,"Número de Gols - Fora"),
+        (161,"Resultado aos 10 minutos"),
+        (163,"Número de Gols 2 ° Tempo"),
+        (168,"Vai ter gol contra?"),
+        (169,"Marcar em ambas etapas"),
+        (171,"Ganhar uma ou ambas etapas"),
+        (198,"Ímpar/Par - Time de Casa"),
+        (199,"Ímpar/Par - Time de Fora"),
+        (211,"Ambos marcam no 2° Tempo?"),
+        (215,"Time de fora vai marcar no 1° Tempo?"),
+        (216,"Time de fora vai marcar no 2° Tempo?"),
+        (218,"Time de casa marca no 1° tempo?"),
+        (219,"Time de casa marca 2° tempo?"),
+        (305,"Escanteios Abaixo/Exatamente/Acima"),
+        (427,"Casa/Empate/Fora  Abaixo/Acima"),
+        (429,"Vencedor do Encontro e Ambos Marcam"),
+        (433,"European Handicap Corners"),
+        (461,"Margem de Vitória"),
+        (523,"Abaixo/Acima e Ambos marcam")
     )
 
     market_to_reduct = models.IntegerField(choices=MARKET_LIST, verbose_name='Tipo de Aposta', unique=True)
@@ -259,7 +294,7 @@ class MarketReduction(models.Model):
     def apply_reductions(self):
         from core.models import Game
         able_games = Game.objects.filter(start_date__gt=tzlocal.now(), 
-        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=3)),
         game_status=1, 
         is_visible=True)
 
@@ -267,7 +302,7 @@ class MarketReduction(models.Model):
         
         for game in able_games:
 
-            cotations_to_reduct =  game.cotations.filter(kind__id=self.market_to_reduct)
+            cotations_to_reduct =  game.cotations.filter(market__id=self.market_to_reduct)
             cotations_to_reduct.update(price=F('start_price') * reduction )
             cotations_to_reduct.update(price=Case(When(price__lt=1,then=1.05),default=F('price')))
             
