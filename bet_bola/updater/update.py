@@ -106,6 +106,7 @@ def process_markets(markets, game_instance):
     for market in markets:
         for cotation in market['Providers'][0]['Bets']:
             Cotation(id=cotation['Id'],
+                id_string=cotation['Id'],
                 name=get_translated_cotation(market['Name'], cotation['Name']) ,
                 game=game_instance,
                 line=cotation.get('Line',None),

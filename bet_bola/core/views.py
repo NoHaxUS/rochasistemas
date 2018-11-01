@@ -215,10 +215,6 @@ class GameLeague(TemplateResponseMixin, View):
 
 
 class CotationsView(View):
-
-    def get_verbose_cotation(self, cotation_name):
-        names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Fora'}
-        return names_mapping.get(cotation_name, cotation_name)
     
     def get(self, request, *args, **kwargs):
 
@@ -269,7 +265,6 @@ class BetView(View):
             itens = []
 
             for key, value in request.session['ticket'].items():
-                print(str(value))
                 cotation = Cotation.objects.filter(pk=value).values('pk','game__id','game__name','name', 'price', 'market__name')
                 itens.append(cotation.first())
 

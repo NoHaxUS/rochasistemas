@@ -122,7 +122,7 @@ nav .brand-logo{
 }
 .championship-list li a{
     font-family: 'Roboto', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     display: inline-block;
     width: 100%;
     color: #000000;
@@ -323,7 +323,7 @@ span.step-links li.active a{
 
 .championship-collapse-header{
     background-color: #ffffff;
-    padding: 0.5rem;
+    padding: 0.2rem;
     color: #0e0909;
     font-size: 1.4rem;
 }
@@ -385,6 +385,9 @@ span.step-links li.active a{
 
 .ul-championship-title li a:hover{
     font-style: italic;
+    background-color: beige;
+    padding: 8px;
+    border-radius: 20px;
 }
 
 .see-ticket-after-create{

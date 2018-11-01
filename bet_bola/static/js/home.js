@@ -388,7 +388,9 @@ $(document).ready(function () {
 
         $.get('/cotations/'+ game_id, function(data, status, rq){
             
-            var dataJSON = jQuery.parseJSON(data);            
+            var dataJSON = JSON.parse(data);
+            
+            //console.log(dataJSON);
 
             var full_html = '';
 
@@ -398,14 +400,15 @@ $(document).ready(function () {
                 '<td class="cotation-market-label">'+ key + '</td>' +
                 '<td class="cotation-market-label"></td>' +
                 '</tr>';
-
-                var array_cotations = jQuery.parseJSON( dataJSON[key] )
+                
+                var array_cotations = JSON.parse(dataJSON[key]);
                 var array_cotations_length = array_cotations.length;
                 
-                for (var i = 0; i < array_cotations_length; i++) {  
+                for (var i = 0; i < array_cotations_length; i++) {
+
                     var base_line = array_cotations[i].fields.base_line ? ' ' + array_cotations[i].fields.base_line : ''                  
                     full_html += '<tr>' +
-                    '<td class="hide">'+ array_cotations[i].pk + '</td>' +
+                    '<td class="hide">'+ array_cotations[i].fields.id_string + '</td>' +
                     '<td class="more-cotation-name">'+ array_cotations[i].fields.name + base_line + '</td>' +
                     '<td class="more-cotation">'+ array_cotations[i].fields.price + '</td>' +
                     '<td class="more-cotation-kind hide">' + array_cotations[i].fields.market + '</td>' +
@@ -430,8 +433,7 @@ $(document).ready(function () {
         var cotation_name = $(this).siblings().eq(1).text();
         var cotation_value = $(this).text().trim();
         var cotation_kind = $(this).siblings().eq(2).text();
-        console.log(cotation_kind);
-
+        //console.log(cotation_id);
 
         bet_info = {
             'game_id': game_id,

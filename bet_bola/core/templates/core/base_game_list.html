@@ -375,17 +375,17 @@
                     </ul>
     
                     <ul class="collapsible ul-collapsible" data-collapsible="accordion">
-                        {% for country in country_leagues %}
+                        {% for location in location_leagues %}
                         <li>
                             <div class="collapsible-header championship-collapse-header">
                                 <i class="large material-icons green-text-button">chevron_right</i>
-                                {{country.name}}
+                                {{location.name}}
                             </div>
                             <div class="collapsible-body championship-collapse-body">
                                 <ul class='ul-championship-title'>
-                                    {% for championship in country_leagues|get_item:country %}
+                                    {%for league in location_leagues|get_item:location %}
                                     <li class="center-align">
-                                        <a href="{% url 'core:core_championship_get' pk=championship.pk %}" class="championship-li">{{ championship.name }}</a>
+                                        <a href="{% url 'core:core_championship_get' pk=league.pk %}" class="championship-li">{{ league.name }}</a>
                                     </li>
                                     {%endfor%}
                                 </ul>

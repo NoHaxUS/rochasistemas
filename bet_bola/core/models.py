@@ -457,6 +457,7 @@ class Cotation(models.Model):
         )
 
     id = models.BigIntegerField(primary_key=True)
+    id_string = models.CharField(max_length=40, default="")
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
     start_price = models.DecimalField(max_digits=30, decimal_places=2, default=0,verbose_name='Valor Original')
     price = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
