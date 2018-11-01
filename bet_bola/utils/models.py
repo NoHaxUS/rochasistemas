@@ -291,11 +291,33 @@ class MarketReduction(models.Model):
     reduction_percentual = models.IntegerField(default=100, verbose_name='Percentual de Redução')
 
 
+    def reset_reducions(self):
+        from core.models import Game
+        able_games = Game.objects.filter(start_date__gt=tzlocal.now(), 
+        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=3)),
+        game_status__in=[1,2,8],
+        is_visible=True)
+
+        reduction = 1
+        
+        for game in able_games:
+
+            cotations_to_reduct =  game.cotations.filter(market__id=self.market_to_reduct)
+            cotations_to_reduct.update(price=F('start_price') * reduction )
+            cotations_to_reduct.update(price=Case(When(price__lt=1,then=1.05),default=F('price')))
+            
+            if GeneralConfigurations.objects.filter(pk=1):
+                max_cotation_value = GeneralConfigurations.objects.get(pk=1).max_cotation_value
+            else:
+                max_cotation_value = 200
+            
+            cotations_to_reduct.filter(price__gt=max_cotation_value).update(price=max_cotation_value)
+
     def apply_reductions(self):
         from core.models import Game
         able_games = Game.objects.filter(start_date__gt=tzlocal.now(), 
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=3)),
-        game_status=1, 
+        game_status__in=[1,2,8],
         is_visible=True)
 
         reduction = self.reduction_percentual / 100
@@ -322,7 +344,7 @@ class MarketReduction(models.Model):
 
 
     class Meta:
-        verbose_name = 'Redução'
-        verbose_name_plural = 'Reduções'
+        verbose_name = 'Redução de Cota'
+        verbose_name_plural = 'Reduções de Cotas'
 
 
