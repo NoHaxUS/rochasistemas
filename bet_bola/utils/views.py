@@ -33,7 +33,7 @@ class ValidateTicket(View):
 class PDF(View):
 
     def get_verbose_cotation(self, cotation_name):
-        names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Visitante'}
+        names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Fora'}
         return names_mapping.get(cotation_name, cotation_name)
 
 

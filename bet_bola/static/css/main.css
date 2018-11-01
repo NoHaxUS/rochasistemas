@@ -438,15 +438,15 @@ span.step-links li.active a{
     margin: 15px 0px;
 }
 
-.more_cotations_button{
-    width: 70%;
+.more_cotations_button {
+    width: 85%;
     margin: auto;
     height: 100%;
     display: block;
     background-color: #edb811;
-    border-radius: 30px;
-    padding: 8px 0px;
-    color:#ffffff;
+    border-radius: 0px;
+    padding: 6px 0px;
+    color: #ffffff;
     font-weight: bold;
     margin-top: 6px;
 }
@@ -457,9 +457,8 @@ span.step-links li.active a{
     margin: auto;
     height: 100%;
     display: block;
-    background-color: #919ad4;
-    border-radius: 30px;
-    padding: 8px 0px;
+    background-color: #289c6a;
+    padding: 10px 6px;
     color:#ffffff;
     font-weight: bold;
     margin-top: 6px;
@@ -469,15 +468,15 @@ span.step-links li.active a{
     font-family: 'Exo 2', sans-serif;
 }
 
-.cotation{
-    width: 70%;
+.cotation {
+    width: 85%;
     margin: auto;
     height: 100%;
     display: block;
     background-color: #289c6a;
-    border-radius: 30px;
-    padding: 8px 0px;
-    color:#ffffff;
+    border-radius: 0px;
+    padding: 6px 0px;
+    color: #ffffff;
     font-weight: bold;
     margin-top: 6px;
 }
@@ -517,6 +516,11 @@ span.step-links li.active a{
     padding-right: 10px;
 }
 
+
+.more-table {
+    line-height: 0.8;
+}
+
 #rules{
     white-space: pre-line !important;
     font-family: 'Exo 2', sans-serif;
@@ -540,27 +544,27 @@ span.step-links li.active a{
         margin-top: 6px;
     }
 
-    .more_cotations_button{
-        width: 70%;
+    .more_cotations_button {
+        width: 85%;
         margin: auto;
         height: 100%;
         display: block;
         background-color: #edb811;
-        border-radius: 30px;
+        border-radius: 0px;
         padding: 4px 4px;
-        color:#ffffff;
+        color: #ffffff;
         font-weight: bold;
     }
 
-    .cotation{
-        width: 70%;
+    .cotation {
+        width: 85%;
         margin: auto;
         height: 100%;
         display: block;
         background-color: #289c6a;
-        border-radius: 30px;
+        border-radius: 0px;
         padding: 4px 4px;
-        color:#ffffff;
+        color: #ffffff;
         font-weight: bold;
     }
 

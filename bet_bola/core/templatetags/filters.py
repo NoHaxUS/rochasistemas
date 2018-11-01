@@ -8,26 +8,18 @@ register = template.Library()
 @register.filter(name='standard_cotations_order_by')
 def standard_cotations_order_by(queryset):
 
-    standard_cotations = queryset.filter(market__name="1X2", market__isnull=False).order_by('name')
+    standard = queryset.filter(market__name="1X2", market__isnull=False)
 
-    if standard_cotations.count() >=3:
-        cotations_ordered = []
-        cotations_ordered.append(standard_cotations[0])
-        cotations_ordered.append(standard_cotations[2])
-        cotations_ordered.append(standard_cotations[1])
-        return cotations_ordered
-  
-    return standard_cotations
+    home = standard.filter(name='Casa').first()
+    away = standard.filter(name='Fora').first()
+    draw = standard.filter(name='Empate').first()
+    
+    return [home, draw, away]
 
 
 @register.filter(name='get_item')
 def get_item(dictionary, key):
     return dictionary.get(key,key)
-
-#@register.filter(name='translate_country')
-#def translate_country(country_name):
-#    return COUNTRY_TRANSLATE.get(country_name, country_name)
-
 
 @register.simple_tag
 def app_name():
@@ -36,5 +28,5 @@ def app_name():
 
 @register.filter(name='get_verbose_cotation')
 def get_verbose_cotation(cotation_name):
-    names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Visitante'}
+    names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Fora'}
     return names_mapping.get(cotation_name, cotation_name)

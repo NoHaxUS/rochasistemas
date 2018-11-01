@@ -65,7 +65,7 @@ $(document).ready(function () {
     function AddBetToTicket(bet_info, actualElement) {
 
         $.post('/bet/', bet_info, function(data, status, rq){
-            console.log(rq.status);
+
             if(rq.status == '201'){
                 alertify.notify("Adicionado");
 
@@ -90,7 +90,6 @@ $(document).ready(function () {
 
     function RenderTicket() {
          
-        console.log("Inside");
         $('.ticket-list').empty();
 
         $.get('/bet/', function(ticket, status, rq){
@@ -254,7 +253,6 @@ $(document).ready(function () {
             'cotation_kind' : cotation_kind
         }
 
-        console.log("COTATION CLICK OK");
         AddBetToTicket(bet_info, $(this)  );
 
     });
@@ -510,7 +508,6 @@ $(document).ready(function () {
         var send_data = $(this).serialize();
 
         $.post('/user/punter/register/', send_data, function(data, status, rq){
-            console.log(rq.status);
 
             alertify.alert("Sucesso","Cadastrado com sucesso, você será logado automaticamente. Boas apostas :)")
             .set('onok', 

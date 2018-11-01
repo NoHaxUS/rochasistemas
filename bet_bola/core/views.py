@@ -217,7 +217,7 @@ class GameLeague(TemplateResponseMixin, View):
 class CotationsView(View):
 
     def get_verbose_cotation(self, cotation_name):
-        names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Visitante'}
+        names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Fora'}
         return names_mapping.get(cotation_name, cotation_name)
     
     def get(self, request, *args, **kwargs):
@@ -236,10 +236,6 @@ class CotationsView(View):
 
         return UnicodeJsonResponse(cotations_serialized, safe=False)
 
-def get_max_reward_by_value(value, actual_max_value):
-    from math import ceil
-    values_rewards = {}
-    return values_rewards.get(ceil(value), actual_max_value)
 
 class BetView(View):
 
@@ -271,9 +267,11 @@ class BetView(View):
             return HttpResponse("Empty")
         else:
             itens = []
+
             for key, value in request.session['ticket'].items():
+                print(str(value))
                 cotation = Cotation.objects.filter(pk=value).values('pk','game__id','game__name','name', 'price', 'market__name')
-                itens.append(cotation[0])
+                itens.append(cotation.first())
 
             return JsonResponse( itens , safe=False)
     
@@ -399,13 +397,11 @@ class CreateTicketView(View):
 
         ticket_reward_value = cotation_sum * ticket_bet_value
 
-        max_reward_to_pay_per_value = get_max_reward_by_value(ticket_bet_value, max_reward_to_pay)
-
         if not accepted_conditions:
-            if Decimal(ticket_reward_value) > max_reward_to_pay_per_value:
+            if Decimal(ticket_reward_value) > max_reward_to_pay:
                 data['success'] =  False
                 data['has_to_accept'] = True
-                data['message'] =  "O valor máximo pago pela banca para o valor apostado é: R$" + str(max_reward_to_pay_per_value) + ". Seu prêmio será reajustado para esse valor."
+                data['message'] =  "O valor máximo pago pela banca para o valor apostado é: R$" + str(max_reward_to_pay) + ". Seu prêmio será reajustado para esse valor."
                 return UnicodeJsonResponse(data)
 
             for reward_related in RewardRelated.objects.all().order_by('value_max','pk'):
@@ -488,7 +484,7 @@ class TicketDetail(TemplateResponseMixin, View):
     template_name = 'core/ticket_details.html'
 
     def get_verbose_cotation(self, cotation_name):
-        names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Visitante'}
+        names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Fora'}
         return names_mapping.get(cotation_name, cotation_name)
 
     def get(self, request, *args, **kwargs):
