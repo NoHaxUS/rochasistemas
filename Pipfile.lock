@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "71ecafa74b01f99a7513a582e3584d1e10115f39b9b813dac40f5792f0e5e443"
+            "sha256": "89a7fb86d72236c527d0f8d833cb73f89ed522b834b4d69c27c47eaf3519c29a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -23,14 +23,6 @@
             ],
             "version": "==3.5.3"
         },
-        "bootstrap-admin": {
-            "hashes": [
-                "sha256:21747448e7bd71ac45b0534596b45f3226cacd7db85c948b944a36b2cd107a17",
-                "sha256:68e8e3f9465e5462a7285039ba8c5982eb8182e67ffa40f4d8851ba534ec20fa"
-            ],
-            "index": "pypi",
-            "version": "==0.4.0"
-        },
         "certifi": {
             "hashes": [
                 "sha256:339dc09518b07e2fa7eda5450740925974815557727d6bd35d319c1524a04a4c",
@@ -50,7 +42,6 @@
                 "sha256:2335065e6395b9e67ca716de5f7526736bfa6ceead690adf616d925bdc622b13",
                 "sha256:5b94b49521f6456670fdb30cd82a4eca9412788a93fa6dd6df72c94d5a8ff2d7"
             ],
-            "markers": "python_version != '3.1.*' and python_version != '3.2.*' and python_version != '3.3.*' and python_version != '3.0.*' and python_version >= '2.7'",
             "version": "==7.0"
         },
         "decorator": {
@@ -60,13 +51,13 @@
             ],
             "version": "==4.3.0"
         },
-        "djadmin": {
+        "djadmin-ok": {
             "hashes": [
-                "sha256:743c4a8453152a9d36a5b64a9d33f4245e21215a40fb45b4c8b0af2dd6154227",
-                "sha256:f79a828a3039b3a301e9762644ab52968db742c74deff1d97a16eab313f692f1"
+                "sha256:6efc75ab23c72932cd84691bec446969309841c9a3d61e7b8968c25d669fc491",
+                "sha256:6efec8a49e1b333a54b770d189dd5d127c44cfbe78ad15790aa966638ba71d2d"
             ],
             "index": "pypi",
-            "version": "==1.1.6"
+            "version": "==1.1.7"
         },
         "django": {
             "hashes": [
@@ -94,7 +85,6 @@
             "hashes": [
                 "sha256:67045236dcfd6816dc439556d009594abf643e5eb48992e36beac09c2ca659b8"
             ],
-            "markers": "python_version != '3.1.*' and python_version != '3.2.*' and python_version != '3.0.*' and python_version >= '2.6'",
             "version": "==0.17.1"
         },
         "geocoder": {
@@ -202,7 +192,6 @@
                 "sha256:41c3db2fc01e5b907288010dec72f9d0a74e37d6994e6eb56849f59fea2265ae",
                 "sha256:8819bba37a02d143296a4d032373c4dd4aca11f6d4c9973335ca75f9c8475f59"
             ],
-            "markers": "python_version >= '2.7' and python_version != '3.2.*' and python_version != '3.0.*' and python_version != '3.1.*' and python_version < '4' and python_version != '3.3.*'",
             "version": "==1.24"
         },
         "user-agents": {

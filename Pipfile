@@ -8,10 +8,9 @@ django = "*"
 "psycopg2" = "*"
 requests = "*"
 fpdf = "*"
-bootstrap-admin = "*"
 pika = "*"
 django-apscheduler = "*"
-djadmin = "*"
+djadmin-ok = "*"
 
 [dev-packages]
 

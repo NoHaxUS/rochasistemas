@@ -9,7 +9,6 @@ from django.db.models import Q
 from user.models import NormalUser
 from django.conf import settings
 import utils.timezone as tzlocal
-from .cotations_restrictions import is_excluded_cotation
 from django.utils import timezone
 import utils.timezone as tzlocal
 
