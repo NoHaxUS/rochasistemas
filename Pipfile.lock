@@ -53,11 +53,11 @@
         },
         "djadmin-ok": {
             "hashes": [
-                "sha256:6efc75ab23c72932cd84691bec446969309841c9a3d61e7b8968c25d669fc491",
-                "sha256:6efec8a49e1b333a54b770d189dd5d127c44cfbe78ad15790aa966638ba71d2d"
+                "sha256:a3e99cad4d250a33ab6f166dfd0f467c9f2c1a1599430861a3d530fe3b93ad22",
+                "sha256:c9c366b63b802438719d3e746df13a4a19fdf885db94c202dde5152a3606e307"
             ],
             "index": "pypi",
-            "version": "==1.1.7"
+            "version": "==1.1.8"
         },
         "django": {
             "hashes": [
