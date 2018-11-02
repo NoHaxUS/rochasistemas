@@ -212,5 +212,5 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
 ]
 
-#ADMIN_COLOR_THEME = 'green'
-#ADMIN_HEADER_TITLE = "Administração"
+ADMIN_COLOR_THEME = 'green'
+ADMIN_HEADER_TITLE = "Administração"

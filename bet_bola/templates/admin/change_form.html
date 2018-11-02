@@ -1,0 +1,237 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls admin_static admin_modify djadmin_form  djadmin custom  %}
+
+{% block extrahead %}{{ block.super }}
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+
+{% endblock %}
+{% block  navbar-fixed %} navbar-fixed{% endblock %}
+{% block extrastyle %}{{ block.super }}{% endblock %}
+
+{% block coltype %}colM{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form{% endblock %}
+
+{% if not is_popup %}
+{% block breadcrumbs %}
+    <nav class="{{ request.ADMIN_COLOR_THEME }}">
+        <div class="nav-wrapper">
+            <div class="col s12 l12 m12 ">
+                <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+            &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+            &rsaquo; {% if has_change_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+            &rsaquo; {% if add %}{% trans 'Add' %} {{ opts.verbose_name }}{% else %}{{ original|truncatewords:"18" }}{% endif %}
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+{% endif %}
+
+{% block sidebar %}
+    {% if change %}{% if not is_popup %}
+        {% for widget in djadmin_card %}
+            <ul class="collapsible collapsible-accordion" data-collapsible="expandable">
+                <li>
+                    <div class="collapsible-header active {{ request.ADMIN_COLOR_THEME }} white-text"><i
+                            class="mdi-action-dashboard white-text"></i> {% trans widget.name %}</div>
+                    <div class="collapsible-body">
+                        <div class="widget-data ">
+                            {{ widget.html|safe }}
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        {% endfor %}
+        <ul class="collapsible collapsible-accordion" data-collapsible="expandable">
+            <li>
+                <div class="collapsible-header active {{ request.ADMIN_COLOR_THEME }} white-text"><i
+                        class="mdi-action-settings-applications white-text"></i> {% trans 'Tools' %}</div>
+                <div class="collapsible-body">
+                    <div class="collection">
+                        {% next_prev original as data %}
+                        {% if data.next or data.prev %}
+                            <ul class="object-tools">
+                                {% if data.prev %}
+                                    <a href="{% url opts|admin_urlname:'change' data.prev|admin_urlquote %}"
+                                       class="{{ request.ADMIN_COLOR_THEME }}-text collection-item"><i
+                                            class="mdi-image-navigate-before"></i> {% trans "Previous" %}</a>
+                                {% endif %}
+                                {% if data.next %}
+                                    <a href="{% url opts|admin_urlname:'change' data.next|admin_urlquote %}"
+                                       class="{{ request.ADMIN_COLOR_THEME }}-text collection-item">{% trans "Next" %}
+                                        <i class="mdi-image-navigate-next"></i></a>
+                                {% endif %}
+                            </ul>
+                        {% endif %}
+                        <ul class="object-tools">
+                            {% block object-tools-items %}
+                                {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
+                                <a href="{% add_preserved_filters history_url %}" class="historylink collection-item {{ request.ADMIN_COLOR_THEME }}-text ">
+                                    {% trans "History" %}</a>
+                                {% if has_absolute_url %}
+                                    <a href="{{ absolute_url }}" class="{{ request.ADMIN_COLOR_THEME }}-text viewsitelink collection-item">
+                                        {% trans "View on site" %}</a>{% endif %}
+                            {% endblock %}
+                        </ul>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    {% endif %}{% endif %}
+    {% if change %}
+            {% for field in adminform.form.initial %}
+                {% get_file_detail adminform field as detail %}
+                {% if detail.url %}
+                    <ul class="collapsible collapsible-accordion" data-collapsible="expandable">
+                    <li>
+                        <div class="collapsible-header active {{ request.ADMIN_COLOR_THEME }} white-text"><i
+                                class="mdi-navigation-apps white-text"></i>{% trans 'Files' %}</div>
+                        <div class="collapsible-body">
+                            <div class="card-image center card-content">
+                                {% if detail.type == "image" %}
+                                    <img class="materialboxed" src="{{ MEDIA_URL }}{{ detail.url }}"
+                                         width="{{ detail.width }}" alt="">
+                                    <h6 class="header {{ request.ADMIN_COLOR_THEME }}-text ">Field Name : {{ field|capfirst }}</h6>
+                                    <h6 class="card-stats-number ">Dimension : {{ detail.height }}x{{ detail.width }}</h6>
+                                    <h6 class="card-stats-number ">Size : {{ detail.size|filesizeformat }}</h6>
+                                    <h6 class="card-stats-number ">Type : {{ detail.extension }} file</h6>
+                                {% else %}
+                                    <h6 class="header {{ request.ADMIN_COLOR_THEME }}-text ">Field Name : {{ field|capfirst }}</h6>
+                                    <h6 class="card-stats-number center">Size : {{ detail.size|filesizeformat }}</h6>
+                                    <h6 class="card-stats-number center">Type : {{ detail.extension }} file</h6>
+                                    <h6 class="card-stats-number center"><a href="{{ MEDIA_URL }}{{ detail.url }}" target="_blank">{{ field }} Download</a></h6>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </li>
+                    </ul>
+                {% endif %}
+            {% endfor %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+   <div class="card-panel change_form">
+{% block object-tools %}
+{% endblock %}
+   {% if title %}<h5>{% trans title %}</h5>{% endif %}
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.model_name }}_form" novalidate>
+    {% csrf_token %}
+    {% block form_top %}{% endblock %}
+<div>
+{% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1" />{% endif %}
+{% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}" />{% endif %}
+{% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
+{% if errors %}
+    <p class="errornote">
+    {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+    </p>
+    {{ adminform.form.non_field_errors }}
+{% endif %}
+
+    {% block change_form %}
+        {% fieldset_layout adminform inline_admin_formsets as layout %}
+        {% form form=adminform.form layout=layout %}{% endform %}
+        {% prepopulated_fields_js %}
+    {% endblock %}
+
+{% block after_related_objects %}{% endblock %}
+
+{% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+
+    {% block admin_change_form_document_ready %}
+        <script type="text/javascript">
+            (function ($) {
+                $(document).ready(function () {
+                    $('.add-another').click(function (e) {
+                        e.preventDefault();
+                        var event = $.Event('django:add-another-related');
+                        $(this).trigger(event);
+                        if (!event.isDefaultPrevented()) {
+                            showAddAnotherPopup(this);
+                        }
+                    });
+
+                    {% if adminform and add %}
+                        $('form#{{ opts.model_name }}_form :input:visible:enabled:first').attr('autofocus', true);
+                        $('form#{{ opts.model_name }}_form :input:visible:enabled:first').focus();
+
+                    {% endif %}
+                });
+            })(django.jQuery);
+
+        </script>
+
+    {% endblock %}
+
+{# JavaScript for prepopulated fields #}
+{% prepopulated_fields_js %}
+
+</div>
+</form></div>
+{% endblock %}
+{% block extrajs %}
+    <script>color_name = "{{ request.ADMIN_COLOR_THEME }}";</script>
+    <link rel="stylesheet" href="{% static 'admin/js/packages/datetime/css/datepicker.css' %}" type="text/css">
+    <script type="text/javascript" src="{% static 'admin/js/packages/datetime/js/datepicker.standalone.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/jquery.formset.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/jquery.formatter.min.js' %}"></script>
+    <script>
+    $(".datepicker").click(function () {
+        var picker = new MaterialDatePicker()
+        .on('submit', (val) => {
+        $(this).siblings('input').val( val.format("YYYY-MM-DD"));
+        });
+        picker.open();
+    });
+    $(".timepicker").click(function () {
+        var picker = new MaterialDatePicker().on('submit', (val) => {
+        $(this).siblings('input').val( val.format("HH:mm:SS")); });
+        picker.open();
+        $(".c-datepicker__toggle.c-datepicker--show-time").attr('checked', 'checked');
+        $(".c-datepicker__header-date__month.js-date-month").hide();
+        $(".c-datepicker__header-date__day.js-date-day").hide();
+        $(".c-datepicker__header-day").hide();
+
+    });
+    {% verbatim %}
+        $('.datepicker').siblings('input').formatter({
+            'pattern': '{{9999}}-{{99}}-{{99}}',
+        });
+        $('.timepicker').siblings('input').formatter({
+            'pattern': '{{99}}:{{99}}:{{99}}',
+        });
+    {% endverbatim %}
+    </script>
+    <style type="text/css">
+    .selector .selector-chosen h2 {
+        background: {{ request.ADMIN_COLOR_THEME_CODE }} !important;
+    }
+    .selector ::-webkit-scrollbar-thumb {
+        background: {{ request.ADMIN_COLOR_THEME_CODE }};
+    }
+    .u-hover-ball-effect:hover:before, .c-datepicker__day-body:hover:before, .c-datepicker__clock__num:hover:before, .c-datepicker__clock__am-pm-toggle label:hover:before {
+        background: {{ request.ADMIN_COLOR_THEME_CODE }};
+    }
+     .c-datepicker__header-date {
+        background: {{ request.ADMIN_COLOR_THEME_CODE }};
+    }
+    .c-datepicker__header-day {
+        background: {{ request.ADMIN_COLOR_THEME_CODE }};
+    }
+    .c-datepicker__clock-hands {
+        background: {{ request.ADMIN_COLOR_THEME_CODE }};
+    }
+    .c-datepicker__clock-hands .c-datepicker__hour-hand {
+        background: {{ request.ADMIN_COLOR_THEME_CODE }} !important;
+    }
+    .c-datepicker__clock__am-pm-toggle label.c-datepicker__toggle--checked::after{
+        background: {{ request.ADMIN_COLOR_THEME_CODE }} !important;
+    }
+     .c-datepicker__back:focus, .c-datepicker__next:focus, .c-datepicker__toggle:focus {
+        background-color: {{ request.ADMIN_COLOR_THEME_CODE }};
+    }
+
+    </style>
+{% endblock %}

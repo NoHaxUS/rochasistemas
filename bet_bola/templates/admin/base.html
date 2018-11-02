@@ -1,0 +1,286 @@
+{% load i18n admin_static staticfiles custom %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    {% if LANGUAGE_BIDI %}
+            <link rel="stylesheet" type="text/css" href="{% static "admin/rtl/css/materialize.css" %}"/>
+    {% else %}
+        <link rel="stylesheet" type="text/css" href="{% static "admin/css/materialize.min.css" %}"/>
+    {% endif %}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/js/packages/perfect-scrollbar/perfect-scrollbar.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "admin/js/packages/tooltip/tooltipster.min.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/custom.css" %}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script src="{% static "admin/js/jquery-1.11.2.min.js" %}" type="text/javascript"></script>
+
+    {% block extrastyle %}{% endblock %}
+    {% block extrahead %}{% endblock %}
+    {% block blockbots %}
+        <meta name="robots" content="NONE,NOARCHIVE"/>{% endblock %}
+</head>
+{% load i18n %}
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
+      data-admin-utc-offset="{% now "Z" %}">
+
+<!-- Container -->
+<div id="container" class="card">
+    {% if not is_popup %}
+        <header id="header" class="page-topbar {% block navbar-fixed %}{% endblock %}">
+            <nav class="{{ request.ADMIN_COLOR_THEME }}">
+                <div class="nav-wrapper">
+                    <div class="col l11 offset-l1">
+                        {% block branding %}{% endblock %}
+                        {% block usertools %}
+                            {% if has_permission %}
+                                <ul class="right hide-on-med-and-down">
+                                        <li><a class="dropdown-button" href="#!" data-beloworigin="true"
+                                           data-activates="dropdown1"> {% trans 'Welcome,' %} {% firstof user.get_short_name user.get_username|capfirst %}<i
+                                            class="mdi-navigation-arrow-drop-down right"></i></a>
+                                        <ul id="dropdown1" class="dropdown-content">
+                                            {% block userlinks %}
+                                                {% if site_url %}
+                                                    <li><a class="{{ request.ADMIN_COLOR_THEME }}-text" href="{{ site_url }}">{% trans 'View site' %}</a></li>
+                                                {% endif %}
+                                                {% if user.is_active and user.is_staff %}
+                                                    {% url 'django-admindocs-docroot' as docsroot %}
+                                                    {% if docsroot %}
+                                                        <li><a class="{{ request.ADMIN_COLOR_THEME }}-text" href="{{ docsroot }}">{% trans 'Documentation' %}</a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endif %}
+                                                {% if user.has_usable_password %}
+                                                    <li>
+                                                        <a class="{{ request.ADMIN_COLOR_THEME }}-text" href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a>
+                                                    </li>
+                                                {% endif %}
+
+                                            {% endblock %}
+                                            <li class="divider"></li>
+                                            <li><a class="{{ request.ADMIN_COLOR_THEME }}-text" href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+
+                            {% endif %}
+                        {% endblock %}
+                        {% block nav-global %}{% endblock %}
+                    </div>
+                </div>
+            </nav>
+        </header>
+    {% endif %}
+
+    <div id="content" class="{% block coltype %}colM{% endblock %}">
+        <div id="content-main">
+            {% if available_apps %}
+                <!-- START MAIN -->
+                <div id="main">
+                    <!-- START WRAPPER -->
+                    <div class="wrapper">
+                        {% if not is_popup %}
+                            <!-- START LEFT SIDEBAR NAV-->
+                            <aside id="left-sidebar-nav">
+                                <ul id="slide-out" class="side-nav leftside-navigation">
+                                    <li class="user-details {{ request.ADMIN_COLOR_THEME }} darken-2">
+                                        <div class="row">
+                                            <div class="col col s4 m4 l4">
+                                                <img src="/static/admin/images/avatar.png" alt=""
+                                                     class="circle responsive-img valign profile-image">
+                                            </div>
+                                            <div class="col col s8 m8 l8">
+                                                <a class="btn-flat dropdown-button waves-effect waves-light white-text profile-btn"
+                                                   href="#"
+                                                   data-activates="profile-dropdown">{% firstof user.get_short_name user.get_username|capfirst %}</a>
+                                                <p class="user-roal">{% if  request.user.is_superuser %}Administrator{% else %}Other{% endif %}</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <div class="divider"></div>
+                                    <li class="li-hover"><a href="/" class="ultra-small margin more-tex  "><i
+                                            class="mdi-navigation-arrow-back"></i>{% trans ' Ver Início' %}</a>
+                                    </li>
+                                    {% if site_url %}
+                                        <li class="li-hover hide-on-large-only"><a class="{{ request.ADMIN_COLOR_THEME }}-text" href="{{ site_url }}">{% trans 'View site' %}</a></li>
+                                    {% endif %}
+                                    {% if user.is_active and user.is_staff %}
+                                        {% url 'django-admindocs-docroot' as docsroot %}
+                                        {% if docsroot %}
+                                            <li class="li-hover hide-on-large-only"><a class="{{ request.ADMIN_COLOR_THEME }}-text" href="{{ docsroot }}">{% trans 'Documentation' %}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if user.has_usable_password %}
+                                        <li class="li-hover hide-on-large-only">
+                                            <a class="{{ request.ADMIN_COLOR_THEME }}-text" href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a>
+                                        </li>
+                                    {% endif %}
+                                    <li class="li-hover hide-on-large-only"><a class="{{ request.ADMIN_COLOR_THEME }}-text" href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a></li>
+                                    {% for app in available_apps %}
+                                        <div class="divider"></div>
+                                        <li class="li-hover"><a href="{{ app.app_url }}"
+                                                                class="ultra-small {{ request.ADMIN_COLOR_THEME }} white-text margin more-tex center ">{{ app.name|capfirst }}</a>
+                                        </li>
+                                        {% for model in app.models %}
+                                            <li class="no-padding">
+                                                <ul class="collapsible collapsible-accordion">
+                                                    <li class="bold"><a class="{{ request.ADMIN_COLOR_THEME }}-text truncate collapsible-header waves-effect waves-cyan"><i
+                                                            class="mdi-av-play-arrow"></i>{{ model.name }}</a>
+                                                        <div class="collapsible-body">
+                                                            <ul>
+                                                                {% if model.admin_url %}
+                                                                    <li>
+                                                                        <a href="{{ model.admin_url }}" class="truncate">{% trans 'All' %} {{ model.name }}</a>
+                                                                    </li>
+                                                                {% endif %}
+                                                                {% if model.add_url %}
+                                                                    <li>
+                                                                        <a href="{{ model.add_url }}" class="truncate">{% trans 'Add' %} {{ model.name }}</a>
+                                                                    </li>
+                                                                {% endif %}
+                                                            </ul>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                                <a href="#" data-activates="slide-out"
+                                   class="sidebar-collapse btn-floating btn-medium waves-effect waves-light hide-on-large-only white "><i
+                                        class="mdi-navigation-menu {{ request.ADMIN_COLOR_THEME }}-text"></i></a>
+                            </aside>
+                        {% endif %}
+                        <section id="content" class="section">
+                            <div class="row">
+                                <div class="col s12">
+                                    <div class="row">
+                                        {% block breadcrumbs %}
+                                        {% endblock %}
+                                    </div>
+                                    <div class="row">
+                                        <!--start container-->
+                                        <div class="container-fluid">
+                                            <div class="section">
+                                                <div class="divider"></div>
+                                                <!--Basic Form-->
+                                                <div id="basic-form" class="section">
+                                                    <div class="row">
+                                                        <div class="col s12 m12 l9">
+                                                            {% block content %}
+
+                                                                {{ content }}
+                                                            {% endblock %}
+                                                        </div>
+                                                        <div class="col l3 s12 m12">
+                                                            {% block object-tools %}{% endblock %}
+                                                            {% block sidebar %}
+                                                            {% endblock %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                <!-- END MAIN -->
+            {% else %}
+                  <div id="permission-not-available" class="modal {{ request.ADMIN_COLOR_THEME }} white-text">
+                    <div class="modal-content center">
+                      <p>{% trans "You don't have permission to edit anything." %}</p>
+                    </div>
+                    <div class="modal-footer">
+                      <a href="{% url 'admin:logout' %}" class=" modal-action {{ request.ADMIN_COLOR_THEME }} white-text modal-close waves-effect waves-green btn-flat">LOGOUT</a>
+                    </div>
+                  </div>
+                <script>
+                    $(document).ready(function() {
+                        $('#permission-not-available').openModal({
+                             dismissible: false
+                        });
+                    });
+                </script>
+            {% endif %}
+        </div>
+    </div>
+    {% block footer %}
+        <div id="footer">
+
+        </div>
+    {% endblock %}
+</div>
+<!-- END Container -->
+<script src="{% static "admin/js/materialize.min.js" %}" type="text/javascript"></script>
+<script src="{% static "admin/js/packages/perfect-scrollbar/perfect-scrollbar.min.js" %}" type="text/javascript"></script>
+<script src="{% static "admin/js/packages/tooltip/jquery.tooltipster.min.js" %}" type="text/javascript"></script>
+<script src="{% static "admin/js/packages/pace/pace.min.js" %}" type="text/javascript"></script>
+{% block messages %}
+    {% if messages %}
+        <script type="text/javascript">
+            $(document).ready(function () {
+                {% for message in messages %}
+                    Materialize.toast('{{ message|capfirst }}', 10000, 'white {{ request.ADMIN_COLOR_THEME }}-text')
+                {% endfor %}
+            });
+        </script>
+    {% endif %}
+    {% if not request.ADMIN_COLOR_THEME %}
+        <script type="text/javascript">
+            $(document).ready(function () {
+               Materialize.toast('{% trans 'You are not added middleware, So please add middleware of djadmin in setting file' %}', 10000, 'white red-text')
+            });
+        </script>
+    {% endif %}
+{% endblock messages %}
+{% block extrajs %}{% endblock %}
+<script src="{% static "admin/js/plugins.min.js" %}" type="text/javascript"></script>
+<script>
+    (function ($) {
+        $(function () {
+            {% if LANGUAGE_BIDI %}
+                $('.sidebar-collapse').sideNav({edge: "right"});
+            {% else %}
+                $('.sidebar-collapse').sideNav({edge: "left"});
+            {% endif %}
+        });
+    })(jQuery);
+</script>
+<style>
+    a {
+    color: {{ request.ADMIN_COLOR_THEME_CODE }};
+    }
+    input[type=text]:focus:not([readonly])+label, input[type=password]:focus:not([readonly])+label, input[type=email]:focus:not([readonly])+label, input[type=url]:focus:not([readonly])+label, input[type=time]:focus:not([readonly])+label, input[type=date]:focus:not([readonly])+label, input[type=datetime-local]:focus:not([readonly])+label, input[type=tel]:focus:not([readonly])+label, input[type=number]:focus:not([readonly])+label, input[type=search]:focus:not([readonly])+label, textarea.materialize-textarea:focus:not([readonly])+label {
+    color: {{ request.ADMIN_COLOR_THEME_CODE }} !important;
+    }
+    input[type=text]:focus:not([readonly]), input[type=password]:focus:not([readonly]), input[type=email]:focus:not([readonly]), input[type=url]:focus:not([readonly]), input[type=time]:focus:not([readonly]), input[type=date]:focus:not([readonly]), input[type=datetime-local]:focus:not([readonly]), input[type=tel]:focus:not([readonly]), input[type=number]:focus:not([readonly]), input[type=search]:focus:not([readonly]), textarea.materialize-textarea:focus:not([readonly]) {
+    border-bottom: 1px solid {{ request.ADMIN_COLOR_THEME_CODE }};
+    box-shadow: 0 1px 0 0 {{ request.ADMIN_COLOR_THEME_CODE }};
+    }
+    [type="checkbox"].filled-in:checked+label:after {
+    border: 2px solid {{ request.ADMIN_COLOR_THEME_CODE }};
+    background-color: {{ request.ADMIN_COLOR_THEME_CODE }};
+    }
+    [type="checkbox"]:checked+label:before {
+        border-right: 2px solid {{ request.ADMIN_COLOR_THEME_CODE }};
+        border-bottom: 2px solid {{ request.ADMIN_COLOR_THEME_CODE }};
+    }
+    .input-field .prefix.active {
+    color: {{ request.ADMIN_COLOR_THEME_CODE }};
+    }
+    .dropdown-content li>a, .dropdown-content li>span {
+    color: {{ request.ADMIN_COLOR_THEME_CODE }};
+    }
+    blockquote {
+       border-left: 5px solid {{ request.ADMIN_COLOR_THEME_CODE }} !important ;
+    }
+    .formset-field ::-webkit-scrollbar-thumb,#changelist-form ::-webkit-scrollbar-thumb{
+        background: {{ request.ADMIN_COLOR_THEME_CODE }};
+    }
+</style>
+</body>
+</html>

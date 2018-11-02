@@ -1,0 +1,28 @@
+.main-nav, 
+.collapsible, 
+.championship-list,
+.section-header,
+.make-bet,
+.slider-wrapper,
+.more_cotations_button,
+.cotation_pk,
+.cotation_name, 
+.home-away-header,
+.page-footer,
+#back-to-top{
+    display: none;
+}
+
+.game-item-wrapper{
+    margin: 5px 0px;
+}
+
+.cotation{
+    color: #000000;
+    font-weight: bold;
+}
+
+.th-championsip-header{
+    color: #000000;
+    font-weight: bold;
+}

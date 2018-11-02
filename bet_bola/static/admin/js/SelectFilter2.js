@@ -1,4 +1,7 @@
-/*global SelectBox, gettext, interpolate, quickElement, SelectFilter*/
+/**
+ * Created by NeErAj on 10/23/2016.
+ */
+/*global SelectBox, addEvent, gettext, interpolate, quickElement, SelectFilter*/
 /*
 SelectFilter2 - Turns a multiple-select box into a filter interface.
 
@@ -12,6 +15,7 @@ Requires jQuery, core.js, and SelectBox.js.
             return findForm(node.parentNode);
         }
         return node;
+
     }
 
     window.SelectFilter = {
@@ -39,15 +43,15 @@ Requires jQuery, core.js, and SelectBox.js.
 
             // <div class="selector"> or <div class="selector stacked">
             var selector_div = quickElement('div', from_box.parentNode);
-            selector_div.className = is_stacked ? 'selector stacked' : 'selector';
+            selector_div.className = is_stacked ? 'selector stacked row' : 'selector row';
 
             // <div class="selector-available">
             var selector_available = quickElement('div', selector_div);
-            selector_available.className = 'selector-available';
+            selector_available.className = 'selector-available col l6 s12 m12';
             var title_available = quickElement('h2', selector_available, interpolate(gettext('Available %s') + ' ', [field_name]));
             quickElement(
-                'span', title_available, '',
-                'class', 'help help-tooltip help-icon',
+                'i', title_available, '',
+                'class', 'mdi-action-help tooltip',
                 'title', interpolate(
                     gettext(
                         'This is the list of available %s. You may choose some by ' +
@@ -58,41 +62,40 @@ Requires jQuery, core.js, and SelectBox.js.
                 )
             );
 
-            var filter_p = quickElement('p', selector_available, '', 'id', field_id + '_filter');
-            filter_p.className = 'selector-filter';
+            var filter_p = quickElement('div', selector_available, '', 'id', field_id + '_filter');
+            filter_p.className = 'selector-filter input-field col s12';
 
-            var search_filter_label = quickElement('label', filter_p, '', 'for', field_id + '_input');
 
-            quickElement(
-                'span', search_filter_label, '',
-                'class', 'help-tooltip search-label-icon',
-                'title', interpolate(gettext("Type into this box to filter down the list of available %s."), [field_name])
-            );
 
             filter_p.appendChild(document.createTextNode(' '));
 
+            var filter_icon = quickElement('i',filter_p);
+            filter_icon.className = 'mdi-action-search prefix';
             var filter_input = quickElement('input', filter_p, '', 'type', 'text', 'placeholder', gettext("Filter"));
             filter_input.id = field_id + '_input';
+            var search_filter_label = quickElement('label', filter_p, '', 'for', field_id + '_input');
 
             selector_available.appendChild(from_box);
-            var choose_all = quickElement('a', selector_available, gettext('Choose all'), 'title', interpolate(gettext('Click to choose all %s at once.'), [field_name]), 'href', '#', 'id', field_id + '_add_all_link');
-            choose_all.className = 'selector-chooseall';
+            var choose_all_row = quickElement('div',selector_available);
+            choose_all_row.className = 'row';
+            var choose_all = quickElement('a', choose_all_row, gettext('Choose all'), 'title', interpolate(gettext('Click to choose all %s at once.'), [field_name]), 'href', '#', 'id', field_id + '_add_all_link');
+            choose_all.className = 'selector-chooseall-shade tooltip  btn '+color_name+'  col s12 waves-effect waves-light ';
 
             // <ul class="selector-chooser">
             var selector_chooser = quickElement('ul', selector_div);
-            selector_chooser.className = 'selector-chooser';
+            selector_chooser.className = 'selector-chooser ';
             var add_link = quickElement('a', quickElement('li', selector_chooser), gettext('Choose'), 'title', gettext('Choose'), 'href', '#', 'id', field_id + '_add_link');
-            add_link.className = 'selector-add';
+            add_link.className = 'selector-add tooltip';
             var remove_link = quickElement('a', quickElement('li', selector_chooser), gettext('Remove'), 'title', gettext('Remove'), 'href', '#', 'id', field_id + '_remove_link');
-            remove_link.className = 'selector-remove';
+            remove_link.className = 'selector-remove tooltip';
 
             // <div class="selector-chosen">
             var selector_chosen = quickElement('div', selector_div);
-            selector_chosen.className = 'selector-chosen';
+            selector_chosen.className = 'selector-chosen col l6 s12 m12';
             var title_chosen = quickElement('h2', selector_chosen, interpolate(gettext('Chosen %s') + ' ', [field_name]));
             quickElement(
-                'span', title_chosen, '',
-                'class', 'help help-tooltip help-icon',
+                'i', title_chosen, '',
+                'class', 'mdi-action-help tooltip',
                 'title', interpolate(
                     gettext(
                         'This is the list of chosen %s. You may remove some by ' +
@@ -105,8 +108,10 @@ Requires jQuery, core.js, and SelectBox.js.
 
             var to_box = quickElement('select', selector_chosen, '', 'id', field_id + '_to', 'multiple', 'multiple', 'size', from_box.size, 'name', from_box.getAttribute('name'));
             to_box.className = 'filtered';
-            var clear_all = quickElement('a', selector_chosen, gettext('Remove all'), 'title', interpolate(gettext('Click to remove all chosen %s at once.'), [field_name]), 'href', '#', 'id', field_id + '_remove_all_link');
-            clear_all.className = 'selector-clearall';
+            var clear_all_row = quickElement('div',selector_chosen);
+            clear_all_row.className = 'row';
+            var clear_all = quickElement('a', clear_all_row, gettext('Remove all'), 'title', interpolate(gettext('Click to remove all chosen %s at once.'), [field_name]), 'href', '#', 'id', field_id + '_remove_all_link');
+            clear_all.className = 'selector-clearall-shade btn col tooltip '+color_name+' s12 waves-effect waves-light ';
 
             from_box.setAttribute('name', from_box.getAttribute('name') + '_old');
 
@@ -118,33 +123,19 @@ Requires jQuery, core.js, and SelectBox.js.
                 }
                 e.preventDefault();
             };
-            choose_all.addEventListener('click', function(e) {
-                move_selection(e, this, SelectBox.move_all, field_id + '_from', field_id + '_to');
-            });
-            add_link.addEventListener('click', function(e) {
-                move_selection(e, this, SelectBox.move, field_id + '_from', field_id + '_to');
-            });
-            remove_link.addEventListener('click', function(e) {
-                move_selection(e, this, SelectBox.move, field_id + '_to', field_id + '_from');
-            });
-            clear_all.addEventListener('click', function(e) {
-                move_selection(e, this, SelectBox.move_all, field_id + '_to', field_id + '_from');
-            });
-            filter_input.addEventListener('keypress', function(e) {
-                SelectFilter.filter_key_press(e, field_id);
-            });
-            filter_input.addEventListener('keyup', function(e) {
-                SelectFilter.filter_key_up(e, field_id);
-            });
-            filter_input.addEventListener('keydown', function(e) {
-                SelectFilter.filter_key_down(e, field_id);
-            });
-            selector_div.addEventListener('change', function(e) {
+            addEvent(choose_all, 'click', function(e) { move_selection(e, this, SelectBox.move_all, field_id + '_from', field_id + '_to'); });
+            addEvent(add_link, 'click', function(e) { move_selection(e, this, SelectBox.move, field_id + '_from', field_id + '_to'); });
+            addEvent(remove_link, 'click', function(e) { move_selection(e, this, SelectBox.move, field_id + '_to', field_id + '_from'); });
+            addEvent(clear_all, 'click', function(e) { move_selection(e, this, SelectBox.move_all, field_id + '_to', field_id + '_from'); });
+            addEvent(filter_input, 'keypress', function(e) { SelectFilter.filter_key_press(e, field_id); });
+            addEvent(filter_input, 'keyup', function(e) { SelectFilter.filter_key_up(e, field_id); });
+            addEvent(filter_input, 'keydown', function(e) { SelectFilter.filter_key_down(e, field_id); });
+            addEvent(selector_div, 'change', function(e) {
                 if (e.target.tagName === 'SELECT') {
                     SelectFilter.refresh_icons(field_id);
                 }
             });
-            selector_div.addEventListener('dblclick', function(e) {
+            addEvent(selector_div, 'click', function(e) {
                 if (e.target.tagName === 'OPTION') {
                     if (e.target.closest('select').id === field_id + '_to') {
                         SelectBox.move(field_id + '_to', field_id + '_from');
@@ -154,9 +145,7 @@ Requires jQuery, core.js, and SelectBox.js.
                     SelectFilter.refresh_icons(field_id);
                 }
             });
-            findForm(from_box).addEventListener('submit', function() {
-                SelectBox.select_all(field_id + '_to');
-            });
+            addEvent(findForm(from_box), 'submit', function() { SelectBox.select_all(field_id + '_to'); });
             SelectBox.init(field_id + '_from');
             SelectBox.init(field_id + '_to');
             // Move selected from_box options to to_box
@@ -164,8 +153,8 @@ Requires jQuery, core.js, and SelectBox.js.
 
             if (!is_stacked) {
                 // In horizontal mode, give the same height to the two boxes.
-                var j_from_box = $('#' + field_id + '_from');
-                var j_to_box = $('#' + field_id + '_to');
+                var j_from_box = $(from_box);
+                var j_to_box = $(to_box);
                 var resize_filters = function() { j_to_box.height($(filter_p).outerHeight() + j_from_box.outerHeight()); };
                 if (j_from_box.outerHeight() > 0) {
                     resize_filters(); // This fieldset is already open. Resize now.
@@ -241,12 +230,11 @@ Requires jQuery, core.js, and SelectBox.js.
         }
     };
 
-    window.addEventListener('load', function(e) {
+    addEvent(window, 'load', function(e) {
         $('select.selectfilter, select.selectfilterstacked').each(function() {
             var $el = $(this),
                 data = $el.data();
             SelectFilter.init($el.attr('id'), data.fieldName, parseInt(data.isStacked, 10));
         });
     });
-
 })(django.jQuery);
