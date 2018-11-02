@@ -35,7 +35,7 @@ APP_VERBOSE_NAME = 'SITENAME'
 # Application definition
 
 INSTALLED_APPS = [
-    'bootstrap_admin',
+    'djadmin',
     #'admin_view_permission',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -59,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'djadmin.middleware.DJMiddleware',
 ]
 
 #SESSION_EXPIRE_AT_BROWSER_CLOSE = True

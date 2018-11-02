@@ -11,6 +11,7 @@ fpdf = "*"
 bootstrap-admin = "*"
 pika = "*"
 django-apscheduler = "*"
+djadmin = "*"
 
 [dev-packages]
 
