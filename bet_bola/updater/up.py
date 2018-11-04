@@ -24,10 +24,12 @@ def on_message(channel, method_frame, header_frame, body):
     json_parsed = json.loads(body.decode())
     type_res = int(json_parsed['Header']['Type'])
 
+    print(str(type_res))
+
     if type_res == 1:
         process_fixture_metadata(json_parsed)
-    #elif type_res == 3:
-    #    process_markets_realtime(json_parsed)
+    elif type_res == 3:
+        process_markets_realtime(json_parsed)
     elif type_res == 35:
         process_settlements(json_parsed)
     
