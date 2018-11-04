@@ -1,6 +1,7 @@
 import pika
 import json
 import requests
+import django
 from .update import get_events, get_leagues, get_locations, get_sports
 from core.models import Location, League, Sport, Market, Period, Game, Cotation
 from .real_time import process_fixture_metadata, process_markets_realtime, process_settlements
@@ -41,6 +42,10 @@ def activate_package():
 
 
 def start_consuming_updates():
+
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+    django.setup()
+
     parameters = pika.ConnectionParameters(host='localhost')
     connection = pika.BlockingConnection(parameters=parameters)
     channel = connection.channel()
