@@ -213,7 +213,7 @@ class Ticket(models.Model):
 
 
     def cotation_sum(self):
-        valid_cotations = CotationHistory.objects.filter(bet_ticket=self, game__game_status__in = (1,3,2))
+        valid_cotations = CotationHistory.objects.filter(ticket=self, game__game_status__in = (1,3,2))
         
         cotation_sum = 1
         for cotation in valid_cotations:
@@ -263,17 +263,14 @@ class CotationHistory(models.Model):
 
     id = models.BigIntegerField(primary_key=True)
     original_cotation = models.BigIntegerField()
-    bet_ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, verbose_name='Ticket', related_name='cotations_history')
+    ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, verbose_name='Ticket', related_name='cotations_history')
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
     start_price = models.DecimalField(max_digits=30, decimal_places=2, default=0,verbose_name='Valor Original')
     price = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
-    game = models.ForeignKey('Game', related_name='cotations_history', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
-    settlement = models.IntegerField(null=True, blank=True)
-    status = models.IntegerField()
+    game = models.ForeignKey('Game', related_name='cotations_history', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Jogo')
     market = models.ForeignKey('Market', related_name='cotations_history', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
     line = models.CharField(max_length=30, null=True, blank=True)
     base_line = models.CharField(max_length=30, null=True, blank=True)
-    last_update = models.DateTimeField(null=True, blank=True)
 
  
 

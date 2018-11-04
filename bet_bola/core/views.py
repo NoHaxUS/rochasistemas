@@ -432,19 +432,17 @@ class CreateTicketView(View):
             ticket.reward.save()
             ticket.save()
 
-            for i_cotation in game_cotations:
-                ticket.cotations.add(i_cotation)
+            for current_cotation in game_cotations:
+                ticket.cotations.add(current_cotation)
                 CotationHistory(
-                    pk=i_cotation.pk,
-                    original_cotation=i_cotation.pk,
-                    bet_ticket=ticket,
-                    name=i_cotation.name,
-                    status=i_cotation.status,
-                    start_price=i_cotation.start_price,
-                    price=i_cotation.price,
-                    game=i_cotation.game,
-                    settlement=i_cotation.settlement,
-                    market=i_cotation.market,										
+                    id=current_cotation.pk,
+                    original_cotation=current_cotation.pk,
+                    ticket=ticket,
+                    name=current_cotation.name,
+                    start_price=current_cotation.start_price,
+                    price=current_cotation.price,
+                    game=current_cotation.game,
+                    market=current_cotation.market								
                 ).save()
         
 
@@ -462,14 +460,14 @@ class CreateTicketView(View):
 
                     request.session['ticket'] = {}
                     request.session.modified = True
-
                     return UnicodeJsonResponse(data)
                 else:
+                    request.session['ticket'] = {}
+                    request.session.modified = True
                     return UnicodeJsonResponse(data)
             else:
                 request.session['ticket'] = {}
                 request.session.modified = True
-
                 return UnicodeJsonResponse(data)
 
 
@@ -487,13 +485,13 @@ class TicketDetail(TemplateResponseMixin, View):
 
         from utils.models import TicketCustomMessage
 
-        cotations_history = CotationHistory.objects.filter(bet_ticket=ticket.pk)
+        cotations_history = CotationHistory.objects.filter(ticket=ticket.pk)
         
         if cotations_history.count() > 0 and ticket.is_visible == True:
 
             cotations_values = {}
-            for i_cotation in cotations_history:
-                cotations_values[i_cotation.original_cotation] = i_cotation.price
+            for current_cotation in cotations_history:
+                cotations_values[current_cotation.original_cotation] = current_cotation.price
 
             content = "<CENTER> -> " + settings.APP_VERBOSE_NAME.upper() + " <- <BR>"
             content += "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
@@ -519,8 +517,7 @@ class TicketDetail(TemplateResponseMixin, View):
 
             for cotation in ticket.cotations.all():
                 content += "<LEFT>" + cotation.game.name + "<BR>"
-                game_date = cotation.game.start_date.strftime('%d/%m/%Y %H:%M')
-                content += "<LEFT>" + game_date + "<BR>"
+                content += "<LEFT>" + cotation.game.start_date.strftime('%d/%m/%Y %H:%M') + "<BR>"
                 if cotation.market:
                     content += "<LEFT>"+ cotation.market.name + "<BR>"
                 content += "<LEFT>" + cotation.name + " --> " + str("%.2f" % cotations_values[cotation.pk]) + "<BR>"

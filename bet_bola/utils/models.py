@@ -126,7 +126,7 @@ class RewardRelated(models.Model):
 
 
 class TicketCustomMessage(models.Model):
-    text = models.TextField(max_length=75, verbose_name="Mensagem customizada")
+    text = models.TextField(max_length=1000, verbose_name="Mensagem customizada")
 
     def __str__(self):
         return "Mensagem a ser mostrada no ticket"
