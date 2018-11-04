@@ -22,7 +22,7 @@
         <ul class="collapsible collapsible-accordion" data-collapsible="expandable">
             <li>
                 <div class="collapsible-header active {{ request.ADMIN_COLOR_THEME }} white-text"><i
-                        class="mdi-navigation-apps white-text"></i>{% trans 'Models' %}</div>
+                        class="mdi-navigation-apps white-text"></i>{% trans 'Principal' %}</div>
                 <div class="collapsible-body">
                     <div class="row">
                         {% for app in available_apps %}
@@ -45,6 +45,7 @@
                     </div>
                 </div>
             </li>
+            {% if perms.user.is_superuser %}
             {% visitors as visitor %}
             <li>
                 <div class="collapsible-header active {{ request.ADMIN_COLOR_THEME }} white-text "><i
@@ -119,13 +120,14 @@
                 </div>
                 </div>
             </li>
+            {% endif %}
         </ul>
 {% endblock %}
 {% block sidebar %}
     <ul class="collapsible collapsible-accordion" data-collapsible="expandable">
         <li>
             <div class="collapsible-header active {{ request.ADMIN_COLOR_THEME }} white-text"><i
-                    class="mdi-av-recent-actors white-text"></i> {% trans 'Recent Actions' %}</div>
+                    class="mdi-av-recent-actors white-text"></i> {% trans 'Ações Recentes' %}</div>
             <div class="collapsible-body">
                 {% load log %}
                 {% get_admin_log 10 as admin_log for_user user %}
