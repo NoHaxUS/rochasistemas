@@ -33,13 +33,13 @@ def process_markets_realtime(content):
         for market in game['Markets']:
             for cotation in market['Providers'][0]['Bets']:
                 Cotation.objects.filter(id=cotation['Id']).update(
-                    name=cotation['Name'],
+                    #name=cotation['Name'],
                     line=cotation.get('Line',None),
                     base_line=cotation.get('BaseLine', None),
                     status=cotation['Status'],
-                    start_price=cotation['StartPrice'],
+                    #start_price=cotation['StartPrice'],
                     price=cotation['Price'],
-                    settlement=cotation.get('Settlement',None),
+                    #settlement=cotation.get('Settlement',None),
                     last_update=cotation['LastUpdate']
                 )
 
