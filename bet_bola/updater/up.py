@@ -7,7 +7,6 @@ from .real_time import process_fixture_metadata, process_markets_realtime, proce
 
 
 def write_logs(msg):
-
     with open('logs.log', 'a+') as file:
         file.write(msg + "\n")
 
@@ -17,17 +16,13 @@ def start_update():
     get_locations()
     get_leagues()
     get_events()
+    write_logs("Fininshing Update...")
 
-  
 
 def on_message(channel, method_frame, header_frame, body):
 
     json_parsed = json.loads(body.decode())
-
-
     type_res = int(json_parsed['Header']['Type'])
-
-    #print(str(type_res))
 
     if type_res == 1:
         process_fixture_metadata(json_parsed)
@@ -60,7 +55,7 @@ def start_consuming_updates():
     channel.basic_consume(on_message, queue=queue_name)
 
     try:
-        #activate_package()
+        activate_package()
         channel.start_consuming()
     except KeyboardInterrupt:
         channel.stop_consuming()
