@@ -478,10 +478,6 @@ class TicketDetail(TemplateResponseMixin, View):
 
     template_name = 'core/ticket_details.html'
 
-    def get_verbose_cotation(self, cotation_name):
-        names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Fora'}
-        return names_mapping.get(cotation_name, cotation_name)
-
     def get(self, request, *args, **kwargs):
         try:
             ticket = Ticket.objects.get(pk=self.kwargs["pk"])
@@ -527,7 +523,7 @@ class TicketDetail(TemplateResponseMixin, View):
                 content += "<LEFT>" + game_date + "<BR>"
                 if cotation.market:
                     content += "<LEFT>"+ cotation.market.name + "<BR>"
-                content += "<LEFT>" + self.get_verbose_cotation(cotation.name) + " --> " + str("%.2f" % cotations_values[cotation.pk]) + "<BR>"
+                content += "<LEFT>" + cotation.name + " --> " + str("%.2f" % cotations_values[cotation.pk]) + "<BR>"
 
                 content += "<RIGHT> Status: " +  cotation.get_settlement_display() + "<BR>"
                 

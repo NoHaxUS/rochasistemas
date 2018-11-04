@@ -32,10 +32,6 @@ class ValidateTicket(View):
 
 class PDF(View):
 
-    def get_verbose_cotation(self, cotation_name):
-        names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Fora'}
-        return names_mapping.get(cotation_name, cotation_name)
-
 
     def get(self, request, *args, **kwargs):
         ticket = get_object_or_404(Ticket, pk=self.kwargs["pk"])
@@ -90,7 +86,7 @@ class PDF(View):
                 h=h+14
                 pdf.text(4,h, c.market.name)
             h=h+14
-            pdf.text(4,h,"Cota:" + self.get_verbose_cotation(c.name))			
+            pdf.text(4,h,"Cota:" + c.name)			
             pdf.text(190,h,str("%.2f" % cotations_values[c.pk]))
             h=h+14
 

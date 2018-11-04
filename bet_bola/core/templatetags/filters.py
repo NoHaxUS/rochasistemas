@@ -25,8 +25,3 @@ def get_item(dictionary, key):
 def app_name():
     return settings.APP_VERBOSE_NAME
 
-
-@register.filter(name='get_verbose_cotation')
-def get_verbose_cotation(cotation_name):
-    names_mapping = {'1':'Casa','X':'Empate','x':'Empate','2':'Fora'}
-    return names_mapping.get(cotation_name, cotation_name)
