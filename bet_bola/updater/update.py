@@ -67,20 +67,20 @@ def process_events(content):
 
             game_name = get_game_name(fixture['Participants'])
             
-            game_instance = Game.objects.get_or_create(
+            game_instance = Game.objects.update_or_create(
                 pk=game['FixtureId'],
                 defaults={
                     'name':game_name,
                     'start_date': fixture['StartDate'],
                     'game_status': fixture['Status'],
-                    'league': League.objects.get_or_create(pk=fixture['League']['Id'], defaults={'name':fixture['League']['Name']})[0],
-                    'location' : Location.objects.get_or_create(pk=fixture['Location']['Id'], defaults={'name': fixture['Location']['Name']})[0],
-                    'sport' : Sport.objects.get_or_create(pk=fixture['Sport']['Id'], defaults={'name': fixture['Sport']['Name']})[0],
+                    'league': League.objects.update_or_create(pk=fixture['League']['Id'], defaults={'name':fixture['League']['Name']})[0],
+                    'location' : Location.objects.update_or_create(pk=fixture['Location']['Id'], defaults={'name': fixture['Location']['Name']})[0],
+                    'sport' : Sport.objects.update_or_create(pk=fixture['Sport']['Id'], defaults={'name': fixture['Sport']['Name']})[0],
                     'last_update': fixture['LastUpdate']
                 }
             )[0]
             
-            if game['Livescore'] and game['Livescore'].get('Periods',None):
+            if game['Livescore'] and game['Livescore'].get('Periods', None):
                 for period in game['Livescore']['Periods']:
                     if int(period['Results'][0]['Position']) == 1:
                         home_score= period['Results'][0]['Value']
