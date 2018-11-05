@@ -161,8 +161,12 @@ class GeneralConfigurations(models.Model):
 
 
 class RewardRelated(models.Model):
+    id = models.AutoField(primary_key=True, verbose_name="ID")
     value_max = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name="Valor da Aposta")
     reward_value_max = models.DecimalField(max_digits=30, decimal_places=2, default=100000, verbose_name="Valor Máximo da Recompensa")        
+
+    def __str__(self):
+        return "Limitador de Prêmio"
 
     class Meta:
         verbose_name = "Limitar Prêmios"
@@ -180,8 +184,8 @@ class TicketCustomMessage(models.Model):
         super().save( *args, **kwargs)
 
     class Meta:
-        verbose_name = "Mensagem a ser mostrada no ticket"        
-        verbose_name_plural = "Mensagem a ser mostrada no ticket"
+        verbose_name = "Texto do Ticket"        
+        verbose_name_plural = "Texto do Ticket" 
 
 
 class RulesMessage(models.Model):
@@ -251,8 +255,6 @@ class Overview(models.Model):
     def total_net_value(self):
         return self.total_revenue() - (self.total_out_money() + self.seller_out_money() + self.manager_out_money())
     total_net_value.short_description = 'Líquido Total'
-
-
 
 
     def __str__(self):

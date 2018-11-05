@@ -12,6 +12,7 @@ from history.models import PunterPayedHistory
 from django.contrib import messages
 from .decorators import confirm_action
 from django.utils.html import format_html
+from easy_select2 import select2_modelform
 
 
 admin.site.unregister(Group)
@@ -194,7 +195,7 @@ class TicketAdmin(admin.ModelAdmin):
     HiddenTicketFilter,
     'creation_date',
     'reward__reward_status')
-    list_display =('pk', ticket_status, 'get_ticket_link','get_punter_name','value','reward','cotation_sum', payment_status,'creation_date', 'seller_related')
+    list_display = ('id', ticket_status, 'get_ticket_link','get_punter_name','value','reward','cotation_sum', payment_status,'creation_date', 'seller_related')
     exclude = ('cotations','user','normal_user', 'payment', 'reward', 'value')
     actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket, hide_ticket_action, show_ticket_action]
     list_per_page = 50
@@ -323,12 +324,14 @@ def show_game_action(modeladmin, request, queryset):
 
 show_game_action.short_description = 'Exibir Jogos'
 
+#GameForm = select2_modelform(Game, attrs={'width': '250px'})
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
+    #form = GameForm
     search_fields = ['id','name']
     list_filter = (GamesWithNoFinalResults, HiddenGamesFilter)
-    list_display = ('pk','name',)
-    list_display_links = ('pk','name',)
+    list_display = ('id','name',)
+    list_display_links = ('id','name',)
     autocomplete_fields = ['league',]
     actions = [hide_game_action, show_game_action]
     list_per_page = 20
@@ -373,8 +376,8 @@ class GameAdmin(admin.ModelAdmin):
 #@admin.register(Market)
 class MarketAdmin(admin.ModelAdmin):
     search_fields = ['id','name']
-    list_display = ('pk','name',)
-    list_display_links = ('pk','name')
+    list_display = ('id','name',)
+    list_display_links = ('id','name')
     list_per_page = 20
 
 
@@ -389,8 +392,8 @@ class MarketAdmin(admin.ModelAdmin):
 class CotationAdmin(admin.ModelAdmin):
     search_fields = ['id','name','game__name']
     autocomplete_fields = ['game',]
-    list_display = ('pk','name', 'start_price', 'price', 'game', 'market')
-    list_display_links = ('pk','name',)
+    list_display = ('id','name', 'start_price', 'price', 'game', 'market')
+    list_display_links = ('id','name',)
     list_per_page = 20
 
 
@@ -398,16 +401,16 @@ class CotationAdmin(admin.ModelAdmin):
 @admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
     search_fields = ['id','name']
-    list_display = ('pk','name', 'priority')
-    list_display_links = ('pk','name')
+    list_display = ('id','name', 'priority')
+    list_display_links = ('id','name')
     list_per_page = 20
 
 
 @admin.register(League)
 class LeagueAdmin(admin.ModelAdmin):
     search_fields = ['id','name','location__name']
-    list_display = ('pk','name','location','priority')
-    list_display_links = ('pk','name')
+    list_display = ('id','name','location','priority')
+    list_display_links = ('id','name')
     #autocomplete_fields = ['location',]
     list_per_page = 20
 

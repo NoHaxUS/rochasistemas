@@ -11,6 +11,7 @@ fpdf = "*"
 pika = "*"
 django-apscheduler = "*"
 djadmin-ok = "*"
+"django-easy-select2" = "*"
 
 [dev-packages]
 

@@ -6,6 +6,7 @@ from user.models import Seller, Manager
 
 
 class SellerSalesHistory(models.Model):
+    id = models.BigAutoField(primary_key=True, verbose_name="ID")
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, verbose_name='Cambista')
     bet_ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, verbose_name='Bilhete Pago')
     sell_date = models.DateTimeField(verbose_name='Data da Venda', auto_now_add=True)
@@ -24,6 +25,7 @@ class SellerSalesHistory(models.Model):
 
 
 class ManagerTransactions(models.Model):
+    id = models.BigAutoField(primary_key=True, verbose_name="ID")
     manager = models.ForeignKey(Manager, on_delete=models.CASCADE, verbose_name='Gerente')
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, verbose_name='Cambista')
     transaction_date = models.DateTimeField(verbose_name='Data da Transação', auto_now_add=True)
@@ -43,6 +45,7 @@ class ManagerTransactions(models.Model):
 
 
 class RevenueHistorySeller(models.Model):
+    id = models.BigAutoField(primary_key=True, verbose_name="ID")
     who_reseted_revenue = models.CharField(max_length=200, verbose_name='Reponsável pelo Fechamento')
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, verbose_name='Cambista')
     revenue_reseted_date = models.DateTimeField(verbose_name='Data da Transação', auto_now_add=True)
@@ -68,6 +71,7 @@ class RevenueHistorySeller(models.Model):
 
 
 class RevenueHistoryManager(models.Model):
+    id = models.BigAutoField(primary_key=True, verbose_name="ID")
     who_reseted_revenue = models.CharField(max_length=200, verbose_name='Reponsável pelo Fechamento')
     manager = models.ForeignKey(Manager, on_delete=models.CASCADE, verbose_name='Gerente')
     revenue_reseted_date = models.DateTimeField(verbose_name='Data da Transação', auto_now_add=True)
@@ -92,6 +96,7 @@ class RevenueHistoryManager(models.Model):
 
 
 class PunterPayedHistory(models.Model):
+    id = models.BigAutoField(primary_key=True, verbose_name="ID")
     punter_payed = models.CharField(max_length=200, verbose_name='Apostador')
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, verbose_name='Cambista')
     ticket_winner = models.ForeignKey(Ticket, on_delete=models.CASCADE, verbose_name='Bilhete Vencedor')
@@ -110,6 +115,7 @@ class PunterPayedHistory(models.Model):
 
 
 class TicketCancelationHistory(models.Model):
+    id = models.BigAutoField(primary_key=True, verbose_name="ID")
     who_cancelled = models.CharField(max_length=200, verbose_name='Quem Cancelou ?')
     ticket_cancelled = models.ForeignKey(Ticket, on_delete=models.CASCADE, verbose_name='Bilhete Cancelado')
     cancelation_date = models.DateTimeField(verbose_name='Data do Cancelamento', auto_now_add=True)

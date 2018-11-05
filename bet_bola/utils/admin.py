@@ -16,7 +16,6 @@ class ComissionAdmin(admin.ModelAdmin):
                     'total_sixth',
                     'total_sixth_more',
                     'total_comission')
-    #list_editable = ('')
     actions = None
 
     def get_queryset(self, request):
@@ -49,7 +48,7 @@ class MarketReductionsAdmin(admin.ModelAdmin):
 
 @admin.register(RewardRelated)
 class RewardRelatedAdmin(admin.ModelAdmin):
-    list_display = ('pk','value_max','reward_value_max')
+    list_display = ('id','value_max','reward_value_max')
     fields = ('value_max','reward_value_max')
     list_editable = ('value_max','reward_value_max')
 

@@ -25,6 +25,7 @@ class Ticket(models.Model):
         ('Cancelado', 'Cancelado')
     )
     
+    id = models.BigAutoField(primary_key=True, verbose_name="ID")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Apostador')
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
     normal_user = models.ForeignKey(NormalUser, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cliente')
@@ -261,7 +262,7 @@ class Ticket(models.Model):
 
 class CotationHistory(models.Model):
 
-    id = models.BigIntegerField(primary_key=True)
+    id = models.BigIntegerField(primary_key=True, verbose_name="ID")
     original_cotation = models.BigIntegerField()
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, verbose_name='Ticket', related_name='cotations_history')
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
@@ -293,7 +294,7 @@ class Game(models.Model):
         (7, "Abandonado"),
         (8, "Pré-jogo")
     )
-
+    id = models.BigIntegerField(primary_key=True, verbose_name="ID")
     name = models.CharField(max_length=80, verbose_name='Nome do Jogo')
     start_date = models.DateTimeField(verbose_name='Início da Partida')
     league = models.ForeignKey('League', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Liga')
@@ -338,6 +339,7 @@ class Period(models.Model):
         (102,"Termino (Penaltis")
         )
 
+    id = models.BigAutoField(primary_key=True, verbose_name="ID")
     period_type = models.IntegerField(choices=PERIOD_STATUS)
     is_fineshed = models.BooleanField(default=False)
     is_confirmed = models.BooleanField(default=False)
@@ -348,6 +350,7 @@ class Period(models.Model):
 
 class League(models.Model):
 
+    id = models.BigIntegerField(primary_key=True, verbose_name="ID")
     name = models.CharField(max_length=120, verbose_name='Nome', help_text='Campeonato')
     location = models.ForeignKey('Location', related_name='my_leagues',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Local')
     priority = models.IntegerField(default=1, verbose_name='Prioridade')
@@ -363,6 +366,7 @@ class League(models.Model):
 
 class Location(models.Model):
 
+    id = models.BigIntegerField(primary_key=True, verbose_name="ID")
     name = models.CharField(max_length=45, verbose_name='Local')
     priority = models.IntegerField(default=1, verbose_name='Prioridade')
 
@@ -384,6 +388,7 @@ class Reward(models.Model):
         ('Venceu e não foi pago','Venceu e não foi pago')
     )
 
+    id = models.BigAutoField(primary_key=True, verbose_name="ID")
     who_rewarded = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL)
     reward_date = models.DateTimeField(null=True, blank=True)
     reward_status = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1], verbose_name='Status do Prêmio')
@@ -421,7 +426,7 @@ class Reward(models.Model):
 
 
 class Market(models.Model):
-
+    id = models.BigIntegerField(primary_key=True, verbose_name="ID")
     name = models.CharField(max_length=100, verbose_name='Tipo de Aposta')
     
     def __str__(self):
@@ -452,7 +457,7 @@ class Cotation(models.Model):
             (3, "Finalizada")
         )
 
-    id = models.BigIntegerField(primary_key=True)
+    id = models.BigIntegerField(primary_key=True, verbose_name="ID")
     id_string = models.CharField(max_length=40, default="")
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
     start_price = models.DecimalField(max_digits=30, decimal_places=2, default=0,verbose_name='Valor Original')
@@ -470,11 +475,6 @@ class Cotation(models.Model):
         return str(self.price)
 
 
-    # def save(self, *args, **kwargs):
-    #     if not Cotation.objects.filter(name=self.name, market=self.market, game=self.game).exists():
-    #         super().save(*args, **kwargs)
-
-            
     class Meta:
         verbose_name = 'Cota'
         verbose_name_plural = 'Cotas'
@@ -487,7 +487,7 @@ class Payment(models.Model):
         ('Pago', 'Pago'),
         ('Cancelado', 'Cancelado'),
     )
-
+    id = models.BigAutoField(primary_key=True, verbose_name="ID")
     who_set_payment = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
     status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1], verbose_name='Status do Pagamento')
     payment_date = models.DateTimeField(null=True, blank=True, verbose_name='Data do Pagamento')

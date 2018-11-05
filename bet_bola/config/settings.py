@@ -35,6 +35,7 @@ APP_VERBOSE_NAME = 'Gol Bet'
 # Application definition
 
 INSTALLED_APPS = [
+    'easy_select2',
     'djadmin',
     #'admin_view_permission',
     'django.contrib.admin',

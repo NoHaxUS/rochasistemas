@@ -4,13 +4,10 @@ from django.db.models import F, Q, When, Case
 
 
 
-class CustomUser(AbstractUser):
-    def __init__(self, *args, **kwargs):
-        self.first_name = models.CharField(max_length=45, verbose_name='Primeiro Nome')
-        super(CustomUser, self).__init__(*args, **kwargs)        
-
-    cellphone = models.CharField(max_length=14, verbose_name='Celular')
+class CustomUser(AbstractUser):   
+    #cellphone = models.CharField(max_length=14, verbose_name='Celular')
     email = models.EmailField(null=True, blank=True, verbose_name='E-mail')
+    first_name = models.CharField(max_length=150, verbose_name='Primeiro Nome')
 
 
     def __str__(self):
@@ -24,14 +21,15 @@ class CustomUser(AbstractUser):
 
 
 class NormalUser(models.Model):
-    first_name = models.CharField(max_length=40, verbose_name='Nome')
+    first_name = models.CharField(max_length=150, verbose_name='Nome')
     cellphone = models.CharField(max_length=14, verbose_name='Celular')
 
     def __str__(self):
         return self.first_name
 
 
-class Punter(CustomUser):	
+class Punter(CustomUser):
+    cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -64,9 +62,9 @@ class Punter(CustomUser):
 
 class Seller(CustomUser):
     cpf = models.CharField(max_length=11, verbose_name='CPF', null=True, blank=True)
+    cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)
     address = models.CharField(max_length=75, verbose_name='Endereço', null=True, blank=True)
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
-    commission = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Comissão')
     credit_limit = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Créditos')
     my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True, blank=True)
     can_cancel_ticket = models.BooleanField(default=False, verbose_name='Cancela Bilhete ?')
@@ -197,6 +195,7 @@ class Seller(CustomUser):
 
 class Manager(CustomUser):
     cpf = models.CharField(max_length=11, verbose_name='CPF', null=True, blank=True)
+    cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)
     address = models.CharField(max_length=75, verbose_name='Endereço', null=True, blank=True)
     commission = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Comissão')
     credit_limit_to_add = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name="Crédito")

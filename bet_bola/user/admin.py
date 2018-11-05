@@ -13,9 +13,9 @@ admin.site.register(GeneralConfigurations)
 @admin.register(Punter)
 class PunterAdmin(admin.ModelAdmin):
     search_fields = ['pk','first_name','username','cpf']
-    list_display = ('pk','username','first_name','cellphone')
+    list_display = ('username','first_name','cellphone')
     fields = ('username','password','first_name', 'last_name', 'cellphone', 'email','is_active')
-    list_display_links = ('pk','username')
+    list_display_links = ('username',)
     list_per_page = 20
 
 
@@ -58,7 +58,7 @@ pay_seller.short_description = 'Pagar Cambistas'
 @admin.register(Seller)
 class SellerAdmin(admin.ModelAdmin):
     search_fields = ['pk','first_name','username','cpf']
-    fields = ('username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'commission', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active', 'can_cancel_ticket', 'limit_time_to_cancel')
+    fields = ('username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active', 'can_cancel_ticket', 'limit_time_to_cancel')
     list_editable = ('credit_limit',)
     list_display = ('username','full_name','actual_revenue','out_money','net_value','real_net_value','credit_limit','see_comissions')
     list_display_links = ('username',)
@@ -130,9 +130,9 @@ pay_manager.short_description = 'Pagar Gerentes'
 class ManagerAdmin(admin.ModelAdmin):
     search_fields = ['pk','first_name','username','cpf']
     fields = ('username','password','first_name','last_name','email','cellphone','cpf','address','commission','credit_limit_to_add','is_active','can_cancel_ticket','can_sell_unlimited')
-    list_display = ('pk','username','first_name','email','cellphone','actual_revenue','get_commission','net_value','out_money','real_net_value','credit_limit_to_add')
+    list_display = ('username','first_name','actual_revenue','get_commission','net_value','out_money','real_net_value','credit_limit_to_add')
     list_editable = ('credit_limit_to_add',)
-    list_display_links = ('pk','username',)
+    list_display_links = ('username',)
     actions = [pay_manager]
     list_per_page = 20
 
