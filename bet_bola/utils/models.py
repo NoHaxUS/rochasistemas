@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import F, Q, When, Case
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.utils import timezone
 from user.models import Seller, Manager
 from core.models import Cotation, Ticket
@@ -10,14 +10,16 @@ import utils.timezone as tzlocal
 class Comission(models.Model):
     
     seller_related = models.OneToOneField('user.Seller',related_name="comissions", on_delete=models.CASCADE, verbose_name="Cambista Relacionado")
-    simple = models.IntegerField(default=10, verbose_name="Apostas Simples")
-    double = models.IntegerField(default=10, verbose_name="Apostas Duplas")
-    triple_amount = models.IntegerField(default=10, verbose_name="Apostas Triplas")
-    four_plus_amount = models.IntegerField(default=10, verbose_name="Mais de 3")
+    simple = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Simples")
+    double = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Dupla")
+    triple = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Tripla")
+    fourth = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Quádrupla")
+    fifth = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Quíntupla")
+    sixth = models. DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Sêxtupla")
+    sixth_more = models. DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Mais de  6")
 
 
     def total_simple(self):
-        
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(
             payment__who_set_payment=self.seller_related, 
@@ -48,23 +50,65 @@ class Comission(models.Model):
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=3)
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
-        return round(total_revenue * (self.triple_amount / Decimal(100)),2)
+        return round(total_revenue * (self.triple / Decimal(100)),2)
     total_triple.short_description = "Tripla"
-    
-    def total_plus(self):
+
+    def total_fourth(self):
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(
             payment__who_set_payment=self.seller_related, 
             payment__seller_was_rewarded=False,
-            ).annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=3)
+            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=4)
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
-        return round(total_revenue * (self.four_plus_amount / Decimal(100)),2)
-    total_plus.short_description = "Mais que 3"
+        return round(total_revenue * (self.fourth / Decimal(100)),2)
+    total_fourth.short_description = "Quádrupla"
+
+
+    def total_fifth(self):
+        total_revenue = 0
+        tickets_not_rewarded = Ticket.objects.filter(
+            payment__who_set_payment=self.seller_related, 
+            payment__seller_was_rewarded=False,
+            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=5)
+        for ticket in tickets_not_rewarded:
+            total_revenue += ticket.value
+        return round(total_revenue * (self.fifth / Decimal(100)),2)
+    total_fifth.short_description = "Quíntupla"
+
+
+    def total_sixth(self):
+        total_revenue = 0
+        tickets_not_rewarded = Ticket.objects.filter(
+            payment__who_set_payment=self.seller_related, 
+            payment__seller_was_rewarded=False,
+            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=6)
+        for ticket in tickets_not_rewarded:
+            total_revenue += ticket.value
+        return round(total_revenue * (self.sixth / Decimal(100)),2)
+    total_sixth.short_description = "Sêxtupla"
+
+    
+    def total_sixth_more(self):
+        total_revenue = 0
+        tickets_not_rewarded = Ticket.objects.filter(
+            payment__who_set_payment=self.seller_related, 
+            payment__seller_was_rewarded=False,
+            ).annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=6)
+        for ticket in tickets_not_rewarded:
+            total_revenue += ticket.value
+        return round(total_revenue * (self.sixth_more / Decimal(100)),2)
+    total_sixth_more.short_description = "Mais de 6"
     
 
     def total_comission(self):
-        return round(self.total_simple() + self.total_double() + self.total_triple() + self.total_plus(),2)
+        return round(self.total_simple() + 
+        self.total_double() + 
+        self.total_triple() + 
+        self.total_fourth() +
+        self.total_fifth() +
+        self.total_sixth() +
+        self.total_sixth_more(),2)
     total_comission.short_description = "Comissão Total"
 
     def __str__(self):

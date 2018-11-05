@@ -66,7 +66,7 @@ class Seller(CustomUser):
     cpf = models.CharField(max_length=11, verbose_name='CPF', null=True, blank=True)
     address = models.CharField(max_length=75, verbose_name='Endereço', null=True, blank=True)
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
-    commission = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Comissão')
+    commission = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Comissão')
     credit_limit = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Créditos')
     my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True, blank=True)
     can_cancel_ticket = models.BooleanField(default=False, verbose_name='Cancela Bilhete ?')

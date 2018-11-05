@@ -405,8 +405,8 @@ class LocationAdmin(admin.ModelAdmin):
 
 @admin.register(League)
 class LeagueAdmin(admin.ModelAdmin):
-    search_fields = ['id','name']
-    list_display = ('pk','name','priority')
+    search_fields = ['id','name','location__name']
+    list_display = ('pk','name','location','priority')
     list_display_links = ('pk','name')
     #autocomplete_fields = ['location',]
     list_per_page = 20

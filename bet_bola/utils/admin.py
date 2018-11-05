@@ -7,8 +7,16 @@ from django.contrib import messages
 @admin.register(Comission)
 class ComissionAdmin(admin.ModelAdmin):
     search_fields = ['seller_related__id','seller_related__username', 'seller_related__first_name']
-    list_display = ('seller_related','simple','double','triple_amount', 'four_plus_amount','total_simple','total_double','total_triple','total_plus', 'total_comission')
-    list_editable = ('simple', 'double','triple_amount','four_plus_amount')
+    list_display = ('seller_related',
+                    'total_simple',
+                    'total_double',
+                    'total_triple',
+                    'total_fourth',
+                    'total_fifth',
+                    'total_sixth',
+                    'total_sixth_more',
+                    'total_comission')
+    #list_editable = ('')
     actions = None
 
     def get_queryset(self, request):
