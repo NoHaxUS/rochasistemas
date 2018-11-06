@@ -330,7 +330,7 @@ class GameAdmin(admin.ModelAdmin):
     #form = GameForm
     search_fields = ['id','name']
     list_filter = (GamesWithNoFinalResults, HiddenGamesFilter)
-    list_display = ('id','name',)
+    list_display = ('id','name')
     list_display_links = ('id','name',)
     autocomplete_fields = ['league',]
     actions = [hide_game_action, show_game_action]
@@ -401,7 +401,9 @@ class CotationAdmin(admin.ModelAdmin):
 @admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
     search_fields = ['id','name']
-    list_display = ('id','name', 'priority')
+    list_filter = ('visible',)
+    list_display = ('id','name', 'priority','visible')
+    #list_editable = ('visible',)
     list_display_links = ('id','name')
     list_per_page = 20
 
@@ -409,7 +411,8 @@ class LocationAdmin(admin.ModelAdmin):
 @admin.register(League)
 class LeagueAdmin(admin.ModelAdmin):
     search_fields = ['id','name','location__name']
-    list_display = ('id','name','location','priority')
+    list_filter = ('visible',)
+    list_display = ('id','name','location','priority', 'visible')
     list_display_links = ('id','name')
     #autocomplete_fields = ['location',]
     list_per_page = 20

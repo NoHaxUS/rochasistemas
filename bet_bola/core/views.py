@@ -27,6 +27,7 @@ def get_main_menu():
     game_status=1,
     is_visible=True)\
     .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+    .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
     .order_by('-league__location__priority', '-league__priority')
 
 
@@ -60,6 +61,7 @@ class TodayGames(TemplateResponseMixin, View):
         is_visible=True)\
         .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
 
 
@@ -68,6 +70,7 @@ class TodayGames(TemplateResponseMixin, View):
         game_status=1, 
         is_visible=True)\
         .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .count()
         
         num_of_pages =  ceil(games_total / results_per_page)
@@ -106,6 +109,7 @@ class TomorrowGames(TemplateResponseMixin, View):
         is_visible=True)\
         .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
 
 
@@ -113,6 +117,7 @@ class TomorrowGames(TemplateResponseMixin, View):
         game_status=1, 
         is_visible=True)\
         .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .count()
 
         num_of_pages =  ceil(games_total / results_per_page)
@@ -155,6 +160,7 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
         is_visible=True)\
         .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
 
 
@@ -162,6 +168,7 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
         game_status=1, 
         is_visible=True)\
         .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .count()
 
         num_of_pages =  ceil(games_total / results_per_page)
