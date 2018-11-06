@@ -3,21 +3,7 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block branding %}
-{% if perms.user.is_superuser %}
-    <a class="brand-logo tooltip" 
-    href="{% url 'admin:index' %}" title="{{ site_header }}"> {{ site_header }} </a>
-{% endif %}
-{% if perms.user.be_manager and not perms.user.is_superuser %}
-    <a class="brand-logo tooltip" 
-    href="{% url 'admin:index' %}" title="{{ site_header }}">Meu Saldo: {{ request.user.manager.credit_limit_to_add }} </a>
-{% endif %}
-
-{% if perms.user.be_seller and not perms.user.is_superuser %}
-    <a class="brand-logo tooltip" 
-    href="{% url 'admin:index' %}" title="{{ site_header }}">Meu Saldo: {{ request.user.seller.credit_limit }} </a>
-{% endif %}
-
-
+<a class="brand-logo tooltip {% block header-align %}{% endblock %}" href="{% url 'admin:index' %}" title="{{ site_header }}">{{ site_header }}</a>
 {% endblock %}
 
 {% block nav-global %}{% endblock %}

@@ -12,7 +12,6 @@ from history.models import PunterPayedHistory
 from django.contrib import messages
 from .decorators import confirm_action
 from django.utils.html import format_html
-from easy_select2 import select2_modelform
 
 
 admin.site.unregister(Group)
@@ -323,11 +322,10 @@ def show_game_action(modeladmin, request, queryset):
             messages.success(request, result['message'])
 
 show_game_action.short_description = 'Exibir Jogos'
+    
 
-#GameForm = select2_modelform(Game, attrs={'width': '250px'})
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
-    #form = GameForm
     search_fields = ['id','name']
     list_filter = (GamesWithNoFinalResults, HiddenGamesFilter)
     list_display = ('id','name')

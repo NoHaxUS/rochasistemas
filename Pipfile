@@ -8,10 +8,8 @@ name = "pypi"
 requests = "*"
 fpdf = "*"
 pika = "*"
-django-apscheduler = "*"
-djadmin-ok = "*"
-"django-easy-select2" = "*"
 django = "*"
+djadmin-ok = "*"
 
 [dev-packages]
 

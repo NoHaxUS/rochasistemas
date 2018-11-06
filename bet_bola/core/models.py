@@ -361,6 +361,7 @@ class League(models.Model):
 
 
     class Meta:
+        ordering = ('-id',)
         verbose_name = 'Liga'
         verbose_name_plural = 'Ligas'
 
