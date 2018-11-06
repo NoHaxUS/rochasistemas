@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
 "psycopg2" = "*"
 requests = "*"
 fpdf = "*"
@@ -12,6 +11,7 @@ pika = "*"
 django-apscheduler = "*"
 djadmin-ok = "*"
 "django-easy-select2" = "*"
+django = "*"
 
 [dev-packages]
 
