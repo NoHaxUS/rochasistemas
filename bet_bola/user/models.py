@@ -80,7 +80,6 @@ class Seller(CustomUser):
         RevenueHistorySeller.objects.create(who_reseted_revenue=who_reseted_revenue,
         seller=self,
         final_revenue=self.actual_revenue(),
-        actual_comission=self.commission,
         earned_value=self.net_value(),
         final_out_value=self.out_money(),
         profit = self.actual_revenue() - self.out_money())

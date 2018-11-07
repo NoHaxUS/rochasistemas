@@ -49,16 +49,15 @@ class RevenueHistorySeller(models.Model):
     who_reseted_revenue = models.CharField(max_length=200, verbose_name='Reponsável pelo Fechamento')
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, verbose_name='Cambista')
     revenue_reseted_date = models.DateTimeField(verbose_name='Data da Transação', auto_now_add=True)
-    final_revenue = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Total Faturado')
-    actual_comission = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Comissão')
-    earned_value = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Valor Recebido')
-    final_out_value = models.DecimalField(max_digits=40, decimal_places=2,null=True, blank=True, verbose_name='Total Pago')
+    final_revenue = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Entrada Total')
+    earned_value = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Comissão')
+    final_out_value = models.DecimalField(max_digits=40, decimal_places=2,null=True, blank=True, verbose_name='Saída Total')
     profit = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Lucro')
 
 
     def get_commission(self):
         return str(round(self.actual_comission,0)) + "%"
-    get_commission.short_description = 'Comissão'
+    get_commission.short_description = '% de Comissão'
 
 
     def __str__(self):
@@ -75,16 +74,16 @@ class RevenueHistoryManager(models.Model):
     who_reseted_revenue = models.CharField(max_length=200, verbose_name='Reponsável pelo Fechamento')
     manager = models.ForeignKey(Manager, on_delete=models.CASCADE, verbose_name='Gerente')
     revenue_reseted_date = models.DateTimeField(verbose_name='Data da Transação', auto_now_add=True)
-    final_revenue = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Faturamento')
-    actual_comission = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Comissão')
-    earned_value = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Valor Recebido')
-    final_out_value = models.DecimalField(max_digits=40, decimal_places=2,null=True, blank=True, verbose_name='Total Pago')
+    final_revenue = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Entrada Total')
+    actual_comission = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='% Comissão')
+    earned_value = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Comissão')
+    final_out_value = models.DecimalField(max_digits=40, decimal_places=2,null=True, blank=True, verbose_name='Saída Total')
     profit = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Lucro')
 
 
     def get_commission(self):
         return str(round(self.actual_comission,0)) + "%"
-    get_commission.short_description = 'Comissão'
+    get_commission.short_description = '% de Comissão'
 
 
     def __str__(self):
