@@ -193,5 +193,5 @@
 
 })(django.jQuery);
 django.jQuery(document).on('change', '.related-widget-wrapper select', function () {
-    $(this).not('.filtered').not('.disabled').not('.material-ignore').material_select();
+    $(this).not('.filtered').not('.disabled').not('.material-ignore').formSelect();
 });

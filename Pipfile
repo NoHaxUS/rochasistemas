@@ -9,7 +9,6 @@ requests = "*"
 fpdf = "*"
 pika = "*"
 django = "*"
-djadmin-ok = "*"
 
 [dev-packages]
 
