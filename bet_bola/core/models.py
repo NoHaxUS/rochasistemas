@@ -43,14 +43,14 @@ class Ticket(models.Model):
     def ticket_status(self):         
         if self.payment.status_payment == 'Cancelado':
             return "Cancelado"   
-        elif self.cotations.filter(~Q(status=3)).exclude(status=2):
+        if self.cotations.filter(status=1).count() > 0:
             return "Aguardando Resultados"
-        elif self.cotations.filter(~Q(settlement=2)).exclude(status=2).exclude(settlement=-1).exclude(settlement=3):
+        if self.cotations.filter(~Q(settlement=2)).count() > 0:
             return "Não Venceu"
         else:
             if self.payment.status_payment == 'Pago':
                 return "Venceu"        
-            return "Venceu e não foi pago"
+            return "Venceu, não pago"
 
     def get_punter_name(self):
         if self.user:
@@ -455,7 +455,7 @@ class Cotation(models.Model):
 
 
     def __str__(self):
-        return str(self.price)
+        return str(self.id)
 
 
     class Meta:

@@ -4,7 +4,7 @@ from user.models import CustomUser
 from .models import Ticket,Cotation,Payment,Game,League,Reward,Location,Market
 from user.models import CustomUser
 from django.contrib.auth.models import Group
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.utils.translation import gettext_lazy as _
 from django.contrib.admin.views.main import ChangeList
 import utils.timezone as tzlocal
@@ -126,11 +126,36 @@ class TicketStatusListFilter(admin.SimpleListFilter):
             ("Aguardando Resultados","Aguardando Resultados"),
             ("Não Venceu", "Não Venceu"),
             ("Venceu","Venceu"),
-            ("Venceu e não foi pago","Venceu e não foi pago")
+            ("Venceu, não pago","Venceu, não pago")
         )
 
     def queryset(self, request, queryset):
-        return queryset
+
+        if self.value() == "Cancelado":
+            return queryset.filter(payment__status_payment="Cancelado")
+
+        if self.value() == "Aguardando Resultados":
+            return queryset\
+            .annotate(cotations_num=Count('cotations__pk', filter=Q(cotations__status=1)) )\
+            .filter(cotations_num__gt=0)
+
+        if self.value() == "Não Venceu":
+            return queryset\
+            .annotate(cotations_open=Count('cotations__pk', filter=Q(cotations__status=1)) )\
+            .annotate(cotations_not_winner=Count('cotations__pk', filter=~Q(cotations__settlement=2) ) )\
+            .filter(cotations_open=0, cotations_not_winner__gt=0)
+
+        if self.value() == "Venceu":
+            return queryset\
+            .annotate(cotations_open=Count('cotations__pk', filter=Q(cotations__status=1)) )\
+            .annotate(cotations_not_winner=Count('cotations__pk', filter=~Q(cotations__settlement=2) ) )\
+            .filter(cotations_open=0, cotations_not_winner=0, payment__status_payment='Pago')
+
+        if self.value() == "Venceu, não pago":
+            return queryset\
+            .annotate(cotations_open=Count('cotations__pk', filter=Q(cotations__status=1)) )\
+            .annotate(cotations_not_winner=Count('cotations__pk', filter=~Q(cotations__settlement=2) ) )\
+            .filter(cotations_open=0, cotations_not_winner=0).exclude(payment__status_payment='Pago')
 
 
 @admin.register(Ticket)
@@ -148,7 +173,7 @@ class TicketAdmin(admin.ModelAdmin):
     'get_punter_name',
     'value','reward',
     'cotation_sum', payment_status,'creation_date', 'seller_related')
-    exclude = ('cotations',)
+    #exclude = ('cotations',)
     actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket]
     list_per_page = 50
 
