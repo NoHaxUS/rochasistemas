@@ -390,6 +390,7 @@ class MarketAdmin(admin.ModelAdmin):
 class CotationAdmin(admin.ModelAdmin):
     search_fields = ['id','name','game__name']
     autocomplete_fields = ['game',]
+    list_filter = ('market',)
     list_display = ('id','name', 'start_price', 'price', 'game', 'market')
     list_display_links = ('id','name',)
     list_per_page = 20

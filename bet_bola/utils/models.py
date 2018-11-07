@@ -272,6 +272,9 @@ class Overview(models.Model):
 
 class MarketReduction(models.Model):
     MARKET_LIST = (
+        (600,"Casa"),
+        (601,"Empate"),
+        (602,"Fora"),
         (1,"1X2"),
         (2,"Abaixo/Acima"),
         (3,"Asian Handicap"),
@@ -345,10 +348,17 @@ class MarketReduction(models.Model):
         is_visible=True)
 
         reduction = 1
-        
-        for game in able_games:
 
-            cotations_to_reduct =  game.cotations.filter(market__id=self.market_to_reduct)
+        for game in able_games:
+            
+            if self.market_to_reduct == 600:
+                cotations_to_reduct =  game.cotations.filter(market__id=1, name='Casa')
+            elif self.market_to_reduct == 601:
+                cotations_to_reduct =  game.cotations.filter(market__id=1, name='Empate')
+            elif self.market_to_reduct == 602:
+                cotations_to_reduct =  game.cotations.filter(market__id=1, name='Fora')
+            else:
+                cotations_to_reduct =  game.cotations.filter(market__id=self.market_to_reduct)
             cotations_to_reduct.update(price=F('start_price') * reduction )
             cotations_to_reduct.update(price=Case(When(price__lt=1,then=1.05),default=F('price')))
             
@@ -360,6 +370,7 @@ class MarketReduction(models.Model):
             cotations_to_reduct.filter(price__gt=max_cotation_value).update(price=max_cotation_value)
 
     def apply_reductions(self):
+
         from core.models import Game
         able_games = Game.objects.filter(start_date__gt=tzlocal.now(), 
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=3)),
@@ -370,7 +381,14 @@ class MarketReduction(models.Model):
         
         for game in able_games:
 
-            cotations_to_reduct =  game.cotations.filter(market__id=self.market_to_reduct)
+            if self.market_to_reduct == 600:
+                cotations_to_reduct =  game.cotations.filter(market__id=1, name='Casa')
+            elif self.market_to_reduct == 601:
+                cotations_to_reduct =  game.cotations.filter(market__id=1, name='Empate')
+            elif self.market_to_reduct == 602:
+                cotations_to_reduct =  game.cotations.filter(market__id=1, name='Fora')
+            else:
+                cotations_to_reduct =  game.cotations.filter(market__id=self.market_to_reduct)
             cotations_to_reduct.update(price=F('start_price') * reduction )
             cotations_to_reduct.update(price=Case(When(price__lt=1,then=1.05),default=F('price')))
             
