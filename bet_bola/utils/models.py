@@ -138,7 +138,7 @@ class GeneralConfigurations(models.Model):
         able_games =  games = Game.objects.filter(start_date__gt=tzlocal.now(), 
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
         game_status=1, 
-        is_visible=True)
+        visible=True)
 
         reduction = self.percentual_reduction / 100
         
@@ -345,7 +345,7 @@ class MarketReduction(models.Model):
         able_games = Game.objects.filter(start_date__gt=tzlocal.now(), 
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=3)),
         game_status__in=[1,2,8],
-        is_visible=True)
+        visible=True)
 
         reduction = 1
 
@@ -375,7 +375,7 @@ class MarketReduction(models.Model):
         able_games = Game.objects.filter(start_date__gt=tzlocal.now(), 
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=3)),
         game_status__in=[1,2,8],
-        is_visible=True)
+        visible=True)
 
         reduction = self.reduction_percentual / 100
         

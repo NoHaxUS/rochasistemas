@@ -25,7 +25,7 @@ def get_main_menu():
     games = Game.objects.filter(start_date__gt=tzlocal.now(),
     league__isnull=False,
     game_status=1,
-    is_visible=True)\
+    visible=True)\
     .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
     .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
     .order_by('-league__location__priority', '-league__priority')
@@ -58,7 +58,7 @@ class TodayGames(TemplateResponseMixin, View):
         games = Game.objects.filter(start_date__gt=tzlocal.now(), 
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
         game_status=1, 
-        is_visible=True)\
+        visible=True)\
         .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
@@ -68,7 +68,7 @@ class TodayGames(TemplateResponseMixin, View):
         games_total = Game.objects.filter(start_date__gt=tzlocal.now(), 
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
         game_status=1, 
-        is_visible=True)\
+        visible=True)\
         .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .count()
@@ -106,7 +106,7 @@ class TomorrowGames(TemplateResponseMixin, View):
         my_qs = Cotation.objects.filter(market__name="1X2")
         games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
         game_status=1, 
-        is_visible=True)\
+        visible=True)\
         .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
@@ -115,7 +115,7 @@ class TomorrowGames(TemplateResponseMixin, View):
 
         games_total = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
         game_status=1, 
-        is_visible=True)\
+        visible=True)\
         .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .count()
@@ -157,7 +157,7 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
         my_qs = Cotation.objects.filter(market__name="1X2")
         games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
         game_status=1, 
-        is_visible=True)\
+        visible=True)\
         .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
@@ -166,7 +166,7 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
 
         games_total = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
         game_status=1, 
-        is_visible=True)\
+        visible=True)\
         .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .count()
@@ -203,7 +203,7 @@ class GameLeague(TemplateResponseMixin, View):
         games = Game.objects.filter(start_date__gt=tzlocal.now(),
         game_status=1,
         league__id=self.kwargs["pk"],
-        is_visible=True)\
+        visible=True)\
         .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
         .order_by('-league__priority')
@@ -494,7 +494,7 @@ class TicketDetail(TemplateResponseMixin, View):
 
         cotations_history = CotationHistory.objects.filter(ticket=ticket.pk)
         
-        if cotations_history.count() > 0 and ticket.is_visible == True:
+        if cotations_history.count() > 0 and ticket.visible == True:
 
             cotations_values = {}
             for current_cotation in cotations_history:

@@ -16,54 +16,6 @@ from django.utils.html import format_html
 
 admin.site.unregister(Group)
 
-class GamesWithNoFinalResults(admin.SimpleListFilter):
-
-    title = _('Jogos sem resultado final')
-    parameter_name = 'games_with_no_final_results'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('list_all', _('Jogos sem resultado final')),
-        )
-
-    def queryset(self, request, queryset):
-        if self.value() == 'list_all':
-            return queryset.filter(status_game=3, periods__isnull=False)
-
-
-class HiddenGamesFilter(admin.SimpleListFilter):
-
-    title = _('Visibilidade')
-    parameter_name = 'visibility'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('list_all_hidden', _('Jogos Ocultos')),
-        )
-
-    def queryset(self, request, queryset):
-        if self.value() == 'list_all_hidden':
-            return queryset.filter(is_visible=False)
-        elif self.value() == None:
-            return queryset.filter(is_visible=True)
-
-
-class HiddenTicketFilter(admin.SimpleListFilter):
-
-    title = _('Visibilidade')
-    parameter_name = 'visibility'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('list_all_hidden', _('Tickets Ocultos')),
-        )
-
-    def queryset(self, request, queryset):
-        if self.value() == 'list_all_hidden':
-            return queryset.filter(is_visible=False)
-        elif self.value() == None:
-            return queryset.filter(is_visible=True)
-
 
 @confirm_action("Cancelar Ticket(s)")
 def cancel_ticket(modeladmin, request, queryset):
@@ -132,29 +84,6 @@ def pay_winner_punter(modeladmin, request, queryset):
 
 pay_winner_punter.short_description = 'Pagar Apostador'
 
-
-@confirm_action("Ocultar Ticket(s)")
-def hide_ticket_action(modeladmin, request, queryset):
-
-    if request.user.is_superuser:
-        for ticket in queryset:
-            result = ticket.hide_ticket()
-            messages.success(request, result['message'])
-
-hide_ticket_action.short_description = 'Ocultar Tickets'
-
-
-@confirm_action("Ocultar Ticket(s)")
-def show_ticket_action(modeladmin, request, queryset):
-
-    if request.user.is_superuser:
-        for ticket in queryset:
-            result = ticket.show_ticket()
-            messages.success(request, result['message'])
-
-show_ticket_action.short_description = 'Exibir Tickets'
-
-
 def payment_status(obj):
     if obj.payment:
         return ("%s" % obj.payment.status_payment)
@@ -191,12 +120,12 @@ class TicketAdmin(admin.ModelAdmin):
     list_filter = (
     'payment__who_set_payment_id',
     'payment__status_payment',
-    HiddenTicketFilter,
+    'visible',
     'creation_date',
     'reward__reward_status')
     list_display = ('id', ticket_status, 'get_ticket_link','get_punter_name','value','reward','cotation_sum', payment_status,'creation_date', 'seller_related')
     exclude = ('cotations','user','normal_user', 'payment', 'reward', 'value')
-    actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket, hide_ticket_action, show_ticket_action]
+    actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket]
     list_per_page = 50
 
 
@@ -258,7 +187,7 @@ class TicketAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj):
         if request.user.has_perm('user.be_seller') and not request.user.is_superuser:
-            return ('value','reward','payment','creation_date','cotation_sum', 'seller', 'ticket_status','is_visible')
+            return ('value','reward','payment','creation_date','cotation_sum', 'seller', 'ticket_status','visible')
         return super().get_readonly_fields(request, obj)
 
     def get_queryset(self, request):        
@@ -272,14 +201,14 @@ class TicketAdmin(admin.ModelAdmin):
                 
         if request.user.has_perm('user.be_seller'):            
             return qs.filter(payment__who_set_payment=request.user.seller,
-            is_visible=True)
+            visible=True)
         
 
         if request.user.has_perm('user.be_manager'):
-            return qs.filter(payment__who_set_payment__my_manager=request.user.manager, is_visible=True)
+            return qs.filter(payment__who_set_payment__my_manager=request.user.manager, visible=True)
 
         if request.user.has_perm('user.be_punter'):
-            return qs.filter(user=request.user.punter, is_visible=True)
+            return qs.filter(user=request.user.punter, visible=True)
         
 
 
@@ -299,61 +228,17 @@ class PaymentAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return False
         return super().has_delete_permission(request)
-
-
-
-@confirm_action("Ocultar Jogo(s)")
-def hide_game_action(modeladmin, request, queryset):
-
-    if request.user.is_superuser:
-        for game in queryset:
-            result = game.hide_game()
-            messages.success(request, result['message'])
-
-hide_game_action.short_description = 'Ocultar Jogos'
-
-
-@confirm_action("Exibir Jogo(s)")
-def show_game_action(modeladmin, request, queryset):
-
-    if request.user.is_superuser:
-        for game in queryset:
-            result = game.show_game()
-            messages.success(request, result['message'])
-
-show_game_action.short_description = 'Exibir Jogos'
     
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
     search_fields = ['id','name']
-    list_filter = (GamesWithNoFinalResults, HiddenGamesFilter)
-    list_display = ('id','name')
+    list_filter = ('visible', )
+    list_display = ('id','name', 'visible')
+    list_editable = ('visible',)
     list_display_links = ('id','name',)
     autocomplete_fields = ['league',]
-    actions = [hide_game_action, show_game_action]
     list_per_page = 20
-
-
-    def get_actions(self, request):
-        actions = super().get_actions(request)
-
-        if request.user.is_superuser:
-            valid_actions = ['hide_game_action','show_game_action']
-            actions_copy = actions.copy()
-            for action in actions_copy:
-                if not action in valid_actions:
-                    del actions[action]
-            return actions
-
-        if request.user.has_perm('user.be_seller'):
-            return None
-        
-        if request.user.has_perm('user.be_manager'):
-            return None
-
-        if request.user.has_perm('user.be_punter'):
-            return None
 
 
 
@@ -377,12 +262,6 @@ class MarketAdmin(admin.ModelAdmin):
     list_display = ('id','name',)
     list_display_links = ('id','name')
     list_per_page = 20
-
-
-    def has_delete_permission(self, request):
-        if request.user.is_superuser:
-            return False
-        return super().has_delete_permission(request)
     
 
 
@@ -402,7 +281,7 @@ class LocationAdmin(admin.ModelAdmin):
     search_fields = ['id','name']
     list_filter = ('visible',)
     list_display = ('id','name', 'priority','visible')
-    #list_editable = ('visible',)
+    list_editable = ('priority','visible')
     list_display_links = ('id','name')
     list_per_page = 20
 
@@ -413,6 +292,7 @@ class LeagueAdmin(admin.ModelAdmin):
     list_filter = ('visible',)
     list_display = ('id','name','location','priority', 'visible')
     list_display_links = ('id','name')
-    #autocomplete_fields = ['location',]
+    autocomplete_fields = ['location',]
+    list_editable = ('priority','visible')
     list_per_page = 20
 

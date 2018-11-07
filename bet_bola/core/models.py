@@ -34,7 +34,7 @@ class Ticket(models.Model):
     reward = models.OneToOneField('Reward', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
     payment = models.OneToOneField('Payment', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
     value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')    
-    is_visible = models.BooleanField(default=True, verbose_name='Visível?')
+    visible = models.BooleanField(default=True, verbose_name='Visível?')
 
     def __str__(self):
         return str(self.pk)
@@ -59,15 +59,6 @@ class Ticket(models.Model):
             return self.normal_user.first_name
     get_punter_name.short_description = 'Apostador'
 
-    def hide_ticket(self):
-        self.is_visible = False
-        self.save()
-        return {"message" :"Ticket "+ str(self.pk) +" Ocultado."}
-
-    def show_ticket(self):
-        self.is_visible = True
-        self.save()
-        return {"message" :"Ticket "+ str(self.pk) +" Exibido."}
 
     def get_ticket_link(self):
         from django.utils.safestring import mark_safe
@@ -302,7 +293,7 @@ class Game(models.Model):
     sport = models.ForeignKey('Sport', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Esporte')
     game_status = models.IntegerField(choices=GAME_STATUS,verbose_name='Status do Jogo')
     last_update = models.DateTimeField(verbose_name='Ultima Atualização')
-    is_visible = models.BooleanField(default=True, verbose_name='Visível?')
+    visible = models.BooleanField(default=True, verbose_name='Visível?')
 
 
     class Meta:
@@ -313,17 +304,6 @@ class Game(models.Model):
 
     def __str__(self):
         return self.name
-
-    def hide_game(self):
-        self.is_visible = False
-        self.save()
-        return {"message" :"Jogo "+ str(self.pk) +" Ocultado."}
-
-
-    def show_game(self):
-        self.is_visible = True
-        self.save()
-        return {"message" :"Jogo "+ str(self.pk) +" Exibido."}
 
 
 class Period(models.Model):
