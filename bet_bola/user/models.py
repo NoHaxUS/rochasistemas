@@ -7,7 +7,6 @@ from decimal import Decimal
 
 
 class CustomUser(AbstractUser):   
-    #cellphone = models.CharField(max_length=14, verbose_name='Celular')
     email = models.EmailField(null=True, blank=True, verbose_name='E-mail')
     first_name = models.CharField(max_length=150, verbose_name='Primeiro Nome')
 

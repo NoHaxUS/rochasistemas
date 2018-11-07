@@ -108,7 +108,7 @@ def ticket_status(obj):
         )
 
     return format_html (
-            '<div class="">{}</div>',
+            '<div class="wait_ticket">{}</div>',
             obj.ticket_status
         )
 
@@ -124,15 +124,16 @@ class TicketAdmin(admin.ModelAdmin):
     'creation_date',
     'reward__reward_status')
     list_display = ('id', ticket_status, 'get_ticket_link','get_punter_name','value','reward','cotation_sum', payment_status,'creation_date', 'seller_related')
-    exclude = ('cotations','user','normal_user', 'payment', 'reward', 'value')
+    exclude = ('cotations',)
     actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket]
     list_per_page = 50
 
 
     def has_add_permission(self, request):
-        if request.user.is_superuser:
-            return False
-        return super().has_add_permission(request)
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
 
     def get_actions(self, request):
@@ -165,36 +166,9 @@ class TicketAdmin(admin.ModelAdmin):
         if request.user.has_perm('user.be_punter'):
             return None
 
-    """
-    def get_list_filter(self, request):
-
-        if request.user.is_superuser:
-            return super().get_list_filter(request)
-            
-        if request.user.has_perm('user.be_punter'):
-            return None
-
-        if request.user.has_perm('user.be_seller'):
-            list_filter = list(super().get_list_filter(request))
-            list_filter.remove('payment__who_set_payment_id')
-            return list_filter
-
-        if request.user.has_perm('user.be_manager'):
-            return super().get_list_filter(request)
-    """
-
-        
-
-    def get_readonly_fields(self, request, obj):
-        if request.user.has_perm('user.be_seller') and not request.user.is_superuser:
-            return ('value','reward','payment','creation_date','cotation_sum', 'seller', 'ticket_status','visible')
-        return super().get_readonly_fields(request, obj)
 
     def get_queryset(self, request):        
         qs = super().get_queryset(request)
-        
-        #SOLVE
-        # return qs
 
         if request.user.is_superuser:            
             return qs
@@ -202,7 +176,6 @@ class TicketAdmin(admin.ModelAdmin):
         if request.user.has_perm('user.be_seller'):            
             return qs.filter(payment__who_set_payment=request.user.seller,
             visible=True)
-        
 
         if request.user.has_perm('user.be_manager'):
             return qs.filter(payment__who_set_payment__my_manager=request.user.manager, visible=True)
