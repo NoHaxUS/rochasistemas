@@ -114,16 +114,40 @@ def ticket_status(obj):
 
 ticket_status.short_description = 'Status'
 
+class TicketStatusListFilter(admin.SimpleListFilter):
+
+    title = _('Ticket Status')
+    parameter_name = 'ticket-status'
+
+
+    def lookups(self, request, model_admin):
+        return (
+            ("Cancelado", "Cancelado"),
+            ("Aguardando Resultados","Aguardando Resultados"),
+            ("Não Venceu", "Não Venceu"),
+            ("Venceu","Venceu"),
+            ("Venceu e não foi pago","Venceu e não foi pago")
+        )
+
+    def queryset(self, request, queryset):
+        return queryset
+
+
 @admin.register(Ticket)
 class TicketAdmin(admin.ModelAdmin):
     search_fields = ['id']
     list_filter = (
+    TicketStatusListFilter,
     'payment__who_set_payment_id',
     'payment__status_payment',
     'visible',
     'creation_date',
     'reward__reward_status')
-    list_display = ('id', ticket_status, 'get_ticket_link','get_punter_name','value','reward','cotation_sum', payment_status,'creation_date', 'seller_related')
+    list_display = ('id', ticket_status, 
+    'get_ticket_link',
+    'get_punter_name',
+    'value','reward',
+    'cotation_sum', payment_status,'creation_date', 'seller_related')
     exclude = ('cotations',)
     actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket]
     list_per_page = 50
