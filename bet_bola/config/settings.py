@@ -35,7 +35,6 @@ APP_VERBOSE_NAME = 'Gol Bet'
 # Application definition
 
 INSTALLED_APPS = [
-    'djadmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,7 +57,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'djadmin.middleware.DJMiddleware',
 ]
 
 #SESSION_EXPIRE_AT_BROWSER_CLOSE = True
@@ -211,5 +209,3 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
 ]
 
-ADMIN_COLOR_THEME = 'green'
-ADMIN_HEADER_TITLE = "Administração"
