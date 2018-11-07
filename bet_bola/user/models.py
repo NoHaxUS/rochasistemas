@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User, Permission, AbstractUser, BaseUserManager
 from django.db.models import F, Q, When, Case
+from django.core.validators import MinValueValidator
+from decimal import Decimal
 
 
 
@@ -65,7 +67,7 @@ class Seller(CustomUser):
     cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)
     address = models.CharField(max_length=75, verbose_name='Endereço', null=True, blank=True)
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
-    credit_limit = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Créditos')
+    credit_limit = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Crédito')
     my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True, blank=True)
     can_cancel_ticket = models.BooleanField(default=False, verbose_name='Cancela Bilhete ?')
     limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento")
@@ -100,11 +102,11 @@ class Seller(CustomUser):
         total_net_value = self.comissions.total_comission()
         return round(total_net_value, 2)
 
-    net_value.short_description = 'A Receber'
+    net_value.short_description = 'Comissão'
 
     def real_net_value(self):
         return self.actual_revenue() -  (self.net_value() + self.out_money())
-    real_net_value.short_description = 'Líquido'
+    real_net_value.short_description = 'Lucro'
     
 
     def see_comissions(self):
@@ -129,7 +131,7 @@ class Seller(CustomUser):
             payed_sum += payed.payed_value
         return payed_sum
 
-    out_money.short_description = 'Pagamentos'
+    out_money.short_description = 'Saída'
 
 
     def actual_revenue(self):
@@ -144,7 +146,7 @@ class Seller(CustomUser):
 
         return total_revenue
 
-    actual_revenue.short_description = 'Faturamento'
+    actual_revenue.short_description = 'Entrada'
 
 
     def save(self, *args, **kwargs):
@@ -197,7 +199,7 @@ class Manager(CustomUser):
     cpf = models.CharField(max_length=11, verbose_name='CPF', null=True, blank=True)
     cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)
     address = models.CharField(max_length=75, verbose_name='Endereço', null=True, blank=True)
-    commission = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Comissão')
+    commission = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Comissão', validators=[MinValueValidator(Decimal('0.01'))])
     credit_limit_to_add = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name="Crédito")
     can_cancel_ticket = models.BooleanField(default=True, verbose_name='Cancela Bilhete ?')
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
@@ -236,24 +238,24 @@ class Manager(CustomUser):
 
         return payed_sum
 
-    out_money.short_description = 'Pagamentos'
+    out_money.short_description = 'Saída'
 
 
     def get_commission(self):
         return str(round(self.commission,0)) + "%"
-    get_commission.short_description = 'Comissão'
+    get_commission.short_description = ' % de comissão'
 
     def net_value(self):
         total_net_value = self.actual_revenue() * (self.commission / 100)
         return round(total_net_value,2)
         
-    net_value.short_description = 'A Receber'
+    net_value.short_description = 'Comissão'
 
 
     def real_net_value(self):
         return self.actual_revenue() -  (self.net_value() + self.out_money())
     
-    real_net_value.short_description = 'Líquido'
+    real_net_value.short_description = 'Lucro'
     
 
     def actual_revenue(self):
@@ -269,7 +271,7 @@ class Manager(CustomUser):
                 total_revenue += ticket.value
         return total_revenue
 
-    actual_revenue.short_description = 'Faturamento'
+    actual_revenue.short_description = 'Entrada'
 
 
     def manage_credit(self, obj, is_new=False):

@@ -214,7 +214,7 @@ class Overview(models.Model):
         for seller in sellers:
             total_revenue_sum += seller.actual_revenue()
         return total_revenue_sum
-    total_revenue.short_description = 'Faturamento Total'
+    total_revenue.short_description = 'Entrada Total'
 
 
     def total_out_money(self):
@@ -225,7 +225,7 @@ class Overview(models.Model):
         for seller in sellers:
             total_out_money_sum += seller.out_money()
         return total_out_money_sum
-    total_out_money.short_description = 'Gastos com Apostas'
+    total_out_money.short_description = 'Saída Apostas'
 
 
     def seller_out_money(self):
@@ -237,7 +237,7 @@ class Overview(models.Model):
             total_net_value_sum += seller.net_value()
         
         return total_net_value_sum
-    seller_out_money.short_description = 'Gastos com Cambistas'
+    seller_out_money.short_description = 'Saída Cambistas'
 
 
     def manager_out_money(self):
@@ -249,16 +249,16 @@ class Overview(models.Model):
             total_net_value_sum += manager.net_value()
         
         return total_net_value_sum
-    manager_out_money.short_description = 'Gastos com Gerentes'
+    manager_out_money.short_description = 'Saída Gerentes'
 
 
     def total_net_value(self):
         return self.total_revenue() - (self.total_out_money() + self.seller_out_money() + self.manager_out_money())
-    total_net_value.short_description = 'Líquido Total'
+    total_net_value.short_description = 'Lucro Total'
 
 
     def __str__(self):
-        return "Visão Geral"
+        return "Visão Geral - Caixa"
 
     def save(self, *args, **kwargs):
         self.pk = 1
