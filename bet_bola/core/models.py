@@ -39,6 +39,12 @@ class Ticket(models.Model):
     def __str__(self):
         return str(self.pk)
 
+        ('Aguardando Resultados', 'Aguardando Resultados'),
+        ('O apostador foi pago', 'O apostador foi pago'),
+        ('Esse ticket não venceu', 'Esse ticket não venceu'),
+        ('Venceu, Pagar Apostador', 'Venceu, Pagar Apostador'),
+        ('Venceu, não pago','Venceu, não pago')
+
     @property
     def ticket_status(self):
         if self.payment.status_payment == Payment.PAYMENT_STATUS[2][1]:

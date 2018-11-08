@@ -534,6 +534,28 @@ $(document).ready(function () {
     });
 
 
+    $('.modal-pay-winners').on('click', function(e){
+
+        e.preventDefault();
+
+        alertify.confirm("Confirmação", "Deseja Pagar Ganhadores", 
+        function(){
+            $.post('/utils/pay_ticket_winners/', {}, function(data, status, rq){
+                
+                if(data.success){
+                    alertify.success(data.message);
+                }else{
+                    alertify.error(data.message);
+                }
+
+    
+            });
+        },
+        function(){
+            
+        });
+    });
+
 
     $('#user_register_form').on('submit', function(e){
         e.preventDefault();

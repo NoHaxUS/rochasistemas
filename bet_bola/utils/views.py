@@ -4,7 +4,7 @@ from django.template.loader import get_template
 from django.views.generic import View
 from django.utils import timezone
 from django.core import serializers
-from core.models import Ticket,Cotation,CotationHistory
+from core.models import Ticket,Cotation,CotationHistory, Reward
 from user.models import Seller
 from .models import TicketCustomMessage
 from django.conf import settings
@@ -45,6 +45,22 @@ class CancelTicket(View):
                 'sucess':False,
                 'message': 'Esse bilhete não existe.'
             })
+
+
+class PayTicketWinners(View):
+
+    def post(self, request, *args, **kwargs):
+        tickets = Ticket.objects.filter(payment__who_set_payment=request.user.seller, 
+        payment__status_payment='Pago')\
+        .exclude(reward__reward_status=Reward.REWARD_STATUS[1][1])
+        ticket_winner = [ticket for ticket in tickets if ticket.ticket_status == 'Venceu']
+        for ticket in ticket_winner:
+            ticket.pay_winner_punter(request.user.seller)
+        
+        return UnicodeJsonResponse({
+            'sucess':True,
+            'message': 'Ganhadores Pagos.'
+        })
 
 
 class PDF(View):

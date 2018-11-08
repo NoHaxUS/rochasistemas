@@ -255,14 +255,15 @@
                 Consultar Bilhete</a>
         </li>
         {% else %}
-        <li class="user-logged-name">Olá, {{user}}</li>
         {% if perms.user.be_manager and not user.is_superuser %}
+        <li class="user-logged-name">Olá, {{user}} - Saldo: {{ user.manager.credit_limit_to_add  }}</li>
         <li>
             <a href="{% url 'admin:index' %}" class="waves-effect waves-light btn white green-text-button">
                 Painel do Gerente</a>
         </li>       
         {% endif %}
         {% if perms.user.be_seller and not user.is_superuser %}
+        <li class="user-logged-name">Olá, {{user}} - Saldo: {{ user.seller.credit_limit  }}</li>
         <li>
             <a href="{% url 'admin:index' %}" class="waves-effect waves-light btn white green-text-button">
                 Painel</a>
@@ -280,7 +281,7 @@
                 Cancelar</a>
         </li>
         <li>
-            <a href="#modal-pay-winners" class="waves-effect waves-light btn white green-text-button modal-trigger">
+            <a href="#" class="modal-pay-winners waves-effect waves-light btn white green-text-button">
                 Pagar Ganhadores</a>
         </li>
         {% endif %}
@@ -337,8 +338,8 @@
                 Consultar Bilhete</a>
         </li>
         {% else %}
-        <li class="user-logged-name user-logged-mobile">Olá, {{user}}</li>
         {% if perms.user.be_seller and not user.is_superuser %}
+        <li class="user-logged-name">Olá, {{user}} <br /> Saldo: {{ user.seller.credit_limit  }}</li>
         <li>
             <a href="{% url 'admin:index' %}" class="waves-effect waves-light btn white green-text-button ">
                 Painel</a>
@@ -356,7 +357,7 @@
                 Cancelar</a>
         </li>
         <li>
-            <a href="#modal-pay-winners" class="waves-effect waves-light btn white green-text-button modal-trigger">
+            <a href="#" class="modal-pay-winners waves-effect waves-light btn white green-text-button">
                 Pagar Ganhadores</a>
         </li>
         {% endif %} {% if not perms.user.be_seller and not user.is_superuser and not perms.user.be_manager %}
@@ -380,6 +381,7 @@
         </li>
         {% endif %}
         {% if perms.user.be_manager and not user.is_superuser %}
+        <li class="user-logged-name">Olá, {{user}} <br /> Saldo: {{ user.manager.credit_limit_to_add  }}</li>
         <li>
             <a href="{% url 'admin:index' %}" class="waves-effect waves-light btn white green-text-button">
                 Painel do Gerente</a>

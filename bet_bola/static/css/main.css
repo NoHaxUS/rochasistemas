@@ -26,6 +26,7 @@ nav ul a.btn{
     margin-left: 0px;
     padding-left: 8px;
     padding-right: 8px;
+    margin-right: 10px;
 }
 
 tbody tr td {
@@ -254,6 +255,7 @@ nav .brand-logo{
     font-size: 1.6rem;
     text-transform: capitalize;
     margin-right: 15px;
+    text-align: center;
 }
 
 .more_cotations_button{
