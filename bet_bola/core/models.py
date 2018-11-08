@@ -62,7 +62,7 @@ class Ticket(models.Model):
 
     def get_ticket_link(self):
         from django.utils.safestring import mark_safe
-        link = '<a href="/ticket/'+str(self.pk) + '/">Consultar<a/>'
+        link = '<a href="/ticket/'+str(self.pk) + '/" class="consult">Consultar<a/>'
         return mark_safe(link)
     get_ticket_link.short_description = 'Ver'
 

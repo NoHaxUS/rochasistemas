@@ -39,7 +39,7 @@ class PDF(View):
         response['Content-Disposition'] = 'inline; filename="ticket.pdf"'
 
 
-        cotations_history = CotationHistory.objects.filter(bet_ticket=ticket.pk)
+        cotations_history = CotationHistory.objects.filter(ticket=ticket.pk)
 
         cotations_values = {}
         for i_cotation in cotations_history:

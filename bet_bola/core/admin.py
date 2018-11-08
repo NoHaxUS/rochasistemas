@@ -91,19 +91,25 @@ payment_status.short_description = 'Status do Pagamento'
 
 
 def ticket_status(obj):
-    if obj.ticket_status == 'Venceu':
+    if obj.ticket_status == Ticket.TICKET_STATUS['Venceu']:
         return format_html (
             '<div class="winner_ticket">{}</div>',
             obj.ticket_status
         )
-    elif obj.ticket_status == 'Não Venceu':
+    elif obj.ticket_status == Ticket.TICKET_STATUS['Não Venceu']:
         return format_html (
             '<div class="loser_ticket">{}</div>',
             obj.ticket_status
         )
-    elif obj.ticket_status == 'Cancelado':
+    elif obj.ticket_status == Ticket.TICKET_STATUS['Cancelado']:
         return format_html (
-            '<div class="loser_ticket">{}</div>',
+            '<div class="canceled_ticket">{}</div>',
+            obj.ticket_status
+        )
+
+    elif obj.ticket_status == Ticket.TICKET_STATUS['Venceu, não pago']:
+        return format_html (
+            '<div class="winner_not_paid">{}</div>',
             obj.ticket_status
         )
 
