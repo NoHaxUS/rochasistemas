@@ -95,12 +95,12 @@ class Ticket(models.Model):
                     'message':' Tempo limite para cancelar o Ticket '+ str(self.pk) +' excedido.'}
 
         
-
         seller = self.payment.who_set_payment
-        seller.credit_limit += self.value
-        seller.save()
+        if not seller.can_sell_unlimited:
+            seller.credit_limit += self.value
+            seller.save()
 
-        self.payment.status_payment = Ticket.TICKET_STATUS[4][1]
+        self.payment.status_payment = Ticket.TICKET_STATUS['Cancelado']
         self.payment.payment_date = None
         self.payment.seller_was_rewarded = True
         self.payment.save()
@@ -427,6 +427,11 @@ class Cotation(models.Model):
     line = models.CharField(max_length=30, null=True, blank=True)
     base_line = models.CharField(max_length=30, null=True, blank=True)
     last_update = models.DateTimeField(null=True, blank=True, verbose_name="Última atualização")
+
+
+    def save(self, *args, **kwargs):
+        if not self.status == self.COTATION_STATUS[0][0] and self.settlement == None:
+            super().save(args, kwargs)
 
 
     def __str__(self):

@@ -505,6 +505,36 @@ $(document).ready(function () {
     });
 
 
+
+    $('#cancel-ticket-form').on('submit', function(e){
+
+        e.preventDefault();
+        var ticket_num = $('#cancel-ticket-input').val();
+        if (ticket_num == '') {
+            alertify.alert('Erro', 'Você deve informar o número do bilhete.').set('movable', false);
+        }else{
+
+            alertify.confirm("Confirmação", "Deseja cancelar o bilhete: " + ticket_num, 
+            function(){
+                $.post('/utils/cancel_ticket/', {'ticket_id': ticket_num}, function(data, status, rq){
+                    
+                    if(data.success){
+                        alertify.success(data.message);
+                    }else{
+                        alertify.error(data.message);
+                    }
+    
+        
+                });
+            },
+            function(){
+                
+            });
+        }
+    });
+
+
+
     $('#user_register_form').on('submit', function(e){
         e.preventDefault();
         var send_data = $(this).serialize();

@@ -30,6 +30,23 @@ class ValidateTicket(View):
                 'message': 'Esse bilhete não existe.'
             })
 
+
+class CancelTicket(View):
+
+    def post(self, request, *args, **kwargs):
+        ticket_id = request.POST['ticket_id']
+
+        ticket = Ticket.objects.filter(pk=ticket_id)
+
+        if ticket.count() > 0:
+            return UnicodeJsonResponse(ticket.first().cancel_ticket(request.user.seller))
+        else:
+            return UnicodeJsonResponse({
+                'sucess':False,
+                'message': 'Esse bilhete não existe.'
+            })
+
+
 class PDF(View):
 
 

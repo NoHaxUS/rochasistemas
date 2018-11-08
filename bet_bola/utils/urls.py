@@ -21,4 +21,5 @@ app_name = 'utils'
 urlpatterns = [
     path('pdf/<int:pk>/', views.PDF.as_view(), name='pdf'),
     path('validate_ticket/', views.ValidateTicket.as_view(), name='validate_ticket'),
+    path('cancel_ticket/', views.CancelTicket.as_view(), name='cancel_ticket'),
 ]

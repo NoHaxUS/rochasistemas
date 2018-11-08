@@ -207,6 +207,34 @@
         </div>
     </div>
     <!-- end Validate Ticket -->
+
+    <!-- Cancel Ticket -->
+    <div id="modal-cancel-ticket" class="modal">
+        <div class="modal-content">
+            <a class="modal-close">
+                <i class="material-icons right">close</i>
+            </a>
+            <h4>Cancelar Bilhete</h4>
+            <div class="row">
+                <form action="" method="get" id="cancel-ticket-form">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix">event_note</i>
+                            <input id="cancel-ticket-input" type="number" class="validate" tabindex="1" autofocus autocomplete="off">
+                            <label for="cancel-ticket-input">N° do Bilhete</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <button class="btn waves-effect waves-light right" type="submit" tabindex="2">Cancelar</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- end Cancel Ticket -->
     
 
 {% endblock %}
@@ -237,15 +265,23 @@
         {% if perms.user.be_seller and not user.is_superuser %}
         <li>
             <a href="{% url 'admin:index' %}" class="waves-effect waves-light btn white green-text-button">
-                Painel do Cambista</a>
+                Painel</a>
         </li>
         <li>
             <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
-                Consultar Bilhete</a>
+                Consultar</a>
         </li>
         <li>
             <a href="#modal-validate-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
-                Validar Bilhete</a>
+                Validar</a>
+        </li>
+        <li>
+            <a href="#modal-cancel-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
+                Cancelar</a>
+        </li>
+        <li>
+            <a href="#modal-pay-winners" class="waves-effect waves-light btn white green-text-button modal-trigger">
+                Pagar Ganhadores</a>
         </li>
         {% endif %}
         
@@ -305,15 +341,23 @@
         {% if perms.user.be_seller and not user.is_superuser %}
         <li>
             <a href="{% url 'admin:index' %}" class="waves-effect waves-light btn white green-text-button ">
-                Painel do Cambista</a>
+                Painel</a>
         </li>
         <li>
             <a href="#modal-check-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
-                Consultar Bilhete</a>
+                Consultar</a>
         </li>
         <li>
             <a href="#modal-validate-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
-                Validar Bilhete</a>
+                Validar</a>
+        </li>
+        <li>
+            <a href="#modal-cancel-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
+                Cancelar</a>
+        </li>
+        <li>
+            <a href="#modal-pay-winners" class="waves-effect waves-light btn white green-text-button modal-trigger">
+                Pagar Ganhadores</a>
         </li>
         {% endif %} {% if not perms.user.be_seller and not user.is_superuser and not perms.user.be_manager %}
         <li>

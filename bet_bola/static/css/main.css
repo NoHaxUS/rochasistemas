@@ -24,8 +24,8 @@ main {
 
 nav ul a.btn{
     margin-left: 0px;
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-left: 8px;
+    padding-right: 8px;
 }
 
 tbody tr td {
