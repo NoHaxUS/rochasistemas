@@ -17,13 +17,13 @@ import utils.timezone as tzlocal
 
 class Ticket(models.Model):
 
-    TICKET_STATUS = (
-        ('Aguardando Resultados', 'Aguardando Resultados'),
-        ('Não Venceu', 'Não Venceu'),
-        ('Venceu', 'Venceu'),
-        ('Venceu, não pago','Venceu, não pago'),
-        ('Cancelado', 'Cancelado')
-    )
+    TICKET_STATUS = {
+        'Aguardando Resultados':'Aguardando Resultados',
+        'Não Venceu': 'Não Venceu',
+        'Venceu':'Venceu',
+        'Venceu, não pago' : 'Venceu, não pago',
+        'Cancelado' : 'Cancelado'
+    }
     
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Apostador')
@@ -66,6 +66,7 @@ class Ticket(models.Model):
         return mark_safe(link)
     get_ticket_link.short_description = 'Ver'
 
+
     def seller_related(self):
         if self.payment:
             return self.payment.who_set_payment
@@ -80,11 +81,11 @@ class Ticket(models.Model):
                 'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
         
         who_cancelled  = str(user.pk) + ' - ' + user.username
-        if not self.ticket_status == 'Aguardando Resultados':
+        if not self.ticket_status == Ticket.TICKET_STATUS['Aguardando Resultados']:
             return {'success':False,
                 'message':' Ticket '+ str(self.pk)+ ' não cancelado, pois não está aguardando resultados.'}
         
-        if not self.payment.status_payment == 'Pago':
+        if not self.payment.status_payment == Payment.PAYMENT_STATUS[1][1]:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Pago para ser cancelado.'}
 
@@ -120,11 +121,11 @@ class Ticket(models.Model):
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
         
-        if not self.payment.status_payment == 'Aguardando Pagamento do Ticket':
+        if not self.payment.status_payment == Payment.PAYMENT_STATUS[0][1]:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Aguardando Pagamento.'}
 
-        if not self.ticket_status == 'Aguardando Resultados':
+        if not self.ticket_status == Ticket.TICKET_STATUS['Aguardando Resultados']:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Aguardando Resultados.'}
 
@@ -164,20 +165,20 @@ class Ticket(models.Model):
 
     def pay_winner_punter(self, user):
         from history.models import PunterPayedHistory
-        
-        if self.reward.reward_status == 'O apostador foi pago':
-            return {'success':False,
-                'message':'O Ticket '+ str(self.pk)+ ' já foi recompensado.'}
 
         if not self.payment or not self.reward:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
         
-        if not self.ticket_status == 'Venceu':
+        if self.reward.reward_status == Reward.REWARD_STATUS[1][1]:
+            return {'success':False,
+                'message':'O Ticket '+ str(self.pk)+ ' já foi recompensado.'}
+        
+        if not self.ticket_status == Ticket.TICKET_STATUS['Venceu']:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não Venceu'}
 
-        if not self.payment.status_payment == 'Pago':
+        if not self.payment.status_payment == Payment.PAYMENT_STATUS[1][1]:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não foi Pago.'}
 
@@ -213,33 +214,6 @@ class Ticket(models.Model):
 
         return round(cotation_sum,2)
     cotation_sum.short_description = 'Cota Total'
-
-
-    def update_ticket_status(self):
-
-        if self.cotations.filter(winning=False).count() > 0:
-            self.ticket_status = Ticket.TICKET_STATUS[1][1]
-            self.reward.status_reward = Reward.REWARD_STATUS[2][1]
-            self.reward.save()
-            self.save()
-        elif not self.cotations.filter(winning=None).count() > 0:
-            if self.payment.status_payment == 'Pago':
-                self.ticket_status = Ticket.TICKET_STATUS[2][1]
-                self.reward.status_reward = Reward.REWARD_STATUS[3][1]
-            else:
-                self.ticket_status = Ticket.TICKET_STATUS[3][1]
-                self.reward.status_reward = Reward.REWARD_STATUS[4][1]
-            self.reward.save()
-            self.save()
-            
-            from utils.models import GeneralConfigurations
-            if GeneralConfigurations.objects.filter(pk=1):
-                auto_pay_punter = GeneralConfigurations.objects.get(pk=1).auto_pay_punter
-            else:
-                auto_pay_punter = False
-            
-            if auto_pay_punter and self.payment.who_set_payment:
-                self.pay_winner_punter(self.payment.who_set_payment)
 
 
     class Meta:
@@ -285,6 +259,7 @@ class Game(models.Model):
         (7, "Abandonado"),
         (8, "Pré-jogo")
     )
+    
     id = models.BigIntegerField(primary_key=True, verbose_name="ID")
     name = models.CharField(max_length=80, verbose_name='Nome do Jogo')
     start_date = models.DateTimeField(verbose_name='Início da Partida')
@@ -368,7 +343,7 @@ class Reward(models.Model):
         ('O apostador foi pago', 'O apostador foi pago'),
         ('Esse ticket não venceu', 'Esse ticket não venceu'),
         ('Venceu, Pagar Apostador', 'Venceu, Pagar Apostador'),
-        ('Venceu e não foi pago','Venceu e não foi pago')
+        ('Venceu, não pago','Venceu, não pago')
     )
 
     id = models.BigAutoField(primary_key=True, verbose_name="ID")

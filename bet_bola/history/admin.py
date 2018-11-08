@@ -5,6 +5,7 @@ from user.models import CustomUser
 from django.utils.translation import gettext_lazy as _
 
 
+
 @admin.register(SellerSalesHistory)
 class SellerSalesHistoryAdmin(admin.ModelAdmin):
     search_fields = ['seller__username','seller__first_name']
@@ -18,10 +19,10 @@ class SellerSalesHistoryAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs
         elif request.user.has_perm('user.be_seller'):
-            return SellerSalesHistory.objects.filter(seller=request.user.seller)
+            return qs.filter(seller=request.user.seller)
         
         elif request.user.has_perm('user.be_manager'):
-            return SellerSalesHistory.objects.filter(seller__my_manager=request.user.manager)
+            return qs.filter(seller__my_manager=request.user.manager)
 
     def has_add_permission(self, request):
         return False
@@ -29,9 +30,6 @@ class SellerSalesHistoryAdmin(admin.ModelAdmin):
         return False
     def has_change_permission(self, request, obj=None):
         return False
-    
-
-
 
 
 @admin.register(ManagerTransactions)
@@ -48,10 +46,10 @@ class ManagerTransactionsAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs
         elif request.user.has_perm('user.be_seller'):
-            return ManagerTransactions.objects.filter(seller=request.user.seller)
+            return qs.filter(seller=request.user.seller)
 
         elif request.user.has_perm('user.be_manager'):
-            return ManagerTransactions.objects.filter(manager=request.user.manager)
+            return qs.filter(manager=request.user.manager)
 
 
     def has_add_permission(self, request):
@@ -76,10 +74,10 @@ class RevenueHistorySellerAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs
         elif request.user.has_perm('user.be_seller'):
-            return RevenueHistorySeller.objects.filter(seller=request.user.seller)
+            return qs.filter(seller=request.user.seller)
 
         elif request.user.has_perm('user.be_manager'):
-            return RevenueHistorySeller.objects.filter(seller__my_manager=request.user.manager)
+            return qs.filter(seller__my_manager=request.user.manager)
 
 
     def has_add_permission(self, request):
@@ -104,7 +102,7 @@ class RevenueHistoryManagerAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs
         elif request.user.has_perm('user.be_manager'):
-            return RevenueHistoryManager.objects.filter(manager=request.user.manager)
+            return qs.filter(manager=request.user.manager)
 
 
     def has_add_permission(self, request):
@@ -113,8 +111,6 @@ class RevenueHistoryManagerAdmin(admin.ModelAdmin):
         return False
     def has_change_permission(self, request, obj=None):
         return False
-
-
 
 
 @admin.register(PunterPayedHistory)
@@ -131,10 +127,10 @@ class PunterPayedHistoryAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs
         elif request.user.has_perm('user.be_seller'):
-            return PunterPayedHistory.objects.filter(seller=request.user.seller)
+            return qs.filter(seller=request.user.seller)
 
         elif request.user.has_perm('user.be_manager'):
-            return PunterPayedHistory.objects.filter(seller__my_manager=request.user.manager)
+            return qs.filter(seller__my_manager=request.user.manager)
 
 
     def has_add_permission(self, request):
@@ -143,8 +139,6 @@ class PunterPayedHistoryAdmin(admin.ModelAdmin):
         return False
     def has_change_permission(self, request, obj=None):
         return False
-
-
 
 
 @admin.register(TicketCancelationHistory)
@@ -164,9 +158,9 @@ class TicketCancelationHistoryHistoryAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs
         elif request.user.has_perm('user.be_seller'):
-            return TicketCancelationHistory.objects.filter(seller_of_payed=request.user.seller)
+            return qs.filter(seller_of_payed=request.user.seller)
         elif request.user.has_perm('user.be_manager'):
-            return TicketCancelationHistory.objects.filter(seller_of_payed__my_manager=request.user.manager)
+            return qs.filter(seller_of_payed__my_manager=request.user.manager)
 
 
     def has_add_permission(self, request):
@@ -175,3 +169,4 @@ class TicketCancelationHistoryHistoryAdmin(admin.ModelAdmin):
         return False
     def has_change_permission(self, request, obj=None):
         return False
+

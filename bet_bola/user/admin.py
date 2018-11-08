@@ -21,15 +21,9 @@ class PunterAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-
-        if request.user.is_superuser:
-            return qs
-        if request.user.has_perm('user.be_manager'):
-            return qs
-        if request.user.has_perm('user.be_seller'):
-            return qs
         if request.user.has_perm('user.be_punter'):
             return qs.filter(pk=request.user.pk)
+        return qs
 
     def get_fields(self, request, obj):
         fields = super().get_fields(request, obj)
@@ -81,7 +75,6 @@ class SellerAdmin(admin.ModelAdmin):
             return qs
         if request.user.has_perm('user.be_manager'):
             return qs.filter(my_manager=request.user.manager)
-
         if request.user.has_perm('user.be_seller'):
             return qs.filter(pk=request.user.pk)
         
@@ -130,7 +123,7 @@ pay_manager.short_description = 'Pagar Gerentes'
 class ManagerAdmin(admin.ModelAdmin):
     search_fields = ['pk','first_name','username','cpf']
     fields = ('username','password','first_name','last_name','email','cellphone','commission','cpf','address','credit_limit_to_add','is_active','can_cancel_ticket','can_sell_unlimited')
-    list_display = ('username','first_name','actual_revenue','get_commission','net_value','out_money','real_net_value','credit_limit_to_add')
+    list_display = ('username','first_name','actual_revenue','out_money','get_commission','net_value','real_net_value','credit_limit_to_add')
     list_editable = ('credit_limit_to_add',)
     list_display_links = ('username',)
     actions = [pay_manager]
