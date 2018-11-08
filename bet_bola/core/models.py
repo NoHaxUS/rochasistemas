@@ -40,17 +40,17 @@ class Ticket(models.Model):
         return str(self.pk)
 
     @property
-    def ticket_status(self):         
-        if self.payment.status_payment == 'Cancelado':
-            return "Cancelado"   
+    def ticket_status(self):
+        if self.payment.status_payment == Payment.PAYMENT_STATUS[2][1]:
+            return Payment.PAYMENT_STATUS[2][1]
         if self.cotations.filter(status=1).count() > 0:
-            return "Aguardando Resultados"
+            return Ticket.TICKET_STATUS['Aguardando Resultados']
         if self.cotations.filter(~Q(settlement=2)).count() > 0:
-            return "Não Venceu"
+            return Ticket.TICKET_STATUS['Não Venceu']
         else:
             if self.payment.status_payment == 'Pago':
-                return "Venceu"        
-            return "Venceu, não pago"
+                return Ticket.TICKET_STATUS["Venceu"]
+            return Ticket.TICKET_STATUS["Venceu, não pago"]
 
     def get_punter_name(self):
         if self.user:
