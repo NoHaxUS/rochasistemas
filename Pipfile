@@ -4,11 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-"psycopg2" = "*"
 requests = "*"
 fpdf = "*"
 pika = "*"
 django = "*"
+"psycopg2-binary" = "*"
 
 [dev-packages]
 

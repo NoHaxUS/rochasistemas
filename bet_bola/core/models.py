@@ -435,11 +435,6 @@ class Cotation(models.Model):
     last_update = models.DateTimeField(null=True, blank=True, verbose_name="Última atualização")
 
 
-    def save(self, *args, **kwargs):
-        if not self.status == self.COTATION_STATUS[0][0] and self.settlement == None:
-            super().save(args, kwargs)
-
-
     def __str__(self):
         return str(self.id)
 
