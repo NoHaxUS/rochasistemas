@@ -6,6 +6,7 @@ import json
 from core.models import Location, League, Sport, Market, Period, Game, Cotation
 from .real_time import process_fixture_metadata, process_markets_realtime, process_settlements
 from .translations import get_translated_cotation, get_translated_market
+from utils.models import MarketReduction, GeneralConfigurations
 
 def get_locations():
     request = requests.get("http://prematch.lsports.eu/OddService/GetLocations?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&Lang=pt")
@@ -39,8 +40,14 @@ def process_locations(content):
             ).save()
 
 
-def process_reductions(self):
-    pass
+def process_reductions():
+    if GeneralConfigurations.objects.filter(pk=1).exists():
+        print("Processando Redução de Cotas Geral")
+        GeneralConfigurations.objects.get(pk=1).apply_reductions()
+    
+    for market_reduction in MarketReduction.objects.all():
+        print("Processando Redução: " + str(market_reduction.market_to_reduct))
+        market_reduction.apply_reductions()
 
 
 def process_leagues(content):
