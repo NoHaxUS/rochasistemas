@@ -435,6 +435,11 @@ class Cotation(models.Model):
     last_update = models.DateTimeField(null=True, blank=True, verbose_name="Última atualização")
 
 
+    def save(self, *args, **kwargs):
+        if not Cotation.objects.filter(id=self.id, status=3).exists():
+            super().save(args, kwargs)
+
+
     def __str__(self):
         return str(self.id)
 

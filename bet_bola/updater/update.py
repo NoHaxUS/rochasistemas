@@ -38,6 +38,11 @@ def process_locations(content):
                 name=location['Name']
             ).save()
 
+
+def process_reductions(self):
+    pass
+
+
 def process_leagues(content):
     for league in content.get('Body'):
         if league['Id'] and league['Name'] and league['LocationId'] and league['SportId']:

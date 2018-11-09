@@ -11,12 +11,12 @@ def write_logs(msg):
         file.write(msg + "\n")
 
 def start_update():  
-    write_logs("Update Started...")
+    #write_logs("Update Started...")
     get_sports()
     get_locations()
     get_leagues()
     get_events()
-    write_logs("Fininshing Update...")
+    #write_logs("Fininshing Update...")
 
 
 def on_message(channel, method_frame, header_frame, body):
@@ -28,8 +28,8 @@ def on_message(channel, method_frame, header_frame, body):
 
     if type_res == 1:
         process_fixture_metadata(json_parsed)
-    elif type_res == 3:
-        process_markets_realtime(json_parsed)
+    #elif type_res == 3:
+    #    process_markets_realtime(json_parsed)
     elif type_res == 35:
         process_settlements(json_parsed)
     
