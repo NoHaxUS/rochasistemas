@@ -82,15 +82,15 @@ class GetMainMenuView(View):
 
         location_leagues = defaultdict(set)
 
-        leagues = [ game.league for game in games ]
-        #for game in games:
-        #    if game.league.location:
-        #        location_leagues[game.league.location].add(game.league)
+        
+        for game in games:
+            if game.league.location:
+                location_leagues[game.league.location].add(game.league)
         
         #print(leagues)
-        print(serializers.serialize("json", leagues, use_natural_foreign_keys=True))
-        return UnicodeJsonResponse({})
-        #return UnicodeJsonResponse(serializers.serialize("json", location_leagues, use_natural_foreign_keys=True), safe=False)
+        #print(serializers.serialize("json", leagues, use_natural_foreign_keys=True))
+        #return UnicodeJsonResponse({})
+        return UnicodeJsonResponse(serializers.serialize("json", location_leagues, use_natural_foreign_keys=True), safe=False)
 
 
 class PDF(View):
