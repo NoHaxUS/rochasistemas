@@ -424,14 +424,14 @@
                         {% for location in location_leagues %}
                         <li>
                             <div class="collapsible-header championship-collapse-header">
-                                <i class="large material-icons green-text-button">chevron_right</i>
+                                <i class="large material-icons green-text-button">arrow_drop_down</i>
                                 {{location.name}}
                             </div>
                             <div class="collapsible-body championship-collapse-body">
                                 <ul class='ul-championship-title'>
                                     {%for league in location_leagues|get_item:location %}
                                     <li class="center-align">
-                                        <a href="{% url 'core:core_championship_get' pk=league.pk %}" class="championship-li">{{ league.name }}</a>
+                                        <a href="{% url 'core:core_championship_get' pk=league.pk %}" class="championship-li"><i class="tiny material-icons green-text-button">chevron_right</i> {{ league.name }}</a>
                                     </li>
                                     {%endfor%}
                                 </ul>
@@ -510,14 +510,14 @@
         {% for location in location_leagues %}
         <li>
             <div class="collapsible-header championship-collapse-header">
-                <i class="large material-icons green-text-button">chevron_right</i>
+                <i class="large material-icons green-text-button">arrow_drop_down</i>
                 {{location.name}}
             </div>
             <div class="collapsible-body championship-collapse-body">
                 <ul class='ul-championship-title'>
                     {%for league in location_leagues|get_item:location %}
                     <li class="center-align">
-                        <a href="{% url 'core:core_championship_get' pk=league.pk%}" class="championship-li">{{ league.name }}</a>
+                        <a href="{% url 'core:core_championship_get' pk=league.pk%}" class="championship-li"><i class="tiny material-icons green-text-button">chevron_right</i> {{ league.name }}</a>
                     </li>
                     {%endfor%}
                 </ul>

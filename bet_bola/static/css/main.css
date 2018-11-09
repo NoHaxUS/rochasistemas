@@ -385,13 +385,6 @@ span.step-links li.active a{
     background-color: #8ad863;
 }
 
-.ul-championship-title li a:hover{
-    font-style: italic;
-    background-color: beige;
-    padding: 8px;
-    border-radius: 20px;
-}
-
 .see-ticket-after-create{
     font-family: 'Roboto', sans-serif;
     display: block;
