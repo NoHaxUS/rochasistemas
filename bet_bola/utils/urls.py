@@ -23,4 +23,5 @@ urlpatterns = [
     path('validate_ticket/', views.ValidateTicket.as_view(), name='validate_ticket'),
     path('cancel_ticket/', views.CancelTicket.as_view(), name='cancel_ticket'),
     path('pay_ticket_winners/', views.PayTicketWinners.as_view(), name='pay_ticket_winners'),
+    path('get_main_menu/', views.GetMainMenuView.as_view(), name='get_main_menu'),
 ]

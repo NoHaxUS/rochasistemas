@@ -13,6 +13,11 @@ from django.db.models import F, Q, When, Case
 import urllib
 import json
 from utils.response import UnicodeJsonResponse
+from  collections import defaultdict
+from django.core import serializers
+import utils.timezone as tzlocal
+from core.models import Game
+from django.db.models import Count
 
 
 class ValidateTicket(View):
@@ -61,6 +66,31 @@ class PayTicketWinners(View):
             'sucess':True,
             'message': 'Ganhadores Pagos.'
         })
+
+
+class GetMainMenuView(View):
+
+    def get(self, request, *args, **kwargs):
+
+        games = Game.objects.filter(start_date__gt=tzlocal.now(),
+        league__isnull=False,
+        game_status=1,
+        visible=True)\
+        .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
+        .order_by('-league__location__priority', '-league__priority')
+
+        location_leagues = defaultdict(set)
+
+        leagues = [ game.league for game in games ]
+        #for game in games:
+        #    if game.league.location:
+        #        location_leagues[game.league.location].add(game.league)
+        
+        #print(leagues)
+        print(serializers.serialize("json", leagues, use_natural_foreign_keys=True))
+        return UnicodeJsonResponse({})
+        #return UnicodeJsonResponse(serializers.serialize("json", location_leagues, use_natural_foreign_keys=True), safe=False)
 
 
 class PDF(View):

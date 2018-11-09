@@ -19,24 +19,8 @@ import urllib
 from decimal import Decimal
 from math import ceil
 from  collections import defaultdict
+import time
 
-def get_main_menu():
-
-    games = Game.objects.filter(start_date__gt=tzlocal.now(),
-    league__isnull=False,
-    game_status=1,
-    visible=True)\
-    .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
-    .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
-    .order_by('-league__location__priority', '-league__priority')
-
-
-    location_leagues = defaultdict(set)
-
-    for game in games:
-        if game.league.location:
-            location_leagues[game.league.location].add(game.league)
-    return location_leagues
 
 class TodayGames(TemplateResponseMixin, View):
 
@@ -76,13 +60,14 @@ class TodayGames(TemplateResponseMixin, View):
         num_of_pages =  ceil(games_total / results_per_page)
 
         league_games = defaultdict(list)
-        location_leagues = get_main_menu()
+        #location_leagues = get_main_menu()
+
         
         for game in games:
             league_games[game.league].append(game)
         
         context = {'league_games': league_games, 
-            'location_leagues': location_leagues,
+            #'location_leagues': location_leagues,
             'after_tommorrow': after_tommorrow,
             'range_pages': range(1, num_of_pages + 1),
             'current_page': page}
