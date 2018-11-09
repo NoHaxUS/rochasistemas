@@ -119,7 +119,8 @@ class PDF(View):
                 h=h+14
                 pdf.text(4,h, c.market.name)
             h=h+14
-            pdf.text(4,h,"Cota:" + c.name)			
+            base_line = c.base_line if c.base_line else ''
+            pdf.text(4,h,"Cota:" + c.name + ' ' + base_line)			
             pdf.text(190,h,str("%.2f" % cotations_values[c.pk]))
             h=h+14
 

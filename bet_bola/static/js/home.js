@@ -95,7 +95,7 @@ $(document).ready(function () {
         $.get('/bet/', function(ticket, status, rq){
             var cotation_sum = 1
             for (var key in ticket) {
-
+                var base_line = ticket[key]['base_line'] ? ' ' + ticket[key]['base_line'] : ''
                 var bet_html = '<div class="divider"></div>' +
                     '<li class="center-align bet">' +
                     '<div class="game-id hide">'+
@@ -108,7 +108,7 @@ $(document).ready(function () {
                         ticket[key]['market__name'] +
                     '</div>' +
                     '<div class="game-cotation">' +
-                        ticket[key]['name'] + ' : ' + ticket[key]['price'] +
+                        ticket[key]['name'] + base_line + ' : ' + ticket[key]['price'] +
                     '</div>' +
                     '<div class="bet-delete">' +
                     '<span class="valign-wrapper red-text">Remover' +

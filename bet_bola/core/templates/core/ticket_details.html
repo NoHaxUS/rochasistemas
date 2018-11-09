@@ -145,7 +145,11 @@
                             </td>
                             <td>
                             {{cotation.market.name}} <br>
+                            {% if cotation.base_line %}
+                                Cota: {{cotation.name}} {{cotation.base_line}} : {{ cotations_values|get_item:cotation.pk }}
+                            {% else %}
                             Cota: {{cotation.name}} : {{ cotations_values|get_item:cotation.pk }}
+                            {% endif %}
                             </td>
                             <td>
                                 {{ cotation.get_settlement_display }}

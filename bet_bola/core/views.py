@@ -272,7 +272,7 @@ class BetView(View):
             itens = []
 
             for key, value in request.session['ticket'].items():
-                cotation = Cotation.objects.filter(pk=value).values('pk','game__id','game__name','name', 'price', 'market__name')
+                cotation = Cotation.objects.filter(pk=value).values('pk','game__id','game__name','name','base_line', 'price', 'market__name')
                 itens.append(cotation.first())
 
             return JsonResponse( itens , safe=False)
@@ -527,7 +527,9 @@ class TicketDetail(TemplateResponseMixin, View):
                 content += "<LEFT>" + cotation.game.start_date.strftime('%d/%m/%Y %H:%M') + "<BR>"
                 if cotation.market:
                     content += "<LEFT>"+ cotation.market.name + "<BR>"
-                content += "<LEFT>" + cotation.name + " --> " + str("%.2f" % cotations_values[cotation.pk]) + "<BR>"
+
+                base_line = cotation.base_line if cotation.base_line else ''
+                content += "<LEFT>" + cotation.name + ' ' + base_line + " --> " + str("%.2f" % cotations_values[cotation.pk]) + "<BR>"
 
                 content += "<RIGHT> Status: " +  cotation.get_settlement_display() + "<BR>"
                 
