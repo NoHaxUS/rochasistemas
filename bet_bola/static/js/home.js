@@ -2,7 +2,33 @@ $(document).ready(function () {
 
 
     $.get('/utils/get_main_menu/', function(response, status, rq){
-        console.log(JSON.parse(response));
+        
+        //console.log(response);
+        var content = '';
+        for (key in response){
+            //console.log(key);
+            content += '<li>' +
+                '<div class="collapsible-header championship-collapse-header">' +
+                '<i class="large material-icons green-text-button">arrow_drop_down</i>' +
+                key +
+                '</div>' +
+                '<div class="collapsible-body championship-collapse-body">' +
+                    '<ul class="ul-championship-title">';
+                       
+                        for (new_key in response[key]){
+                            //console.log(response[key][new_key])
+                            content += '<li class="center-align">' +
+                            '<a href="/league/' + response[key][new_key][0] + '" class="championship-li"><i class="tiny material-icons green-text-button">chevron_right</i>'+ response[key][new_key][1] +'</a>' +
+                        '</li>';
+                      }
+        content += '</ul>' +
+                '</div> ' +
+            '</li>';
+        }
+
+        document.getElementById('main-menu-mobile').innerHTML = content;
+        document.getElementById('main-menu-desktop').innerHTML = content;
+
     }, 'json');
 
 
@@ -396,7 +422,7 @@ $(document).ready(function () {
             
             var dataJSON = JSON.parse(data);
             
-            //console.log(dataJSON);
+            console.log(dataJSON);
 
             var full_html = '';
 

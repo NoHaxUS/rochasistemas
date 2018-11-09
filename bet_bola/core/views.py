@@ -194,12 +194,12 @@ class GameLeague(TemplateResponseMixin, View):
         .order_by('-league__priority')
         
         
-        location_leagues = get_main_menu()
+        #location_leagues = get_main_menu()
 
         first_game = games.first()
         location_league = str(first_game.league.location.name) + " - " + str(first_game.league.name)
         context = {'games_selected_league': games, 
-            'location_leagues': location_leagues,
+            #'location_leagues': location_leagues,
             'location_league' : location_league,
             'after_tommorrow': after_tommorrow}
 

@@ -82,15 +82,19 @@ class GetMainMenuView(View):
         .values('league__location','league__location__name', 'league')\
         .distinct()
 
-        #print(games)
-        item = []
+
+        itens = {}
         for value in games:
             print(value)
             value["league__name"] = League.objects.filter(id=value['league']).values('name').first()['name']
-            #item[value['league__location__name']]
-            item.append(value)
+            if not value['league__location__name'] in itens.keys():
+                itens[value['league__location__name']] = []
+                itens[value['league__location__name']].append( ( value['league'], value["league__name"]) )
+            else:
+                itens[value['league__location__name']].append( ( value['league'], value["league__name"]) )
 
-        return UnicodeJsonResponse(item, safe=False)
+
+        return UnicodeJsonResponse(itens, safe=False)
         #location_leagues = defaultdict(set)
         #location_leagues = {}
         
