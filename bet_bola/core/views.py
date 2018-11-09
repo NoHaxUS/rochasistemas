@@ -108,13 +108,13 @@ class TomorrowGames(TemplateResponseMixin, View):
         num_of_pages =  ceil(games_total / results_per_page)
         
         league_games = defaultdict(list)
-        location_leagues = get_main_menu()
+        #location_leagues = get_main_menu()
         
         for game in games:
             league_games[game.league].append(game)
         
         context = {'league_games': league_games, 
-            'location_leagues': location_leagues,
+            #'location_leagues': location_leagues,
             'after_tommorrow': after_tommorrow,
             'range_pages': range(1, num_of_pages + 1),
             'current_page': page
@@ -159,13 +159,13 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
         num_of_pages =  ceil(games_total / results_per_page)
 
         league_games = defaultdict(list)
-        location_leagues = get_main_menu()
+        #location_leagues = get_main_menu()
         
         for game in games:
             league_games[game.league].append(game)
         
         context = {'league_games': league_games, 
-            'location_leagues': location_leagues,
+            #'location_leagues': location_leagues,
             'after_tommorrow': after_tommorrow,
             'range_pages': range(1, num_of_pages + 1),
             'current_page': page
