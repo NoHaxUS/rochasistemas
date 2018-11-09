@@ -83,13 +83,14 @@ class GetMainMenuView(View):
         .distinct()
 
         #print(games)
-        item = {}
+        item = []
         for value in games:
             print(value)
             value["league__name"] = League.objects.filter(id=value['league']).values('name').first()['name']
-            item[value['league__location__name']]
+            #item[value['league__location__name']]
+            item.append(value)
 
-        return UnicodeJsonResponse(itens, safe=False)
+        return UnicodeJsonResponse(item, safe=False)
         #location_leagues = defaultdict(set)
         #location_leagues = {}
         
