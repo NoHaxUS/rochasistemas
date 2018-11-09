@@ -338,7 +338,7 @@ class Location(models.Model):
         return self.name
 
     def natural_key(self):
-        pass
+        return self.name
 
     class Meta:
         verbose_name = 'País'
