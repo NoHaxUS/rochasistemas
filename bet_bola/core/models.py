@@ -51,11 +51,13 @@ class Ticket(models.Model):
             return Payment.PAYMENT_STATUS[2][1]
         if self.cotations.filter(status=1).count() > 0:
             return Ticket.TICKET_STATUS['Aguardando Resultados']
-        if self.cotations.filter(~Q(settlement=2)).count() > 0:
+
+        if self.cotations.filter(settlement__in=[1,3,4]).count() > 0:
             return Ticket.TICKET_STATUS['Não Venceu']
+
+        if not self.cotations.filter(~Q(settlement__in=[2,5])).count() > 0 and self.payment.status_payment == 'Pago':
+            return Ticket.TICKET_STATUS["Venceu"]
         else:
-            if self.payment.status_payment == 'Pago':
-                return Ticket.TICKET_STATUS["Venceu"]
             return Ticket.TICKET_STATUS["Venceu, não pago"]
 
     def get_punter_name(self):
@@ -212,7 +214,9 @@ class Ticket(models.Model):
 
 
     def cotation_sum(self):
-        valid_cotations = CotationHistory.objects.filter(ticket=self, game__game_status__in = (1,3,2))
+        valid_cotations = CotationHistory.objects\
+        .filter(ticket=self, game__game_status__in = (1,3,2,8))\
+        .exclude(original_cotation__settlement=-1)
         
         cotation_sum = 1
         for cotation in valid_cotations:
@@ -413,9 +417,9 @@ class Cotation(models.Model):
             (-1, "Cancelada"),
             (1, "Perdeu"),
             (2, "Ganhou"),
-            (3, "Reembolso"),
-            (4, "Metade Perdida"),
-            (5, "Metade Ganha")
+            (3, "Perdeu"), #(3, "Reembolso"),
+            (4, "Perdeu"), #(4, "Metade Perdida"),
+            (5, "Ganhou") #(5, "Metade Ganha")
         )
 
     COTATION_STATUS = (
