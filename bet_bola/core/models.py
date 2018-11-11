@@ -411,7 +411,7 @@ class Market(models.Model):
 
     class Meta:
         verbose_name = 'Mercado'
-        verbose_name_plural = 'Mercado'
+        verbose_name_plural = 'Mercados'
 
 
 class Cotation(models.Model):
