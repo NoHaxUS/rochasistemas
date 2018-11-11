@@ -292,6 +292,12 @@ class MarketAdmin(admin.ModelAdmin):
     #list_editable = ('available',)
     list_display_links = ('id','name')
     list_per_page = 40
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
     
 
 
@@ -314,6 +320,13 @@ class LocationAdmin(admin.ModelAdmin):
     list_editable = ('priority','visible')
     list_display_links = ('id','name')
     list_per_page = 20
+
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(League)

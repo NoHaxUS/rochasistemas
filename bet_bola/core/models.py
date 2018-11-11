@@ -49,16 +49,19 @@ class Ticket(models.Model):
     def ticket_status(self):
         if self.payment.status_payment == Payment.PAYMENT_STATUS[2][1]:
             return Payment.PAYMENT_STATUS[2][1]
-        if self.cotations.filter(status=1).count() > 0:
-            return Ticket.TICKET_STATUS['Aguardando Resultados']
 
         if self.cotations.filter(settlement__in=[1,3,4]).count() > 0:
             return Ticket.TICKET_STATUS['Não Venceu']
 
+        if self.cotations.filter(status=1).count() > 0:
+            return Ticket.TICKET_STATUS['Aguardando Resultados']
+
         if not self.cotations.filter(~Q(settlement__in=[2,5])).count() > 0 and self.payment.status_payment == 'Pago':
             return Ticket.TICKET_STATUS["Venceu"]
-        else:
+        if not self.cotations.filter(~Q(settlement__in=[2,5])).count() > 0 and self.payment.status_payment == Payment.PAYMENT_STATUS[0][1]:
             return Ticket.TICKET_STATUS["Venceu, não pago"]
+        
+        return "Bilhete Inválido"
 
     def get_punter_name(self):
         if self.user:
