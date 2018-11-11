@@ -482,7 +482,7 @@ class TicketDetail(TemplateResponseMixin, View):
 
             cotations_values = {}
             for current_cotation in cotations_history:
-                cotations_values[current_cotation.original_cotation] = current_cotation.price
+                cotations_values[current_cotation.original_cotation.pk] = current_cotation.price
 
             content = "<CENTER> -> " + settings.APP_VERBOSE_NAME.upper() + " <- <BR>"
             content += "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"

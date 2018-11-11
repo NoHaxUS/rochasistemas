@@ -122,7 +122,7 @@ class PDF(View):
 
         cotations_values = {}
         for i_cotation in cotations_history:
-            cotations_values[i_cotation.original_cotation] = i_cotation.price
+            cotations_values[i_cotation.original_cotation.pk] = i_cotation.price
 
 
         pdf = FPDF('P', 'mm', (231, 297 + ticket.cotations.count() * 84))
