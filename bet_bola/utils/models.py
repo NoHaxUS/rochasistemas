@@ -128,7 +128,6 @@ class GeneralConfigurations(models.Model):
     min_cotation_sum = models.DecimalField(max_digits=30, decimal_places=2,default=1, verbose_name="Valor mínimo da cota total")
     max_cotation_sum = models.DecimalField(max_digits=30, decimal_places=2, default=100000, verbose_name="Valor máximo da cota total")
     percentual_reduction = models.IntegerField(default=100, verbose_name="Redução Percentual")
-    auto_pay_punter = models.BooleanField(default=False, verbose_name='Auto Pagar Vencedores')
 
     def __str__(self):
         return "Configuração Atual"

@@ -216,12 +216,14 @@ class Ticket(models.Model):
     def cotation_sum(self):
         valid_cotations = CotationHistory.objects\
         .filter(ticket=self, game__game_status__in = (1,3,2,8))\
-        .exclude(original_cotation__settlement=-1)
+        .exclude(original_cotation__settlement=-1)\
+        .exclude(original_cotation__status=2)
         
         cotation_sum = 1
         for cotation in valid_cotations:
             cotation_sum *= cotation.price
-
+        if cotation_sum == 1:
+            return 0
         return round(cotation_sum,2)
     cotation_sum.short_description = 'Cota Total'
 
@@ -398,7 +400,8 @@ class Reward(models.Model):
 
 class Market(models.Model):
     id = models.BigIntegerField(primary_key=True, verbose_name="ID")
-    name = models.CharField(max_length=100, verbose_name='Tipo de Aposta')
+    name = models.CharField(max_length=100, verbose_name='Mercado')
+    available = models.BooleanField(default=True, verbose_name="Disponibilidade")
     
     def __str__(self):
         return str(self.name)
@@ -407,8 +410,8 @@ class Market(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = 'Tipo de Aposta'
-        verbose_name_plural = 'Tipo de Aposta'
+        verbose_name = 'Mercado'
+        verbose_name_plural = 'Mercado'
 
 
 class Cotation(models.Model):
@@ -440,10 +443,13 @@ class Cotation(models.Model):
     line = models.CharField(max_length=30, null=True, blank=True)
     base_line = models.CharField(max_length=30, null=True, blank=True)
     last_update = models.DateTimeField(null=True, blank=True, verbose_name="Última atualização")
-
+    is_updating = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        if not Cotation.objects.filter(id=self.id, status=3).exists():
+        if self.is_updating:
+            if not Cotation.objects.filter(id=self.id, status__in=[3,2]).exists():
+                super().save(args, kwargs)
+        else:
             super().save(args, kwargs)
 
 

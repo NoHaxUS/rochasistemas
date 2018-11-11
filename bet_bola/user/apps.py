@@ -1,34 +1,17 @@
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 
-def update_users_permissions_to_defaulf(sender, **kwargs):
-    from user.models import Seller, Punter, Manager
+def define_country_priority(sender, **kwargs):
+    print("Definindo prioridades de países")
+    from core.models import Location
+    Location.objects.filter(pk=183).update(priority=150)
+    Location.objects.filter(pk__in=[203,142,221,195,230,197,138,76,215,218,176,147,243])\
+    .update(priority=100)
     
-    updateBool = input("Update Users? Say: y or n: ")
-    if updateBool == "y":
-        print("Updating Sellers and Managers Permissions")
-        for seller in Seller.objects.all():
-            #seller.is_staff = True
-            seller.define_default_permissions()
-            seller.save()
-        
-        for manager in Manager.objects.all():
-            #manager.is_staff = True
-            manager.define_default_permissions()
-            manager.save()
-
-        """
-        for punter in Punter.objects.all():
-            punter.is_staff = True
-            punter.define_default_permissions()
-            punter.save()
-        """
-
 
 class UserConfig(AppConfig):
     name = 'user'
     verbose_name = "Usuários"
     
     def ready(self):
-        pass
-        #post_migrate.connect(update_users_permissions_to_defaulf, sender=self)
+        post_migrate.connect(define_country_priority, sender=self)

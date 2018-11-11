@@ -213,9 +213,9 @@ class CotationsView(View):
         gameid = self.kwargs['gameid']
         cotations_by_kind = {}
 
-        cotations_of_game = Cotation.objects.filter(game_id=gameid).filter(~Q(market__name='1X2')).filter(Q(market__isnull=False))			
+        cotations_of_game = Cotation.objects.filter(game_id=gameid).filter(~Q(market__name='1X2')).filter(market__isnull=False, market__available=True)			
         
-        markets = Market.objects.all().prefetch_related(Prefetch('cotations', queryset=cotations_of_game, to_attr='my_cotations')).order_by('name')
+        markets = Market.objects.filter(available=True).prefetch_related(Prefetch('cotations', queryset=cotations_of_game, to_attr='my_cotations')).order_by('name')
                                 
         cotations_serialized = {}
         for market in markets:
@@ -427,7 +427,7 @@ class CreateTicketView(View):
             for current_cotation in game_cotations:
                 ticket.cotations.add(current_cotation)
                 CotationHistory.objects.create(
-                    original_cotation=current_cotation.id,
+                    original_cotation=current_cotation,
                     ticket=ticket,
                     name=current_cotation.name,
                     start_price=current_cotation.start_price,

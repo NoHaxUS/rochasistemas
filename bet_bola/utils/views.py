@@ -85,7 +85,6 @@ class GetMainMenuView(View):
 
         itens = {}
         for value in games:
-            print(value)
             value["league__name"] = League.objects.filter(id=value['league']).values('name').first()['name']
             if not value['league__location__name'] in itens.keys():
                 itens[value['league__location__name']] = []
@@ -95,18 +94,6 @@ class GetMainMenuView(View):
 
 
         return UnicodeJsonResponse(itens, safe=False)
-        #location_leagues = defaultdict(set)
-        #location_leagues = {}
-        
-        #for game in games:
-        #    if game.league.location:
-        #        location_leagues[game.league.location.name].add(serializers.serialize("json", game.league))
-        
-        #print(leagues)
-        #print(serializers.serialize("json", leagues, use_natural_foreign_keys=True))
-        #return UnicodeJsonResponse({})
-
-        #return UnicodeJsonResponse(serializers.serialize("json", location_leagues, use_natural_foreign_keys=True), safe=False)
 
 
 class PDF(View):

@@ -284,12 +284,14 @@ class GameAdmin(admin.ModelAdmin):
 
 
 
-#@admin.register(Market)
+@admin.register(Market)
 class MarketAdmin(admin.ModelAdmin):
     search_fields = ['id','name']
     list_display = ('id','name',)
+    list_filter = ('available',)
+    #list_editable = ('available',)
     list_display_links = ('id','name')
-    list_per_page = 20
+    list_per_page = 40
     
 
 
