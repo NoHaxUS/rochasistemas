@@ -426,16 +426,15 @@ class CreateTicketView(View):
 
             for current_cotation in game_cotations:
                 ticket.cotations.add(current_cotation)
-                CotationHistory(
-                    id=current_cotation.pk,
-                    original_cotation=current_cotation.pk,
+                CotationHistory.objects.create(
+                    original_cotation=current_cotation.id,
                     ticket=ticket,
                     name=current_cotation.name,
                     start_price=current_cotation.start_price,
                     price=current_cotation.price,
                     game=current_cotation.game,
-                    market=current_cotation.market								
-                ).save()
+                    market=current_cotation.market
+                )
         
 
             data['message'] = """

@@ -37,7 +37,9 @@ REAL_COTATION_NAMES = {
     "1 To Nil":"Casa e Fora não Marca",
     "2 To Nil":"Fora e Casa não Marca",
     "7 Or More":"7 ou mais",
-    "5 Or More": "7 ou mais"
+    "5 Or More": "7 ou mais",
+    'Exactly':"Exatamente",
+    "Or More":"Ou mais"
 }
 
 REAL_MARKET_NAMES = {
