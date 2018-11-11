@@ -233,7 +233,7 @@ class Ticket(models.Model):
 
 class CotationHistory(models.Model):
 
-    id = models.BigIntegerField(primary_key=True, verbose_name="ID")
+    id = models.BigAutoField(primary_key=True, verbose_name="ID")
     original_cotation = models.BigIntegerField()
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, verbose_name='Ticket', related_name='cotations_history')
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
