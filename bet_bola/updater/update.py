@@ -50,7 +50,7 @@ def auto_pay_punter():
             .exclude(reward__reward_status=Reward.REWARD_STATUS[1][1])
 
             for ticket in tickets:
-                ticket.pay_punter_winner(ticket.payment.who_set_payment)
+                ticket.pay_winner_punter(ticket.payment.who_set_payment)
 
 
 def process_reductions():
