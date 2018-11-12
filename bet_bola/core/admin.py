@@ -240,8 +240,18 @@ class TicketAdmin(admin.ModelAdmin):
 
 
     
-        
+    def get_list_filter(self, request):
 
+        if request.user.is_superuser or request.user.has_perm('user.be_manager'):
+            return super().get_list_filter(request)
+            
+        if request.user.has_perm('user.be_seller'):
+            list_filter = list(super().get_list_filter(request))
+            list_filter.remove('payment__who_set_payment_id')
+            return list_filter
+
+        if request.user.has_perm('user.be_punter'):
+            return None
 
 
 #@admin.register(Reward)
