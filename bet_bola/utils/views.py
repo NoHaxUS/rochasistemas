@@ -158,7 +158,7 @@ class PDF(View):
             h=h+14
 
             pdf.text(4,h,"Status:")			
-            pdf.text(170,h, c.get_settlement_display() )				
+            pdf.text(170,h, c.get_settlement_display_mod() )				
 
 
             h=h+14

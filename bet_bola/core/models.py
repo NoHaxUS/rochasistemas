@@ -56,8 +56,9 @@ class Ticket(models.Model):
         if self.cotations.filter(status=1).count() > 0:
             return Ticket.TICKET_STATUS['Aguardando Resultados']
 
-        if not self.cotations.filter(~Q(settlement__in=[2,5])).count() > 0 and self.payment.status_payment == 'Pago':
+        if not self.cotations.filter(~Q(settlement__in=[2,5])).exclude(status=2).count() > 0 and self.payment.status_payment == 'Pago':
             return Ticket.TICKET_STATUS["Venceu"]
+        
         if not self.cotations.filter(~Q(settlement__in=[2,5])).count() > 0 and self.payment.status_payment == Payment.PAYMENT_STATUS[0][1]:
             return Ticket.TICKET_STATUS["Venceu, não pago"]
         
@@ -447,6 +448,13 @@ class Cotation(models.Model):
     base_line = models.CharField(max_length=30, null=True, blank=True)
     last_update = models.DateTimeField(null=True, blank=True, verbose_name="Última atualização")
     is_updating = models.BooleanField(default=False)
+
+
+    def get_settlement_display_mod(self):
+        if self.status == 2:
+            return "Suspensa"
+        else:
+            return self.get_settlement_display()
 
     def save(self, *args, **kwargs):
         if self.is_updating:
