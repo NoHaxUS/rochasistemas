@@ -59,7 +59,7 @@ class Ticket(models.Model):
         if not self.cotations.filter(~Q(settlement__in=[2,5])).exclude(status=2).count() > 0 and self.payment.status_payment == 'Pago':
             return Ticket.TICKET_STATUS["Venceu"]
         
-        if not self.cotations.filter(~Q(settlement__in=[2,5])).count() > 0 and self.payment.status_payment == Payment.PAYMENT_STATUS[0][1]:
+        if not self.cotations.filter(~Q(settlement__in=[2,5])).exclude(status=2).count() > 0 and self.payment.status_payment == Payment.PAYMENT_STATUS[0][1]:
             return Ticket.TICKET_STATUS["Venceu, não pago"]
         
         return "Bilhete Inválido"
