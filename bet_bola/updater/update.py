@@ -3,10 +3,11 @@ import time
 import datetime
 import pika
 import json
-from core.models import Location, League, Sport, Market, Period, Game, Cotation
+from core.models import Location, League, Sport, Market, Period, Game, Cotation, Ticket, Reward
 from .real_time import process_fixture_metadata, process_markets_realtime, process_settlements
 from .translations import get_translated_cotation, get_translated_market
 from utils.models import MarketReduction, GeneralConfigurations
+from django.db.models import Q , Count
 
 def get_locations():
     request = requests.get("http://prematch.lsports.eu/OddService/GetLocations?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&Lang=pt")
@@ -38,6 +39,18 @@ def process_locations(content):
                 pk=location['Id'], 
                 name=location['Name']
             ).save()
+
+
+def auto_pay_punter():
+    if GeneralConfigurations.objects.filter(pk=1).exists():
+        if GeneralConfigurations.objects.get(pk=1).auto_pay_punter:
+            tickets = Ticket.objects.annotate(cotations_open=Count('cotations__pk', filter=Q(cotations__status=1)) )\
+            .annotate(cotations_not_winner=Count('cotations__pk', filter=~Q(cotations__settlement__in=[2,5]) & ~Q(cotations__status=2) ) )\
+            .filter(cotations_open=0, cotations_not_winner=0, payment__status_payment='Pago')\
+            .exclude(reward__reward_status=Reward.REWARD_STATUS[1][1])
+
+            for ticket in tickets:
+                ticket.pay_punter_winner(ticket.payment.who_set_payment)
 
 
 def process_reductions():

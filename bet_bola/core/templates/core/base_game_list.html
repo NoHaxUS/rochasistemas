@@ -280,10 +280,7 @@
             <a href="#modal-cancel-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
                 Cancelar</a>
         </li>
-        <li>
-            <a href="#" class="modal-pay-winners waves-effect waves-light btn white green-text-button">
-                Pagar Ganhadores</a>
-        </li>
+
         {% endif %}
         
         {% if not perms.user.be_seller and not user.is_superuser and not perms.user.be_manager %}
@@ -297,6 +294,10 @@
         </li>
         {% endif %} 
         {% if user.is_superuser %}
+        <li>
+            <a href="#" class="modal-pay-winners waves-effect waves-light btn white green-text-button">
+                Pagar Ganhadores</a>
+        </li>
         <li>
             <a href="/admin/" class="waves-effect waves-light btn white green-text-button">
                 Administração</a>
@@ -356,10 +357,6 @@
             <a href="#modal-cancel-ticket" class="waves-effect waves-light btn white green-text-button modal-trigger">
                 Cancelar</a>
         </li>
-        <li>
-            <a href="#" class="modal-pay-winners waves-effect waves-light btn white green-text-button">
-                Pagar Ganhadores</a>
-        </li>
         {% endif %} {% if not perms.user.be_seller and not user.is_superuser and not perms.user.be_manager %}
         <li>
             <a href="{% url 'admin:index' %}" class="waves-effect waves-light btn white green-text-button ">
@@ -371,6 +368,10 @@
         </li>
         {% endif %} 
         {% if user.is_superuser %}
+        <li>
+            <a href="#" class="modal-pay-winners waves-effect waves-light btn white green-text-button">
+                Pagar Ganhadores</a>
+        </li>
         <li>
             <a href="/admin/" class="waves-effect waves-light btn white green-text-button ">
                 Administração</a>

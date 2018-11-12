@@ -55,16 +55,22 @@ class CancelTicket(View):
 class PayTicketWinners(View):
 
     def post(self, request, *args, **kwargs):
-        tickets = Ticket.objects.filter(payment__who_set_payment=request.user.seller, 
-        payment__status_payment='Pago')\
-        .exclude(reward__reward_status=Reward.REWARD_STATUS[1][1])
-        ticket_winner = [ticket for ticket in tickets if ticket.ticket_status == 'Venceu']
-        for ticket in ticket_winner:
-            ticket.pay_winner_punter(request.user.seller)
-        
+        if request.user.is_superuser:
+            tickets = Ticket.objects.annotate(cotations_open=Count('cotations__pk', filter=Q(cotations__status=1)) )\
+            .annotate(cotations_not_winner=Count('cotations__pk', filter=~Q(cotations__settlement__in=[2,5]) & ~Q(cotations__status=2) ) )\
+            .filter(cotations_open=0, cotations_not_winner=0, payment__status_payment='Pago')\
+            .exclude(reward__reward_status=Reward.REWARD_STATUS[1][1])
+
+            for ticket in tickets:
+                ticket.pay_winner_punter(ticket.payment.who_set_payment)
+
+            return UnicodeJsonResponse({
+                'sucess':True,
+                'message': 'Ganhadores Pagos.'
+            })
         return UnicodeJsonResponse({
-            'sucess':True,
-            'message': 'Ganhadores Pagos.'
+            'sucess':False,
+            'message': 'Você não tem permissão para isso.'
         })
 
 

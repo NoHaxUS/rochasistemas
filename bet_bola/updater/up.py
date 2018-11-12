@@ -1,7 +1,7 @@
 import pika
 import json
 import requests
-from .update import get_events, get_leagues, get_locations, get_sports, process_reductions
+from .update import get_events, get_leagues, get_locations, get_sports, process_reductions, auto_pay_punter
 from core.models import Location, League, Sport, Market, Period, Game, Cotation
 from .real_time import process_fixture_metadata, process_markets_realtime, process_settlements
 
@@ -17,6 +17,7 @@ def start_update():
     get_leagues()
     get_events()
     process_reductions()
+    auto_pay_punter()
     #write_logs("Fininshing Update...")
 
 
