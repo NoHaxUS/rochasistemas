@@ -285,6 +285,7 @@ class CreateTicketView(View):
             max_bet_value = general_config.max_bet_value
             min_cotation_sum = general_config.min_cotation_sum
             max_cotation_sum = general_config.max_cotation_sum
+            block_bets = general_config.block_bets
 
         except GeneralConfigurations.DoesNotExist:
             max_bet_value = 1000000
@@ -293,10 +294,18 @@ class CreateTicketView(View):
             min_bet_value = 1
             min_cotation_sum = 1
             max_cotation_sum = 100000
+            block_bets = False
+        
 
         data = {
             'success': True
         }
+
+
+        if block_bets:
+            data['success'] =  False
+            data['message'] =  """As apostas foram bloqueadas pela Administração."""
+            return UnicodeJsonResponse(data)
 
         ticket_value = request.POST.get('ticket_value', None)
         client_name = request.POST.get('client_name', None)

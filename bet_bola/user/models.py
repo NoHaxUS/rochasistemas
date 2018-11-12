@@ -201,6 +201,7 @@ class Manager(CustomUser):
     credit_limit_to_add = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name="Crédito")
     can_cancel_ticket = models.BooleanField(default=True, verbose_name='Cancela Bilhete ?')
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
+    based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no lucro ?')
 
     def reset_revenue(self, who_reseted_revenue):
         from core.models import Payment
@@ -244,8 +245,18 @@ class Manager(CustomUser):
     get_commission.short_description = ' % de comissão'
 
     def net_value(self):
-        total_net_value = self.actual_revenue() * (self.commission / 100)
-        return round(total_net_value,2)
+        from core.models import Seller
+        sellers = Seller.objects.filter(my_manager=self)
+
+
+        if self.based_on_profit:
+            total_net_value = 0
+            for seller in sellers:
+                total_net_value += seller.real_net_value()
+            return round(total_net_value * (self.commission / 100),2)
+        else:
+            total_net_value = self.actual_revenue() * (self.commission / 100)
+            return round(total_net_value, 2)
         
     net_value.short_description = 'Comissão'
 
@@ -257,16 +268,13 @@ class Manager(CustomUser):
     
 
     def actual_revenue(self):
-        from core.models import Seller,Ticket
+        from core.models import Seller
 
         sellers = Seller.objects.filter(my_manager=self)
 
         total_revenue = 0
         for seller in sellers:
-            tickets_not_rewarded = Ticket.objects.filter(payment__who_set_payment=seller,
-            payment__manager_was_rewarded=False).exclude(payment__status_payment='Cancelado')
-            for ticket in tickets_not_rewarded:
-                total_revenue += ticket.value
+            total_revenue += seller.actual_revenue()
         return total_revenue
 
     actual_revenue.short_description = 'Entrada'

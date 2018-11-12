@@ -1,12 +1,10 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
 from user.models import CustomUser
 from .models import Ticket,Cotation,Payment,Game,League,Reward,Location,Market
 from user.models import CustomUser
 from django.contrib.auth.models import Group
 from django.db.models import Q, Count
 from django.utils.translation import gettext_lazy as _
-from django.contrib.admin.views.main import ChangeList
 import utils.timezone as tzlocal
 from history.models import PunterPayedHistory
 from django.contrib import messages
@@ -184,6 +182,8 @@ class TicketAdmin(admin.ModelAdmin):
     list_per_page = 50
 
 
+
+
     def has_add_permission(self, request):
         return False
 
@@ -237,6 +237,9 @@ class TicketAdmin(admin.ModelAdmin):
 
         if request.user.has_perm('user.be_punter'):
             return qs.filter(user=request.user.punter, visible=True)
+
+
+    
         
 
 
@@ -308,6 +311,7 @@ class CotationAdmin(admin.ModelAdmin):
     list_filter = ('market',)
     list_display = ('id','name', 'start_price', 'price', 'game', 'market')
     list_display_links = ('id','name',)
+    exclude = ('is_updating',)
     list_per_page = 20
 
 
