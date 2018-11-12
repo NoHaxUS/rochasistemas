@@ -154,13 +154,13 @@ class TicketStatusListFilter(admin.SimpleListFilter):
         if self.value() == "Venceu":
             return queryset\
             .annotate(cotations_open=Count('cotations__pk', filter=Q(cotations__status=1)) )\
-            .annotate(cotations_not_winner=Count('cotations__pk', filter=~Q(cotations__settlement__in=[2,5]) ) )\
+            .annotate(cotations_not_winner=Count('cotations__pk', filter=~Q(cotations__settlement__in=[2,5]) & ~Q(cotations__status=2) ) )\
             .filter(cotations_open=0, cotations_not_winner=0, payment__status_payment='Pago')
 
         if self.value() == "Venceu, não pago":
             return queryset\
             .annotate(cotations_open=Count('cotations__pk', filter=Q(cotations__status=1)) )\
-            .annotate(cotations_not_winner=Count('cotations__pk', filter=~Q(cotations__settlement__in=[2,5]) ) )\
+            .annotate(cotations_not_winner=Count('cotations__pk', filter=~Q(cotations__settlement__in=[2,5]) & ~Q(cotations__status=2) ) )\
             .filter(cotations_open=0, cotations_not_winner=0).exclude(payment__status_payment='Pago')
 
 
