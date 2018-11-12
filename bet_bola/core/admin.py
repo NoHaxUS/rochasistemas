@@ -148,7 +148,7 @@ class TicketStatusListFilter(admin.SimpleListFilter):
 
         if self.value() == "Não Venceu":
             return queryset\
-            .annotate(cotations_not_winner=Count('cotations__pk', filter=cotations__settlement__in=[1,3,4]))\
+            .annotate(cotations_not_winner=Count('cotations__pk', filter=Q(cotations__settlement__in=[1,3,4])))\
             .filter(cotations_not_winner__gt=0)
 
         if self.value() == "Venceu":
