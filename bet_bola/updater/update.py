@@ -13,7 +13,7 @@ def get_locations():
     process_locations(request.json())
 
 def get_sports():
-    print('Criando Sports')
+    print('Criando Sports.')
     request = requests.get("http://prematch.lsports.eu/OddService/GetSports?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&Lang=pt")
     process_sports(request.json())
 
@@ -25,8 +25,8 @@ def get_leagues():
 def get_events():
     from_date = str(int((datetime.datetime.now() + datetime.timedelta(days=-1)).timestamp()))
     to_date = str(int((datetime.datetime.now() + datetime.timedelta(days=3)).timestamp()))
-
-    print("Atualizango Jogos e Cotas")
+    print(from_date, to_date)
+    print("Atualizango Jogos e Cotas.")
     request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate="+from_date+"&ToDate="+to_date+"&Lang=pt&Sports=6046")
     process_events(request.json())
 
@@ -76,9 +76,8 @@ def process_events(content):
         fixture = game['Fixture']
         print(game['FixtureId'])
         if game['FixtureId'] and fixture['Sport'] and fixture['Location'] and fixture['League']:
-
-            game_name = get_game_name(fixture['Participants'])
             
+            game_name = get_game_name(fixture['Participants'])
             game_instance = Game.objects.update_or_create(
                 pk=game['FixtureId'],
                 defaults={
