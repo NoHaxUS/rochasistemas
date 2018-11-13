@@ -37,7 +37,7 @@ class TodayGames(TemplateResponseMixin, View):
         end_offset = (page * results_per_page)
         
         after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
-        my_qs = Cotation.objects.filter(market__name="1X2")
+        my_qs = Cotation.objects.filter(market__name="1X2", status=1)
         
         games = Game.objects.filter(start_date__gt=tzlocal.now(), 
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
@@ -88,7 +88,7 @@ class TomorrowGames(TemplateResponseMixin, View):
 
         after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
-        my_qs = Cotation.objects.filter(market__name="1X2")
+        my_qs = Cotation.objects.filter(market__name="1X2", status=1)
         games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
         game_status=1, 
         visible=True)\
@@ -139,7 +139,7 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
 
         after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
-        my_qs = Cotation.objects.filter(market__name="1X2")
+        my_qs = Cotation.objects.filter(market__name="1X2", status=1)
         games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
         game_status=1, 
         visible=True)\
@@ -183,7 +183,7 @@ class GameLeague(TemplateResponseMixin, View):
 
         after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
-        my_qs = Cotation.objects.filter(market__name='1X2')
+        my_qs = Cotation.objects.filter(market__name='1X2', status=1)
 
         games = Game.objects.filter(start_date__gt=tzlocal.now(),
         game_status=1,

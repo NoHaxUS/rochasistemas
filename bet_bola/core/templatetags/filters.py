@@ -6,14 +6,17 @@ import os, re
 register = template.Library()
 
 @register.filter(name='standard_cotations_order_by')
-def standard_cotations_order_by(queryset):
+def standard_cotations_order_by(my_cotations):
+    home, draw, away = None, None, None
+    for cotation in my_cotations:
 
-    standard = queryset.filter(market__name="1X2", market__isnull=False)
+        if cotation.name == 'Casa':
+            home = cotation
+        elif cotation.name == 'Fora':
+            away = cotation
+        elif cotation.name == 'Empate':
+            draw = cotation
 
-    home = standard.filter(name='Casa').first()
-    away = standard.filter(name='Fora').first()
-    draw = standard.filter(name='Empate').first()
-    
     return [home, draw, away]
 
 
