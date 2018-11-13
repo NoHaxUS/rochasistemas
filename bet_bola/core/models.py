@@ -382,19 +382,17 @@ class Reward(models.Model):
 
 
         reward_total = round(self.ticket.value * self.ticket.cotation_sum(), 2)
-        
-        for reward_related in RewardRelated.objects.all().order_by('value_max','pk'):
-            if self.ticket.value <= reward_related.value_max:
-                if reward_total > reward_related.reward_value_max:
-                    return reward_related.reward_value_max
-                else:
-                    return reward_total
 
         if reward_total > max_reward_to_pay:
             return max_reward_to_pay
         else:
+            for reward_related in RewardRelated.objects.all().order_by('value_max','pk'):
+                if self.ticket.value <= reward_related.value_max:
+                    if reward_total > reward_related.reward_value_max:
+                        return reward_related.reward_value_max
+                    else:
+                        return reward_total
             return reward_total
-
 
 
     def __str__(self):
