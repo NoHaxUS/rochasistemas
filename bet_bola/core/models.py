@@ -461,7 +461,7 @@ class Cotation(models.Model):
 
     def save(self, *args, **kwargs):
         if self.is_updating:
-            if not Cotation.objects.filter(id=self.id, status__in=[3,2]).exists():
+            if not Cotation.objects.filter(id=self.id, status=3).exists():
                 super().save(args, kwargs)
         else:
             super().save(args, kwargs)

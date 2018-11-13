@@ -213,7 +213,7 @@ class CotationsView(View):
         gameid = self.kwargs['gameid']
         cotations_by_kind = {}
 
-        cotations_of_game = Cotation.objects.filter(game_id=gameid).filter(~Q(market__name='1X2')).filter(market__isnull=False, market__available=True)			
+        cotations_of_game = Cotation.objects.filter(game_id=gameid).filter(~Q(market__name='1X2')).filter(market__isnull=False, market__available=True, status=1)			
         
         markets = Market.objects.filter(available=True).prefetch_related(Prefetch('cotations', queryset=cotations_of_game, to_attr='my_cotations')).order_by('name')
                                 
