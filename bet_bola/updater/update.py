@@ -8,6 +8,8 @@ from .real_time import process_fixture_metadata, process_markets_realtime, proce
 from .translations import get_translated_cotation, get_translated_market
 from utils.models import MarketReduction, GeneralConfigurations
 from django.db.models import Q , Count
+from django.utils.dateparse import parse_datetime
+from django.utils.timezone import make_aware
 
 def get_locations():
     request = requests.get("http://prematch.lsports.eu/OddService/GetLocations?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&Lang=pt")
@@ -74,10 +76,20 @@ def process_leagues(content):
 def process_sports(content):
     for sport in content.get('Body'):
         if sport['Id'] and sport['Name']:
-            Sport(
+            Sport.objects.update_or_create(
                 pk=sport['Id'],
-                name=sport['Name']
-                ).save()    
+                defaults={
+                'name':sport['Name']
+                }
+            )    
+
+
+def change_time_by_hours(date):
+
+    current_date = parse_datetime(date)
+    delta = datetime.timedelta(hours=2)
+    real_date = current_date - delta
+    return real_date
 
 
 def get_game_name(participants):
@@ -95,7 +107,7 @@ def process_events(content):
                 pk=game['FixtureId'],
                 defaults={
                     'name':game_name,
-                    'start_date': fixture['StartDate'],
+                    'start_date': change_time_by_hours(fixture['StartDate']),
                     'game_status': fixture['Status'],
                     'league': League.objects.update_or_create(pk=fixture['League']['Id'], defaults={'name':fixture['League']['Name']})[0],
                     'location' : Location.objects.update_or_create(pk=fixture['Location']['Id'], defaults={'name': fixture['Location']['Name']})[0],
