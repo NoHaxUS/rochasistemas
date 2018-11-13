@@ -102,18 +102,18 @@ $(document).ready(function () {
                 alertify.notify("Adicionado");
 
                 var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
-                updateRewardTotal(ticket_bet_value);
                 RenderTicket();
                 IS_COTATION_SELECTED = true;
                 selectOnClick(actualElement);
+                updateRewardTotal(ticket_bet_value);
             }else{
                 alertify.notify("Removido");
 
                 var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
-                updateRewardTotal(ticket_bet_value);
                 RenderTicket();
                 IS_COTATION_SELECTED = false;
                 selectOnClick(actualElement);
+                updateRewardTotal(ticket_bet_value);
             }
         }, 'json');
         
