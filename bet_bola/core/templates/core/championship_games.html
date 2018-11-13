@@ -43,7 +43,7 @@
                         <div class="col s3 l2 center-align">Mais</div>
                     </div>
                     <div class="cotations-wrapper">
-                        {% for cotation in game.cotations.all|standard_cotations_order_by %}
+                        {% for cotation in game.my_cotations|standard_cotations_order_by %}
                         <div class="col s3 l1 center-align">
                             <span class="hide cotation_pk">{{cotation.pk}}</span>
                             <span class="hide cotation_name">{{cotation.name}}</span>
