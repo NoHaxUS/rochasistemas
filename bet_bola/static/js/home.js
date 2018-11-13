@@ -101,19 +101,15 @@ $(document).ready(function () {
             if(rq.status == '201'){
                 alertify.notify("Adicionado");
 
-                var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
                 RenderTicket();
                 IS_COTATION_SELECTED = true;
                 selectOnClick(actualElement);
-                updateRewardTotal(ticket_bet_value);
             }else{
                 alertify.notify("Removido");
-
-                var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
+                
                 RenderTicket();
                 IS_COTATION_SELECTED = false;
                 selectOnClick(actualElement);
-                updateRewardTotal(ticket_bet_value);
             }
         }, 'json');
         
@@ -163,13 +159,17 @@ $(document).ready(function () {
             
             $(".cotation-total").html(COTATION_TOTAL);
             
+            console.log("TOTAL:" + COTATION_TOTAL);
+            var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
+            updateRewardTotal(ticket_bet_value);
         },
     'json');
 
     }
 
     function updateRewardTotal(ticket_bet_value){
-
+        console.log(ticket_bet_value);
+        console.log(COTATION_TOTAL);
         if( isNaN(ticket_bet_value) ){
             $('.award-value').text('R$ 0.00');
         }else{
