@@ -29,7 +29,7 @@ DB_SWAP_LOCAL = False
 
 ALLOWED_HOSTS = ['*']
 
-APP_VERBOSE_NAME = 'sitename'
+APP_VERBOSE_NAME = 'Gol Bet'
 
 
 # Application definition
@@ -108,9 +108,9 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'db_sitename',
-            'USER': 'user_sitename',
-            'PASSWORD': 'db_password',
+            'NAME': 'db_golbet',
+            'USER': 'user_golbet',
+            'PASSWORD': 'DrM52gafF37x9zJA',
             'HOST': 'localhost',
             'PORT': '5432',
             'CHARSET':'UTF8'
@@ -204,7 +204,7 @@ USE_TZ = False
 
 #Statis Files
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = '/home/mushzinho5/webapps/static_sitename'
+STATIC_ROOT = '/home/mushzinho5/webapps/static_golbet'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
