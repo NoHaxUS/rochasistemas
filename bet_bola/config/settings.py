@@ -194,12 +194,12 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'Pablo <noreply@example.com>'
 
 #Zones
-TIME_ZONE = 'America/Sao_Paulo'
-TIME_ZONE_LOCAL = 'America/Sao_Paulo'
+TIME_ZONE = 'America/Bahia'
+TIME_ZONE_LOCAL = 'America/Bahia'
 
 USE_I18N = True
 USE_L10N = True
-USE_TZ = False
+USE_TZ = True
 
 
 #Statis Files
