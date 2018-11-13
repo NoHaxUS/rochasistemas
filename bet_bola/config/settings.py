@@ -24,12 +24,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-DB_SWAP_LOCAL = True
+DEBUG = False
+DB_SWAP_LOCAL = False
 
 ALLOWED_HOSTS = ['*']
 
-APP_VERBOSE_NAME = 'Gol Bet'
+APP_VERBOSE_NAME = 'sitename'
 
 
 # Application definition
@@ -108,9 +108,9 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'db_golbet',
-            'USER': 'user_golbet',
-            'PASSWORD': 'DrM52gafF37x9zJA',
+            'NAME': 'db_sitename',
+            'USER': 'user_sitename',
+            'PASSWORD': 'db_password',
             'HOST': 'localhost',
             'PORT': '5432',
             'CHARSET':'UTF8'
@@ -204,7 +204,7 @@ USE_TZ = False
 
 #Statis Files
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = '/home/mushzinho5/webapps/static_golbet'
+STATIC_ROOT = '/home/mushzinho5/webapps/static_sitename'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
