@@ -12,6 +12,7 @@ from django.utils.dateparse import parse_datetime
 from django.utils.timezone import make_aware
 
 def get_locations():
+    print('Criando Localizações.')
     request = requests.get("http://prematch.lsports.eu/OddService/GetLocations?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&Lang=pt")
     process_locations(request.json())
 
