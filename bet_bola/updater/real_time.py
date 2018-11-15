@@ -1,5 +1,5 @@
 from core.models import Location, League, Sport, Market, Period, Game, Cotation
-
+from update import change_time_by_hours
 
 def get_game_name(participants):
     return participants[0]['Name'] + ' x ' + participants[1]['Name'] if int(participants[0]['Position']) == 1 else participants[1]['Name'] + ' x ' + participants[0]['Name']
@@ -16,7 +16,7 @@ def process_fixture_metadata(content):
             
             Game.objects.filter(pk=game['FixtureId']).update(
                 name=game_name,
-                start_date=fixture['StartDate'],
+                start_date=change_time_by_hours(fixture['StartDate']),
                 game_status=fixture['Status'],
                 league=League.objects.get_or_create(pk=fixture['League']['Id'], defaults={'name':fixture['League']['Name']})[0],
                 location=Location.objects.get_or_create(pk=fixture['Location']['Id'], defaults={'name': fixture['Location']['Name']})[0],
