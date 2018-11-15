@@ -9,7 +9,6 @@ from .translations import get_translated_cotation, get_translated_market
 from utils.models import MarketReduction, GeneralConfigurations
 from django.db.models import Q , Count
 from django.utils.dateparse import parse_datetime
-from django.utils.timezone import make_aware
 
 def get_locations():
     print('Criando Localizações.')
