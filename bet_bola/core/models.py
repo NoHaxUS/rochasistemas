@@ -221,7 +221,7 @@ class Ticket(models.Model):
         valid_cotations = CotationHistory.objects\
         .filter(ticket=self, game__game_status__in = (1,3,2,8))\
         .exclude(original_cotation__settlement=-1)\
-        .exclude(original_cotation__status=2)
+        #.exclude(original_cotation__status=2)
         
         cotation_sum = 1
         for cotation in valid_cotations:
@@ -452,10 +452,7 @@ class Cotation(models.Model):
 
 
     def get_settlement_display_mod(self):
-        if self.status == 2:
-            return "Suspensa"
-        else:
-            return self.get_settlement_display()
+        return self.get_settlement_display()
 
     def save(self, *args, **kwargs):
         if self.is_updating:
