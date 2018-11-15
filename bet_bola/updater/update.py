@@ -37,10 +37,10 @@ def get_events():
 def process_locations(content):
     for location in content.get('Body'):
         if location['Id'] and location['Name']:
-            Location(
-                pk=location['Id'], 
-                name=location['Name']
-            ).save()
+            Location.objects.update_or_create(
+                pk=location['Id'],
+                defaults={'name':location['Name']}
+            )
 
 
 def auto_pay_punter():

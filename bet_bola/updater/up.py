@@ -14,6 +14,7 @@ def start_update():
     #write_logs("Update Started...")
     get_sports()
     get_locations()
+    input("PARE")
     get_leagues()
     get_events()
     process_reductions()
