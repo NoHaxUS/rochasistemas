@@ -1,5 +1,5 @@
 from core.models import Location, League, Sport, Market, Period, Game, Cotation
-from update import change_time_by_hours
+from updater.update import change_time_by_hours
 
 def get_game_name(participants):
     return participants[0]['Name'] + ' x ' + participants[1]['Name'] if int(participants[0]['Position']) == 1 else participants[1]['Name'] + ' x ' + participants[0]['Name']
