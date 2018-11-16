@@ -51,7 +51,7 @@ pay_seller.short_description = 'Pagar Cambistas'
 
 @admin.register(Seller)
 class SellerAdmin(admin.ModelAdmin):
-    search_fields = ['pk','first_name','username','cpf']
+    search_fields = ['id','first_name','username','cpf']
     fields = ('username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'credit_limit', 'my_manager', 'can_sell_unlimited', 'is_active', 'can_cancel_ticket', 'limit_time_to_cancel')
     list_editable = ('credit_limit',)
     list_display = ('username','full_name','actual_revenue','out_money','net_value','real_net_value','credit_limit','see_comissions')

@@ -104,12 +104,14 @@ $(document).ready(function () {
                 RenderTicket();
                 IS_COTATION_SELECTED = true;
                 selectOnClick(actualElement);
+                
             }else{
                 alertify.notify("Removido");
                 
                 RenderTicket();
                 IS_COTATION_SELECTED = false;
                 selectOnClick(actualElement);
+
             }
         }, 'json');
         
@@ -159,7 +161,7 @@ $(document).ready(function () {
             
             $(".cotation-total").html(COTATION_TOTAL);
             
-            console.log("TOTAL:" + COTATION_TOTAL);
+
             var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
             updateRewardTotal(ticket_bet_value);
         },
@@ -168,8 +170,7 @@ $(document).ready(function () {
     }
 
     function updateRewardTotal(ticket_bet_value){
-        console.log(ticket_bet_value);
-        console.log(COTATION_TOTAL);
+
         if( isNaN(ticket_bet_value) ){
             $('.award-value').text('R$ 0.00');
         }else{
@@ -411,16 +412,7 @@ $(document).ready(function () {
 
         $('.more_cotation_header').text(game_name);
 
-        var game_data = '<tr>' +
-            '<td class="hide more-game-id">'+ game_id +'</td>' +
-            '<td class="hide more-game-name">'+ game_name +'</td>' +
-        '</tr>';
-
-        $('.more-table tbody').empty().append(game_data);
-
         $.get('/cotations/'+ game_id, function(response, status, rq){
-    
-            console.log(response);
 
             var content = '';
             for (key in response){
@@ -430,23 +422,32 @@ $(document).ready(function () {
                         key +
                     '</div>' +
                     '<div class="collapsible-body championship-collapse-body">' +
-                        '<ul class="ul-championship-title">';
+                        '<ul>';
                            
                             array_cotations = JSON.parse(response[key]);
                             for (new_key in array_cotations ){
-                                //console.log(response[key][new_key])
+                                var base_line = array_cotations[new_key].fields.base_line ? ' ' + array_cotations[new_key].fields.base_line : ''
                                 content += '<li class="center-align">' +
                                 '<div class="row">' +
                                     '<div class="col s6">'+
-                                    array_cotations[new_key].fields.name +
+                                    array_cotations[new_key].fields.name + base_line +
                                     '</div>'+
                                     '<div class="col s6">'+
-                                    array_cotations[new_key].fields.price +
+                                        '<span class="more-cotation">' +
+                                            array_cotations[new_key].fields.price +
+                                        '</span>' +
                                     '</div>'+
-                                '<div/>' +
-                            '</li>';
-
-                            console.log(array_cotations[new_key]);
+                                    '<span class="hide more-cotation-game">' +
+                                        array_cotations[new_key].fields.game +
+                                    '</span>' +
+                                    '<span class="hide more-cotation-id-string">' +
+                                        array_cotations[new_key].fields.id_string +
+                                    '</span>' +
+                                '</div>' +
+                            '</li>'+
+                            '<div class="divider"></div>';
+                            
+                            //console.log(array_cotations[new_key]);
 
                           }
             content += '</ul>' +
@@ -455,35 +456,22 @@ $(document).ready(function () {
             }
 
 
-
-
-
-
             document.getElementById('more-cotation-ul').innerHTML = content;
-            //$('.more-table tbody').append(full_html);
-            $('.more_cotation_progress').hide();
+            //$('.more_cotation_progress').hide();
 
         }, 'json');
             
     });
 
     $(document).on('click', '.more-cotation',function(){
-        var first_tr = $(this).parent().parent().children().first();
-        var game_id = first_tr.children('.more-game-id').text().trim();
-        var game_name = first_tr.children('.more-game-name').text().trim();
-        var cotation_id = $(this).siblings().eq(0).text();
-        var cotation_name = $(this).siblings().eq(1).text();
-        var cotation_value = $(this).text().trim();
-        var cotation_kind = $(this).siblings().eq(2).text();
-        //console.log(cotation_id);
+        var game_id = $(this).parent().siblings().eq(1).text();
+        var cotation_id = $(this).parent().siblings().eq(2).text();
+
+        console.log(game_id);
 
         bet_info = {
             'game_id': game_id,
-            'game_name': game_name,
             'cotation_id': cotation_id,
-            'cotation_name': cotation_name,
-            'cotation_value': cotation_value,
-            'cotation_kind' : cotation_kind
         }
 
         AddBetToTicket(bet_info);

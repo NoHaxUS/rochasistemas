@@ -28,7 +28,7 @@ def get_leagues():
 def get_events():
     from_date = str(int((datetime.datetime.now() + datetime.timedelta(days=-1)).timestamp()))
     to_date = str(int((datetime.datetime.now() + datetime.timedelta(days=3)).timestamp()))
-    print(from_date, to_date)
+    
     print("Atualizango Jogos e Cotas.")
     request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate="+from_date+"&ToDate="+to_date+"&Lang=pt&Sports=6046")
     process_events(request.json())
@@ -140,6 +140,8 @@ def process_events(content):
 def process_markets(markets, game_instance):
 
     for market in markets:
+        if int(market['Id']) == 161:
+            continue
         for cotation in market['Providers'][0]['Bets']:
             Cotation(id=cotation['Id'],
                 id_string=cotation['Id'],
