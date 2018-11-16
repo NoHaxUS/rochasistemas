@@ -141,12 +141,13 @@ class TicketStatusListFilter(admin.SimpleListFilter):
         if self.value() == "Aguardando Resultados":
             return queryset\
             .annotate(cotations_open=Count('cotations__pk', filter=Q(cotations__settlement__isnull=True)))\
-            .filter(cotations_open__gt=0).exclude(payment__status_payment='Cancelado')
+            .annotate(cotations_not_winner=Count('cotations__pk', filter=Q(cotations__settlement__in=[1,3,4])))\
+            .filter(cotations_open__gt=0, cotations_not_winner=0).exclude(payment__status_payment='Cancelado')
 
         if self.value() == "Não Venceu":
             return queryset\
             .annotate(cotations_not_winner=Count('cotations__pk', filter=Q(cotations__settlement__in=[1,3,4])))\
-            .filter(cotations_not_winner__gt=0)
+            .filter(cotations_not_winner__gt=0).exclude(payment__status_payment='Cancelado')
 
         if self.value() == "Venceu":
             return queryset\
