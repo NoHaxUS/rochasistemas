@@ -418,42 +418,52 @@ $(document).ready(function () {
 
         $('.more-table tbody').empty().append(game_data);
 
-        $.get('/cotations/'+ game_id, function(data, status, rq){
-            
-            var dataJSON = JSON.parse(data);
-            
-            console.log(dataJSON);
+        $.get('/cotations/'+ game_id, function(response, status, rq){
+    
+            console.log(response);
 
-            var full_html = '';
+            var content = '';
+            for (key in response){
+                content += '<li>' +
+                    '<div class="collapsible-header championship-collapse-header">' +
+                    '<i class="large material-icons green-text-button">arrow_drop_down</i>' +
+                        key +
+                    '</div>' +
+                    '<div class="collapsible-body championship-collapse-body">' +
+                        '<ul class="ul-championship-title">';
+                           
+                            array_cotations = JSON.parse(response[key]);
+                            for (new_key in array_cotations ){
+                                //console.log(response[key][new_key])
+                                content += '<li class="center-align">' +
+                                '<div class="row">' +
+                                    '<div class="col s6">'+
+                                    array_cotations[new_key].fields.name +
+                                    '</div>'+
+                                    '<div class="col s6">'+
+                                    array_cotations[new_key].fields.price +
+                                    '</div>'+
+                                '<div/>' +
+                            '</li>';
 
-            for( key in dataJSON){
-                
-                full_html += '<tr>' +
-                '<td class="cotation-market-label">'+ key + '</td>' +
-                '<td class="cotation-market-label"></td>' +
-                '</tr>';
-                
-                var array_cotations = JSON.parse(dataJSON[key]);
-                var array_cotations_length = array_cotations.length;
-                
-                for (var i = 0; i < array_cotations_length; i++) {
+                            console.log(array_cotations[new_key]);
 
-                    var base_line = array_cotations[i].fields.base_line ? ' ' + array_cotations[i].fields.base_line : ''                  
-                    full_html += '<tr>' +
-                    '<td class="hide">'+ array_cotations[i].fields.id_string + '</td>' +
-                    '<td class="more-cotation-name">'+ array_cotations[i].fields.name + base_line + '</td>' +
-                    '<td class="more-cotation">'+ array_cotations[i].fields.price + '</td>' +
-                    '<td class="more-cotation-kind hide">' + array_cotations[i].fields.market + '</td>' +
-                        '</tr>';
-
-                }
-                
+                          }
+            content += '</ul>' +
+                    '</div> ' +
+                '</li>';
             }
 
-            $('.more-table tbody').append(full_html);
+
+
+
+
+
+            document.getElementById('more-cotation-ul').innerHTML = content;
+            //$('.more-table tbody').append(full_html);
             $('.more_cotation_progress').hide();
 
-        }, 'text');
+        }, 'json');
             
     });
 

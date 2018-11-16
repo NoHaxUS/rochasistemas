@@ -281,7 +281,8 @@ class GameAdmin(admin.ModelAdmin):
     autocomplete_fields = ['league',]
     list_per_page = 20
 
-
+    def has_delete_permission(self, request, obj=None):
+        return False
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -324,6 +325,9 @@ class CotationAdmin(admin.ModelAdmin):
     exclude = ('is_updating',)
     list_per_page = 20
 
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 
 @admin.register(Location)
@@ -352,4 +356,8 @@ class LeagueAdmin(admin.ModelAdmin):
     autocomplete_fields = ['location',]
     list_editable = ('priority','visible')
     list_per_page = 20
+
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
