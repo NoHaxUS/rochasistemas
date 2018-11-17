@@ -31,7 +31,7 @@
 
 {% block content %}
 <div class="col s12 center-align">
-    {% if show_ticket %}
+    {% if show_ticket and perms.user.be_seller or perms.user.be_manager %}
     <div class="row">
         <div id="ticket-details-actions">
             <div class="col s4">
