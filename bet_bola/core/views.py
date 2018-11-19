@@ -394,18 +394,25 @@ class CreateTicketView(View):
         ticket_reward_value = cotation_sum * ticket_bet_value
 
         if not accepted_conditions:
+
+            for reward_related in RewardRelated.objects.all().order_by('value_max','pk'):
+                if ticket_bet_value <= reward_related.value_max and ticket_reward_value > reward_related.reward_value_max:
+                    if reward_related.reward_value_max > max_reward_to_pay:
+                        data['success'] =  False
+                        data['has_to_accept'] = True
+                        data['message'] =  "O valor máximo pago pela banca é de " + str(max_reward_to_pay) + " R$. Seu prêmio será reajustado para esse valor."
+                    else:
+                        data['success'] =  False
+                        data['has_to_accept'] = True
+                        data['message'] =  "O valor máximo pago pela banca para o valor de "+ str( round(ticket_bet_value, 2) ) + " R$ é de " + str(reward_related.reward_value_max) + " R$. Seu prêmio será reajustado para esse valor."
+
+                    return UnicodeJsonResponse(data)
+
             if Decimal(ticket_reward_value) > max_reward_to_pay:
                 data['success'] =  False
                 data['has_to_accept'] = True
-                data['message'] =  "O valor máximo pago pela banca para o valor apostado é: R$" + str(max_reward_to_pay) + ". Seu prêmio será reajustado para esse valor."
+                data['message'] =  "O valor máximo pago pela banca é de " + str(max_reward_to_pay) + " R$. Seu prêmio será reajustado para esse valor."
                 return UnicodeJsonResponse(data)
-
-            for reward_related in RewardRelated.objects.all().order_by('value_max','pk'):
-                if ticket_reward_value >= reward_related.reward_value_max:
-                    data['success'] =  False
-                    data['has_to_accept'] = True
-                    data['message'] =  "O valor máximo pago pela banca para o valor de "+ str( round(ticket_bet_value, 2) ) + " R$ é de " + str(reward_related.reward_value_max) + " R$. Seu prêmio será reajustado para esse valor."
-                    return UnicodeJsonResponse(data)
 
         if len(game_cotations) < min_number_of_choices_per_bet:
             data['success'] =  False

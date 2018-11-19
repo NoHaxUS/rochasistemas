@@ -119,11 +119,10 @@ $(document).ready(function () {
     }
 
     function RenderTicket() {
-         
-        $('.ticket-list').empty();
 
         $.get('/bet/', function(ticket, status, rq){
-            var cotation_sum = 1
+            let cotation_sum = 1;
+            let all_content = '';
             for (var key in ticket) {
                 var base_line = ticket[key]['base_line'] ? ' ' + ticket[key]['base_line'] : ''
                 var bet_html = '<div class="divider"></div>' +
@@ -145,14 +144,17 @@ $(document).ready(function () {
                     '<i class="small material-icons red-text">delete</i>' +
                     '</span>' +
                     '</div>' +
-                    '</li>';
+                    '</li>' + 
+                    '<div class="divider"></div>';
 
                 cotation_sum = cotation_sum * ticket[key]['price']
+                all_content += bet_html;
                 
-                $('.ticket-list').append(bet_html);
-                //console.log(bet_html);
-                $('.ticket-list').append('<div class="divider"></div>');
             }
+            
+            $('.ticket-list').empty();
+            $('.ticket-list').append(all_content);
+
             if (cotation_sum == 1){
                 COTATION_TOTAL = 0
             }else{
@@ -160,8 +162,6 @@ $(document).ready(function () {
             }
             
             $(".cotation-total").html(COTATION_TOTAL);
-            
-
             var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
             updateRewardTotal(ticket_bet_value);
         },
