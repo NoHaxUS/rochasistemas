@@ -138,6 +138,25 @@ def ticket_status(obj):
 
 ticket_status.short_description = 'Status'
 
+
+
+class HiddenTicketFilter(admin.SimpleListFilter):
+
+    title = _('Visibilidade')
+    parameter_name = 'visibility'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('list_all_hidden', _('Tickets Ocultos')),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'list_all_hidden':
+            return queryset.filter(visible=False)
+        elif self.value() == None:
+            return queryset.filter(visible=True)
+
+
 class TicketStatusListFilter(admin.SimpleListFilter):
 
     title = _('Ticket Status')
@@ -189,7 +208,7 @@ class TicketAdmin(admin.ModelAdmin):
     TicketStatusListFilter,
     'payment__who_set_payment_id',
     'payment__status_payment',
-    'visible',
+    HiddenTicketFilter,
     'creation_date',
     'reward__reward_status')
     list_display = ('id', ticket_status, 
