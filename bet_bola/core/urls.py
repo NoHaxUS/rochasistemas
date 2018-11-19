@@ -31,4 +31,5 @@ urlpatterns = [
     path('cotations/<int:gameid>/', views.CotationsView.as_view(), name='core_cotations_get'),
     path('app/', views.AppDownload.as_view(), name='core_app_download'),
     path('rules/', views.RulesView.as_view(), name='core_rules'),
+    path('print_tables/', views.PrintGameTables.as_view(), name='print_tables'),
 ]

@@ -546,6 +546,74 @@ class TicketDetail(TemplateResponseMixin, View):
         return self.render_to_response(context)
 
 
+
+class PrintGameTables(TemplateResponseMixin, View):
+
+
+    def order_cotations(self, cotations):
+        ordered = list(cotations).copy()
+        for cotation in cotations:
+            if cotation.name == 'Casa':
+                ordered[0] = cotation
+            elif cotation.name == "Empate":
+                ordered[1] = cotation
+            elif cotation.name == "Fora":
+                ordered[2] = cotation
+            elif cotation.name == "Casa/Fora":
+                ordered[3] = cotation
+            elif cotation.name == "Casa/Empate":
+                ordered[4] = cotation
+            elif cotation.name == "Empate/Fora":
+                ordered[5] = cotation
+        return ordered            
+
+    template_name = 'core/print_tables.html'
+
+    def get(self, request, *args, **kwargs):
+
+
+        #Today Games # 7 (Dupla Chance)
+        my_qs = Cotation.objects.filter(Q(market__name="1X2") | Q(market__pk=7), status=1)
+        
+        games = Game.objects.filter(start_date__gt=tzlocal.now(), 
+        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+        game_status=1, 
+        visible=True)\
+        .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+        .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
+        .order_by('-league__location__priority','-league__priority')
+
+        league_games = defaultdict(list)
+        
+        for game in games:
+            league_games[game.league].append(game)
+
+        content = ""
+        for league in league_games:
+            content += "<CENTER> <BIG>" + league.name + "<BR>"
+            content += '---------------------------------------'
+            for game in league_games[league]:
+                content += "<CENTER>" + game.name + "<BR>"
+                #content += "<CENTER>" + game.start_date + "<BR>"
+                #print(game.my_cotations)
+                for cotation in self.order_cotations(game.my_cotations):
+                    print(cotation.name)
+                    content += cotation.name + '->'
+
+                
+
+
+        """
+        content = "<CENTER> -> " + settings.APP_VERBOSE_NAME.upper() + " <- <BR>"
+        content += "#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;"
+        context = {'print': content, 'base_url': request.get_host()}
+        """
+
+        return self.render_to_response({})
+
+
+
 class AppDownload(View, TemplateResponseMixin):
 
     template_name = 'core/app_download.html'
