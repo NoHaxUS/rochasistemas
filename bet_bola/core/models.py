@@ -73,6 +73,18 @@ class Ticket(models.Model):
     get_punter_name.short_description = 'Apostador'
 
 
+    def hide_ticket(self):
+        self.visible = False
+        self.save()
+        return {"message" :"Jogo "+ str(self.pk) +" Ocultado."}
+
+
+    def show_ticket(self):
+        self.visible = True
+        self.save()
+        return {"message" :"Jogo "+ str(self.pk) +" Exibido."}
+
+
     def get_ticket_link(self):
         from django.utils.safestring import mark_safe
         link = '<a href="/ticket/'+str(self.pk) + '/" class="consult">Consultar<a/>'

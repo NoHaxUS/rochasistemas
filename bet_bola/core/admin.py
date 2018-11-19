@@ -82,6 +82,26 @@ def pay_winner_punter(modeladmin, request, queryset):
 
 pay_winner_punter.short_description = 'Pagar Apostador'
 
+@confirm_action("Ocultar Ticket(s)")
+def hide_ticket_action(modeladmin, request, queryset):
+
+    if request.user.is_superuser:
+        for ticket in queryset:
+            result = ticket.hide_ticket()
+            messages.success(request, result['message'])
+
+hide_ticket_action.short_description = 'Ocultar Tickets'
+
+@confirm_action("Ocultar Ticket(s)")
+def show_ticket_action(modeladmin, request, queryset):
+
+    if request.user.is_superuser:
+        for ticket in queryset:
+            result = ticket.show_ticket()
+            messages.success(request, result['message'])
+
+show_ticket_action.short_description = 'Exibir Tickets'
+
 def payment_status(obj):
     if obj.payment:
         return ("%s" % obj.payment.status_payment)
@@ -178,7 +198,7 @@ class TicketAdmin(admin.ModelAdmin):
     'value','reward',
     'cotation_sum', payment_status,'creation_date', 'seller_related')
     #exclude = ('cotations',)
-    actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket]
+    actions = [validate_selected_tickets, pay_winner_punter, cancel_ticket, hide_ticket_action, show_ticket_action]
     list_per_page = 50
 
 
