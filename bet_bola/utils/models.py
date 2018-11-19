@@ -346,7 +346,7 @@ class MarketReduction(models.Model):
         from core.models import Game
         able_games = Game.objects.filter(start_date__gt=tzlocal.now(), 
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=3)),
-        game_status__in=[1,2,8],
+        game_status__in=[1,2,8,9],
         visible=True)
 
         reduction = 1
@@ -376,7 +376,7 @@ class MarketReduction(models.Model):
         from core.models import Game
         able_games = Game.objects.filter(start_date__gt=tzlocal.now(), 
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=3)),
-        game_status__in=[1,2,8],
+        game_status__in=[1,2,8,9],
         visible=True)
 
         reduction = self.reduction_percentual / 100

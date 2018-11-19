@@ -232,7 +232,7 @@ class Ticket(models.Model):
 
     def cotation_sum(self):
         valid_cotations = CotationHistory.objects\
-        .filter(ticket=self, game__game_status__in = (1,2,3,8))\
+        .filter(ticket=self, game__game_status__in = (1,2,3,8,9))\
         .exclude(original_cotation__settlement=-1)
         
         cotation_sum = 1
@@ -285,7 +285,8 @@ class Game(models.Model):
         (5, "Adiado"),
         (6, 'Interrompindo'),
         (7, "Abandonado"),
-        (8, "Pré-jogo")
+        (8, "Pré-jogo"),
+        (9, "Quase Iniciado")
     )
     
     id = models.BigIntegerField(primary_key=True, verbose_name="ID")
@@ -471,6 +472,19 @@ class Cotation(models.Model):
     is_updating = models.BooleanField(default=False)
 
 
+    def get_settlement_display_modified(self):
+        if self.game.game_status == 4:
+            return "Jogo Cancelado"
+        elif self.game.game_status == 5:
+            return "Jogo Adiado"
+        elif self.game.game_status == 6:
+            return "Jogo Interrompido"
+        elif self.game.game_status == 7:
+            return "Jogo Abandonado"
+        elif self.game.game_status == 8:
+            return "Jogo Perdeu a Cobertura"
+        
+        return self.get_settlement_display()
 
     def save(self, *args, **kwargs):
         if self.is_updating:

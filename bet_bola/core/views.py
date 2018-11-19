@@ -531,7 +531,7 @@ class TicketDetail(TemplateResponseMixin, View):
                 base_line = cotation.base_line if cotation.base_line else ''
                 content += "<LEFT>" + cotation.name + ' ' + base_line + " --> " + str("%.2f" % cotations_values[cotation.pk]) + "<BR>"
 
-                content += "<RIGHT> Status: " +  cotation.get_settlement_display() + "<BR>"
+                content += "<RIGHT> Status: " +  cotation.get_settlement_display_modified() + "<BR>"
                 
                 content += "<CENTER>-------------------------------> <BR>"
             content += "<CENTER> "+ settings.APP_VERBOSE_NAME + "<BR>"
