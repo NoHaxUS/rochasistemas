@@ -232,7 +232,7 @@ class Ticket(models.Model):
 
     def cotation_sum(self):
         valid_cotations = CotationHistory.objects\
-        .filter(ticket=self, game__game_status__in = (1,3,2,8))\
+        .filter(ticket=self, game__game_status__in = (1,2,3,8))\
         .exclude(original_cotation__settlement=-1)
         
         cotation_sum = 1
