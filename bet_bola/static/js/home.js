@@ -123,7 +123,8 @@ $(document).ready(function () {
         $.get('/bet/', function(ticket, status, rq){
             let cotation_sum = 1;
             let all_content = '';
-            for (var key in ticket) {
+            let ticket_lenght = ticket.length - 1;
+            for (let key=0; key < ticket_lenght; key++) {
                 var base_line = ticket[key]['base_line'] ? ' ' + ticket[key]['base_line'] : ''
                 var bet_html = '<div class="divider"></div>' +
                     '<li class="center-align bet">' +
@@ -147,7 +148,6 @@ $(document).ready(function () {
                     '</li>' + 
                     '<div class="divider"></div>';
 
-                cotation_sum = cotation_sum * ticket[key]['price']
                 all_content += bet_html;
                 
             }
@@ -155,13 +155,8 @@ $(document).ready(function () {
             $('.ticket-list').empty();
             $('.ticket-list').append(all_content);
 
-            if (cotation_sum == 1){
-                COTATION_TOTAL = 0
-            }else{
-                COTATION_TOTAL = cotation_sum.toFixed(2);
-            }
-            
-            $(".cotation-total").html(COTATION_TOTAL);
+            COTATION_TOTAL = parseFloat(ticket[ticket_lenght]['cotation_sum']);
+            $(".cotation-total").html(ticket[ticket_lenght]['cotation_sum']);
             var ticket_bet_value = parseFloat( $($('.ticket-bet-value')[0]).val() );
             updateRewardTotal(ticket_bet_value);
         },
@@ -364,8 +359,7 @@ $(document).ready(function () {
             return;
         }
 
-
-        console.log(confirmation_message);                               
+                             
         alertify.confirm('Confirmação', confirmation_message, function(){                   
         $.post('/ticket/',
         {'ticket_value': ticket_value, 

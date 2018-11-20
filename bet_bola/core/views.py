@@ -211,7 +211,6 @@ class CotationsView(View):
     def get(self, request, *args, **kwargs):
 
         gameid = self.kwargs['gameid']
-        cotations_by_kind = {}
 
         cotations_of_game = Cotation.objects.filter(game_id=gameid).filter(~Q(market__name='1X2')).filter(market__isnull=False, market__available=True, status=1)			
         
@@ -255,11 +254,27 @@ class BetView(View):
             return HttpResponse("Empty")
         else:
             itens = []
-
+            cotation_sum = 1
             for key, value in request.session['ticket'].items():
-                cotation = Cotation.objects.filter(pk=value).values('pk','game__id','game__name','name','base_line', 'price', 'market__name')
-                itens.append(cotation.first())
+                cotation = Cotation.objects.filter(pk=value).values('pk','game__id','game__name','name','base_line', 'price', 'market__name').first()
+                itens.append(cotation)
+                cotation_sum *= cotation['price']
 
+            if cotation_sum == 1:
+                cotation_sum = 0
+
+            from utils.models import GeneralConfigurations
+            try:
+                general_config = GeneralConfigurations.objects.get(pk=1)
+                max_cotation_sum = general_config.max_cotation_sum
+            except GeneralConfigurations.DoesNotExist:
+                max_cotation_sum = 100000
+
+            if cotation_sum > max_cotation_sum:
+                cotation_sum = max_cotation_sum
+
+            cotation_total = {"cotation_sum": round(cotation_sum, 2)}
+            itens.append(cotation_total)
             return JsonResponse( itens , safe=False)
     
     def delete(self, request, *args, **kwargs):
@@ -386,10 +401,12 @@ class CreateTicketView(View):
             data['message'] =  "A cotação total deve ser maior que "+ str(min_cotation_sum)
             return UnicodeJsonResponse(data)
 
+        """
         if cotation_sum > max_cotation_sum:
             data['success'] =  False
             data['message'] =  "A cotação total deve ser menor que "+ str(max_cotation_sum)
             return UnicodeJsonResponse(data)
+        """
 
         ticket_reward_value = cotation_sum * ticket_bet_value
 

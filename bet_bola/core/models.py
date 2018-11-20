@@ -240,6 +240,17 @@ class Ticket(models.Model):
             cotation_sum *= cotation.price
         if cotation_sum == 1:
             return 0
+
+        from utils.models import GeneralConfigurations
+        try:
+            general_config = GeneralConfigurations.objects.get(pk=1)
+            max_cotation_sum = general_config.max_cotation_sum
+        except GeneralConfigurations.DoesNotExist:
+            max_cotation_sum = 100000
+        
+        if cotation_sum > max_cotation_sum:
+            cotation_sum = max_cotation_sum
+
         return round(cotation_sum,2)
     cotation_sum.short_description = 'Cota Total'
 
