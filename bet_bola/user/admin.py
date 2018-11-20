@@ -145,5 +145,6 @@ class ManagerAdmin(admin.ModelAdmin):
         actions = super().get_actions(request)
         if request.user.is_superuser:
             return actions
+        return None
 
 
