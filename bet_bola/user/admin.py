@@ -67,7 +67,10 @@ class SellerAdmin(admin.ModelAdmin):
         if request.user.has_perm('user.be_manager'):
             if 'delete_selected' in actions:
                 del actions['delete_selected']
-        return actions
+            return actions
+        if request.user.has_perm('user.be_seller'):
+            return None
+        return None
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
