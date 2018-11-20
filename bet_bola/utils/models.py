@@ -137,9 +137,8 @@ class GeneralConfigurations(models.Model):
 
     def apply_reductions(self):
         from core.models import Game
-        able_games =  games = Game.objects.filter(start_date__gt=tzlocal.now(), 
-        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
-        game_status=1, 
+        able_games = Game.objects.filter(start_date__gt=tzlocal.now(),
+        game_status__in=[1,2,8,9],
         visible=True)
 
         reduction = self.percentual_reduction / 100
@@ -344,8 +343,7 @@ class MarketReduction(models.Model):
 
     def reset_reducions(self):
         from core.models import Game
-        able_games = Game.objects.filter(start_date__gt=tzlocal.now(), 
-        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=3)),
+        able_games = Game.objects.filter(start_date__gt=tzlocal.now(),
         game_status__in=[1,2,8,9],
         visible=True)
 
@@ -374,8 +372,7 @@ class MarketReduction(models.Model):
     def apply_reductions(self):
 
         from core.models import Game
-        able_games = Game.objects.filter(start_date__gt=tzlocal.now(), 
-        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=3)),
+        able_games = Game.objects.filter(start_date__gt=tzlocal.now(),
         game_status__in=[1,2,8,9],
         visible=True)
 
