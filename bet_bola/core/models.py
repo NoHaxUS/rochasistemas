@@ -50,16 +50,16 @@ class Ticket(models.Model):
         if self.payment.status_payment == Payment.PAYMENT_STATUS[2][1]:
             return Payment.PAYMENT_STATUS[2][1]
 
-        if self.cotations.filter(settlement__in=[1,3,4]).count() > 0:
+        if self.cotations.filter(settlement__in=[1,3,4]).exclude(game__game_status__in = (4,5,6,7,8)).count() > 0:
             return Ticket.TICKET_STATUS['Não Venceu']
 
-        if self.cotations.filter(settlement__isnull=True).count() > 0:
+        if self.cotations.filter(settlement__isnull=True).exclude(game__game_status__in = (4,5,6,7,8)).count() > 0:
             return Ticket.TICKET_STATUS['Aguardando Resultados']
 
-        if not self.cotations.filter(settlement__in=[1,3,4]).count() > 0 and self.payment.status_payment == 'Pago':
+        if not self.cotations.filter(settlement__in=[1,3,4]).exclude(game__game_status__in = (4,5,6,7,8)).count() > 0 and self.payment.status_payment == 'Pago':
             return Ticket.TICKET_STATUS["Venceu"]
         
-        if not self.cotations.filter(settlement__in=[1,3,4]).count() > 0 and self.payment.status_payment == Payment.PAYMENT_STATUS[0][1]:
+        if not self.cotations.filter(settlement__in=[1,3,4]).exclude(game__game_status__in = (4,5,6,7,8)).count() > 0 and self.payment.status_payment == Payment.PAYMENT_STATUS[0][1]:
             return Ticket.TICKET_STATUS["Venceu, não pago"]
         
         return "Bilhete Inválido"
