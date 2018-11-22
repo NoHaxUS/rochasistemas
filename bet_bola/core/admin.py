@@ -361,7 +361,6 @@ class CotationAdmin(admin.ModelAdmin):
     list_filter = ('market',)
     list_display = ('id','name', 'start_price', 'price', 'game', 'market')
     list_display_links = ('id','name',)
-    exclude = ('is_updating',)
     list_per_page = 20
 
     def has_delete_permission(self, request, obj=None):

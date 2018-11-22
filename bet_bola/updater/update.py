@@ -137,10 +137,12 @@ def process_events(content):
                 process_markets(game['Markets'], game_instance)                
 
 
+NOT_ALLOWED_MARKETS = [161,305,129,95,11]
+
 def process_markets(markets, game_instance):
 
     for market in markets:
-        if int(market['Id']) == 161:
+        if int(market['Id']) in NOT_ALLOWED_MARKETS:
             continue
         for cotation in market['Providers'][0]['Bets']:
             Cotation(id=cotation['Id'],

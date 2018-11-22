@@ -480,7 +480,7 @@ class Cotation(models.Model):
     line = models.CharField(max_length=30, null=True, blank=True)
     base_line = models.CharField(max_length=30, null=True, blank=True)
     last_update = models.DateTimeField(null=True, blank=True, verbose_name="Última atualização")
-    is_updating = models.BooleanField(default=False)
+    is_updating = models.BooleanField(default=False, verbose_name="Impedir Mudança de Status?")
 
 
     def get_settlement_display_modified(self):
