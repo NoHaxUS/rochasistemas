@@ -39,7 +39,11 @@ REAL_COTATION_NAMES = {
     "7 Or More":"7 ou mais",
     "5 Or More": "7 ou mais",
     'Exactly':"Exatamente",
-    "Or More":"Ou mais"
+    "Or More":"Ou mais",
+    "Over And Yes":"Acima e Sim",
+    "Over And No":"Acima e Não",
+    "Under And Yes":"Abaixo e Sim",
+    "Under And No":"Abaixo e Não"
 }
 
 REAL_MARKET_NAMES = {

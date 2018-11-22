@@ -209,11 +209,18 @@ class GameLeague(TemplateResponseMixin, View):
 class CotationsView(View):
     
     def get(self, request, *args, **kwargs):
+        from utils.models import MarketRemotion
 
-        gameid = self.kwargs['gameid']
-
-        cotations_of_game = Cotation.objects.filter(game_id=gameid).filter(~Q(market__name='1X2')).filter(market__isnull=False, market__available=True, status=1)			
+        game_id = self.kwargs['gameid']
+        cotations_of_game = Cotation.objects.filter(game_id=game_id).filter(~Q(market__name='1X2')).filter(market__isnull=False, market__available=True, status=1)			
         
+        remotions = MarketRemotion.objects.all()
+
+        for remotion in remotions:
+            cotations_of_game = cotations_of_game.exclude(market__pk=remotion.market_to_remove, 
+            name=remotion.below_above, base_line=remotion.base_line)
+
+
         markets = Market.objects.filter(available=True).prefetch_related(Prefetch('cotations', queryset=cotations_of_game, to_attr='my_cotations')).order_by('name')
                                 
         cotations_serialized = {}

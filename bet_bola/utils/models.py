@@ -271,7 +271,45 @@ class Overview(models.Model):
 
 
 
+class MarketRemotion(models.Model):
+
+    BELOW_ABOVE = (
+        ("Abaixo", "Abaixo"),
+        ("Acima","Acima")
+    )
+    
+    MARKET_LIST = (
+        (2,"Abaixo/Acima"),
+        (21,"Abaixo/Acima 1° Tempo"),
+        (45,"Abaixo/Acima 2° Tempo"),
+        (101,"Abaixo/Acima - Time de Casa"),
+        (102,"Abaixo/Acima - Time de Fora")
+    )
+
+    market_to_remove = models.IntegerField(choices=MARKET_LIST, verbose_name='Tipo de Aposta')
+    below_above = models.CharField(max_length=8, choices=BELOW_ABOVE, verbose_name='Abaixo ou Acima')
+    base_line = models.CharField(max_length=5, verbose_name='Valor')
+
+
+    def __str__(self):
+        return self.get_market_to_remove_display() + ' - ' + self.below_above + ' ' +self.base_line
+
+
+    def save(self, *args, **kwargs):
+        if not MarketRemotion.objects.filter(market_to_remove=self.market_to_remove, below_above=self.below_above, base_line=self.base_line).exists():
+            super().save(args,kwargs)
+
+    class Meta:
+        verbose_name = 'Remoção de Aposta'
+        verbose_name_plural = 'Remoção de Apostas'
+
+
+
+
+
+
 class MarketReduction(models.Model):
+
     MARKET_LIST = (
         (600,"Casa"),
         (601,"Empate"),
@@ -284,7 +322,7 @@ class MarketReduction(models.Model):
         (6,"Placar Correto"),
         (7,"Dupla Chance"),
         (9,"Placar Correto 1° Tempo"),
-        (11,"Total de Escanteios"),
+        #(11,"Total de Escanteios"),
         (13,"Handicap Europeu"),
         (16,"Primeiro Time a Marcar"),
         (17,"Ambos marcam?"),
@@ -304,14 +342,14 @@ class MarketReduction(models.Model):
         (84,"Vencer em ambas etapas"),
         (85,"Ganhar de Virada"),
         (86,"Vencer sem tomar Gol"),
-        (95,"Handicap - Escanteios"),
+        #(95,"Handicap - Escanteios"),
         (98,"Time de casa não toma gol?"),
         (99,"Time de fora não toma gol?"),
         (101,"Abaixo/Acima - Time de Casa"),
         (102,"Abaixo/Acima - Time de Fora"),
         (113,"Ambos marcam no 1° Tempo?"),
         (128,"Número de Gols"),
-        (129,"Abaixo/Acima Escanteios 1° Tempo"),
+        #(129,"Abaixo/Acima Escanteios 1° Tempo"),
         (134,"Número de Gols 1° Tempo"),
         (143,"Em qual etapa o time de Casa vai fazer mais Gols?"),
         (144,"Em qual etapa o time de Fora vai fazer mais Gols?"),
@@ -329,7 +367,7 @@ class MarketReduction(models.Model):
         (216,"Time de fora vai marcar no 2° Tempo?"),
         (218,"Time de casa marca no 1° tempo?"),
         (219,"Time de casa marca 2° tempo?"),
-        (305,"Escanteios Abaixo/Exatamente/Acima"),
+        #(305,"Escanteios Abaixo/Exatamente/Acima"),
         (427,"Casa/Empate/Fora  Abaixo/Acima"),
         (429,"Vencedor do Encontro e Ambos Marcam"),
         (433,"European Handicap Corners"),
