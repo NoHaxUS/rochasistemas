@@ -151,7 +151,14 @@ class GeneralConfigurations(models.Model):
 
     def save(self, *args, **kwargs):
         self.pk = 1
-        self.apply_reductions()
+
+        if GeneralConfigurations.objects.filter(pk=1).exists():
+            percentual_reduction_original = GeneralConfigurations.objects.get(pk=1).percentual_reduction
+        else:
+            percentual_reduction_original = 0
+        
+        if not percentual_reduction_original == self.percentual_reduction:
+            self.apply_reductions()
 
         super().save(args, kwargs)
 
