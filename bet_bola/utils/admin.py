@@ -35,6 +35,7 @@ class OverviewAdmin(admin.ModelAdmin):
 @admin.register(MarketReduction)
 class MarketReductionsAdmin(admin.ModelAdmin):
     list_display = ('market_to_reduct','reduction_percentual')
+    actions = None
 
     def delete_model(self, request, obj):
         obj.reset_reducions()
