@@ -9,20 +9,21 @@ from .translations import get_translated_cotation, get_translated_market
 from utils.models import MarketReduction, GeneralConfigurations
 from django.db.models import Q , Count
 from django.utils.dateparse import parse_datetime
+from .countries import COUNTRIES
 
 def get_locations():
     print('Criando Localizações.')
-    request = requests.get("http://prematch.lsports.eu/OddService/GetLocations?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&Lang=pt")
+    request = requests.get("http://prematch.lsports.eu/OddService/GetLocations?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54")
     process_locations(request.json())
 
 def get_sports():
     print('Criando Sports.')
-    request = requests.get("http://prematch.lsports.eu/OddService/GetSports?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&Lang=pt")
+    request = requests.get("http://prematch.lsports.eu/OddService/GetSports?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54")
     process_sports(request.json())
 
 def get_leagues():
     print('Atualizando Ligas.')
-    request = requests.get("http://prematch.lsports.eu/OddService/GetLeagues?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&Lang=pt")
+    request = requests.get("http://prematch.lsports.eu/OddService/GetLeagues?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54")
     process_leagues(request.json())
 
 def get_events():
@@ -30,7 +31,7 @@ def get_events():
     to_date = str(int((datetime.datetime.now() + datetime.timedelta(days=3)).timestamp()))
     
     print("Atualizango Jogos e Cotas.")
-    request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate="+from_date+"&ToDate="+to_date+"&Lang=pt&Sports=6046")
+    request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate="+from_date+"&ToDate="+to_date+"&Sports=6046")
     process_events(request.json())
 
 
@@ -39,7 +40,7 @@ def process_locations(content):
         if location['Id'] and location['Name']:
             Location.objects.update_or_create(
                 pk=location['Id'],
-                defaults={'name':location['Name']}
+                defaults={'name':COUNTRIES.get(str(location['Id']), location['Name'])}
             )
 
 
