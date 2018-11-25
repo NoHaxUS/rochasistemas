@@ -10,20 +10,30 @@ from utils.models import MarketReduction, GeneralConfigurations
 from django.db.models import Q , Count
 from django.utils.dateparse import parse_datetime
 from .countries import COUNTRIES
+import time
 
 def get_locations():
     print('Criando Localizações.')
     request = requests.get("http://prematch.lsports.eu/OddService/GetLocations?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54")
+    while not request.status_code == 200:
+        request = requests.get("http://prematch.lsports.eu/OddService/GetLocations?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54")
+        time.sleep(5)
     process_locations(request.json())
 
 def get_sports():
     print('Criando Sports.')
     request = requests.get("http://prematch.lsports.eu/OddService/GetSports?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54")
+    while not request.status_code == 200:
+        request = requests.get("http://prematch.lsports.eu/OddService/GetSports?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54")
+        time.sleep(5)
     process_sports(request.json())
 
 def get_leagues():
     print('Atualizando Ligas.')
     request = requests.get("http://prematch.lsports.eu/OddService/GetLeagues?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54")
+    while not request.status_code == 200:
+        request = requests.get("http://prematch.lsports.eu/OddService/GetLeagues?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54")
+        time.sleep(5)
     process_leagues(request.json())
 
 def get_events():
@@ -32,6 +42,9 @@ def get_events():
     
     print("Atualizango Jogos e Cotas.")
     request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate="+from_date+"&ToDate="+to_date+"&Sports=6046")
+    while not request.status_code == 200:
+        request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate="+from_date+"&ToDate="+to_date+"&Sports=6046")
+        time.sleep(5)
     process_events(request.json())
 
 
@@ -48,7 +61,7 @@ def auto_pay_punter():
     if GeneralConfigurations.objects.filter(pk=1).exists():
         if GeneralConfigurations.objects.get(pk=1).auto_pay_punter:
             tickets = Ticket.objects.annotate(cotations_open=Count('cotations__pk', filter=Q(cotations__status=1)) )\
-            .annotate(cotations_not_winner=Count('cotations__pk', filter=~Q(cotations__settlement__in=[2,5]) & ~Q(cotations__status=2) ) )\
+            .annotate(cotations_not_winner=Count('cotations__pk', filter=Q(cotations__settlement__in=[1,3,4]) & ~Q(game__game_status__in = (4,5,6,7,8)) ) )\
             .filter(cotations_open=0, cotations_not_winner=0, payment__status_payment='Pago')\
             .exclude(reward__reward_status=Reward.REWARD_STATUS[1][1])
 
