@@ -61,7 +61,7 @@ def auto_pay_punter():
     if GeneralConfigurations.objects.filter(pk=1).exists():
         if GeneralConfigurations.objects.get(pk=1).auto_pay_punter:
             tickets = Ticket.objects.annotate(cotations_open=Count('cotations__pk', filter=Q(cotations__status=1)) )\
-            .annotate(cotations_not_winner=Count('cotations__pk', filter=Q(cotations__settlement__in=[1,3,4]) & ~Q(game__game_status__in = (4,5,6,7,8)) ) )\
+            .annotate(cotations_not_winner=Count('cotations__pk', filter=Q(cotations__settlement__in=[1,3,4]) & ~Q(cotations__game__game_status__in = (4,5,6,7,8)) ) )\
             .filter(cotations_open=0, cotations_not_winner=0, payment__status_payment='Pago')\
             .exclude(reward__reward_status=Reward.REWARD_STATUS[1][1])
 
