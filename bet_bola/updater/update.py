@@ -39,7 +39,7 @@ def get_leagues():
 def get_events():
     from_date = str(int((datetime.datetime.now() + datetime.timedelta(days=-1)).timestamp()))
     to_date = str(int((datetime.datetime.now() + datetime.timedelta(days=3)).timestamp()))
-    
+    #print("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate="+from_date+"&ToDate="+to_date+"&Sports=6046")
     print("Atualizango Jogos e Cotas.")
     request = requests.get("http://prematch.lsports.eu/OddService/GetEvents?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54&FromDate="+from_date+"&ToDate="+to_date+"&Sports=6046")
     while not request.status_code == 200:
