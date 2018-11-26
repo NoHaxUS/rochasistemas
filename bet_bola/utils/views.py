@@ -82,7 +82,8 @@ class GetMainMenuView(View):
         league__isnull=False,
         game_status=1,
         visible=True)\
-        .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .filter(cotations_count__gte=3)\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .order_by('-league__location__priority', '-league__priority')\
         .values('league__location','league__location__name', 'league')\

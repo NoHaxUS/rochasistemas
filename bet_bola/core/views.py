@@ -43,9 +43,10 @@ class TodayGames(TemplateResponseMixin, View):
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
         game_status=1, 
         visible=True)\
-        .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
+        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .filter(cotations_count__gte=3)\
         .order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
 
 
@@ -92,9 +93,10 @@ class TomorrowGames(TemplateResponseMixin, View):
         games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
         game_status=1, 
         visible=True)\
-        .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
+        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .filter(cotations_count__gte=3)\
         .order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
 
 
@@ -143,9 +145,10 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
         games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
         game_status=1, 
         visible=True)\
-        .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
+        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .filter(cotations_count__gte=3)\
         .order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
 
 
@@ -189,8 +192,9 @@ class GameLeague(TemplateResponseMixin, View):
         game_status=1,
         league__id=self.kwargs["pk"],
         visible=True)\
-        .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .filter(cotations_count__gte=3)\
         .order_by('-league__priority')
         
         
