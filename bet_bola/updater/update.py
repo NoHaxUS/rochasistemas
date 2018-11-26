@@ -124,7 +124,7 @@ def process_events(content):
                     'start_date': change_time_by_hours(fixture['StartDate']),
                     'game_status': fixture['Status'],
                     'league': League.objects.update_or_create(pk=fixture['League']['Id'], defaults={'name':fixture['League']['Name']})[0],
-                    'location' : Location.objects.update_or_create(pk=fixture['Location']['Id'], defaults={'name': fixture['Location']['Name']})[0],
+                    'location' : Location.objects.update_or_create(pk=fixture['Location']['Id'], defaults={'name': COUNTRIES.get(str(fixture['Location']['Id']), fixture['Location']['Name']) })[0],
                     'sport' : Sport.objects.update_or_create(pk=fixture['Sport']['Id'], defaults={'name': fixture['Sport']['Name']})[0],
                     'last_update': fixture['LastUpdate']
                 }
