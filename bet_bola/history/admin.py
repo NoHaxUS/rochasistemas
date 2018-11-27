@@ -24,12 +24,6 @@ class SellerSalesHistoryAdmin(admin.ModelAdmin):
         elif request.user.has_perm('user.be_manager'):
             return qs.filter(seller__my_manager=request.user.manager)
 
-    def has_add_permission(self, request):
-        return False
-    def has_delete_permission(self, request, obj=None):
-        return False
-    def has_change_permission(self, request, obj=None):
-        return False
 
 
 @admin.register(ManagerTransactions)
@@ -52,13 +46,6 @@ class ManagerTransactionsAdmin(admin.ModelAdmin):
             return qs.filter(manager=request.user.manager)
 
 
-    def has_add_permission(self, request):
-        return False
-    def has_delete_permission(self, request, obj=None):
-        return False
-    def has_change_permission(self, request, obj=None):
-        return False
-
 
 @admin.register(RevenueHistorySeller)
 class RevenueHistorySellerAdmin(admin.ModelAdmin):
@@ -80,12 +67,6 @@ class RevenueHistorySellerAdmin(admin.ModelAdmin):
             return qs.filter(seller__my_manager=request.user.manager)
 
 
-    def has_add_permission(self, request):
-        return False
-    def has_delete_permission(self, request, obj=None):
-        return False
-    def has_change_permission(self, request, obj=None):
-        return False
 
 
 @admin.register(RevenueHistoryManager)
@@ -104,13 +85,6 @@ class RevenueHistoryManagerAdmin(admin.ModelAdmin):
         elif request.user.has_perm('user.be_manager'):
             return qs.filter(manager=request.user.manager)
 
-
-    def has_add_permission(self, request):
-        return False
-    def has_delete_permission(self, request, obj=None):
-        return False
-    def has_change_permission(self, request, obj=None):
-        return False
 
 
 @admin.register(PunterPayedHistory)
@@ -133,13 +107,6 @@ class PunterPayedHistoryAdmin(admin.ModelAdmin):
             return qs.filter(seller__my_manager=request.user.manager)
 
 
-    def has_add_permission(self, request):
-        return False
-    def has_delete_permission(self, request, obj=None):
-        return False
-    def has_change_permission(self, request, obj=None):
-        return False
-
 
 @admin.register(TicketCancelationHistory)
 class TicketCancelationHistoryHistoryAdmin(admin.ModelAdmin):
@@ -161,12 +128,3 @@ class TicketCancelationHistoryHistoryAdmin(admin.ModelAdmin):
             return qs.filter(seller_of_payed=request.user.seller)
         elif request.user.has_perm('user.be_manager'):
             return qs.filter(seller_of_payed__my_manager=request.user.manager)
-
-
-    def has_add_permission(self, request):
-        return False
-    def has_delete_permission(self, request, obj=None):
-        return False
-    def has_change_permission(self, request, obj=None):
-        return False
-
