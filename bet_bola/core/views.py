@@ -54,21 +54,19 @@ class TodayGames(TemplateResponseMixin, View):
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
         game_status=1, 
         visible=True)\
-        .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .filter(cotations_count__gte=3)\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .count()
         
         num_of_pages =  ceil(games_total / results_per_page)
 
         league_games = defaultdict(list)
-        #location_leagues = get_main_menu()
-
         
         for game in games:
             league_games[game.league].append(game)
         
-        context = {'league_games': league_games, 
-            #'location_leagues': location_leagues,
+        context = {'league_games': league_games,
             'after_tommorrow': after_tommorrow,
             'range_pages': range(1, num_of_pages + 1),
             'current_page': page}
@@ -103,20 +101,19 @@ class TomorrowGames(TemplateResponseMixin, View):
         games_total = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
         game_status=1, 
         visible=True)\
-        .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .filter(cotations_count__gte=3)\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .count()
 
         num_of_pages =  ceil(games_total / results_per_page)
         
         league_games = defaultdict(list)
-        #location_leagues = get_main_menu()
-        
+
         for game in games:
             league_games[game.league].append(game)
         
-        context = {'league_games': league_games, 
-            #'location_leagues': location_leagues,
+        context = {'league_games': league_games,
             'after_tommorrow': after_tommorrow,
             'range_pages': range(1, num_of_pages + 1),
             'current_page': page
@@ -155,20 +152,19 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
         games_total = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
         game_status=1, 
         visible=True)\
-        .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .filter(cotations_count__gte=3)\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .count()
 
         num_of_pages =  ceil(games_total / results_per_page)
 
         league_games = defaultdict(list)
-        #location_leagues = get_main_menu()
         
         for game in games:
             league_games[game.league].append(game)
         
-        context = {'league_games': league_games, 
-            #'location_leagues': location_leagues,
+        context = {'league_games': league_games,
             'after_tommorrow': after_tommorrow,
             'range_pages': range(1, num_of_pages + 1),
             'current_page': page
