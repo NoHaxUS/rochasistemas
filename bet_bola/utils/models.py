@@ -153,11 +153,14 @@ class GeneralConfigurations(models.Model):
         self.pk = 1
 
         if GeneralConfigurations.objects.filter(pk=1).exists():
-            percentual_reduction_original = GeneralConfigurations.objects.get(pk=1).percentual_reduction
+            general_config = GeneralConfigurations.objects.get(pk=1)
+            percentual_reduction_original = general_config.percentual_reduction
+            max_cotation_value_original =  general_config.max_cotation_value
         else:
             percentual_reduction_original = 0
+            max_cotation_value_original = 0
         
-        if not percentual_reduction_original == self.percentual_reduction:
+        if percentual_reduction_original != self.percentual_reduction or max_cotation_value_original != self.max_cotation_value:
             self.apply_reductions()
 
         super().save(args, kwargs)
