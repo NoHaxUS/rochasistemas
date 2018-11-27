@@ -62,7 +62,7 @@ class Ticket(models.Model):
         if not self.cotations.filter(settlement__in=[1,3,4]).exclude(game__game_status__in = (4,5,6,7,8)).count() > 0 and self.cotations.exclude(game__game_status__in = (4,5,6,7,8)).exclude(settlement=-1).count() > 0 and self.payment.status_payment == Payment.PAYMENT_STATUS[0][1]:
             return Ticket.TICKET_STATUS["Venceu, não pago"]
         
-        return "Bilhete Anulado."
+        return "Bilhete Anulado"
 
 
     def get_punter_name(self):
