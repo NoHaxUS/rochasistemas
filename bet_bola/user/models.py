@@ -274,9 +274,11 @@ class Manager(CustomUser):
 
         total_revenue = 0
         for seller in sellers:
-            total_revenue += seller.actual_revenue()
+            tickets_not_rewarded = BetTicket.objects.filter(payment__who_set_payment=seller, payment__manager_was_rewarded=False)
+            for ticket in tickets_not_rewarded:
+                total_revenue += ticket.value
         return total_revenue
-
+        
     actual_revenue.short_description = 'Entrada'
 
 
