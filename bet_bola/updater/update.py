@@ -69,6 +69,101 @@ def auto_pay_punter():
                 ticket.pay_winner_punter(ticket.payment.who_set_payment)
 
 
+#UEFA Europa League
+#UEFA Champions League
+#Europa League
+def get_real_league_id(league_id, league_name):
+
+    league_set = {
+        1628,
+        1781,
+        1782,
+        1783,
+        1785,
+        1786,
+        1787,
+        1788,
+        1789,
+        1790,
+        1791,
+        1792,
+
+        3174,
+        3175,
+        3176,
+        3177,
+        3179,
+        3180,
+        3181,
+        3178,
+
+        26754,
+        26757,
+        26758,
+        26759,
+        26760,
+        26761,
+        26762,
+        26763,
+        26771,
+        26772,
+        26773,
+        26777
+        }
+
+    league_dict = {
+        50000: {
+            1628,
+            1781,
+            1782,
+            1783,
+            1785,
+            1786,
+            1787,
+            1788,
+            1789,
+            1790,
+            1791,
+            1792},
+        50001:{
+            3174,
+            3175,
+            3176,
+            3177,
+            3179,
+            3180,
+            3181,
+            3178},
+        50002:{
+            26754,
+            26757,
+            26758,
+            26759,
+            26760,
+            26761,
+            26762,
+            26763,
+            26771,
+            26772,
+            26773,
+            26777}
+        }
+
+    league_name_new = {
+        50000:"UEFA Europa League",
+        50001:"UEFA Champions League",
+        50002:"Europa League"
+    }
+
+    
+    if league_id in league_set:
+        for new_league_id in league_dict.keys():
+            if league_id in league_dict[new_league_id]:
+                return (new_league_id, league_name_new[new_league_id] )
+
+    return (league_id, league_name)
+
+
 def process_reductions():
     if GeneralConfigurations.objects.filter(pk=1).exists():
         print("Processando Redução de Cotas Geral")
@@ -82,7 +177,7 @@ def process_reductions():
 def process_leagues(content):
     for league in content.get('Body'):
         if league['Id'] and league['Name'] and league['LocationId'] and league['SportId']:
-            League(pk=league['Id'], 
+            League(pk=league['Id'],
             name=league['Name'],
             location=Location.objects.get(pk=league['LocationId'])                         
             ).save()
@@ -109,6 +204,7 @@ def change_time_by_hours(date):
 def get_game_name(participants):
     return participants[0]['Name'] + ' x ' + participants[1]['Name'] if int(participants[0]['Position']) == 1 else participants[1]['Name'] + ' x ' + participants[0]['Name']
 
+
 def process_events(content):
 
     for game in content.get('Body'):
@@ -117,14 +213,18 @@ def process_events(content):
         if game['FixtureId'] and fixture['Sport'] and fixture['Location'] and fixture['League']:
             
             game_name = get_game_name(fixture['Participants'])
+
+            league_id_new, league_name_new = get_real_league_id(fixture['League']['Id'], fixture['League']['Name'])
+            location_original = Location.objects.update_or_create(pk=fixture['Location']['Id'], defaults={'name': COUNTRIES.get(str(fixture['Location']['Id']), fixture['Location']['Name']) })[0]
+            
             game_instance = Game.objects.update_or_create(
                 pk=game['FixtureId'],
                 defaults={
                     'name':game_name,
                     'start_date': change_time_by_hours(fixture['StartDate']),
                     'game_status': fixture['Status'],
-                    'league': League.objects.update_or_create(pk=fixture['League']['Id'], defaults={'name':fixture['League']['Name']})[0],
-                    'location' : Location.objects.update_or_create(pk=fixture['Location']['Id'], defaults={'name': COUNTRIES.get(str(fixture['Location']['Id']), fixture['Location']['Name']) })[0],
+                    'league': League.objects.update_or_create(pk=league_id_new, defaults={'name':league_name_new, 'location': location_original})[0],
+                    'location' : location_original,
                     'sport' : Sport.objects.update_or_create(pk=fixture['Sport']['Id'], defaults={'name': fixture['Sport']['Name']})[0],
                     'last_update': fixture['LastUpdate']
                 }
