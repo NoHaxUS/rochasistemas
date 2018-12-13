@@ -26,9 +26,9 @@ def process_fixture_metadata(content):
                 name=game_name,
                 start_date=change_time_by_hours(fixture['StartDate']),
                 game_status=fixture['Status'],
-                league=League.objects.get_or_create(pk=fixture['League']['Id'], defaults={'name':fixture['League']['Name']})[0],
-                location=Location.objects.get_or_create(pk=fixture['Location']['Id'], defaults={'name': fixture['Location']['Name']})[0],
-                sport=Sport.objects.get_or_create(pk=fixture['Sport']['Id'], defaults={'name': fixture['Sport']['Name']})[0],
+                #league=League.objects.get_or_create(pk=fixture['League']['Id'], defaults={'name':fixture['League']['Name']})[0],
+                #location=Location.objects.get_or_create(pk=fixture['Location']['Id'], defaults={'name': fixture['Location']['Name']})[0],
+                #sport=Sport.objects.get_or_create(pk=fixture['Sport']['Id'], defaults={'name': fixture['Sport']['Name']})[0],
                 last_update=fixture['LastUpdate']
             )
 
