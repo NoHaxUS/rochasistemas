@@ -33,11 +33,11 @@ class PunterRegister(View):
             errors['errors'] = True
             errors['data'].append('O Telefone é obrigatório')
         if request.POST['login']:
-            if Punter.objects.filter(username=request.POST['login']).exists():
+            if CustomUser.objects.filter(username=request.POST['login']).exists():
                 errors['errors'] = True
                 errors['data'].append('Esse login já está em uso, desculpe.')
         if request.POST['email']:
-            if Punter.objects.filter(email=request.POST['email']).exists():
+            if CustomUser.objects.filter(email=request.POST['email']).exists():
                 errors['errors'] = True
                 errors['data'].append('Esse email já está em uso, desculpe.')
 

@@ -290,7 +290,7 @@ class TicketAdmin(admin.ModelAdmin):
             return list_filter
 
         if request.user.has_perm('user.be_punter'):
-            return None
+            return ()
 
 
 #@admin.register(Reward)
