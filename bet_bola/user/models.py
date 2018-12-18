@@ -201,7 +201,7 @@ class Manager(CustomUser):
     credit_limit_to_add = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name="Crédito")
     can_cancel_ticket = models.BooleanField(default=True, verbose_name='Cancela Bilhete ?')
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
-    based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no lucro ?')
+    based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no líquido ?')
 
     def reset_revenue(self, who_reseted_revenue):
         from core.models import Payment
@@ -250,10 +250,8 @@ class Manager(CustomUser):
 
 
         if self.based_on_profit:
-            total_net_value = 0
-            for seller in sellers:
-                total_net_value += seller.real_net_value()
-            return round(total_net_value * (self.commission / 100),2)
+            total_net_value = self.net_value_before_comission() * (self.commission / 100)
+            return round(total_net_value, 2)
         else:
             total_net_value = self.actual_revenue() * (self.commission / 100)
             return round(total_net_value, 2)
@@ -262,9 +260,14 @@ class Manager(CustomUser):
 
 
     def real_net_value(self):
-        return self.actual_revenue() -  (self.net_value() + self.out_money())
+        return self.net_value_before_comission() - self.net_value()
     
     real_net_value.short_description = 'Lucro'
+
+
+    def net_value_before_comission(self):
+        return self.actual_revenue() - self.out_money()
+    net_value_before_comission.short_description = 'Líquido'
     
 
     def actual_revenue(self):

@@ -126,7 +126,7 @@ pay_manager.short_description = 'Pagar Gerentes'
 class ManagerAdmin(admin.ModelAdmin):
     search_fields = ['pk','first_name','username','cpf']
     fields = ('username','password','first_name','last_name','email','cellphone','commission','cpf','address','credit_limit_to_add','is_active','can_cancel_ticket','can_sell_unlimited','based_on_profit')
-    list_display = ('username','first_name','actual_revenue','out_money','get_commission','net_value','real_net_value','credit_limit_to_add')
+    list_display = ('username','first_name','actual_revenue','out_money','net_value_before_comission','get_commission','net_value','real_net_value','credit_limit_to_add')
     list_editable = ('credit_limit_to_add',)
     list_display_links = ('username',)
     actions = [pay_manager]
