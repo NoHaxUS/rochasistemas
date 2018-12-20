@@ -144,11 +144,11 @@ class GeneralConfigurations(models.Model):
         reduction = self.percentual_reduction / 100
         
         for game in able_games:
-            game.cotations.update(price=F('start_price') * reduction )
+            game.cotations.update(price=F('price') * reduction )
             game.cotations.update(price=Case(When(price__lt=1,then=1.01),default=F('price')))
             game.cotations.filter(price__gt=self.max_cotation_value).update(price=self.max_cotation_value)
 
-
+    """
     def save(self, *args, **kwargs):
         self.pk = 1
 
@@ -164,6 +164,7 @@ class GeneralConfigurations(models.Model):
             self.apply_reductions()
 
         super().save(args, kwargs)
+    """
 
 
     class Meta:
@@ -388,7 +389,7 @@ class MarketReduction(models.Model):
     market_to_reduct = models.IntegerField(choices=MARKET_LIST, verbose_name='Tipo de Aposta', unique=True)
     reduction_percentual = models.IntegerField(default=100, verbose_name='Percentual de Redução')
 
-
+    """
     def reset_reducions(self):
         from core.models import Game
 
@@ -413,9 +414,10 @@ class MarketReduction(models.Model):
                 cotations_to_reduct =  game.cotations.filter(market__id=1, name='Fora')
             else:
                 cotations_to_reduct =  game.cotations.filter(market__id=self.market_to_reduct)
-            cotations_to_reduct.update(price=F('start_price') * reduction )
+            cotations_to_reduct.update(price=F('price') * reduction )
             cotations_to_reduct.update(price=Case(When(price__lt=1,then=1.05),default=F('price')))
             cotations_to_reduct.filter(price__gt=max_cotation_value).update(price=max_cotation_value)
+    """
 
     def apply_reductions(self):
         from core.models import Game
@@ -441,13 +443,15 @@ class MarketReduction(models.Model):
                 cotations_to_reduct =  game.cotations.filter(market__id=1, name='Fora')
             else:
                 cotations_to_reduct =  game.cotations.filter(market__id=self.market_to_reduct)
-            cotations_to_reduct.update(price=F('start_price') * reduction )
+            cotations_to_reduct.update(price=F('price') * reduction )
             cotations_to_reduct.update(price=Case(When(price__lt=1,then=1.05),default=F('price')))
             cotations_to_reduct.filter(price__gt=max_cotation_value).update(price=max_cotation_value)
 
+    """
     def save(self, *args, **kwargs):
         self.apply_reductions()
         super().save(args, kwargs)
+    """
 
     def __str__(self):
         return str(self.market_to_reduct)

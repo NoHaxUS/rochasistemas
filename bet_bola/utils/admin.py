@@ -36,7 +36,8 @@ class OverviewAdmin(admin.ModelAdmin):
 class MarketReductionsAdmin(admin.ModelAdmin):
     list_display = ('market_to_reduct','reduction_percentual')
     actions = None
-
+    
+    """
     def delete_model(self, request, obj):
         obj.reset_reducions()
         obj.delete()
@@ -45,6 +46,7 @@ class MarketReductionsAdmin(admin.ModelAdmin):
         for market in queryset:
             market.reset_reducions()
             market.delete()
+    """
 
 
 @admin.register(RewardRelated)
