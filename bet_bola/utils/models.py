@@ -148,10 +148,11 @@ class GeneralConfigurations(models.Model):
             game.cotations.update(price=Case(When(price__lt=1,then=1.01),default=F('price')))
             game.cotations.filter(price__gt=self.max_cotation_value).update(price=self.max_cotation_value)
 
-    """
+    
     def save(self, *args, **kwargs):
         self.pk = 1
-
+        super().save(args, kwargs)
+        """
         if GeneralConfigurations.objects.filter(pk=1).exists():
             general_config = GeneralConfigurations.objects.get(pk=1)
             percentual_reduction_original = general_config.percentual_reduction
@@ -162,9 +163,8 @@ class GeneralConfigurations(models.Model):
         
         if percentual_reduction_original != self.percentual_reduction or max_cotation_value_original != self.max_cotation_value:
             self.apply_reductions()
-
-        super().save(args, kwargs)
-    """
+        """
+    
 
 
     class Meta:
