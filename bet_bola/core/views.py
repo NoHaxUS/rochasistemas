@@ -182,14 +182,14 @@ class GameLeague(TemplateResponseMixin, View):
 
         after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
-        my_qs = Cotation.objects.filter(market__name='1X2', status=1)
+        my_qs = Cotation.objects.filter(market__name='1X2')
 
         games = Game.objects.filter(start_date__gt=tzlocal.now(),
-        game_status=1,
+        game_status__in=[1,8,9],
         league__id=self.kwargs["pk"],
         visible=True)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
-        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .annotate(cotations_count=Count('cotations'))\
         .filter(cotations_count__gte=3)\
         .order_by('-league__priority')
         
@@ -212,7 +212,7 @@ class CotationsView(View):
         from utils.models import MarketRemotion
 
         game_id = self.kwargs['gameid']
-        cotations_of_game = Cotation.objects.filter(game_id=game_id).filter(~Q(market__name='1X2')).filter(market__isnull=False, market__available=True, status=1)			
+        cotations_of_game = Cotation.objects.filter(game_id=game_id).filter(~Q(market__name='1X2')).filter(market__isnull=False, market__available=True)
         
         remotions = MarketRemotion.objects.all()
 
