@@ -80,9 +80,9 @@ class GetMainMenuView(View):
 
         games = Game.objects.filter(start_date__gt=tzlocal.now(),
         league__isnull=False,
-        game_status=1,
+        game_status__in=[1,8,9],
         visible=True)\
-        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .annotate(cotations_count=Count('cotations'))\
         .filter(cotations_count__gte=3)\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .order_by('-league__location__priority', '-league__priority')\

@@ -37,24 +37,24 @@ class TodayGames(TemplateResponseMixin, View):
         end_offset = (page * results_per_page)
         
         after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
-        my_qs = Cotation.objects.filter(market__name="1X2", status=1)
+        my_qs = Cotation.objects.filter(market__name="1X2")
         
         games = Game.objects.filter(start_date__gt=tzlocal.now(), 
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
-        game_status=1, 
+        game_status__in=[1,8,9],
         visible=True)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
-        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .annotate(cotations_count=Count('cotations'))\
         .filter(cotations_count__gte=3)\
         .order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
 
 
         games_total = Game.objects.filter(start_date__gt=tzlocal.now(), 
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
-        game_status=1, 
+        game_status__in=[1,8,9],
         visible=True)\
-        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .annotate(cotations_count=Count('cotations'))\
         .filter(cotations_count__gte=3)\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .count()
@@ -87,21 +87,21 @@ class TomorrowGames(TemplateResponseMixin, View):
 
         after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
-        my_qs = Cotation.objects.filter(market__name="1X2", status=1)
+        my_qs = Cotation.objects.filter(market__name="1X2")
         games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
-        game_status=1, 
+        game_status__in=[1,8,9], 
         visible=True)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
-        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .annotate(cotations_count=Count('cotations'))\
         .filter(cotations_count__gte=3)\
         .order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
 
 
         games_total = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
-        game_status=1, 
+        game_status__in=[1,8,9],
         visible=True)\
-        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .annotate(cotations_count=Count('cotations'))\
         .filter(cotations_count__gte=3)\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .count()
@@ -138,21 +138,21 @@ class AfterTomorrowGames(TemplateResponseMixin, View):
 
         after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
 
-        my_qs = Cotation.objects.filter(market__name="1X2", status=1)
+        my_qs = Cotation.objects.filter(market__name="1X2")
         games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
-        game_status=1, 
+        game_status__in=[1,8,9],
         visible=True)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
-        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .annotate(cotations_count=Count('cotations'))\
         .filter(cotations_count__gte=3)\
         .order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
 
 
         games_total = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
-        game_status=1, 
+        game_status__in=[1,8,9],
         visible=True)\
-        .annotate(cotations_count=Count('cotations', filter=~Q(cotations__status=2) ))\
+        .annotate(cotations_count=Count('cotations'))\
         .filter(cotations_count__gte=3)\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .count()
