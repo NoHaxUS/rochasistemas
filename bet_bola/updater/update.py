@@ -270,7 +270,6 @@ def process_markets(markets, game_instance):
                 price=cotation['Price'],
                 settlement=cotation.get('Settlement',None),
                 market=Market.objects.get_or_create(pk=market['Id'], defaults={'name': get_translated_market(market['Name']) })[0],
-                last_update=cotation['LastUpdate'],
-                is_updating=True
+                last_update=cotation['LastUpdate']
             ).save()
 
