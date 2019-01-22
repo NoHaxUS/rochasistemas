@@ -1,3 +1,32 @@
+LEAGUE_NAMES_TRANSLATED = {
+    "24692":"Paranaense - Fase 1 Playoffs",
+    "24982":"Paranaense - Fase 2 Playoffs",
+    "1096":"Paranaense - Fase 1",
+    "1101":"Catarinense - Fase 1",
+    "1104":"Brasiliense - Fase 1",
+    "1109":"Baiano - Fase 1",
+    "1110":"Alagoano - Fase 1",
+    "1140":"Cearense - Fase 2",
+    "1141":"Potiguar - Fase 1",
+    "1446":"Pernambucano - Fase 1",
+    "1457":"Gaúcho - Fase 1",
+    "1462":"Paraense - Fase 1",
+    "1773":"Liga Futsal - Fase 1",
+    "3377":"Matogrossense - Fase 1",
+    "4921":"Sergipano - Fase 1 - Grupo A",
+    "5791":"Cearense - Fase 1 Grupo A",
+    "6240":"Carioca 2° Divisão - Fase 2 - Grupo A",
+    "21294":"Carioca 2° Divisão - Fase 1 - Grupo A",
+    "21313":"Carioca 2° Divisão - Fase 1 - Grupo B",
+    "18478":"Carioca - Fase 1",
+    "1513":"Potiguar - Fase 2",
+    "4290":"Carioca 2° Divisão - Fase 1 Play Offs",
+    "24777":"Paranaense - Fase 2 Grupo A",
+    "24778":"Paranaense - Fase 2 Grupo B",
+    "1452":"Paraibano - Fase 1"
+}
+
+
 REAL_COTATION_NAMES = {
     "1":"Casa",
     "2":"Fora",
@@ -120,6 +149,9 @@ TRANSLATIONS_FOR_SPECIAL_CASES = {
     "5 Or More":"5 ou mais",
     "6 Or More":"6 ou mais"
 }
+
+def get_translated_league(league_id, league_name):
+    return LEAGUE_NAMES_TRANSLATED.get(league_id, league_name)
 
 def get_translated_cotation(market, name):
     

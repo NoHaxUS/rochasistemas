@@ -5,7 +5,7 @@ import pika
 import json
 from core.models import Location, League, Sport, Market, Period, Game, Cotation, Ticket, Reward
 from .real_time import process_fixture_metadata, process_markets_realtime, process_settlements
-from .translations import get_translated_cotation, get_translated_market
+from .translations import get_translated_cotation, get_translated_market, get_translated_league
 from utils.models import MarketReduction, GeneralConfigurations
 from django.db.models import Q , Count
 from django.utils.dateparse import parse_datetime
@@ -178,7 +178,7 @@ def process_leagues(content):
     for league in content.get('Body'):
         if league['Id'] and league['Name'] and league['LocationId'] and league['SportId']:
             League(pk=league['Id'],
-            name=league['Name'],
+            name=get_translated_league(str(league['Id']), league['Name']),
             location=Location.objects.get(pk=league['LocationId'])                         
             ).save()
 
