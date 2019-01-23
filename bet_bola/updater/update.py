@@ -223,7 +223,7 @@ def process_events(content):
                     'name':game_name,
                     'start_date': change_time_by_hours(fixture['StartDate']),
                     'game_status': fixture['Status'],
-                    'league': League.objects.update_or_create(pk=league_id_new, defaults={'name':league_name_new, 'location': location_original})[0],
+                    'league': League.objects.update_or_create(pk=league_id_new, defaults={'name': get_translated_league(str(league_id_new), league_name_new), 'location': location_original})[0],
                     'location' : location_original,
                     'sport' : Sport.objects.update_or_create(pk=fixture['Sport']['Id'], defaults={'name': fixture['Sport']['Name']})[0],
                     'last_update': fixture['LastUpdate']
