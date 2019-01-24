@@ -21,6 +21,129 @@ from math import ceil
 from  collections import defaultdict
 import time
 
+class SearchView(TemplateResponseMixin, View):
+
+    template_name = 'core/index.html'
+
+    def post(self, request, *args, **kwargs):
+        
+
+        page = int(request.GET.get('page')) if request.GET.get('page') else 1
+
+        search_word = request.POST.get('search-word', None)
+        if search_word == '':
+            search_word = None
+        request.session['search-word'] = search_word
+        request.session.modified = True
+
+        results_per_page = 80
+        start_offset = 0 if page == 1 else (page * results_per_page) - results_per_page
+        end_offset = (page * results_per_page)
+        
+        after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
+        my_qs = Cotation.objects.filter(market__name="1X2")
+        
+        games = Game.objects.filter(start_date__gt=tzlocal.now(), 
+        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+        game_status__in=[1,8,9],
+        visible=True)\
+        .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
+        .annotate(cotations_count=Count('cotations'))\
+        .filter(cotations_count__gte=3)
+
+
+        if search_word:
+            games = games.filter(name__icontains=search_word).order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
+        else:
+            games = games.order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
+
+
+        games_total = Game.objects.filter(start_date__gt=tzlocal.now(), 
+        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+        game_status__in=[1,8,9],
+        visible=True)\
+        .annotate(cotations_count=Count('cotations'))\
+        .filter(cotations_count__gte=3)\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
+  
+        if search_word:
+            games_total = games_total.filter(name__icontains=search_word).count()
+        else:
+            games_total = games_total.count()
+
+
+        num_of_pages =  ceil(games_total / results_per_page)
+
+        league_games = defaultdict(list)
+        
+        for game in games:
+            league_games[game.league].append(game)
+        
+        context = {'league_games': league_games,
+            'after_tommorrow': after_tommorrow,
+            'range_pages': range(1, num_of_pages + 1),
+            'current_page': page,
+            'search_word':search_word}
+        
+        return self.render_to_response(context)
+
+
+
+    def get(self, request, *args, **kwargs):
+        
+        page = int(request.GET.get('page')) if request.GET.get('page') else 1
+
+        search_word = request.session.get('search-word', None)
+
+        results_per_page = 80
+        start_offset = 0 if page == 1 else (page * results_per_page) - results_per_page
+        end_offset = (page * results_per_page)
+        
+        after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
+        my_qs = Cotation.objects.filter(market__name="1X2")
+        
+        games = Game.objects.filter(start_date__gt=tzlocal.now(),
+        game_status__in=[1,8,9],
+        visible=True)\
+        .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
+        .annotate(cotations_count=Count('cotations'))\
+        .filter(cotations_count__gte=3)
+
+        if search_word:
+            games = games.filter(name__icontains=search_word).order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
+        else:
+            games = games.order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
+
+
+        games_total = Game.objects.filter(start_date__gt=tzlocal.now(),
+        game_status__in=[1,8,9],
+        visible=True)\
+        .annotate(cotations_count=Count('cotations'))\
+        .filter(cotations_count__gte=3)\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False))
+
+        if search_word:
+            games_total = games_total.filter(name__icontains=search_word).count()
+        else:
+            games_total = games_total.count()
+
+        
+        num_of_pages =  ceil(games_total / results_per_page)
+
+        league_games = defaultdict(list)
+        
+        for game in games:
+            league_games[game.league].append(game)
+        
+        context = {'league_games': league_games,
+            'after_tommorrow': after_tommorrow,
+            'range_pages': range(1, num_of_pages + 1),
+            'current_page': page,
+            'search_word': search_word}
+        
+        return self.render_to_response(context)
 
 class TodayGames(TemplateResponseMixin, View):
 

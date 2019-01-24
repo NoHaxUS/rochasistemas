@@ -523,6 +523,24 @@
 
 {% block right_section_desktop %}
 <div class="col s2 hide-on-med-and-down hoverable white">
+    <div class="section-header white-text center-align">BUSCA</div>
+    <div class="row">
+        <form id="search-form" class="col s12" method="POST" action="/search/">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="input-field col s12 bet-ticket-input">
+                        <input placeholder="Digite aqui" type="text" name="search-word" class="validate center-align" value="{{search_word}}">
+                    </div>
+                </div>
+                <div class="row search-buttons">
+                    <div class="col s12 center-align">
+                        <button class="btn waves-effect waves-light search-submit blue-button round" type="submit" desktop="True">Buscar
+                            <i class="material-icons right">search</i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+    </div>
     <div class="section-header white-text center-align">
         BILHETE
     </div>

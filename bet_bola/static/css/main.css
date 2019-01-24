@@ -182,6 +182,11 @@ nav .brand-logo{
     margin-bottom: 12px;
 }
 
+.search-submit{
+    margin-top: 10px;
+    margin-bottom: 12px;
+}
+
 .side-nav{
     background-color: #334a40;
 }
