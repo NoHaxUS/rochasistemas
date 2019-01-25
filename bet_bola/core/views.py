@@ -43,8 +43,7 @@ class SearchView(TemplateResponseMixin, View):
         after_tommorrow = tzlocal.now().date() + timezone.timedelta(days=2)
         my_qs = Cotation.objects.filter(market__name="1X2")
         
-        games = Game.objects.filter(start_date__gt=tzlocal.now(), 
-        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+        games = Game.objects.filter(start_date__gt=tzlocal.now(),
         game_status__in=[1,8,9],
         visible=True)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
@@ -59,8 +58,7 @@ class SearchView(TemplateResponseMixin, View):
             games = games.order_by('-league__location__priority','-league__priority')[start_offset:end_offset]
 
 
-        games_total = Game.objects.filter(start_date__gt=tzlocal.now(), 
-        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+        games_total = Game.objects.filter(start_date__gt=tzlocal.now(),
         game_status__in=[1,8,9],
         visible=True)\
         .annotate(cotations_count=Count('cotations'))\
@@ -79,7 +77,10 @@ class SearchView(TemplateResponseMixin, View):
         
         for game in games:
             league_games[game.league].append(game)
-        
+
+        if not search_word:
+            search_word = ''
+
         context = {'league_games': league_games,
             'after_tommorrow': after_tommorrow,
             'range_pages': range(1, num_of_pages + 1),
@@ -136,6 +137,9 @@ class SearchView(TemplateResponseMixin, View):
         
         for game in games:
             league_games[game.league].append(game)
+
+        if not search_word:
+            search_word = ''
         
         context = {'league_games': league_games,
             'after_tommorrow': after_tommorrow,
