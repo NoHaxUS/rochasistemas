@@ -4,6 +4,7 @@ from django.template.loader import get_template
 from django.views.generic import View
 from django.utils import timezone
 from django.core import serializers
+from django.db.models import Prefetch, Count
 from core.models import Ticket,Cotation,CotationHistory, Reward
 from user.models import Seller
 from .models import TicketCustomMessage
@@ -182,6 +183,83 @@ class PDF(View):
                 pdf.text(v,h, phrase)
                 h+=10
 
+        buffer = pdf.output(dest='S').encode('latin-1')
+        response.write(buffer)
+        return response
+
+
+class GamesTablePDF(View):
+    def order_cotations(self, cotations):
+        ordered = list(cotations).copy()
+        for cotation in cotations:
+            if cotation.name == 'Casa':
+                ordered[0] = cotation
+            elif cotation.name == "Empate":
+                ordered[1] = cotation
+            elif cotation.name == "Fora":
+                ordered[2] = cotation
+            elif cotation.name == "Casa/Fora":
+                ordered[3] = cotation
+            elif cotation.name == "Casa/Empate":
+                ordered[4] = cotation
+            elif cotation.name == "Empate/Fora":
+                ordered[5] = cotation
+        return ordered         
+
+
+    def get(self, request, *args, **kwargs):        
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'inline; filename="ticket.pdf"'
+
+        my_qs = Cotation.objects.filter(Q(market__name="1X2") | Q(market__pk=7), status=1)
+
+        games = Game.objects.filter(start_date__gt=tzlocal.now(), 
+        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+        game_status=1, 
+        visible=True)\
+        .annotate(cotations_count=Count('cotations')).filter(cotations_count__gte=1)\
+        .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
+        .order_by('-league__location__priority','-league__priority')
+
+        league_games = defaultdict(list)
+        dictionare = {"Casa":"C", "Empate":"E","Fora":"F","Casa/Fora":"C/F","Casa/Empate":"C/E","Empate/Fora":"E/F"}  
+
+        for game in games:
+            league_games[game.league].append(game)        
+
+        pdf = FPDF('P', 'mm', (231, 297 + games.count() * 84))
+        pdf.add_page()
+        pdf.add_font('DejaVu', '', 'DejaVuSansCondensed.ttf', uni=True)     
+        pdf.set_font('DejaVu','',30)
+
+        pdf.text(60,15, "-> "+ settings.APP_VERBOSE_NAME.upper() +" <-")                
+        
+        h = 80
+        for league in league_games:
+            h=h+8
+            pdf.text(4,h,league.name.upper())
+            pdf.set_font('DejaVu','',28)
+            for game in league_games[league]:
+                h=h+24
+                pdf.text(4,h, game.name)                
+                h=h+14
+                cont = 0
+                content = ""
+                for c in self.order_cotations(game.my_cotations): 
+                    content += "[" + dictionare[c.name] + ':' + str(c.price)  +"]"                                                    
+                    if cont == 2:
+                        pdf.text(50,h,content)
+                        content = ""
+                        h=h+14       
+                    cont +=1                     
+                pdf.text(35,h,content)                
+                h=h+14
+            h=h+14
+            pdf.set_font('DejaVu','',30)
+        pdf.text(80,h+20, settings.APP_VERBOSE_NAME)
+        h+=36
+        
         buffer = pdf.output(dest='S').encode('latin-1')
         response.write(buffer)
         return response
