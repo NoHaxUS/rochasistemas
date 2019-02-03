@@ -747,28 +747,24 @@ class PrintGameTables(TemplateResponseMixin, View):
         for game in games:
             league_games[game.league].append(game)
 
-        content = ""
-        for league in league_games:
-            content += "<CENTER> <BIG>" + league.name + "<BR>"
-            content += '---------------------------------------'
-            for game in league_games[league]:
-                content += "<CENTER>" + game.name + "<BR>"
-                #content += "<CENTER>" + game.start_date + "<BR>"
-                #print(game.my_cotations)
-                for cotation in self.order_cotations(game.my_cotations):
-                    print(cotation.name)
-                    content += cotation.name + '->'
-
+        content = ""        
+        for league in league_games:                                      
+            content += "<CENTER> <BIG>" + league.name           
+            for game in league_games[league]:                
+                content += '<BR>'
+                content += "<CENTER>" + game.name + "<BR>"               
+                for cotation in self.order_cotations(game.my_cotations):                    
+                    content += "[" +cotation.name +':' + str(cotation.price)+']<BR>'                                                    
                 
 
 
-        """
-        content = "<CENTER> -> " + settings.APP_VERBOSE_NAME.upper() + " <- <BR>"
-        content += "#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;"
-        context = {'print': content, 'base_url': request.get_host()}
-        """
 
-        return self.render_to_response({})
+        content += "<BR><CENTER> -> " + settings.APP_VERBOSE_NAME.upper() + " <- <BR>"
+        content += "#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;"        
+        
+        context = {'games':games,'league_games':league_games,'print': content, 'base_url': request.get_host()}
+
+        return self.render_to_response(context)
 
 
 

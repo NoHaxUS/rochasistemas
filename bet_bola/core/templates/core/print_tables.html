@@ -1,5 +1,7 @@
 {% extends './base_main.html' %}
 
+{% load filters %}
+
 {% block modals %}
 {% endblock %}
 
@@ -28,14 +30,13 @@
 {% block left_section_desktop %}
 {% endblock %}
 
-{% block content %}
-<div class="row">
-    <div class="col s12 center-align">
-        
-        <div class="row">
-         Impressão 
-        </div>
-    </div>
+{% block content %}    
+<div class="col s12 center-align">
+    <a id="print_ticket"
+    class="btn waves-effect waves-light yellow black-text"
+    command="{{print}}">Imprimir
+        <i class="material-icons right">print</i>
+    </a>                  
 </div>
 {% endblock %}
 
