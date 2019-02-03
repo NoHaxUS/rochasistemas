@@ -747,16 +747,23 @@ class PrintGameTables(TemplateResponseMixin, View):
         for game in games:
             league_games[game.league].append(game)
 
-        content = ""        
-        for league in league_games:                                      
-            content += "<CENTER> <BIG>" + league.name           
+        content = ""
+        
+        dictionare = {"Casa":"C", "Empate":"E","Fora":"F","Casa/Fora":"C/F","Casa/Empate":"C/E","Empate/Fora":"E/F"}  
+        for league in league_games:          
+            content += "<LEFT> <MEDIUM2>" + league.name +"<BR>"           
             for game in league_games[league]:                
                 content += '<BR>'
-                content += "<CENTER>" + game.name + "<BR>"               
+                content += "<LEFT>" + game.name + "<BR>"                               
+                content += "<CENTER>"
+                cont=0
                 for cotation in self.order_cotations(game.my_cotations):                    
-                    content += "[" +cotation.name +':' + str(cotation.price)+']<BR>'                                                    
-                
-
+                    content += "["+dictionare[cotation.name] +':' + str(cotation.price)+"]"                    
+                    if cont == 2:
+                        content+='<BR><CENTER>'
+                    cont+=1
+                content += '<BR>'
+            content += '<BR>'            
 
 
         content += "<BR><CENTER> -> " + settings.APP_VERBOSE_NAME.upper() + " <- <BR>"
