@@ -131,7 +131,9 @@ REAL_MARKET_NAMES = {
     "Under/Over And Both Teams To Score":"Abaixo/Acima e Ambos marcam",
     "Will Be An Own Goal?":"Vai ter gol contra?",
     "Odd/Even - Home Team":"Ímpar/Par - Time de Casa",
-    "Corners Handicap": "Handicap - Escanteios"
+    "Corners Handicap": "Handicap - Escanteios",
+    "Double Chance 1st Period":"Dupla Chance 1° Tempo",
+    "1st Period Odd/Even":"Ímpar/Par 1° Tempo"
 }
 
 SPECIAL_MARKETS = (

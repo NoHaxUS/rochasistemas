@@ -34,7 +34,7 @@ def get_leagues():
     while not request.status_code == 200:
         request = requests.get("http://prematch.lsports.eu/OddService/GetLeagues?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54")
         time.sleep(5)
-    process_leagues(request.json())
+    #process_leagues(request.json())
 
 def get_events():
     from_date = str(int((datetime.datetime.now() + datetime.timedelta(days=-1)).timestamp()))
@@ -173,14 +173,6 @@ def process_reductions():
         print("Processando Redução: " + str(market_reduction.market_to_reduct))
         market_reduction.apply_reductions()
 
-
-def process_leagues(content):
-    for league in content.get('Body'):
-        if league['Id'] and league['Name'] and league['LocationId'] and league['SportId']:
-            League(pk=league['Id'],
-            name=get_translated_league(str(league['Id']), league['Name']),
-            location=Location.objects.get(pk=league['LocationId'])                         
-            ).save()
 
 def process_sports(content):
     for sport in content.get('Body'):

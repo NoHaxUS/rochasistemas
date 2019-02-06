@@ -12,9 +12,9 @@ def write_logs(msg):
 
 def start_update():  
     #write_logs("Update Started...")
-    get_sports()
-    get_locations()
-    get_leagues()
+    #get_sports()
+    #get_locations()
+    #get_leagues()
     get_events()
     process_reductions()
     auto_pay_punter()
