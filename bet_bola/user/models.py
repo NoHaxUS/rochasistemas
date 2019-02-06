@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User, Permission, AbstractUser, BaseUserManager
 from django.db.models import F, Q, When, Case
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
 
 
@@ -69,7 +69,7 @@ class Seller(CustomUser):
     credit_limit = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Crédito')
     my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True, blank=True)
     can_cancel_ticket = models.BooleanField(default=False, verbose_name='Cancela Bilhete ?')
-    limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento")
+    limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento", validators=[MinValueValidator(1), MaxValueValidator(45)])
 
 
     def reset_revenue(self, who_reseted_revenue):
@@ -200,7 +200,9 @@ class Manager(CustomUser):
     commission = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Comissão', validators=[MinValueValidator(Decimal('0.01'))])
     credit_limit_to_add = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name="Crédito")
     can_cancel_ticket = models.BooleanField(default=True, verbose_name='Cancela Bilhete ?')
+    limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento", validators=[MinValueValidator(1), MaxValueValidator(45)])
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
+    can_change_limit_time = models.BooleanField(default=False, verbose_name='Pode alterar tempo de Cancelamento do Cambista?')
     based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no líquido ?')
 
     def reset_revenue(self, who_reseted_revenue):

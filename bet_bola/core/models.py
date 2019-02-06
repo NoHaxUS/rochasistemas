@@ -119,6 +119,11 @@ class Ticket(models.Model):
                 return {'success':False,
                     'message':' Tempo limite para cancelar o Ticket '+ str(self.pk) +' excedido.'}
 
+        if user.has_perm('user.be_manager') and not user.is_superuser:
+            if self.payment.payment_date + timezone.timedelta(minutes=int(user.manager.limit_time_to_cancel)) < tzlocal.now():
+                return {'success':False,
+                    'message':' Tempo limite para cancelar o Ticket '+ str(self.pk) +' excedido.'}
+
         
         seller = self.payment.who_set_payment
         if not seller.can_sell_unlimited:

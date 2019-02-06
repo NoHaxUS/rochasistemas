@@ -82,6 +82,20 @@ class SellerAdmin(admin.ModelAdmin):
             return qs.filter(pk=request.user.pk)
         
 
+    def get_fields(self, request, obj):
+        fields = super().get_fields(request, obj)
+        if request.user.is_superuser:
+            return fields
+        if request.user.has_perm('user.be_manager'):
+            if request.user.manager.can_change_limit_time:
+                return ('username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'credit_limit', 'can_sell_unlimited', 'is_active', 'can_cancel_ticket', 'limit_time_to_cancel')
+            return ('username', 'first_name','last_name', 'password','email', 'cellphone', 'address', 'cpf', 'credit_limit', 'can_sell_unlimited', 'is_active')   
+
+        if request.user.has_perm('user.be_seller'):
+            return fields
+        if request.user.has_perm('user.be_punter'):
+            return fields
+
     def save_model(self, request, obj, form, change):
         if request.user.has_perm('user.be_manager') and not request.user.is_superuser:
             if form.is_valid():
@@ -125,7 +139,7 @@ pay_manager.short_description = 'Pagar Gerentes'
 @admin.register(Manager)
 class ManagerAdmin(admin.ModelAdmin):
     search_fields = ['pk','first_name','username','cpf']
-    fields = ('username','password','first_name','last_name','email','cellphone','commission','cpf','address','credit_limit_to_add','is_active','can_cancel_ticket','can_sell_unlimited','based_on_profit')
+    fields = ('username','password','first_name','last_name','email','cellphone','commission','cpf','address','credit_limit_to_add','is_active','can_cancel_ticket','limit_time_to_cancel','can_sell_unlimited','can_change_limit_time','based_on_profit')
     list_display = ('username','first_name','actual_revenue','out_money','net_value_before_comission','get_commission','net_value','real_net_value','credit_limit_to_add')
     list_editable = ('credit_limit_to_add',)
     list_display_links = ('username',)
