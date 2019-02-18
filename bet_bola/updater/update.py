@@ -188,7 +188,7 @@ def process_sports(content):
 def change_time_by_hours(date):
 
     current_date = parse_datetime(date)
-    delta = datetime.timedelta(hours=2)
+    delta = datetime.timedelta(hours=3)
     real_date = current_date - delta
     return real_date
 
