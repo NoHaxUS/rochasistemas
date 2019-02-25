@@ -228,20 +228,20 @@ class GamesTablePDF(View):
         for game in games:
             league_games[game.league].append(game)        
 
-        pdf = FPDF('P', 'mm', (231, 297 + games.count() * 84))
+        pdf = FPDF('P', 'mm', (231, 297 + games.count() * 64))
         pdf.add_page()
         pdf.add_font('DejaVu', '', 'DejaVuSansCondensed.ttf', uni=True)     
         pdf.set_font('DejaVu','',30)
 
-        pdf.text(60,15, "-> "+ settings.APP_VERBOSE_NAME.upper() +" <-")                
+        #pdf.text(60,15, "-> "+ settings.APP_VERBOSE_NAME.upper() +" <-")                
         
-        h = 80
+        h = 10
         for league in league_games:
             h=h+8
             pdf.text(4,h,league.name.upper())
             pdf.set_font('DejaVu','',28)
             for game in league_games[league]:
-                h=h+24
+                h=h+15
                 pdf.text(4,h, game.name)                
                 h=h+14
                 cont = 0
@@ -249,16 +249,16 @@ class GamesTablePDF(View):
                 for c in self.order_cotations(game.my_cotations): 
                     content += "[" + dictionare[c.name] + ':' + str(c.price)  +"]"                                                    
                     if cont == 2:
-                        pdf.text(50,h,content)
+                        pdf.text(5,h,content)
                         content = ""
-                        h=h+14       
+                        h=h+14     
                     cont +=1                     
-                pdf.text(35,h,content)                
-                h=h+14
-            h=h+14
+                pdf.text(5,h,content)                
+                h=h+15
+            #h=h+1
             pdf.set_font('DejaVu','',30)
         pdf.text(80,h+20, settings.APP_VERBOSE_NAME)
-        h+=36
+        h+=10
         
         buffer = pdf.output(dest='S').encode('latin-1')
         response.write(buffer)

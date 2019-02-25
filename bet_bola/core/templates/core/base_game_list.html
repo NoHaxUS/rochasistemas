@@ -482,7 +482,7 @@
                 </div>
             </li>
             <li>
-
+                
                 <div class="collapsible-header collapsible-header-mobile">
                     <i class="material-icons">search</i>
                     BUSCA
@@ -505,6 +505,10 @@
                                 </div>
                         </form>
                     </div>
+                </div>
+
+                <div class="row">  
+                        <a class="waves-effect waves-light btn white green-text-button table-button" href="/print_tables/"><i class="material-icons">assignment</i> Tabela</a>
                 </div>
             </li>
         </ul>
@@ -549,6 +553,9 @@
 
 {% block right_section_desktop %}
 <div class="col s2 hide-on-med-and-down hoverable white">
+    <div class="row">  
+            <a class="waves-effect waves-light btn white green-text-button table-button" href="/print_tables/"><i class="material-icons">assignment</i> Tabela</a>
+    </div>
     <div class="section-header white-text center-align">BUSCA</div>
     <div class="row">
         <form id="search-form" class="col s12" method="POST" action="/search/">
