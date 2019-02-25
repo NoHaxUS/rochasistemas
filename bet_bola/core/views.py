@@ -748,27 +748,30 @@ class PrintGameTables(TemplateResponseMixin, View):
             league_games[game.league].append(game)
 
         content = ""
-        for league in league_games:
-            content += "<CENTER> <BIG>" + league.name + "<BR>"
-            content += '---------------------------------------'
-            for game in league_games[league]:
-                content += "<CENTER>" + game.name + "<BR>"
-                #content += "<CENTER>" + game.start_date + "<BR>"
-                #print(game.my_cotations)
-                for cotation in self.order_cotations(game.my_cotations):
-                    print(cotation.name)
-                    content += cotation.name + '->'
+        
+        dictionare = {"Casa":"C", "Empate":"E","Fora":"F","Casa/Fora":"C/F","Casa/Empate":"C/E","Empate/Fora":"E/F"}  
+        for league in league_games:          
+            content += "<LEFT> <MEDIUM2>" + league.name +"<BR>"           
+            for game in league_games[league]:                
+                content += '<BR>'
+                content += "<LEFT>" + game.name + "<BR>"                               
+                content += "<CENTER>"
+                cont=0
+                for cotation in self.order_cotations(game.my_cotations):                    
+                    content += "["+dictionare[cotation.name] +':' + str(cotation.price)+"]"                    
+                    if cont == 2:
+                        content+='<BR><CENTER>'
+                    cont+=1
+                content += '<BR>'
+            content += '<BR>'            
 
-                
 
+        content += "<BR><CENTER> -> " + settings.APP_VERBOSE_NAME.upper() + " <- <BR>"
+        content += "#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;"        
+        
+        context = {'games':games,'league_games':league_games,'print': content, 'base_url': request.get_host()}
 
-        """
-        content = "<CENTER> -> " + settings.APP_VERBOSE_NAME.upper() + " <- <BR>"
-        content += "#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;"
-        context = {'print': content, 'base_url': request.get_host()}
-        """
-
-        return self.render_to_response({})
+        return self.render_to_response(context)
 
 
 
