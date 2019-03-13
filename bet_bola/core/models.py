@@ -50,15 +50,17 @@ class Sport(models.Model):
 class Game(models.Model):
 
     GAME_STATUS = (
-        (1, 'Não Iniciado'),
-        (2,'Ao Vivo'),
-        (3, 'Terminado') ,   
-        (4, 'Cancelado'),        
-        (5, "Adiado"),
-        (6, 'Interrompindo'),
-        (7, "Abandonado"),
-        (8, "Pré-jogo"),
-        (9, "Quase Iniciado")
+        (0, 'Não Iniciado'),
+        (1,'Ao Vivo'),
+        (2, 'Para ser Concertado'),
+        (3, 'Terminado'),        
+        (4, "Adiado"),
+        (5, 'Cancelado'),
+        (6, 'W.O'),
+        (7, 'Interrompido'),
+        (8, "Abandonado"),
+        (9, "Desistido"),
+        (99, "Removido")
     )
     
     id = models.BigIntegerField(primary_key=True, verbose_name="ID")
@@ -68,8 +70,8 @@ class Game(models.Model):
     location = models.ForeignKey('Location', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Local')
     sport = models.ForeignKey('Sport', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Esporte')
     game_status = models.IntegerField(choices=GAME_STATUS,verbose_name='Status do Jogo')
-    last_update = models.DateTimeField(verbose_name='Ultima Atualização')
     visible = models.BooleanField(default=True, verbose_name='Visível?')
+    can_be_modified_by_api = models.BooleanField(default=True, verbose_name='API pode modificar?')
 
 
     class Meta:

@@ -1,3 +1,4 @@
+"""
 from core.models import Location, League, Sport, Market, Period, Game, Cotation
 from django.utils.dateparse import parse_datetime
 import datetime
@@ -63,3 +64,4 @@ def process_settlements(content):
                     settlement=cotation.get('Settlement', None),
                     last_update=cotation['LastUpdate']
                 )
+"""

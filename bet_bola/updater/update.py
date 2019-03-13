@@ -3,8 +3,8 @@ import time
 import datetime
 import pika
 import json
-from core.models import Location, League, Sport, Market, Period, Game, Cotation, Ticket, Reward
-from .real_time import process_fixture_metadata, process_markets_realtime, process_settlements
+#from core.models import Location, League, Sport, Market, Game, Cotation, Ticket, 
+#from .real_time import process_fixture_metadata, process_markets_realtime, process_settlements
 from .translations import get_translated_cotation, get_translated_market, get_translated_league
 from utils.models import MarketReduction, GeneralConfigurations
 from django.db.models import Q , Count
@@ -12,6 +12,17 @@ from django.utils.dateparse import parse_datetime
 from .countries import COUNTRIES
 import time
 
+TOKEN="20445-s1B9Vv6E9VSLU1"
+
+def get_upcoming_events():
+    today = datetime.datetime.today().strftime('%Y%m%d')
+    #tomorrow = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y%m%d')
+    page = 1
+    url = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + today + "&page=" + str(page)
+    request = requests.get(url)
+    print(request.json())
+
+#-----#
 def get_locations():
     print('Criando Localizações.')
     request = requests.get("http://prematch.lsports.eu/OddService/GetLocations?Username=pabllobeg1@gmail.com&Password=cdfxscsdf45f23&Guid=cbc4e422-1f53-4856-9c01-a4f8c428cb54")
@@ -56,7 +67,7 @@ def process_locations(content):
                 defaults={'name':COUNTRIES.get(str(location['Id']), location['Name'])}
             )
 
-
+"""
 def auto_pay_punter():
     if GeneralConfigurations.objects.filter(pk=1).exists():
         if GeneralConfigurations.objects.get(pk=1).auto_pay_punter:
@@ -265,3 +276,4 @@ def process_markets(markets, game_instance):
                 last_update=cotation['LastUpdate']
             ).save()
 
+"""
