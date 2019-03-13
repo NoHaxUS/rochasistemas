@@ -152,19 +152,6 @@ class GeneralConfigurations(models.Model):
     def save(self, *args, **kwargs):
         self.pk = 1
         super().save(args, kwargs)
-        """
-        if GeneralConfigurations.objects.filter(pk=1).exists():
-            general_config = GeneralConfigurations.objects.get(pk=1)
-            percentual_reduction_original = general_config.percentual_reduction
-            max_cotation_value_original =  general_config.max_cotation_value
-        else:
-            percentual_reduction_original = 0
-            max_cotation_value_original = 0
-        
-        if percentual_reduction_original != self.percentual_reduction or max_cotation_value_original != self.max_cotation_value:
-            self.apply_reductions()
-        """
-    
 
 
     class Meta:
@@ -176,6 +163,7 @@ class RewardRelated(models.Model):
     id = models.AutoField(primary_key=True, verbose_name="ID")
     value_max = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name="Valor da Aposta")
     reward_value_max = models.DecimalField(max_digits=30, decimal_places=2, default=100000, verbose_name="Valor Máximo da Recompensa")        
+    store = models.ForeignKey('Store', verbose_name="Banca", on_delete=models.CASCADE)
 
     def __str__(self):
         return "Limitador de Prêmio"
@@ -187,6 +175,7 @@ class RewardRelated(models.Model):
 
 class TicketCustomMessage(models.Model):
     text = models.TextField(max_length=1000, verbose_name="Mensagem customizada")
+    store = models.ForeignKey('Store', verbose_name="Banca", on_delete=models.CASCADE)
 
     def __str__(self):
         return "Mensagem a ser mostrada no ticket"
@@ -202,6 +191,7 @@ class TicketCustomMessage(models.Model):
 
 class RulesMessage(models.Model):
     text = models.TextField(max_length=999999, verbose_name="Texto de Regras")
+    store = models.ForeignKey('Store', verbose_name="Banca", on_delete=models.CASCADE)
 
     def __str__(self):
         return "Texto de Regras"
@@ -217,6 +207,7 @@ class RulesMessage(models.Model):
 
 class Overview(models.Model):
     overview = models.BooleanField(default=True, verbose_name='Gerar Visão Geral')
+    store = models.ForeignKey('Store', verbose_name="Banca", on_delete=models.CASCADE)
 
 
     def total_revenue(self):
@@ -300,6 +291,7 @@ class MarketRemotion(models.Model):
     market_to_remove = models.IntegerField(choices=MARKET_LIST, verbose_name='Tipo de Aposta')
     below_above = models.CharField(max_length=8, choices=BELOW_ABOVE, verbose_name='Abaixo ou Acima')
     base_line = models.CharField(max_length=5, verbose_name='Valor')
+    store = models.ForeignKey('Store', verbose_name="Banca", on_delete=models.CASCADE)
 
 
     def __str__(self):
@@ -388,6 +380,7 @@ class MarketReduction(models.Model):
 
     market_to_reduct = models.IntegerField(choices=MARKET_LIST, verbose_name='Tipo de Aposta', unique=True)
     reduction_percentual = models.IntegerField(default=100, verbose_name='Percentual de Redução')
+    store = models.ForeignKey('Store', verbose_name="Banca", on_delete=models.CASCADE)
 
     """
     def reset_reducions(self):
