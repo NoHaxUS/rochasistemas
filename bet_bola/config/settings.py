@@ -25,7 +25,7 @@ SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-DB_SWAP_LOCAL = False
+DB_SWAP_LOCAL = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'user',
     'history',
     'utils',
-    'updater'
+    'updater',
+    'ticket'
 ]
 
 MIDDLEWARE = [
@@ -96,7 +97,7 @@ if DB_SWAP_LOCAL:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'bet_bola_new',
+            'NAME': 'bet_bola_api',
             'USER': 'postgres',
             'PASSWORD': 'postgres',
             'HOST': 'localhost',

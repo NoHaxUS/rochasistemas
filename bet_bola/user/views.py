@@ -8,7 +8,7 @@ from django.views import View
 from django.views.generic.base import TemplateResponseMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from core.models import Ticket
+from ticket.models import Ticket
 from user.models import Punter, CustomUser, Seller, Manager
 import utils.timezone as tzlocal
 from utils.response import UnicodeJsonResponse

@@ -1,17 +1,14 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import datetime
-from user.models import Seller
 from django.contrib.auth.models import User
 from user.models import NormalUser
 from django.utils import timezone
 from django.db.models import Q
-from user.models import NormalUser
 from django.conf import settings
 import utils.timezone as tzlocal
 from django.utils import timezone
 import utils.timezone as tzlocal
-from core.models import Store
 
 
 class Ticket(models.Model):
@@ -28,13 +25,13 @@ class Ticket(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Apostador')
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
     normal_user = models.ForeignKey(NormalUser, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cliente')
-    cotations = models.ManyToManyField('Cotation', related_name='ticket', verbose_name='Cota')
+    cotations = models.ManyToManyField('core.Cotation', related_name='ticket', verbose_name='Cota')
     creation_date = models.DateTimeField(verbose_name='Data da Aposta')
     reward = models.OneToOneField('Reward', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
     payment = models.OneToOneField('Payment', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
     value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')    
     visible = models.BooleanField(default=True, verbose_name='Visível?')
-    store = models.ForeignKey('Store', verbose_name='Banca', on_delete=models.CASCADE)
+    store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.pk)

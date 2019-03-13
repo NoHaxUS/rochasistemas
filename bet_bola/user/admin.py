@@ -1,6 +1,6 @@
 from django.contrib import admin
 from user.models import CustomUser
-from core.models import Ticket
+from ticket.models import Ticket
 from .models import Punter, Seller, Manager
 from utils.models import GeneralConfigurations
 from django.contrib import messages

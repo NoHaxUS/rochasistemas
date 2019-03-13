@@ -5,8 +5,9 @@ from django.views.generic import View
 from django.utils import timezone
 from django.core import serializers
 from django.db.models import Prefetch, Count
-from core.models import Ticket,Cotation,CotationHistory, Reward
+from core.models import Cotation,CotationHistory
 from user.models import Seller
+from ticket.models import Ticket, Reward
 from .models import TicketCustomMessage
 from django.conf import settings
 from fpdf import FPDF

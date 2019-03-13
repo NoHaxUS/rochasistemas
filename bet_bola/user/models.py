@@ -3,7 +3,6 @@ from django.contrib.auth.models import User, Permission, AbstractUser, BaseUserM
 from django.db.models import F, Q, When, Case
 from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
-from core.models import Store
 
 
 
@@ -32,7 +31,7 @@ class NormalUser(models.Model):
 
 class Punter(CustomUser):
     cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)
-    store = models.ForeignKey('Store', verbose_name='Banca', on_delete=models.CASCADE)
+    store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -72,7 +71,7 @@ class Seller(CustomUser):
     my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True, blank=True)
     can_cancel_ticket = models.BooleanField(default=False, verbose_name='Cancela Bilhete ?')
     limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento", validators=[MinValueValidator(1), MaxValueValidator(45)])
-    store = models.ForeignKey('Store', verbose_name='Banca', on_delete=models.CASCADE)
+    store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
     def reset_revenue(self, who_reseted_revenue):
         from core.models import Payment
@@ -206,7 +205,7 @@ class Manager(CustomUser):
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
     can_change_limit_time = models.BooleanField(default=False, verbose_name='Pode alterar tempo de Cancelamento do Cambista?')
     based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no líquido ?')
-    store = models.ForeignKey('Store', verbose_name='Banca', on_delete=models.CASCADE)
+    store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
     
     def reset_revenue(self, who_reseted_revenue):
         from core.models import Payment

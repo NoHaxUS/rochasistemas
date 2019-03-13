@@ -1,6 +1,7 @@
 from django.contrib import admin
 from user.models import CustomUser
-from .models import Ticket,Cotation,Payment,Game,League,Reward,Location,Market
+from .models import Cotation,Game,League,Location,Market
+from ticket.models import Ticket,Payment,Reward
 from user.models import CustomUser
 from django.contrib.auth.models import Group
 from django.db.models import Q, Count

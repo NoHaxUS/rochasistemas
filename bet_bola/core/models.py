@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import datetime
-from user.models import Seller
 from django.contrib.auth.models import User
 from user.models import NormalUser
 from django.utils import timezone
@@ -12,6 +11,8 @@ import utils.timezone as tzlocal
 from django.utils import timezone
 import utils.timezone as tzlocal
 from utils.models import GeneralConfigurations
+from user.models import Seller
+from ticket.models import Ticket
 
 
 class Store(models.Model):
@@ -19,7 +20,7 @@ class Store(models.Model):
     fantasy = models.CharField(max_length=150, verbose_name="Nome da Banca")
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name="Data de Criação")
     email = models.EmailField(verbose_name="Email do Dono")
-    config = models.ForeignKey('GeneralConfigurations', verbose_name="Configurações Gerais", on_delete=models.SET_NULL, null=True)
+    config = models.ForeignKey('utils.GeneralConfigurations', verbose_name="Configurações Gerais", on_delete=models.SET_NULL, null=True)
 
 
 
@@ -27,7 +28,7 @@ class CotationHistory(models.Model):
 
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     original_cotation = models.ForeignKey('Cotation', on_delete=models.CASCADE, verbose_name="Cotação Original", related_name='history_cotation')
-    ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, verbose_name='Ticket', related_name='cotations_history')
+    ticket = models.ForeignKey('ticket.Ticket', on_delete=models.CASCADE, verbose_name='Ticket', related_name='cotations_history')
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
     start_price = models.DecimalField(max_digits=30, decimal_places=2, default=0,verbose_name='Valor Original')
     price = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
