@@ -3,7 +3,7 @@ from .models import *
 from ticket.models import Ticket
 from utils.models import GeneralConfigurations
 
-class StoreSerializers(serializers.HyperLinkedModelSerializer):
+class StoreSerializer(serializers.HyperLinkedModelSerializer):
 	
 	config = serializers.SlugRelatedField(queryset = GeneralConfigurations.objects.all(),slug_field='id')
 
@@ -12,7 +12,7 @@ class StoreSerializers(serializers.HyperLinkedModelSerializer):
 		fields = ('username','fantasy','creation_date','email','config')
 
 
-class CotationHistorySerializers(serializers.HyperLinkedModelSerializer):	
+class CotationHistorySerializer(serializers.HyperLinkedModelSerializer):	
 	
 	original_cotation = serializers.SlugRelatedField(queryset = Cotation.objects.all(),slug_field='name')
 	ticket = serializers.SlugRelatedField(queryset = Ticket.objects.all(),slug_field='id')
@@ -24,14 +24,14 @@ class CotationHistorySerializers(serializers.HyperLinkedModelSerializer):
 		fields = ('original_cotation','ticket','name','start_price','price','game','market','line','base_line')
 
 
-class SportSerializers(serializers.HyperLinkedModelSerializer):	
+class SportSerializer(serializers.HyperLinkedModelSerializer):	
 
 	class Meta:
 		model = Sport
 		fields = ('name')
 
 
-class Game(serializers.HyperLinkedModelSerializer):
+class GameSerializer(serializers.HyperLinkedModelSerializer):
 	league = serializers.SlugRelatedField(queryset = Leagu.objects.all(),slug_field='name')
 	Location = serializers.SlugRelatedField(queryset = Location.objects.all(),slug_field='name')
 	sport = serializers.SlugRelatedField(queryset = Sport.objects.all(),slug_field='name')
@@ -41,21 +41,21 @@ class Game(serializers.HyperLinkedModelSerializer):
 		fields = ('name','start_date','league','location','sport','games_status','visible','can_be_modified_by_api')
 
 
-class Location(serializers.HyperLinkedModelSerializer):
+class LocationSerializer(serializers.HyperLinkedModelSerializer):
 
 	class Meta:
 		model = Location
 		fields = ('name','priority','visible')
 
 
-class Market(serializers.HyperLinkedModelSerializer):
+class MarketSerializer(serializers.HyperLinkedModelSerializer):
 	
 	class Meta:
 		model = Market
 		fields = ('name','available')
 
 
-class Cotation(serializers.HyperLinkedModelSerializer):
+class CotationSerializer(serializers.HyperLinkedModelSerializer):
 	
 	game = serializers.SlugRelatedField(queryset = Game.objects.all(),slug_field='name')
 	market = serializers.SlugRelatedField(queryset = Market.objects.all(),slug_field='name')
