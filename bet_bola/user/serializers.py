@@ -3,7 +3,7 @@ from core.models import Store
 from .models import *
 
 
-class PunterSerializers(serializers.HyperlinkedModelSerializer):	
+class PunterSerializer(serializers.HyperlinkedModelSerializer):	
 
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
 
@@ -12,7 +12,7 @@ class PunterSerializers(serializers.HyperlinkedModelSerializer):
 		fields = ('username','first_name', 'last_name', 'cellphone', 'email','store')
 
 
-class SellerSerializers(serializers.HyperlinkedModelSerializer):	
+class SellerSerializer(serializers.HyperlinkedModelSerializer):	
 	
 	my_manager = serializers.SlugRelatedField(read_only=True , slug_field='first_name')
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
@@ -22,14 +22,14 @@ class SellerSerializers(serializers.HyperlinkedModelSerializer):
 		fields = ('username','first_name', 'last_name', 'cpf','my_manager', 'email','store')
 
 
-class NormalUserSerializers(serializers.HyperlinkedModelSerializer):
+class NormalUserSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model=Punter
 		fields = ('first_name','email')
 
 
-class ManagerSerializers(serializers.HyperlinkedModelSerializer):	
+class ManagerSerializer(serializers.HyperlinkedModelSerializer):	
 	
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
 

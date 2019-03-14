@@ -1,18 +1,19 @@
 from rest_framework import serializers
 from .models import *
 from ticket.models import Ticket
+from user.models import CustomUser
 from utils.models import GeneralConfigurations
 
-class StoreSerializer(serializers.HyperLinkedModelSerializer):
-	
+class StoreSerializer(serializers.HyperlinkedModelSerializer):
+	owner = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='id')
 	config = serializers.SlugRelatedField(queryset = GeneralConfigurations.objects.all(),slug_field='id')
 
 	class Meta:
 		model = Store
-		fields = ('username','fantasy','creation_date','email','config')
+		fields = ('owner','fantasy','creation_date','email','config')
 
 
-class CotationHistorySerializer(serializers.HyperLinkedModelSerializer):	
+class CotationHistorySerializer(serializers.HyperlinkedModelSerializer):	
 	
 	original_cotation = serializers.SlugRelatedField(queryset = Cotation.objects.all(),slug_field='name')
 	ticket = serializers.SlugRelatedField(queryset = Ticket.objects.all(),slug_field='id')
@@ -24,15 +25,15 @@ class CotationHistorySerializer(serializers.HyperLinkedModelSerializer):
 		fields = ('original_cotation','ticket','name','start_price','price','game','market','line','base_line')
 
 
-class SportSerializer(serializers.HyperLinkedModelSerializer):	
+class SportSerializer(serializers.HyperlinkedModelSerializer):	
 
 	class Meta:
 		model = Sport
 
 
-class GameSerializer(serializers.HyperLinkedModelSerializer):		
+class GameSerializer(serializers.HyperlinkedModelSerializer):		
 
-	league = serializers.SlugRelatedField(queryset = Leagu.objects.all(),slug_field='name')
+	league = serializers.SlugRelatedField(queryset = League.objects.all(),slug_field='name')
 	Location = serializers.SlugRelatedField(queryset = Location.objects.all(),slug_field='name')
 	sport = serializers.SlugRelatedField(queryset = Sport.objects.all(),slug_field='name')
 
@@ -41,7 +42,7 @@ class GameSerializer(serializers.HyperLinkedModelSerializer):
 		fields = ('name','start_date','league','location','sport','games_status','visible','can_be_modified_by_api')
 
 
-class LeagueSerializer(serializers.HyperLinkedModelSerializer):
+class LeagueSerializer(serializers.HyperlinkedModelSerializer):
 
 	Location = serializers.SlugRelatedField(queryset = Location.objects.all(),slug_field='name')
 
@@ -50,21 +51,21 @@ class LeagueSerializer(serializers.HyperLinkedModelSerializer):
 		fields = ('name','location','priority','visible')
 
 
-class LocationSerializer(serializers.HyperLinkedModelSerializer):
+class LocationSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Location
 		fields = ('name','priority','visible')
 
 
-class MarketSerializer(serializers.HyperLinkedModelSerializer):
+class MarketSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Market
 		fields = ('name','available')
 
 
-class CotationSerializer(serializers.HyperLinkedModelSerializer):
+class CotationSerializer(serializers.HyperlinkedModelSerializer):
 	
 	game = serializers.SlugRelatedField(queryset = Game.objects.all(),slug_field='name')
 	market = serializers.SlugRelatedField(queryset = Market.objects.all(),slug_field='name')

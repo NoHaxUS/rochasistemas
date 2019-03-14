@@ -16,7 +16,7 @@ from ticket.models import Ticket
 
 
 class Store(models.Model):
-    username = models.CharField(max_length=100, verbose_name="Nome do Usuário") 
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_store', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Dono')
     fantasy = models.CharField(max_length=150, verbose_name="Nome da Banca")
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name="Data de Criação")
     email = models.EmailField(verbose_name="Email do Dono")

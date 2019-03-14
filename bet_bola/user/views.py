@@ -1,18 +1,28 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.urls import reverse_lazy
-from django.core.paginator import Paginator
-from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
-from django.contrib.auth.forms import PasswordChangeForm
-from django.views import View
-from django.views.generic.base import TemplateResponseMixin
-from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
-from ticket.models import Ticket
-from user.models import Punter, CustomUser, Seller, Manager
-import utils.timezone as tzlocal
-from utils.response import UnicodeJsonResponse
-import json
+from user.models import Punter, NormalUser, CustomUser, Seller, Manager
+from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework import permissions, mixins, generics
+from rest_framework.response import Response
+from .serializers import PunterSerializer, NormalUserSerializer, SellerSerializer, ManagerSerializer
+
+
+class PunterView(ModelViewSet):
+    queryset = Punter.objects.all()
+    serializer_class = PunterSerializer
+
+    # def get_permissions(self):          
+    #     if self.request.method in permissions.SAFE_METHODS: 
+    #         return [permissions.AllowAny(),]
+    #     return [permissions.IsAdminUser(),]
+
+
+class NormalUserView(ModelViewSet):
+    queryset = NormalUser.objects.all()
+    serializer_class = NormalUserSerializer
+
+    # def get_permissions(self):    
+    #     if self.request.method in permissions.SAFE_METHODS: 
+    #         return [permissions.AllowAny(),]
+    #     return [permissions.IsAdminUser(),]
 
 
 # class PunterRegister(View):
