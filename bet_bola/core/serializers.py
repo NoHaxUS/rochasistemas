@@ -28,10 +28,10 @@ class SportSerializer(serializers.HyperLinkedModelSerializer):
 
 	class Meta:
 		model = Sport
-		fields = ('name')
 
 
-class GameSerializer(serializers.HyperLinkedModelSerializer):
+class GameSerializer(serializers.HyperLinkedModelSerializer):		
+
 	league = serializers.SlugRelatedField(queryset = Leagu.objects.all(),slug_field='name')
 	Location = serializers.SlugRelatedField(queryset = Location.objects.all(),slug_field='name')
 	sport = serializers.SlugRelatedField(queryset = Sport.objects.all(),slug_field='name')
@@ -39,6 +39,15 @@ class GameSerializer(serializers.HyperLinkedModelSerializer):
 	class Meta:
 		model = Game
 		fields = ('name','start_date','league','location','sport','games_status','visible','can_be_modified_by_api')
+
+
+class LeagueSerializer(serializers.HyperLinkedModelSerializer):
+
+	Location = serializers.SlugRelatedField(queryset = Location.objects.all(),slug_field='name')
+
+	class Meta:
+		model = League
+		fields = ('name','location','priority','visible')
 
 
 class LocationSerializer(serializers.HyperLinkedModelSerializer):
@@ -66,4 +75,4 @@ class CotationSerializer(serializers.HyperLinkedModelSerializer):
 
 
 
-
+#Extra Serializers
