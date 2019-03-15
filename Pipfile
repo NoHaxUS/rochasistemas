@@ -9,6 +9,7 @@ fpdf = "*"
 pika = "*"
 django = "*"
 "psycopg2-binary" = "*"
+djangorestframework = "*"
 
 [dev-packages]
 

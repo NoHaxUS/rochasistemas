@@ -30,7 +30,7 @@ def get_cc_from_result(game_id):
     request = requests.get(url)
     data = request.json()
     if request.status_code == 200 and data['success'] == 1:
-        return data['results']['league']['cc']
+        return data['results'][0]['league']['cc']
 
 
 def get_game_name(game):
@@ -59,7 +59,7 @@ def get_league_and_create_location(game):
                     'cc': 'inter',
                     'name': COUNTRIES.get('inter', "Internacional")
                 }
-            )
+            )[0]
         else:
             league.location = Location.objects.get_or_create(
                 cc=cc,
@@ -67,7 +67,7 @@ def get_league_and_create_location(game):
                     'cc': cc,
                     'name': country_translated
                 }
-            )
+            )[0]
         
         league.save()
 
@@ -79,7 +79,7 @@ def get_sport(game):
         defaults={
             'name': SPORTS.get(game['sport_id'], "Futebol")
         }
-    )
+    )[0]
     return sport
 
 
