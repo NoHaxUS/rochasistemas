@@ -1,4 +1,5 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
+from .serializers import GeneralConfigurationsSerializer
 from .models import GeneralConfigurations
 
 class GeneralConfigurationsView(ModelViewSet):

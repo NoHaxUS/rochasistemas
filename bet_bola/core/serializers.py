@@ -5,12 +5,12 @@ from user.models import CustomUser
 from utils.models import GeneralConfigurations
 
 class StoreSerializer(serializers.HyperlinkedModelSerializer):
-	owner = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='id')
+	owner = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='id', required=False)
 	config = serializers.SlugRelatedField(queryset = GeneralConfigurations.objects.all(),slug_field='id')
 
 	class Meta:
 		model = Store
-		fields = ('owner','fantasy','creation_date','email','config')
+		fields = ('owner','fantasy','creation_date','config')
 
 
 class CotationHistorySerializer(serializers.HyperlinkedModelSerializer):	
@@ -29,40 +29,40 @@ class SportSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Sport
+		fields = ('name',)
 
 
 class GameSerializer(serializers.HyperlinkedModelSerializer):		
 
-	league = serializers.SlugRelatedField(queryset = League.objects.all(),slug_field='name')
-	Location = serializers.SlugRelatedField(queryset = Location.objects.all(),slug_field='name')
+	league = serializers.SlugRelatedField(queryset = League.objects.all(),slug_field='name')	
 	sport = serializers.SlugRelatedField(queryset = Sport.objects.all(),slug_field='name')
 
 	class Meta:
 		model = Game
-		fields = ('name','start_date','league','location','sport','games_status','visible','can_be_modified_by_api')
+		fields = ('id','name','start_date','league','sport','game_status','visible','can_be_modified_by_api')
 
 
 class LeagueSerializer(serializers.HyperlinkedModelSerializer):
 
-	Location = serializers.SlugRelatedField(queryset = Location.objects.all(),slug_field='name')
+	location = serializers.SlugRelatedField(queryset = Location.objects.all(),slug_field='name')
 
 	class Meta:
 		model = League
-		fields = ('name','location','priority','visible')
+		fields = ('id','name','location','priority','visible')
 
 
 class LocationSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Location
-		fields = ('name','priority','visible')
+		fields = ('id','name','priority','visible')
 
 
 class MarketSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Market
-		fields = ('name','available')
+		fields = ('id','name','available')
 
 
 class CotationSerializer(serializers.HyperlinkedModelSerializer):

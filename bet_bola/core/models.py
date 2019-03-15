@@ -18,10 +18,11 @@ from ticket.models import Ticket
 class Store(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_store', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Dono')
     fantasy = models.CharField(max_length=150, verbose_name="Nome da Banca")
-    creation_date = models.DateTimeField(auto_now_add=True, verbose_name="Data de Criação")
-    email = models.EmailField(verbose_name="Email do Dono")
+    creation_date = models.DateTimeField(auto_now_add=True, verbose_name="Data de Criação")    
     config = models.ForeignKey('utils.GeneralConfigurations', verbose_name="Configurações Gerais", on_delete=models.SET_NULL, null=True)
 
+    def __str__(self):
+        return self.fantasy
 
 
 class CotationHistory(models.Model):
@@ -67,7 +68,7 @@ class Game(models.Model):
     name = models.CharField(max_length=80, verbose_name='Nome do Jogo')
     start_date = models.DateTimeField(verbose_name='Início da Partida')
     league = models.ForeignKey('League', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Liga')
-    location = models.ForeignKey('Location', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Local')
+    # location = models.ForeignKey('Location', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Local')
     sport = models.ForeignKey('Sport', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Esporte')
     game_status = models.IntegerField(choices=GAME_STATUS,verbose_name='Status do Jogo')
     visible = models.BooleanField(default=True, verbose_name='Visível?')

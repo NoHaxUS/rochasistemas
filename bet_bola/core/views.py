@@ -2,8 +2,8 @@ from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from .models import Store
-from .serializers import StoreSerializer
+from .models import *
+from .serializers import StoreSerializer, CotationHistorySerializer, SportSerializer, GameSerializer, LeagueSerializer, LocationSerializer
 
 
 class StoreView(ModelViewSet):
@@ -11,12 +11,43 @@ class StoreView(ModelViewSet):
     serializer_class = StoreSerializer
 
 
+class CotationHistoryView(ModelViewSet):
+    queryset = CotationHistory.objects.all()
+    serializer_class = CotationHistorySerializer
+
+class SportView(ModelViewSet):
+    queryset = Sport.objects.all()
+    serializer_class = SportSerializer
+
+
+class GameView(ModelViewSet):
+    queryset = Game.objects.all()
+    serializer_class = GameSerializer
+
+
+class LeagueView(ModelViewSet):
+    queryset = League.objects.all()
+    serializer_class = LeagueSerializer
+
+
+class LocationView(ModelViewSet):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer
+
+
 class APIRootView(APIView):
     def get(self, request):        
         data = {  
-            'configuration': reverse('core:configuration-list', request=request),
+            'configuration': reverse('utils:generalconfigurations-list', request=request),
             'stores': reverse('core:store-list', request=request),             
-            'punters': reverse('user:punter-list', request=request),            
+            'sellers': reverse('user:seller-list', request=request),           
+            'managers': reverse('user:manager-list', request=request),
+            'punters': reverse('user:punter-list', request=request),   
+            'games': reverse('core:game-list', request=request),
+            'leagues': reverse('core:league-list', request=request),
+            'locations': reverse('core:location-list', request=request),
+            'cotationshistory': reverse('core:cotationhistory-list', request=request),
+            'sports': reverse('core:sport-list', request=request),
             'normal-users': reverse('user:normaluser-list', request=request),            
         }
         return Response(data)

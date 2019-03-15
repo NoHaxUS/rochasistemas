@@ -16,12 +16,13 @@ Including another URLconf
 from django.urls import path, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-from .views import PunterView, NormalUserView
-from . import views
+from .views import PunterView, NormalUserView, SellerView, ManagerView
 
 app_name = 'user'
 
 router = DefaultRouter()
+router.register(r'managers', ManagerView)
+router.register(r'sellers', SellerView)
 router.register(r'punters', PunterView)
 router.register(r'normal-users', NormalUserView)
 

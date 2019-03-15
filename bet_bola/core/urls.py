@@ -16,13 +16,17 @@ Including another URLconf
 from django.urls import path, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-from .views import StoreView, APIRootView
-from . import views
+from .views import StoreView, GameView, LeagueView, LocationView, CotationHistoryView, SportView, APIRootView
 
 app_name = 'core'
 
 router = DefaultRouter()
 router.register(r'stores', StoreView)
+router.register(r'games', GameView)
+router.register(r'leagues', LeagueView)
+router.register(r'locations', LocationView)
+router.register(r'cotationshistory', CotationHistoryView)
+router.register(r'sports', SportView)
 
 urlpatterns = [
     path('', APIRootView.as_view(), name='api-root')

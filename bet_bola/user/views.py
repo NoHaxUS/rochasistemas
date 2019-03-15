@@ -25,6 +25,39 @@ class NormalUserView(ModelViewSet):
     #     return [permissions.IsAdminUser(),]
 
 
+class SellerView(ModelViewSet):
+    queryset = Seller.objects.all()
+    serializer_class = SellerSerializer
+
+    # def get_permissions(self):    
+    #     if self.request.method in permissions.SAFE_METHODS: 
+    #         return [permissions.AllowAny(),]
+    #     return [permissions.IsAdminUser(),]
+
+
+class ManagerView(ModelViewSet):
+    queryset = Manager.objects.all()
+    serializer_class = ManagerSerializer
+
+    # def get_permissions(self):    
+    #     if self.request.method in permissions.SAFE_METHODS: 
+    #         return [permissions.AllowAny(),]
+    #     return [permissions.IsAdminUser(),]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # class PunterRegister(View):
 
 #     def post(self, request):

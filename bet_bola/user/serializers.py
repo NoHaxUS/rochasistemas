@@ -23,10 +23,12 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class NormalUserSerializer(serializers.HyperlinkedModelSerializer):
+	
+	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
 
 	class Meta:
 		model=Punter
-		fields = ('first_name','email')
+		fields = ('first_name','email','store')
 
 
 class ManagerSerializer(serializers.HyperlinkedModelSerializer):	

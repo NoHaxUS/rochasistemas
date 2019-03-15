@@ -4,7 +4,7 @@ from core.models import Store
 from .models import *
 
 
-class ComissionSerializer(serializers.HyperLinkedModelSerializer):
+class ComissionSerializer(serializers.HyperlinkedModelSerializer):
 	
 	seller_related = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')
 
@@ -13,14 +13,14 @@ class ComissionSerializer(serializers.HyperLinkedModelSerializer):
 		fields = ('seller_related','simple','double','triple','fourth','fifth','sixth','sixth_more')
 
 
-class GeneralConfigurationsSerializer(serializers.HyperLinkedModelSerializer):
+class GeneralConfigurationsSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = GeneralConfigurations
 		fields = ('max_cotation_value','min_number_of_choices_per_bet','max_reward_to_pay','min_bet_value','max_bet_value','min_cotation_sum','max_cotation_sum','percentual_reduction','block_bets','auto_pay_punter')
 
 
-class RewardRelatedSerializer(serializers.HyperLinkedModelSerializer):
+class RewardRelatedSerializer(serializers.HyperlinkedModelSerializer):
 
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
 
@@ -29,7 +29,7 @@ class RewardRelatedSerializer(serializers.HyperLinkedModelSerializer):
 		fields = ('value_max','reward_value_max','store')
 
 
-class TicketCustomMessageSerializer(serializers.HyperLinkedModelSerializer):
+class TicketCustomMessageSerializer(serializers.HyperlinkedModelSerializer):
 
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
 
@@ -38,7 +38,7 @@ class TicketCustomMessageSerializer(serializers.HyperLinkedModelSerializer):
 		fields = ('text','store')
 
 
-class RulesMessageSerializer(serializers.HyperLinkedModelSerializer):
+class RulesMessageSerializer(serializers.HyperlinkedModelSerializer):
 
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
 
@@ -47,7 +47,7 @@ class RulesMessageSerializer(serializers.HyperLinkedModelSerializer):
 		fields = ('text','store')
 
 
-class OverviewSerializer(serializers.HyperLinkedModelSerializer):
+class OverviewSerializer(serializers.HyperlinkedModelSerializer):
 
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
 
@@ -56,7 +56,7 @@ class OverviewSerializer(serializers.HyperLinkedModelSerializer):
 		fields = ('overview','store')
 
 
-class MarketRemotionSerializer(serializers.HyperLinkedModelSerializer):
+class MarketRemotionSerializer(serializers.HyperlinkedModelSerializer):
 	
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
 
