@@ -3,7 +3,8 @@ import time
 import datetime
 import pika
 import json
-#from core.models import Location, League, Sport, Market, Game, Cotation, Ticket, 
+from core.models import Location, League, Sport, Market, Game, Cotation
+from ticket.models import Ticket
 #from .real_time import process_fixture_metadata, process_markets_realtime, process_settlements
 from .translations import get_translated_cotation, get_translated_market, get_translated_league
 from utils.models import MarketReduction, GeneralConfigurations
@@ -20,7 +21,55 @@ def get_upcoming_events():
     page = 1
     url = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + today + "&page=" + str(page)
     request = requests.get(url)
-    print(request.json())
+    process_upcoming_events(request.json())
+
+def get_cc_from_result(game_id):
+    url = "https://api.betsapi.com/v1/bet365/result?token=20445-s1B9Vv6E9VSLU1&event_id=" + game_id
+    request = requests.get(url)
+    data = request.json()
+    if request.status_code == 200 and data['success'] == 1:
+        return data['results']['league']['cc']
+
+
+def get_game_name(game):
+    return game['home']['name'] + ' x ' + game['away']['name']
+
+def get_start_date_from_timestamp(game):
+    return datetime.datetime.fromtimestamp(int(game['time']))
+
+
+def get_league_and_create_location(game):
+    league, created = League.objects.get_or_create(
+        pk=int(game['league']['id']),
+        defaults={
+            'name': game['league']['name']
+        }
+    )
+
+    if league.location == None:
+        get_cc_from_result(game['id'])
+
+
+
+
+
+def process_upcoming_events(data):
+    if data['success'] == 1:
+        for game in data['results']:
+            Game.objects.get_or_create(
+                pk=game['id'],
+                defaults={
+                    'name': get_game_name(game),
+                    'start_date': get_start_date_from_timestamp(game),
+                    'league': ,
+                    
+                }
+            )
+
+
+
+
+
 
 #-----#
 def get_locations():
