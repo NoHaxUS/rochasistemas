@@ -14,15 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.urls import path, include
-from . import views
+from rest_framework.routers import DefaultRouter
+from .views import GeneralConfigurationsView
 
 app_name = 'utils'
 
-urlpatterns = [
-    path('pdf/<int:pk>/', views.PDF.as_view(), name='pdf'),
-    path('games_table_pdf/', views.GamesTablePDF.as_view(), name='games_table_pdf'),
-    path('validate_ticket/', views.ValidateTicket.as_view(), name='validate_ticket'),
-    path('cancel_ticket/', views.CancelTicket.as_view(), name='cancel_ticket'),
-    path('pay_ticket_winners/', views.PayTicketWinners.as_view(), name='pay_ticket_winners'),
-    path('get_main_menu/', views.GetMainMenuView.as_view(), name='get_main_menu'),
-]
+router = DefaultRouter()
+router.register(r'configurations', GeneralConfigurationsView)
+
+urlpatterns = router.urls

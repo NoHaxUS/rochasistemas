@@ -150,9 +150,8 @@ class GeneralConfigurations(models.Model):
             game.cotations.filter(price__gt=self.max_cotation_value).update(price=self.max_cotation_value)
 
     
-    def save(self, *args, **kwargs):
-        self.pk = 1
-        super().save(args, kwargs)
+    # def save(self, *args, **kwargs):        
+    #     super().save(args, kwargs)
 
 
     class Meta:

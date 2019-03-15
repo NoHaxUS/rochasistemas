@@ -15,12 +15,16 @@ Including another URLconf
 """
 from django.urls import path, include
 from django.contrib import admin
-from . import views
+from rest_framework.routers import DefaultRouter
+from .views import PunterView, NormalUserView, SellerView, ManagerView
 
 app_name = 'user'
 
-urlpatterns = [
-    path('punter/register/', views.PunterRegister.as_view(), name='user_punter_register'),
-    path('login/', views.UserLogin.as_view(), name='user_login'),
-    path('logout/',views.UserLogout.as_view(), name='user_logout'),
-]
+router = DefaultRouter()
+router.register(r'managers', ManagerView)
+router.register(r'sellers', SellerView)
+router.register(r'punters', PunterView)
+router.register(r'normal-users', NormalUserView)
+
+
+urlpatterns = router.urls

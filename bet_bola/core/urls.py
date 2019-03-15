@@ -15,22 +15,21 @@ Including another URLconf
 """
 from django.urls import path, include
 from django.contrib import admin
-from . import views
+from rest_framework.routers import DefaultRouter
+from .views import StoreView, GameView, LeagueView, LocationView, CotationHistoryView, SportView, APIRootView
 
 app_name = 'core'
 
+router = DefaultRouter()
+router.register(r'stores', StoreView)
+router.register(r'games', GameView)
+router.register(r'leagues', LeagueView)
+router.register(r'locations', LocationView)
+router.register(r'cotationshistory', CotationHistoryView)
+router.register(r'sports', SportView)
+
 urlpatterns = [
-    path('', views.TodayGames.as_view(), name='core_home'),
-    path('after_tomorrow/', views.AfterTomorrowGames.as_view(), name='after_tomorrow_games'),
-    path('tomorrow_games/', views.TomorrowGames.as_view(), name='core_tomorrow_games'),
-    path('league/<int:pk>/', views.GameLeague.as_view(), name='core_championship_get'),
-    path('ticket/<int:pk>/', views.TicketDetail.as_view(), name='core_ticket_get'),
-    path('ticket/', views.CreateTicketView.as_view(), name='core_ticket_post'),
-    path('bet/', views.BetView.as_view(), name='core_bet_get'),
-    path('bet/<str:pk>/', views.BetView.as_view(), name='core_bet_post'),
-    path('cotations/<int:gameid>/', views.CotationsView.as_view(), name='core_cotations_get'),
-    path('app/', views.AppDownload.as_view(), name='core_app_download'),
-    path('rules/', views.RulesView.as_view(), name='core_rules'),
-    path('print_tables/', views.PrintGameTables.as_view(), name='print_tables'),
-    path('search/', views.SearchView.as_view(), name='search_view'),
+    path('', APIRootView.as_view(), name='api-root')
 ]
+
+urlpatterns += router.urls
