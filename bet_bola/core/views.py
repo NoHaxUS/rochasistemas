@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from .models import *
-from .serializers import StoreSerializer, CotationHistorySerializer, SportSerializer, GameSerializer, LeagueSerializer, LocationSerializer
+from .serializers import *
 
 
 class StoreView(ModelViewSet):
@@ -14,6 +14,7 @@ class StoreView(ModelViewSet):
 class CotationHistoryView(ModelViewSet):
     queryset = CotationHistory.objects.all()
     serializer_class = CotationHistorySerializer
+
 
 class SportView(ModelViewSet):
     queryset = Sport.objects.all()
@@ -35,6 +36,16 @@ class LocationView(ModelViewSet):
     serializer_class = LocationSerializer
 
 
+class CotationView(ModelViewSet):
+    queryset = Cotation.objects.all()
+    serializer_class = CotationSerializer
+
+
+class MarketView(ModelViewSet):
+    queryset = Market.objects.all()
+    serializer_class = MarketSerializer
+
+
 class APIRootView(APIView):
     def get(self, request):        
         data = {  
@@ -43,12 +54,23 @@ class APIRootView(APIView):
             'sellers': reverse('user:seller-list', request=request),           
             'managers': reverse('user:manager-list', request=request),
             'punters': reverse('user:punter-list', request=request),   
+            'tickets': reverse('ticket:ticket-list', request=request), 
+            'rewards': reverse('ticket:reward-list', request=request), 
+            'payments': reverse('ticket:payment-list', request=request), 
             'games': reverse('core:game-list', request=request),
             'leagues': reverse('core:league-list', request=request),
             'locations': reverse('core:location-list', request=request),
+            'cotations': reverse('core:cotation-list', request=request),
             'cotationshistory': reverse('core:cotationhistory-list', request=request),
+            'markets': reverse('core:market-list', request=request),
             'sports': reverse('core:sport-list', request=request),
-            'normal-users': reverse('user:normaluser-list', request=request),            
+            'normal-users': reverse('user:normaluser-list', request=request),                        
+            'seller-sales-history': reverse('history:sellersaleshistory-list', request=request),                        
+            'manager-transactions-history': reverse('history:managertransactions-list', request=request),                        
+            'revenue-history-seller': reverse('history:revenuehistoryseller-list', request=request),                        
+            'revenue-history-manager': reverse('history:revenuehistorymanager-list', request=request),                        
+            'punter-payed-history': reverse('history:punterpayedhistory-list', request=request),                        
+            'ticket-cancelation-history': reverse('history:ticketcancelationhistory-list', request=request),                        
         }
         return Response(data)
 

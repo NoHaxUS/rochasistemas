@@ -266,7 +266,6 @@ class Ticket(models.Model):
         )
 
 
-
 class Reward(models.Model):
 
     REWARD_STATUS = (
@@ -331,6 +330,7 @@ class Payment(models.Model):
         ('Pago', 'Pago'),
         ('Cancelado', 'Cancelado'),
     )
+    
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     who_set_payment = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
     status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1], verbose_name='Status do Pagamento')
