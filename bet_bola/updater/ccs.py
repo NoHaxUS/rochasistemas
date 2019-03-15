@@ -1,5 +1,5 @@
 COUNTRIES = {
-"global":"Global",
+"inter":"Internacional",
 "ae":"Emirados Árabes Unidos",
 "gg":"Guernsey",
 "rs":"Sérvia",

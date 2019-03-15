@@ -12,6 +12,8 @@ from django.db.models import Q , Count
 from django.utils.dateparse import parse_datetime
 from .countries import COUNTRIES
 import time
+from .ccs import COUNTRIES
+from .sports import SPORTS
 
 TOKEN="20445-s1B9Vv6E9VSLU1"
 
@@ -47,22 +49,51 @@ def get_league_and_create_location(game):
     )
 
     if league.location == None:
-        get_cc_from_result(game['id'])
+        cc = get_cc_from_result(game['id'])
+        country_translated = COUNTRIES.get(cc, None)
 
+        if cc == None or country_translated == None:
+            league.location = Location.objects.get_or_create(
+                cc="inter",
+                defaults={
+                    'cc': 'inter',
+                    'name': COUNTRIES.get('inter', "Internacional")
+                }
+            )
+        else:
+            league.location = Location.objects.get_or_create(
+                cc=cc,
+                defaults={
+                    'cc': cc,
+                    'name': country_translated
+                }
+            )
+        
+        league.save()
 
+        return league
 
+def get_sport(game):
+    sport = Sport.objects.get_or_create(
+        pk=int(game['sport_id']),
+        defaults={
+            'name': SPORTS.get(game['sport_id'], "Futebol")
+        }
+    )
+    return sport
 
 
 def process_upcoming_events(data):
     if data['success'] == 1:
         for game in data['results']:
-            Game.objects.get_or_create(
+            game_obj, created = Game.objects.get_or_create(
                 pk=game['id'],
                 defaults={
                     'name': get_game_name(game),
                     'start_date': get_start_date_from_timestamp(game),
-                    'league': ,
-                    
+                    'league': get_league_and_create_location(game),
+                    'sport': get_sport(game),
+                    'game_status': int(game['time_status'])
                 }
             )
 
