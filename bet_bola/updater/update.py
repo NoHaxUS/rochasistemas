@@ -14,6 +14,7 @@ from .countries import COUNTRIES
 import time
 from .ccs import COUNTRIES
 from .sports import SPORTS
+import math
 
 TOKEN="20445-s1B9Vv6E9VSLU1"
 
@@ -21,9 +22,24 @@ def get_upcoming_events():
     today = datetime.datetime.today().strftime('%Y%m%d')
     #tomorrow = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y%m%d')
     page = 1
-    url = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + today + "&page=" + str(page)
-    request = requests.get(url)
-    process_upcoming_events(request.json())
+    url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + today + "&page="
+    url_page = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + today + "&page=" + str(page)
+
+    request = requests.get(url_page)
+    data = request.json()
+    process_upcoming_events(data)
+
+    if request.status_code == 200 and data['success'] == 1:
+        games_total = data['pager']['total']
+        per_page = data['pager']['per_page']
+        num_pages = math.ceil(int(games_total) / int(per_page))
+    
+    while page <= num_pages:
+        #print(page)
+        #print(num_pages)
+        request = requests.get(url_base + str(page))
+        process_upcoming_events(request.json())
+        page += 1
 
 def get_cc_from_result(game_id):
     url = "https://api.betsapi.com/v1/bet365/result?token=20445-s1B9Vv6E9VSLU1&event_id=" + game_id
