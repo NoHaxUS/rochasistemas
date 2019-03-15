@@ -11,12 +11,11 @@ import utils.timezone as tzlocal
 from django.utils import timezone
 import utils.timezone as tzlocal
 from utils.models import GeneralConfigurations
-from user.models import Seller
+from user.models import Seller, CustomUser
 from ticket.models import Ticket
 
 
-class Store(models.Model):
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_store', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Dono')
+class Store(CustomUser):    
     fantasy = models.CharField(max_length=150, verbose_name="Nome da Banca")
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name="Data de Criação")    
     config = models.ForeignKey('utils.GeneralConfigurations', verbose_name="Configurações Gerais", on_delete=models.SET_NULL, null=True)
@@ -38,8 +37,6 @@ class CotationHistory(models.Model):
     line = models.CharField(max_length=30, null=True, blank=True)
     base_line = models.CharField(max_length=30, null=True, blank=True)
     
-
- 
 
 class Sport(models.Model):
     name = models.CharField(max_length=80)

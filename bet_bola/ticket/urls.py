@@ -21,17 +21,9 @@ from .views import *
 app_name = 'core'
 
 router = DefaultRouter()
-router.register(r'stores', StoreView)
-router.register(r'games', GameView)
-router.register(r'leagues', LeagueView)
-router.register(r'locations', LocationView)
-router.register(r'cotations', CotationView)
-router.register(r'cotationshistory', CotationHistoryView)
-router.register(r'markets', MarketView)
-router.register(r'sports', SportView)
+router.register(r'tickets', TicketView)
+router.register(r'rewards', RewardView)
+router.register(r'payments', PaymentView)
 
-urlpatterns = [
-    path('', APIRootView.as_view(), name='api-root')
-]
 
-urlpatterns += router.urls
+urlpatterns = router.urls

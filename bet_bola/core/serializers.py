@@ -4,13 +4,12 @@ from ticket.models import Ticket
 from user.models import CustomUser
 from utils.models import GeneralConfigurations
 
-class StoreSerializer(serializers.HyperlinkedModelSerializer):
-	owner = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='id', required=False)
+class StoreSerializer(serializers.HyperlinkedModelSerializer):	
 	config = serializers.SlugRelatedField(queryset = GeneralConfigurations.objects.all(),slug_field='id')
 
 	class Meta:
 		model = Store
-		fields = ('owner','fantasy','creation_date','config')
+		fields = ('fantasy','creation_date','config')
 
 
 class CotationHistorySerializer(serializers.HyperlinkedModelSerializer):	
@@ -69,10 +68,12 @@ class CotationSerializer(serializers.HyperlinkedModelSerializer):
 	
 	game = serializers.SlugRelatedField(queryset = Game.objects.all(),slug_field='name')
 	market = serializers.SlugRelatedField(queryset = Market.objects.all(),slug_field='name')
+	# start_price = serializers.DecimalField(max_digits=30, decimal_places=2)
+	# price = serializers.DecimalField(max_digits=30, decimal_places=2)
 
 	class Meta:
 		model = Cotation
-		fields = ('name','start_price','price','game','settlement','status','market','line','base_line','last_update')
+		fields = ('id','name','start_price','price','game','settlement','status','market','line','base_line','last_update')
 
 
 
