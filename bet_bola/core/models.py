@@ -101,7 +101,7 @@ class League(models.Model):
 
 
 class Location(models.Model):
-    #cc = models.CharField(max_length=5, verbose_name='cc', unique=True)
+    cc = models.CharField(max_length=5, verbose_name='cc', unique=True)
     name = models.CharField(max_length=45, verbose_name='Local')
     priority = models.IntegerField(default=1, verbose_name='Prioridade')
     visible = models.BooleanField(default=True, verbose_name="Visível?")
