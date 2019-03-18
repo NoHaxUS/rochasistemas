@@ -24,6 +24,7 @@ class CustomUser(AbstractUser):
 class NormalUser(models.Model):
     first_name = models.CharField(max_length=150, verbose_name='Nome')
     cellphone = models.CharField(max_length=14, verbose_name='Celular')
+    my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.first_name

@@ -38,7 +38,7 @@ class LocationView(ModelViewSet):
 
 class CotationView(ModelViewSet):
     queryset = Cotation.objects.all()
-    serializer_class = CotationSerializer
+    serializer_class = CotationSerializer   
 
 
 class MarketView(ModelViewSet):

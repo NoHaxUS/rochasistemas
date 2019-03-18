@@ -76,5 +76,4 @@ class CotationSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','name','start_price','price','game','settlement','status','market','line','base_line','last_update')
 
 
-
 #Extra Serializers
