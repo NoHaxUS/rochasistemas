@@ -3,7 +3,8 @@ import time
 import datetime
 import pika
 import json
-from core.models import Location, League, Sport, Market, Period, Game, Cotation, Ticket, Reward
+from core.models import Location, League, Sport, Market, Period, Game, Cotation
+from ticket.models import Ticket, Reward
 from .real_time import process_fixture_metadata, process_markets_realtime, process_settlements
 from .translations import get_translated_cotation, get_translated_market, get_translated_league
 from utils.models import MarketReduction, GeneralConfigurations
@@ -216,7 +217,6 @@ def process_events(content):
                     'start_date': change_time_by_hours(fixture['StartDate']),
                     'game_status': fixture['Status'],
                     'league': League.objects.update_or_create(pk=league_id_new, defaults={'name': get_translated_league(str(league_id_new), league_name_new), 'location': location_original})[0],
-                    'location' : location_original,
                     'sport' : Sport.objects.update_or_create(pk=fixture['Sport']['Id'], defaults={'name': fixture['Sport']['Name']})[0],
                     'last_update': fixture['LastUpdate']
                 }

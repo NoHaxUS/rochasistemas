@@ -63,9 +63,9 @@ class Game(models.Model):
     name = models.CharField(max_length=80, verbose_name='Nome do Jogo')
     start_date = models.DateTimeField(verbose_name='Início da Partida')
     league = models.ForeignKey('League', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Liga')
-    #location = models.ForeignKey('Location', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Local')
     sport = models.ForeignKey('Sport', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Esporte')
     game_status = models.IntegerField(choices=GAME_STATUS,verbose_name='Status do Jogo')
+    last_update = models.DateTimeField(verbose_name='Última Atualização', auto_now=True)
     visible = models.BooleanField(default=True, verbose_name='Visível?')
     can_be_modified_by_api = models.BooleanField(default=True, verbose_name='API pode modificar?')
 
@@ -79,6 +79,27 @@ class Game(models.Model):
     def __str__(self):
         return self.name
 
+
+class Period(models.Model):
+    
+    PERIOD_STATUS = (
+        (10,"Primeiro Tempo"),
+        (20,"Segundo Tempo"),
+        (30,"Primeiro Tempo (Prorrogacao)"),
+        (35,"Segundo Tempo (Prorrogacao)"),
+        (50,"Penaltis"),
+        (100,"Termino"),
+        (101,"Termino (Prorrogacao)"),
+        (102,"Termino (Penaltis")
+        )
+
+    id = models.BigAutoField(primary_key=True, verbose_name="ID")
+    period_type = models.IntegerField(choices=PERIOD_STATUS)
+    is_fineshed = models.BooleanField(default=False)
+    is_confirmed = models.BooleanField(default=False)
+    game = models.ForeignKey('Game',related_name='periods', on_delete=models.CASCADE)
+    home_score = models.IntegerField(default=0)
+    away_score = models.IntegerField(default=0)
 
 class League(models.Model):
 
@@ -99,7 +120,6 @@ class League(models.Model):
 
 
 class Location(models.Model):
-    cc = models.CharField(max_length=5, verbose_name='cc', unique=True)
     name = models.CharField(max_length=45, verbose_name='Local')
     priority = models.IntegerField(default=1, verbose_name='Prioridade')
     visible = models.BooleanField(default=True, verbose_name="Visível?")

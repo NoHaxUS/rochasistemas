@@ -1,4 +1,3 @@
-"""
 from core.models import Location, League, Sport, Market, Period, Game, Cotation
 from django.utils.dateparse import parse_datetime
 import datetime
@@ -25,7 +24,7 @@ def process_fixture_metadata(content):
             
             Game.objects.filter(pk=game['FixtureId']).update(
                 name=game_name,
-                start_date=change_time_by_hours(fixture['StartDate']),
+                #start_date=change_time_by_hours(fixture['StartDate']),
                 game_status=fixture['Status'],
                 #league=League.objects.get_or_create(pk=fixture['League']['Id'], defaults={'name':fixture['League']['Name']})[0],
                 #location=Location.objects.get_or_create(pk=fixture['Location']['Id'], defaults={'name': fixture['Location']['Name']})[0],
@@ -64,4 +63,3 @@ def process_settlements(content):
                     settlement=cotation.get('Settlement', None),
                     last_update=cotation['LastUpdate']
                 )
-"""
