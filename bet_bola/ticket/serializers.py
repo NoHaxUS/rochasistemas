@@ -64,6 +64,8 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
 			if value <= 0:	                       
 				raise serializers.ValidationError("Valor da aposta inválido.")	        	       
 			raise serializers.ValidationError("A aposta mínima é: R$ " + str(configurations["min_bet_value"]))	
+		elif value > configurations["max_bet_value"]:
+			raise serializers.ValidationError("A aposta ultrapassou o valor maximo de R$ " + str(configurations["max_bet_value"]))	
 		return value	
 
 	def validate_cotations(self, cotations):		

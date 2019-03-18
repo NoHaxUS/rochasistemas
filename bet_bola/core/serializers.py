@@ -65,10 +65,20 @@ class MarketSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CotationSerializer(serializers.HyperlinkedModelSerializer):
-	
+
+	SETTLEMENT_STATUS = (
+            (None, "Em Aberto"),
+            (-1, "Cancelada"),
+            (1, "Perdeu"),
+            (2, "Ganhou"),
+            (3, "Perdeu"), #(3, "Reembolso"),
+            (4, "Perdeu"), #(4, "Metade Perdida"),
+            (5, "Ganhou") #(5, "Metade Ganha")
+        )
+
 	game = serializers.SlugRelatedField(queryset = Game.objects.all(),slug_field='name')
 	market = serializers.SlugRelatedField(queryset = Market.objects.all(),slug_field='name')
-	# start_price = serializers.DecimalField(max_digits=30, decimal_places=2)
+	settlement = serializers.ChoiceField(choices=Cotation.SETTLEMENT_STATUS, required=False)
 	# price = serializers.DecimalField(max_digits=30, decimal_places=2)
 
 	class Meta:

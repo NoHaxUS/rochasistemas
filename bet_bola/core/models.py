@@ -162,7 +162,7 @@ class Cotation(models.Model):
     line = models.CharField(max_length=30, null=True, blank=True)
     base_line = models.CharField(max_length=30, null=True, blank=True)
     last_update = models.DateTimeField(null=True, blank=True, verbose_name="Última atualização")
-
+    
 
     def get_settlement_display_modified(self):
         if self.game.game_status == 4:
