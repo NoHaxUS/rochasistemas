@@ -1,4 +1,5 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework.decorators import action
 from core.models import Cotation, CotationHistory
 from utils import timezone as tzlocal
 from .models import *
@@ -51,6 +52,39 @@ class TicketView(ModelViewSet):
 				game=i_cotation.game,								
 				market=i_cotation.market,				
 			).save()
+
+	@action(methods=['get'], detail=True)
+	def pay_winner_punter(self, request, pk=None):
+		if request.user.has_perm('user.be_seller'):
+			ticket = self.get_object()	
+			response = ticket.pay_winner_punter(request.user)
+			return Response(response)
+		return Response({"failed":"Usuário não é vendedor"})
+
+	@action(methods=['post'], detail=False)
+	def validar_tickets(self, request, pk=None):
+		if request.user.has_perm('user.be_seller'):		
+			pre_id_lista = []
+			
+			try:
+				pre_id_lista = [data["id"] for data in request.data]
+			except KeyError:
+				return Response({"Error": "Entrada invalida. Dica:[{'id':'?'},{'id':'?'}]"})
+
+			id_list = []
+			response = {}
+			for ticket in Ticket.objects.filter(pk__in=pre_id_lista):			
+				id_list.append(ticket.pk)
+				response["ticket " + str(ticket.pk)] = ticket.validate_ticket(request.user)["message"]			
+
+			warnning_id = list(set(pre_id_lista)-set(id_list))
+			count=0
+			for id in warnning_id:
+				count += 1
+				response["warning " + str(count)] = "ticket " + str(id) + " não existe" 
+			return Response(response)
+
+		return Response({"failed":"Usuário não é vendedor"})
 
 
 class RewardView(ModelViewSet):

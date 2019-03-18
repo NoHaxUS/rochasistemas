@@ -1,7 +1,8 @@
-from user.models import Punter, NormalUser, CustomUser, Seller, Manager
+from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework import permissions, mixins, generics
 from rest_framework.response import Response
+from user.models import Punter, NormalUser, CustomUser, Seller, Manager
 from .serializers import PunterSerializer, NormalUserSerializer, SellerSerializer, ManagerSerializer
 
 
@@ -29,6 +30,15 @@ class SellerView(ModelViewSet):
     queryset = Seller.objects.all()
     serializer_class = SellerSerializer
 
+    @action(methods=['get'], detail=True)
+    def pay_seller(self, request, pk=None):
+        seller = self.get_object()
+        who_reseted_revenue = str(request.user.pk) + ' - ' + request.user.username
+        seller.reset_revenue(who_reseted_revenue)
+
+        return Response({'success':'Cambistas Pagos'})
+
+
     # def get_permissions(self):    
     #     if self.request.method in permissions.SAFE_METHODS: 
     #         return [permissions.AllowAny(),]
@@ -39,7 +49,14 @@ class ManagerView(ModelViewSet):
     queryset = Manager.objects.all()
     serializer_class = ManagerSerializer
 
-    # def get_permissions(self):    
+    @action(methods=['get'], detail=True)
+    def pay_manager(self, request, pk=None):
+        manager = self.get_object()
+        who_reseted_revenue = str(request.user.pk) + ' - ' + request.user.username        
+        manager.reset_revenue(who_reseted_revenue)
+        
+        messages.success(request, 'Gerentes Pagos')
+    # def get_permissions(self):        
     #     if self.request.method in permissions.SAFE_METHODS: 
     #         return [permissions.AllowAny(),]
     #     return [permissions.IsAdminUser(),]

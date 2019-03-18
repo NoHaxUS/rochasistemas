@@ -74,6 +74,19 @@ class APIRootView(APIView):
         }
         return Response(data)
 
+
+#Extras
+
+class TodayGamesView(ModelViewSet):                        
+    queryset = League.objects.all().order_by('-location__priority', '-priority')
+    serializer_class = LeagueGameTodaySerializers
+
+    # def get_permissions(self):    
+    #     if self.request.method in permissions.SAFE_METHODS: 
+    #         return [permissions.AllowAny(),]
+    #     return [permissions.IsAdminUser(),]
+
+
 # class SearchView(TemplateResponseMixin, View):
 
 #     template_name = 'core/index.html'

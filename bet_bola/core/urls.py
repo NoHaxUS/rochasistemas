@@ -30,8 +30,11 @@ router.register(r'cotationshistory', CotationHistoryView)
 router.register(r'markets', MarketView)
 router.register(r'sports', SportView)
 
+
 urlpatterns = [
-    path('', APIRootView.as_view(), name='api-root')
+    path('', APIRootView.as_view(), name='api-root'),
+    path('today_games/', TodayGamesView.as_view({'get': 'list'}), name='today_games')
 ]
 
 urlpatterns += router.urls
+

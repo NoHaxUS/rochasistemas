@@ -1,3 +1,4 @@
+from django.db.models import Count
 from rest_framework import serializers
 from .models import *
 from ticket.models import Ticket
@@ -87,3 +88,58 @@ class CotationSerializer(serializers.HyperlinkedModelSerializer):
 
 
 #Extra Serializers
+
+class MinCotationSerializer(serializers.HyperlinkedModelSerializer):
+
+	SETTLEMENT_STATUS = (
+            (None, "Em Aberto"),
+            (-1, "Cancelada"),
+            (1, "Perdeu"),
+            (2, "Ganhou"),
+            (3, "Perdeu"), #(3, "Reembolso"),
+            (4, "Perdeu"), #(4, "Metade Perdida"),
+            (5, "Ganhou") #(5, "Metade Ganha")
+        )
+	
+	market = serializers.SlugRelatedField(queryset = Market.objects.all(),slug_field='name')
+	settlement = serializers.ChoiceField(choices=Cotation.SETTLEMENT_STATUS, required=False)
+	# price = serializers.DecimalField(max_digits=30, decimal_places=2)
+
+	class Meta:
+		model = Cotation
+		fields = ('id','name','start_price','price','settlement','status','market','line','base_line','last_update')
+
+
+class LeagueGameSerializers(serializers.HyperlinkedModelSerializer):			
+
+	standard_cotations = MinCotationSerializer(many=True)
+
+	class Meta:
+		model = Game
+		fields = ('id','name','start_date','game_status','standard_cotations')
+
+
+class LeagueGameTodaySerializers(serializers.HyperlinkedModelSerializer):
+	games = serializers.SerializerMethodField()
+	league = serializers.CharField(source='name')
+
+	class Meta:
+		model = League
+		fields = ('id','league','games')
+
+	def get_games(self, league):
+		qs = Game.objects.filter(league=league,start_date__gt=tzlocal.now(), 
+        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+        game_status__in=[1,8,9],
+        visible=True)
+        
+		serializer = LeagueGameSerializers(qs,many=True)
+		return serializer.data
+
+
+class CountryGameTodaySerializers(serializers.HyperlinkedModelSerializer):
+	itens = LeagueGameTodaySerializers(many=True, source='my_leagues')
+
+	class Meta:
+		model = Location
+		fields = ('id','name','itens')	

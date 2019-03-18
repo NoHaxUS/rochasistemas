@@ -70,6 +70,11 @@ class Game(models.Model):
     can_be_modified_by_api = models.BooleanField(default=True, verbose_name='API pode modificar?')
 
 
+    @property
+    def standard_cotations(self):
+        return self.cotations.filter(market__name='1X2')
+
+    
     class Meta:
         ordering = ('-pk',)
         verbose_name = 'Jogo'
