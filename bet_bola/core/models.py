@@ -48,24 +48,22 @@ class Sport(models.Model):
 class Game(models.Model):
 
     GAME_STATUS = (
-        (0, 'Não Iniciado'),
-        (1,'Ao Vivo'),
-        (2, 'Para ser Concertado'),
-        (3, 'Terminado'),        
-        (4, "Adiado"),
-        (5, 'Cancelado'),
-        (6, 'W.O'),
-        (7, 'Interrompido'),
-        (8, "Abandonado"),
-        (9, "Desistido"),
-        (99, "Removido")
+        (1, 'Não Iniciado'),
+        (2,'Ao Vivo'),
+        (3, 'Terminado') ,   
+        (4, 'Cancelado'),        
+        (5, "Adiado"),
+        (6, 'Interrompindo'),
+        (7, "Abandonado"),
+        (8, "Pré-jogo"),
+        (9, "Quase Iniciado")
     )
     
     id = models.BigIntegerField(primary_key=True, verbose_name="ID")
     name = models.CharField(max_length=80, verbose_name='Nome do Jogo')
     start_date = models.DateTimeField(verbose_name='Início da Partida')
     league = models.ForeignKey('League', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Liga')
-    # location = models.ForeignKey('Location', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Local')
+    #location = models.ForeignKey('Location', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Local')
     sport = models.ForeignKey('Sport', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Esporte')
     game_status = models.IntegerField(choices=GAME_STATUS,verbose_name='Status do Jogo')
     visible = models.BooleanField(default=True, verbose_name='Visível?')
