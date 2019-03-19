@@ -2,6 +2,7 @@ from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q, FilteredRelation
 from django.db.models import Count 
 import utils.timezone as tzlocal
@@ -80,13 +81,21 @@ class APIRootView(APIView):
 
 #Extras
 
-from rest_framework.pagination import PageNumberPagination
-
 class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 10
+    page_size = 5
     page_size_query_param = 'page_size'
     max_page_size = 100
 
+    def get_paginated_response(self, data):
+        return Response({
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,
+            'results': data
+        })
 
 class TodayGamesView(ModelViewSet): 
     today_games = Count('my_games', filter=Q(my_games__start_date__gt=tzlocal.now(),  
@@ -100,6 +109,12 @@ class TodayGamesView(ModelViewSet):
     serializer_class = LeagueGameTodaySerializers
     pagination_class = StandardResultsSetPagination
 
+    # def list(self, request, *args, **kwargs):
+    #     queryset = self.filter_queryset(self.get_queryset())
+    #     page = self.paginate_queryset(queryset)
+    #     super(TodayGamesView, self).list(request, *args, **kwargs)
+
+        
     # def get_permissions(self):    
     #     if self.request.method in permissions.SAFE_METHODS: 
     #         return [permissions.AllowAny(),]

@@ -4,8 +4,6 @@ from .models import *
 from ticket.models import Ticket
 from user.models import CustomUser
 from utils.models import GeneralConfigurations
-from collections import OrderedDict
-from rest_framework.relations import PKOnlyObject
 
 class StoreSerializer(serializers.HyperlinkedModelSerializer):	
 	config = serializers.SlugRelatedField(queryset = GeneralConfigurations.objects.all(),slug_field='id')
@@ -115,44 +113,12 @@ class LeagueGameTodaySerializers(serializers.HyperlinkedModelSerializer):
 		model = League
 		fields = ('id','league','games')
 
-	# def to_representation(self, instance):
-	# 	"""
-	# 	Object instance -> Dict of primitive datatypes.
-	# 	"""
-	# 	ret = OrderedDict()
-	# 	fields = self._readable_fields	  		 
-	# 	for field in fields:			
-	# 		try:
-	# 			attribute = field.get_attribute(instance)				
-	# 		except SkipField:
-	# 			continue
 
-	# 		# KEY IS HERE:	        
-	# 		if field.to_representation(attribute) in [None, '',[]]:				
-	# 			continue
-
-	# 		# We skip `to_representation` for `None` values so that fields do
-	# 		# not have to explicitly deal with that case.
-	# 		#
-	# 		# For related fields with `use_pk_only_optimization` we need to
-	# 		# resolve the pk value.
-	# 		check_for_none = attribute.pk if isinstance(attribute, PKOnlyObject) else attribute
-	# 		if check_for_none is None:				
-	# 			ret[field.field_name] = None
-	# 		else:
-	# 			if field.to_representation(attribute) in [None,'',[]]:
-	# 				# print(field.to_representation(attribute))
-	# 				continue
-	# 			ret[field.field_name] = field.to_representation(attribute)	            		
-
-	# 	return ret
-
-	def get_games(self, league):
-		standard_cotations_count = Count('cotations', filter=Q(cotations__market__name='1X2'))
+	def get_games(self, league):		
 		qs = Game.objects.filter(league=league,start_date__gt=tzlocal.now(), 
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
         game_status__in=[1,8,9],
-        visible=True).annotate(standard_cotations_count=standard_cotations_count).filter(standard_cotations_count__gt=0)
+        visible=True)
         
 		serializer = LeagueGameSerializers(qs,many=True)
 		return serializer.data
