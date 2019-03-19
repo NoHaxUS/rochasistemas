@@ -2,6 +2,9 @@ from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from django.db.models import Q
+from django.db.models import Count 
+import utils.timezone as tzlocal
 from .models import *
 from .serializers import *
 
@@ -77,8 +80,11 @@ class APIRootView(APIView):
 
 #Extras
 
-class TodayGamesView(ModelViewSet):                        
-    queryset = League.objects.all().order_by('-location__priority', '-priority')
+class TodayGamesView(ModelViewSet): 
+    today_games = Count('my_games', filter=Q(my_games__start_date__gt=tzlocal.now(),  my_games__start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),my_games__game_status__in=[1,8,9],
+        my_games__visible=True))
+    league = League.objects.annotate(today_games=today_games)
+    queryset = league.filter(today_games__gt=0).order_by('-location__priority', '-priority')
     serializer_class = LeagueGameTodaySerializers
 
     # def get_permissions(self):    
