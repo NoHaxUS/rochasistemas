@@ -93,7 +93,7 @@ class MinCotationSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Cotation
-		fields = ('id','name','price','line','base_line')
+		fields = ('id','name','price')
 
 
 class LeagueGameSerializers(serializers.HyperlinkedModelSerializer):			
