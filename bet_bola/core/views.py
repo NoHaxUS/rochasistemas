@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.pagination import PageNumberPagination
+from django.db.models import Prefetch
 from django.db.models import Q, FilteredRelation
 from django.db.models import Count 
 import utils.timezone as tzlocal
@@ -82,7 +83,7 @@ class APIRootView(APIView):
 #Extras
 
 class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 5
+    page_size = 50
     page_size_query_param = 'page_size'
     max_page_size = 100
 
@@ -97,28 +98,19 @@ class StandardResultsSetPagination(PageNumberPagination):
             'results': data
         })
 
-class TodayGamesView(ModelViewSet): 
-    today_games = Count('my_games', filter=Q(my_games__start_date__gt=tzlocal.now(),  
-        my_games__start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=2)),
-        my_games__game_status__in=[1,8,9],
-        my_games__visible=True,
-        my_games__cotations__market__name='1X2'))    
+class TodayGamesView(ModelViewSet):     
+    my_qs = Cotation.objects.filter(market__name="1X2")
+    queryset = games = Game.objects.filter(start_date__gt=tzlocal.now(),
+        game_status__in=[1,8,9],
+        visible=True)\
+        .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
+        .annotate(cotations_count=Count('cotations'))\
+        .filter(cotations_count__gte=3).order_by('-league__location__priority','-league__priority')
 
-    league = League.objects.annotate(today_games=today_games)
-    queryset = league.filter(today_games__gt=0).order_by('-location__priority', '-priority')
-    serializer_class = LeagueGameTodaySerializers
+    serializer_class = LeagueGameSerializers
     pagination_class = StandardResultsSetPagination
-
-    # def list(self, request, *args, **kwargs):
-    #     queryset = self.filter_queryset(self.get_queryset())
-    #     page = self.paginate_queryset(queryset)
-    #     super(TodayGamesView, self).list(request, *args, **kwargs)
-
-        
-    # def get_permissions(self):    
-    #     if self.request.method in permissions.SAFE_METHODS: 
-    #         return [permissions.AllowAny(),]
-    #     return [permissions.IsAdminUser(),]
+            
 
 
 

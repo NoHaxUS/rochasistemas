@@ -99,10 +99,11 @@ class MinCotationSerializer(serializers.HyperlinkedModelSerializer):
 class LeagueGameSerializers(serializers.HyperlinkedModelSerializer):			
 
 	standard_cotations = MinCotationSerializer(many=True)
+	league = serializers.SlugRelatedField(queryset=League.objects.all(), slug_field='name')
 
 	class Meta:
 		model = Game
-		fields = ('id','name','start_date','game_status','standard_cotations')
+		fields = ('id','name','start_date','game_status','league','standard_cotations')
 
 
 class LeagueGameTodaySerializers(serializers.HyperlinkedModelSerializer):
