@@ -99,7 +99,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 class TodayGamesView(ModelViewSet): 
     today_games = Count('my_games', filter=Q(my_games__start_date__gt=tzlocal.now(),  
-        my_games__start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+        my_games__start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=2)),
         my_games__game_status__in=[1,8,9],
         my_games__visible=True,
         my_games__cotations__market__name='1X2'))    

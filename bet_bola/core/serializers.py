@@ -108,10 +108,11 @@ class LeagueGameSerializers(serializers.HyperlinkedModelSerializer):
 class LeagueGameTodaySerializers(serializers.HyperlinkedModelSerializer):
 	games = serializers.SerializerMethodField()
 	league = serializers.CharField(source='name')
+	location = serializers.SlugRelatedField(queryset=Location.objects.all(), slug_field='name')
 
 	class Meta:
 		model = League
-		fields = ('id','league','games')
+		fields = ('id','league','location','games')
 
 
 	def get_games(self, league):		
