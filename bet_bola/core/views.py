@@ -2,7 +2,7 @@ from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from django.db.models import Q
+from django.db.models import Q, FilteredRelation
 from django.db.models import Count 
 import utils.timezone as tzlocal
 from .models import *
@@ -80,17 +80,31 @@ class APIRootView(APIView):
 
 #Extras
 
+from rest_framework.pagination import PageNumberPagination
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
 class TodayGamesView(ModelViewSet): 
-    today_games = Count('my_games', filter=Q(my_games__start_date__gt=tzlocal.now(),  my_games__start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),my_games__game_status__in=[1,8,9],
-        my_games__visible=True))
+    today_games = Count('my_games', filter=Q(my_games__start_date__gt=tzlocal.now(),  
+        my_games__start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+        my_games__game_status__in=[1,8,9],
+        my_games__visible=True,
+        my_games__cotations__market__name='1X2'))    
+
     league = League.objects.annotate(today_games=today_games)
     queryset = league.filter(today_games__gt=0).order_by('-location__priority', '-priority')
     serializer_class = LeagueGameTodaySerializers
+    pagination_class = StandardResultsSetPagination
 
     # def get_permissions(self):    
     #     if self.request.method in permissions.SAFE_METHODS: 
     #         return [permissions.AllowAny(),]
     #     return [permissions.IsAdminUser(),]
+
 
 
 # class SearchView(TemplateResponseMixin, View):
