@@ -107,7 +107,8 @@ class TodayGamesView(ModelViewSet):
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .annotate(cotations_count=Count('cotations'))\
-        .filter(cotations_count__gte=3).order_by('-league__location__priority','-league__priority')
+        .filter(cotations_count__gte=3).order_by('-league__location__priority',
+        '-league__priority', 'league__location', 'league')
 
     serializer_class = LeagueGameSerializers
     pagination_class = StandardResultsSetPagination
