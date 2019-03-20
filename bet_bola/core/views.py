@@ -101,6 +101,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 class TodayGamesView(ModelViewSet):     
     my_qs = Cotation.objects.filter(market__name="1X2")
     queryset = games = Game.objects.filter(start_date__gt=tzlocal.now(),
+        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
         game_status__in=[1,8,9],
         visible=True)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
@@ -112,7 +113,32 @@ class TodayGamesView(ModelViewSet):
     pagination_class = StandardResultsSetPagination
             
 
+class TomorrowGamesView(ModelViewSet):     
+    my_qs = Cotation.objects.filter(market__name="1X2")
+    queryset = games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),        
+        game_status__in=[1,8,9],
+        visible=True)\
+        .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
+        .annotate(cotations_count=Count('cotations'))\
+        .filter(cotations_count__gte=3).order_by('-league__location__priority','-league__priority')
 
+    serializer_class = LeagueGameSerializers
+    pagination_class = StandardResultsSetPagination
+
+
+class AfterTomorrowGamesView(ModelViewSet):     
+    my_qs = Cotation.objects.filter(market__name="1X2")
+    queryset = games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
+        game_status__in=[1,8,9],
+        visible=True)\
+        .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
+        .annotate(cotations_count=Count('cotations'))\
+        .filter(cotations_count__gte=3).order_by('-league__location__priority','-league__priority')
+
+    serializer_class = LeagueGameSerializers
+    pagination_class = StandardResultsSetPagination
 
 # class SearchView(TemplateResponseMixin, View):
 

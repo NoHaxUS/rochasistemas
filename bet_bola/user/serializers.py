@@ -19,7 +19,7 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model=Seller
-		fields = ('username','first_name', 'last_name', 'cpf','my_manager', 'email','my_store')
+		fields = ('username','first_name', 'last_name', 'cpf','can_sell_unlimited','credit_limit','limit_time_to_cancel','my_manager', 'email','my_store')
 
 
 class NormalUserSerializer(serializers.HyperlinkedModelSerializer):

@@ -40,24 +40,15 @@ class PaymentSerializer(serializers.HyperlinkedModelSerializer):
 
 #EXTRA SERIALIZERS
 
-class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
-	user = serializers.SlugRelatedField(queryset = Punter.objects.all(), slug_field='first_name', required=False)	
-	normal_user = NormalUserSerializer(required=False)
+class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer):	
+	normal_user = NormalUserSerializer()
 	creation_date = serializers.DateTimeField(read_only=True)	
 	payment = PaymentSerializer(required=False)
 	seller = serializers.SlugRelatedField(queryset = Seller.objects.all(), slug_field='first_name', required=False)	
 	reward = serializers.SlugRelatedField(read_only=True, slug_field='reward_status')	
-	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.all())
-	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
-
-	def __init__(self, *args, **kwargs):
-		super(CreateTicketSerializer, self).__init__(*args, **kwargs)
-		request = kwargs['context']['request']
-
-		if request.user.is_anonymous:
-			self.fields['normal_user'] = NormalUserSerializer(required=True)
-
-
+	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(game__pk=4209953))
+	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')	
+	
 	def validate_value(self, value):
 		configurations = general_configurations()
 		if value < configurations["min_bet_value"]:
@@ -89,4 +80,18 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Ticket
-		fields = ('seller','user','normal_user','creation_date','reward','cotations','payment','value','visible','store')
+		fields = ('seller','normal_user','creation_date','reward','cotations','payment','value','visible','store')
+
+
+class CreateTicektLoggedUserSerializer(CreateTicketAnonymousUserSerializer):	
+
+	def __init__(self, *args, **kwargs):
+		super(CreateTicektLoggedUserSerializer, self).__init__(*args, **kwargs)
+		request = kwargs['context']['request']		
+		if request.user.has_perm('user.be_punter'):
+			self.fields['normal_user'] = NormalUserSerializer(read_only=True)
+
+	class Meta:
+		model = Ticket
+		fields = ('seller','normal_user','creation_date','reward','cotations','payment','value','visible','store')
+

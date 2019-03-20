@@ -2,7 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import datetime
 from django.contrib.auth.models import User
-from user.models import NormalUser
+from user.models import NormalUser, Seller, Punter
 from django.utils import timezone
 from django.db.models import Q
 from django.conf import settings
@@ -135,7 +135,8 @@ class Ticket(models.Model):
 
         TicketCancelationHistory.objects.create(who_cancelled=who_cancelled,
         ticket_cancelled=self,
-        seller_of_payed=seller)
+        seller_of_payed=seller,
+        store=Store.objects.first())
 
         return {'success':True,
             'message':'O Ticket '+ str(self.pk) +' foi cancelado.'}
@@ -184,7 +185,8 @@ class Ticket(models.Model):
         bet_ticket=self,
         value=self.value,
         seller_before_balance=seller_before_balance,
-        seller_after_balance=seller_after_balance)
+        seller_after_balance=seller_after_balance,
+        store=Store.objects.first())
         
         return {'success':True,
             'message':'Ticket '+ str(self.pk) +' Pago com Sucesso. Ver <a href="/ticket/'+ str(self.pk) + '/">' + "Imprimir"+ '</a>'}

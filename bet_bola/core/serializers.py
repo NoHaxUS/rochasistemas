@@ -96,34 +96,33 @@ class MinCotationSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','name','price')
 
 
-class LeagueGameSerializers(serializers.HyperlinkedModelSerializer):			
-
-	standard_cotations = MinCotationSerializer(many=True)
-	league = serializers.SlugRelatedField(queryset=League.objects.all(), slug_field='name')
-
-	class Meta:
-		model = Game
-		fields = ('id','name','start_date','game_status','league','standard_cotations')
-
-
 class LeagueGameTodaySerializers(serializers.HyperlinkedModelSerializer):
-	games = serializers.SerializerMethodField()
+	# games = serializers.SerializerMethodField()
 	league = serializers.CharField(source='name')
 	location = serializers.SlugRelatedField(queryset=Location.objects.all(), slug_field='name')
 
 	class Meta:
 		model = League
-		fields = ('id','league','location','games')
+		fields = ('id','league','location')
 
 
-	def get_games(self, league):		
-		qs = Game.objects.filter(league=league,start_date__gt=tzlocal.now(), 
-        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
-        game_status__in=[1,8,9],
-        visible=True)
+	# def get_games(self, league):		
+	# 	qs = Game.objects.filter(league=league,start_date__gt=tzlocal.now(), 
+ #        start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+ #        game_status__in=[1,8,9],
+ #        visible=True)
         
-		serializer = LeagueGameSerializers(qs,many=True)
-		return serializer.data
+	# 	serializer = LeagueGameSerializers(qs,many=True)
+	# 	return serializer.data
+
+class LeagueGameSerializers(serializers.HyperlinkedModelSerializer):			
+
+	standard_cotations = MinCotationSerializer(many=True)
+	league = LeagueGameTodaySerializers()
+
+	class Meta:
+		model = Game
+		fields = ('id','name','start_date','game_status','league','standard_cotations')
 
 
 class CountryGameTodaySerializers(serializers.HyperlinkedModelSerializer):

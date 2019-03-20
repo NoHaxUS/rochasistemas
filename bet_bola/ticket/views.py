@@ -1,6 +1,7 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.decorators import action
-from core.models import Cotation, CotationHistory
+from rest_framework.response import Response
+from core.models import Cotation, CotationHistory, Store
 from utils import timezone as tzlocal
 from .models import *
 from .serializers import *
@@ -15,7 +16,10 @@ class TicketView(ModelViewSet):
 			return TicketSerializer
 		elif self.action == 'retrieve':
 			return TicketSerializer
-		return CreateTicketSerializer
+
+		if self.request.user.is_authenticated:
+			return CreateTicektLoggedUserSerializer
+		return CreateTicketAnonymousUserSerializer
 
 	def perform_create(self, serializer):
 		data = {
@@ -85,6 +89,18 @@ class TicketView(ModelViewSet):
 			return Response(response)
 
 		return Response({"failed":"Usuário não é vendedor"})
+
+	@action(methods=['get'], detail=True)
+	def validar_ticket(self, request, pk=None):
+		if request.user.has_perm('user.be_seller'):
+			ticket = self.get_object()
+			return Response(ticket.validate_ticket(request.user))
+		return Response({"failed":"Usuário não é vendedor"})
+
+	@action(methods=['get'], detail=True)
+	def cancel_ticket(self, request, pk=None):		
+		ticket = self.get_object()
+		return Response(ticket.cancel_ticket(request.user.seller))
 
 
 class RewardView(ModelViewSet):
