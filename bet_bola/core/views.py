@@ -3,10 +3,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.pagination import PageNumberPagination
+from rest_framework import filters
 from django.db.models import Prefetch
 from django.db.models import Q, FilteredRelation
 from django.db.models import Count 
 import utils.timezone as tzlocal
+import django_filters
 from .models import *
 from .serializers import *
 
@@ -100,7 +102,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 class TodayGamesView(ModelViewSet):     
     my_qs = Cotation.objects.filter(market__name="1X2")
-    queryset = games = Game.objects.filter(start_date__gt=tzlocal.now(),
+    queryset = Game.objects.filter(start_date__gt=tzlocal.now(),
         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
         game_status__in=[1,8,9],
         visible=True)\
@@ -111,11 +113,13 @@ class TodayGamesView(ModelViewSet):
 
     serializer_class = LeagueGameSerializers
     pagination_class = StandardResultsSetPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
             
 
 class TomorrowGamesView(ModelViewSet):     
     my_qs = Cotation.objects.filter(market__name="1X2")
-    queryset = games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),        
+    queryset = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),        
         game_status__in=[1,8,9],
         visible=True)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
@@ -129,7 +133,7 @@ class TomorrowGamesView(ModelViewSet):
 
 class AfterTomorrowGamesView(ModelViewSet):     
     my_qs = Cotation.objects.filter(market__name="1X2")
-    queryset = games = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
+    queryset = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
         game_status__in=[1,8,9],
         visible=True)\
         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
