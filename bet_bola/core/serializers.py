@@ -58,34 +58,30 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','name','priority','visible')
 
 
-class MarketSerializer(serializers.HyperlinkedModelSerializer):
-	
-	class Meta:
-		model = Market
-		fields = ('id','name','available')
+class FilteredCotationSerializer(serializers.ListSerializer):
+
+	def to_representation(self, data):
+		game_id = self.context['request'].GET.get('cotations__game__id')
+		data = data.filter(game__id=game_id)
+		return super(FilteredCotationSerializer, self).to_representation(data)
 
 
 class CotationSerializer(serializers.HyperlinkedModelSerializer):
 
-	SETTLEMENT_STATUS = (
-            (None, "Em Aberto"),
-            (-1, "Cancelada"),
-            (1, "Perdeu"),
-            (2, "Ganhou"),
-            (3, "Perdeu"), #(3, "Reembolso"),
-            (4, "Perdeu"), #(4, "Metade Perdida"),
-            (5, "Ganhou") #(5, "Metade Ganha")
-        )
-
-	game = serializers.SlugRelatedField(queryset = Game.objects.all(),slug_field='name')
-	market = serializers.SlugRelatedField(queryset = Market.objects.all(),slug_field='name')
-	settlement = serializers.ChoiceField(choices=Cotation.SETTLEMENT_STATUS, required=False)
-	# price = serializers.DecimalField(max_digits=30, decimal_places=2)
+	game = serializers.PrimaryKeyRelatedField(read_only=True)
 
 	class Meta:
 		model = Cotation
-		fields = ('id','name','start_price','price','game','settlement','status','market','line','base_line','last_update')
+		list_serializer_class = FilteredCotationSerializer
+		fields = ('id','name','game','price','line','base_line')
 
+
+class MarketSerializer(serializers.HyperlinkedModelSerializer):
+	cotations = CotationSerializer(many=True)
+	
+	class Meta:
+		model = Market
+		fields = ('id','name','cotations')
 
 #Extra Serializers
 

@@ -3,12 +3,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.pagination import PageNumberPagination
-from rest_framework import filters
+from rest_framework import filters as drf_filters
 from django.db.models import Prefetch
 from django.db.models import Q, FilteredRelation
 from django.db.models import Count 
 import utils.timezone as tzlocal
-import django_filters
+from django_filters import rest_framework as filters
 from .models import *
 from .serializers import *
 
@@ -44,13 +44,17 @@ class LocationView(ModelViewSet):
 
 
 class CotationView(ModelViewSet):
-    queryset = Cotation.objects.all()
+    queryset = Cotation.objects.exclude(market__name='1X2')
     serializer_class = CotationSerializer   
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('game__id',)
 
 
 class MarketView(ModelViewSet):
-    queryset = Market.objects.all()
+    queryset = Market.objects.exclude(cotations__market__name='1X2').distinct()
     serializer_class = MarketSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('cotations__game__id',)
 
 
 class APIRootView(APIView):
@@ -114,7 +118,7 @@ class TodayGamesView(ModelViewSet):
 
     serializer_class = LeagueGameSerializers
     pagination_class = StandardResultsSetPagination
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (drf_filters.SearchFilter,)
     search_fields = ('name',)
             
 
