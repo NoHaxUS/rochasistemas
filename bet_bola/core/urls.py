@@ -17,7 +17,7 @@ from django.urls import path, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from .views import *
-
+from django.contrib.auth import views as auth_views
 app_name = 'core'
 
 router = DefaultRouter()
@@ -29,6 +29,7 @@ router.register(r'cotations', CotationView)
 router.register(r'cotationshistory', CotationHistoryView)
 router.register(r'markets', MarketView)
 router.register(r'sports', SportView)
+
 
 
 urlpatterns = [
