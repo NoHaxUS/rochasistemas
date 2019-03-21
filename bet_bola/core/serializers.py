@@ -75,6 +75,13 @@ class CotationSerializer(serializers.HyperlinkedModelSerializer):
 		list_serializer_class = FilteredCotationSerializer
 		fields = ('id','name','game','price','line','base_line')
 
+class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):
+
+	game = serializers.PrimaryKeyRelatedField(read_only=True)
+
+	class Meta:
+		model = Cotation		
+		fields = ('id','name','game','price','line','base_line')
 
 class MarketSerializer(serializers.HyperlinkedModelSerializer):
 	cotations = CotationSerializer(many=True)

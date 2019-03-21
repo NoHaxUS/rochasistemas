@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from core.serializers import CotationSerializer
+from core.serializers import CotationSerializer,CotationTicketSerializer
 from user.models import Seller, Manager,CustomUser
 from core.models import Store, Cotation
-from user.serializers import NormalUserSerializer, Punter
+from user.serializers import NormalUserSerializer, PunterSerializer, SellerSerializer
 from utils.utils import general_configurations
 from utils import timezone as tzlocal
 from .models import *
@@ -10,15 +10,16 @@ from .models import *
 class TicketSerializer(serializers.HyperlinkedModelSerializer):
 
 	seller = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='first_name')
+	user = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='first_name')
 	normal_user = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='first_name')
 	payment = serializers.SlugRelatedField(queryset = Payment.objects.all(),slug_field='status_payment')
 	reward = serializers.SlugRelatedField(queryset = Reward.objects.all(),slug_field='id')
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
-	cotations = CotationSerializer(many=True)
+	cotations = CotationTicketSerializer(many=True)
 
 	class Meta:
 		model = Ticket
-		fields = ('seller','normal_user','cotations','creation_date','reward','payment','value','visible','store')
+		fields = ('id','user','seller','normal_user','cotations','creation_date','reward','payment','value','visible','store')
 
 
 class RewardSerializer(serializers.HyperlinkedModelSerializer):
@@ -31,7 +32,7 @@ class RewardSerializer(serializers.HyperlinkedModelSerializer):
 
 class PaymentSerializer(serializers.HyperlinkedModelSerializer):
 
-	who_set_payment = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')
+	who_set_payment = SellerSerializer(read_only=True)
 
 	class Meta:
 		model = Payment
@@ -43,10 +44,9 @@ class PaymentSerializer(serializers.HyperlinkedModelSerializer):
 class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer):	
 	normal_user = NormalUserSerializer()
 	creation_date = serializers.DateTimeField(read_only=True)	
-	payment = PaymentSerializer(required=False)
-	seller = serializers.SlugRelatedField(queryset = Seller.objects.all(), slug_field='first_name', required=False)	
+	payment = PaymentSerializer(required=False)	
 	reward = serializers.SlugRelatedField(read_only=True, slug_field='reward_status')	
-	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(game__pk=4209953))
+	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(game__id=4419294), required=True)
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')	
 	
 	def validate_value(self, value):
@@ -80,18 +80,18 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 
 	class Meta:
 		model = Ticket
-		fields = ('seller','normal_user','creation_date','reward','cotations','payment','value','visible','store')
+		fields = ('normal_user','creation_date','reward','cotations','payment','value','visible','store')
 
 
-class CreateTicektLoggedUserSerializer(CreateTicketAnonymousUserSerializer):	
+class CreateTicketLoggedUserSerializer(CreateTicketAnonymousUserSerializer):	
 
 	def __init__(self, *args, **kwargs):
-		super(CreateTicektLoggedUserSerializer, self).__init__(*args, **kwargs)
+		super(CreateTicketLoggedUserSerializer, self).__init__(*args, **kwargs)
 		request = kwargs['context']['request']		
 		if request.user.has_perm('user.be_punter'):
 			self.fields['normal_user'] = NormalUserSerializer(read_only=True)
 
 	class Meta:
 		model = Ticket
-		fields = ('seller','normal_user','creation_date','reward','cotations','payment','value','visible','store')
+		fields = ('normal_user','creation_date','reward','cotations','payment','value','visible','store')
 
