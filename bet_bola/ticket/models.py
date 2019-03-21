@@ -97,6 +97,7 @@ class Ticket(models.Model):
 
     def cancel_ticket(self, user):
         from history.models import TicketCancelationHistory
+        from core.models import Store
 
         if not self.payment or not self.reward:
             return {'success':False,
@@ -144,6 +145,7 @@ class Ticket(models.Model):
 
     def validate_ticket(self, user):
         from history.models import SellerSalesHistory
+        from core.models import Store
 
         if not self.payment or not self.reward:
             return {'success':False,

@@ -12,7 +12,6 @@ from django.utils import timezone
 import utils.timezone as tzlocal
 from utils.models import GeneralConfigurations
 from user.models import Seller, CustomUser
-from ticket.models import Ticket
 
 
 class Store(CustomUser):    
