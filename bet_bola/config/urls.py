@@ -19,7 +19,8 @@ from django.contrib.auth import views as auth_views
 import rest_framework 
 
 urlpatterns = [ 
-    path('api-auth/', include('rest_framework.urls')),
+    #path('api-auth/', include('rest_framework.urls')),
+    path('admin/', admin.site.urls),
     path('', include('core.urls', namespace='core')),
     path('', include('ticket.urls', namespace='ticket')),
     path('', include('utils.urls', namespace='utils')),

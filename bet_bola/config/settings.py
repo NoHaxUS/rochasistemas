@@ -35,8 +35,8 @@ APP_VERBOSE_NAME = 'sitename'
 # Application definition
 
 INSTALLED_APPS = [
-    'config.apps.MyAdminConfig',
-    #'django.contrib.admin',
+    #'config.apps.MyAdminConfig',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
