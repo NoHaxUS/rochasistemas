@@ -148,3 +148,29 @@ class AfterTomorrowGamesView(ModelViewSet):
 
     serializer_class = LeagueGameSerializers
     pagination_class = StandardResultsSetPagination
+
+
+class MainMenu(APIView):
+    def get(self, request):
+        games = Game.objects.filter(start_date__gt=tzlocal.now(),
+        league__isnull=False,
+        game_status__in=[1,8,9],
+        visible=True)\
+        .annotate(cotations_count=Count('cotations'))\
+        .filter(cotations_count__gte=3)\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
+        .order_by('-league__location__priority', '-league__priority')\
+        .values('league__location','league__location__name', 'league')\
+        .distinct()
+
+
+        itens = {}
+        for value in games:
+            value["league__name"] = League.objects.filter(id=value['league']).values('name').first()['name']
+            if not value['league__location__name'] in itens.keys():
+                itens[value['league__location__name']] = []
+                itens[value['league__location__name']].append( ( value['league'], value["league__name"]) )
+            else:
+                itens[value['league__location__name']].append( ( value['league'], value["league__name"]) )
+
+        return Response(itens)
