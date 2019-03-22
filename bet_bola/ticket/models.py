@@ -238,7 +238,7 @@ class Ticket(models.Model):
 
     def cotation_sum(self):
         from core.models import CotationHistory
-        
+
         valid_cotations = CotationHistory.objects\
         .filter(ticket=self, game__game_status__in = (1,2,3,9))\
         .exclude(original_cotation__settlement=-1)
@@ -264,8 +264,9 @@ class Ticket(models.Model):
 
 
     class Meta:
+        ordering = ('-pk',)
         verbose_name = 'Ticket'
-        verbose_name_plural = 'Tickets'
+        verbose_name_plural = 'Tickets'        
         permissions = (
             ('can_validate_payment', "Can validate user ticket"),
             ('can_reward', "Can reward a user"),
