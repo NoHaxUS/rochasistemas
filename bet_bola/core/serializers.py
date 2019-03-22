@@ -62,7 +62,7 @@ class FilteredCotationSerializer(serializers.ListSerializer):
 
 	def to_representation(self, data):
 		game_id = self.context['request'].GET.get('cotations__game__id')
-		data = data.filter(game__id=game_id)
+		data = data.filter(game__id=game_id)		
 		return super(FilteredCotationSerializer, self).to_representation(data)
 
 

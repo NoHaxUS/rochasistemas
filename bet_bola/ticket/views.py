@@ -105,6 +105,77 @@ class TicketView(ModelViewSet):
 		ticket = self.get_object()
 		return Response(ticket.cancel_ticket(request.user.seller))
 
+	@action(methods=['get'], detail=True)
+	def ticket_detail(self, request, pk=None):		        
+		ticket = self.get_object()
+
+		from utils.models import TicketCustomMessage
+
+		cotations_history = CotationHistory.objects.filter(ticket=ticket.pk)
+
+		if cotations_history.count() > 0 and ticket.visible == True:
+
+		    cotations_values = {}
+		    for current_cotation in cotations_history:
+		        cotations_values[current_cotation.original_cotation.pk] = current_cotation.price
+
+		    content = "<CENTER> -> " + settings.APP_VERBOSE_NAME.upper() + " <- <BR>"
+		    content += "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
+		    
+		    if ticket.seller:
+		        content += "<CENTER> CAMBISTA: " + ticket.seller.first_name + "<BR>"
+		    if ticket.normal_user:
+		        content += "<CENTER> CLIENTE: " + ticket.normal_user.first_name + "<BR>"
+		    if ticket.user:
+		        content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
+
+		    content += "<CENTER> APOSTA: R$" + str("%.2f" % ticket.value) + "<BR>"
+		    content += "<CENTER> COTA TOTAL: " + str("%.2f" % ticket.cotation_sum() ) + "<BR>"
+		    if ticket.reward:
+		        content += "<CENTER> GANHO POSSIVEL: R$" + str("%.2f" % ticket.reward.real_value) + "<BR>"
+		    if ticket.payment:
+		        content +=  "<CENTER> STATUS: " + ticket.payment.status_payment + "<BR>"
+		    content += "<CENTER> DATA: " + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
+		    content += "<BR><BR>"
+		    
+		    content += "<LEFT> APOSTAS <BR>"
+		    content += "<LEFT>-------------------------------> <BR>"
+
+		    for cotation in ticket.cotations.all():
+		        content += "<LEFT>" + cotation.game.name + "<BR>"
+		        content += "<LEFT>" + cotation.game.start_date.strftime('%d/%m/%Y %H:%M') + "<BR>"
+		        if cotation.market:
+		            content += "<LEFT>"+ cotation.market.name + "<BR>"
+
+		        base_line = cotation.base_line if cotation.base_line else ''
+		        content += "<LEFT>" + cotation.name + ' ' + base_line + " --> " + str("%.2f" % cotations_values[cotation.pk]) + "<BR>"
+
+		        content += "<RIGHT> Status: " +  cotation.get_settlement_display_modified() + "<BR>"
+		        
+		        content += "<CENTER>-------------------------------> <BR>"
+		    content += "<CENTER> "+ settings.APP_VERBOSE_NAME + "<BR>"
+
+		    if TicketCustomMessage.objects.first():            
+		        phrases = TicketCustomMessage.objects.first().text.replace("\r","").split("\n")
+
+		        for phrase in phrases:                
+		            content += "<CENTER> " + phrase + "<BR>"
+
+		    content += "#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;"                
+		    cotation_sum = ticket.cotation_sum()
+		    possible_reward = cotation_sum * ticket.value
+		    ticket = TicketSerializer(ticket)
+		    context = {'ticket': ticket.data,
+		    'cotation_sum':cotation_sum,
+		    'possible_reward':possible_reward,
+		    'print': content,'cotations_values':cotations_values, 
+		    'show_ticket': True, 'base_url': request.get_host()}
+		else:
+		    context = {'show_ticket': False}
+
+		return Response(context)
+
+
 
 class RewardView(ModelViewSet):
     queryset = Reward.objects.all()

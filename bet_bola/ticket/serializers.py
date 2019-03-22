@@ -46,7 +46,7 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 	creation_date = serializers.DateTimeField(read_only=True)	
 	payment = PaymentSerializer(required=False)	
 	reward = serializers.SlugRelatedField(read_only=True, slug_field='reward_status')	
-	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(game__id=4419294), required=True)
+	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(game__id=3913562), required=True)
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')	
 	
 	def validate_value(self, value):
