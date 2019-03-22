@@ -1,6 +1,6 @@
 from django.db.models import Count
 from rest_framework import serializers
-from .models import *
+from .models import Store, CotationHistory, Sport, Game, League, Location, Market, Cotation
 from ticket.models import Ticket
 from user.models import CustomUser
 from utils.models import GeneralConfigurations
@@ -81,11 +81,26 @@ class MarketSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','name','cotations')
 
 
+class MinimumListCotationSerializer(serializers.ListSerializer):
 
-class CotationSerializer(serializers.HyperlinkedModelSerializer):
+	def to_representation(self, data):
+		#print(data)
+		store_id =  self.context['request'].GET.get('store')
+		store = Store.objects.get(pk=store_id)
+		config = store.config
+		if config:
+			if config.cotations_percentage:
+				for cotation in data:
+					cotation.price = (cotation.price * config.cotations_percentage / 100)
+
+		return super(MinimumListCotationSerializer, self).to_representation(data)
+
+
+class MinimumCotationSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Cotation
+		list_serializer_class = MinimumListCotationSerializer
 		fields = ('id','name','price')
 
 
@@ -102,12 +117,13 @@ class LeagueGameTodaySerializer(serializers.HyperlinkedModelSerializer):
 class GameListSerializer(serializers.ListSerializer):
 
 	def to_representation(self, data):
-		print(self.context)
+		
+		#store_id =  self.context['request'].GET.get('store')
 		return super(GameListSerializer, self).to_representation(data)
 
 class GameSerializer(serializers.HyperlinkedModelSerializer):			
 
-	standard_cotations = CotationSerializer(many=True)
+	standard_cotations = MinimumCotationSerializer(many=True)
 	league = LeagueGameTodaySerializer()
 
 	class Meta:

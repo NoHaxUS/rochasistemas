@@ -116,15 +116,11 @@ class TodayGamesView(ModelViewSet):
         .filter(cotations_count__gte=3).order_by('-league__location__priority',
         '-league__priority', 'league__location__name', 'league__name')
     
+
     def list(self, request, pk=None):
-
-        store_id =  request.GET.get('store', None)
-        print(store_id)
         page = self.paginate_queryset(self.queryset)
-        serializer = GameSerializer(page, many=True)
+        serializer = self.get_serializer(page, many=True)
 
-        data = serializer.data 
-        print(data)
         return self.get_paginated_response(serializer.data)
 
 

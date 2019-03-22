@@ -1,6 +1,6 @@
 from django.contrib import admin
 from user.models import CustomUser
-from .models import Cotation,Game,League,Location,Market
+from .models import Cotation,Game,League,Location,Market, Store
 from ticket.models import Ticket,Payment,Reward
 from user.models import CustomUser
 from django.contrib.auth.models import Group
@@ -14,6 +14,11 @@ from django.utils.html import format_html
 
 
 admin.site.unregister(Group)
+
+
+@admin.register(Store)
+class StoreAdmin(admin.ModelAdmin):
+    pass
 
 
 @confirm_action("Cancelar Ticket(s)")
@@ -352,7 +357,6 @@ class MarketAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
-    
 
 
 @admin.register(Cotation)

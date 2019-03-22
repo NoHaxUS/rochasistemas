@@ -128,7 +128,7 @@ class GeneralConfigurations(models.Model):
     max_bet_value = models.DecimalField(max_digits=30, decimal_places=2,default=1000000, verbose_name="Valor máximo da aposta")
     min_cotation_sum = models.DecimalField(max_digits=30, decimal_places=2,default=1, verbose_name="Valor mínimo da cota total")
     max_cotation_sum = models.DecimalField(max_digits=30, decimal_places=2, default=100000, verbose_name="Valor máximo da cota total")
-    percentual_reduction = models.IntegerField(default=100, verbose_name="Redução Percentual")
+    cotations_percentage = models.IntegerField(default=100, verbose_name="Redução Percentual")
     block_bets = models.BooleanField(default=False, verbose_name="Bloquear Apostas?")
     auto_pay_punter = models.BooleanField(default=True, verbose_name="Auto Pagar Apostadores")
 
@@ -142,7 +142,7 @@ class GeneralConfigurations(models.Model):
         game_status__in=[1,2,8,9],
         visible=True)
 
-        reduction = self.percentual_reduction / 100
+        reduction = self.cotations_percentage / 100
         
         for game in able_games:
             game.cotations.update(price=F('price') * reduction )
