@@ -2,13 +2,13 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import datetime
 from django.contrib.auth.models import User
-from user.models import NormalUser, Seller, Punter
 from django.utils import timezone
 from django.db.models import Q
 from django.conf import settings
 import utils.timezone as tzlocal
 from django.utils import timezone
 import utils.timezone as tzlocal
+from user.models import NormalUser, Seller, Punter
 
 
 class Ticket(models.Model):
@@ -237,6 +237,8 @@ class Ticket(models.Model):
 
 
     def cotation_sum(self):
+        from core.models import CotationHistory
+
         valid_cotations = CotationHistory.objects\
         .filter(ticket=self, game__game_status__in = (1,2,3,9))\
         .exclude(original_cotation__settlement=-1)
@@ -262,8 +264,9 @@ class Ticket(models.Model):
 
 
     class Meta:
+        ordering = ('-pk',)
         verbose_name = 'Ticket'
-        verbose_name_plural = 'Tickets'
+        verbose_name_plural = 'Tickets'        
         permissions = (
             ('can_validate_payment', "Can validate user ticket"),
             ('can_reward', "Can reward a user"),

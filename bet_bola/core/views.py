@@ -88,21 +88,48 @@ class APIRootView(APIView):
 
 #Extras
 
+class MainMenu(APIView):
+    def get(self, request):
+        games = Game.objects.filter(start_date__gt=tzlocal.now(),
+        league__isnull=False,
+        game_status__in=[1,8,9],
+        visible=True)\
+        .annotate(cotations_count=Count('cotations'))\
+        .filter(cotations_count__gte=3)\
+        .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
+        .order_by('-league__location__priority', '-league__priority')\
+        .values('league__location','league__location__name', 'league')\
+        .distinct()
+
+
+        itens = {}
+        for value in games:
+            value["league__name"] = League.objects.filter(id=value['league']).values('name').first()['name']
+            if not value['league__location__name'] in itens.keys():
+                itens[value['league__location__name']] = []
+                itens[value['league__location__name']].append( ( value['league'], value["league__name"]) )
+            else:
+                itens[value['league__location__name']].append( ( value['league'], value["league__name"]) )
+
+        return Response(itens)
+
+
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 80
     page_size_query_param = 'page_size'
     max_page_size = 100
 
-    def get_paginated_response(self, data):
+    def get_paginated_response(self, data):        
         return Response({
             'links': {
                 'next': self.get_next_link(),
                 'previous': self.get_previous_link()
             },
             'count': self.page.paginator.count,
-            'total_pages': self.page.paginator.num_pages,
+            'total_pages': self.page.paginator.num_pages,            
             'results': data
         })
+
 
 class TodayGamesView(ModelViewSet):     
     my_qs = Cotation.objects.filter(market__name="1X2")
@@ -144,6 +171,8 @@ class TomorrowGamesView(ModelViewSet):
 
     serializer_class = GameSerializer
     pagination_class = StandardResultsSetPagination
+    filter_backends = (drf_filters.SearchFilter,)
+    search_fields = ('name','league__name')
 
 
 class AfterTomorrowGamesView(ModelViewSet):     
@@ -158,3 +187,7 @@ class AfterTomorrowGamesView(ModelViewSet):
 
     serializer_class = GameSerializer
     pagination_class = StandardResultsSetPagination
+    filter_backends = (drf_filters.SearchFilter,)
+    search_fields = ('name',)
+
+
