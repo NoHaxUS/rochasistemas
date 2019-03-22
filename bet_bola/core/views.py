@@ -162,7 +162,7 @@ class TomorrowGamesView(ModelViewSet):
     serializer_class = LeagueGameSerializers
     pagination_class = StandardResultsSetPagination
     filter_backends = (drf_filters.SearchFilter,)
-    search_fields = ('name',)
+    search_fields = ('name','league__name')
 
 
 class AfterTomorrowGamesView(ModelViewSet):     

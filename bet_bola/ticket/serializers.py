@@ -44,11 +44,16 @@ class PaymentSerializer(serializers.HyperlinkedModelSerializer):
 class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer):	
 	normal_user = NormalUserSerializer()
 	creation_date = serializers.DateTimeField(read_only=True)	
-	payment = PaymentSerializer(required=False)	
+	payment = PaymentSerializer(read_only=True)	
 	reward = serializers.SlugRelatedField(read_only=True, slug_field='reward_status')	
-	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(game__id=3913562), required=True)
+	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(game__id=4407184), required=True)
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')	
-	
+		
+	def update(self, instance, validated_data):
+		normal_user = validated_data.pop('normal_user')		
+		return Ticket.objects.create(**validated_data)
+            
+
 	def validate_value(self, value):
 		configurations = general_configurations()
 		if value < configurations["min_bet_value"]:
