@@ -121,14 +121,16 @@ class TodayGamesView(ModelViewSet):
         store_id =  request.GET.get('store', None)
         print(store_id)
         page = self.paginate_queryset(self.queryset)
-        serializer = LeagueGameSerializer(page, many=True)
-        
+        serializer = GameSerializer(page, many=True)
+
+        data = serializer.data 
+        print(data)
         return self.get_paginated_response(serializer.data)
 
 
 
 
-    serializer_class = LeagueGameSerializer
+    serializer_class = GameSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = (drf_filters.SearchFilter,)
     search_fields = ('name',)
@@ -144,7 +146,7 @@ class TomorrowGamesView(ModelViewSet):
         .annotate(cotations_count=Count('cotations'))\
         .filter(cotations_count__gte=3).order_by('-league__location__priority','-league__priority')
 
-    serializer_class = LeagueGameSerializer
+    serializer_class = GameSerializer
     pagination_class = StandardResultsSetPagination
 
 
@@ -158,5 +160,5 @@ class AfterTomorrowGamesView(ModelViewSet):
         .annotate(cotations_count=Count('cotations'))\
         .filter(cotations_count__gte=3).order_by('-league__location__priority','-league__priority')
 
-    serializer_class = LeagueGameSerializer
+    serializer_class = GameSerializer
     pagination_class = StandardResultsSetPagination

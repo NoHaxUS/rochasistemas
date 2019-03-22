@@ -32,16 +32,6 @@ class SportSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('name',)
 
 
-class GameSerializer(serializers.HyperlinkedModelSerializer):		
-
-	league = serializers.SlugRelatedField(queryset = League.objects.all(),slug_field='name')	
-	sport = serializers.SlugRelatedField(queryset = Sport.objects.all(),slug_field='name')
-
-	class Meta:
-		model = Game
-		fields = ('id','name','start_date','league','sport','game_status','visible','can_be_modified_by_api')
-
-
 class LeagueSerializer(serializers.HyperlinkedModelSerializer):
 
 	location = serializers.SlugRelatedField(queryset = Location.objects.all(),slug_field='name')
@@ -90,9 +80,9 @@ class MarketSerializer(serializers.HyperlinkedModelSerializer):
 		model = Market
 		fields = ('id','name','cotations')
 
-#Extra Serializers
 
-class MinCotationSerializer(serializers.HyperlinkedModelSerializer):
+
+class CotationSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Cotation
@@ -108,13 +98,21 @@ class LeagueGameTodaySerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','league','location')
 
 
-class LeagueGameSerializer(serializers.HyperlinkedModelSerializer):			
 
-	standard_cotations = MinCotationSerializer(many=True)
+class GameListSerializer(serializers.ListSerializer):
+
+	def to_representation(self, data):
+		print(self.context)
+		return super(GameListSerializer, self).to_representation(data)
+
+class GameSerializer(serializers.HyperlinkedModelSerializer):			
+
+	standard_cotations = CotationSerializer(many=True)
 	league = LeagueGameTodaySerializer()
 
 	class Meta:
 		model = Game
+		list_serializer_class = GameListSerializer
 		fields = ('id','name','start_date','game_status','league','standard_cotations')
 
 
