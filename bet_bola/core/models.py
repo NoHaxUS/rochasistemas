@@ -58,15 +58,17 @@ class Sport(models.Model):
 class Game(models.Model):
 
     GAME_STATUS = (
-        (1, 'Não Iniciado'),
-        (2,'Ao Vivo'),
-        (3, 'Terminado') ,   
-        (4, 'Cancelado'),        
-        (5, "Adiado"),
-        (6, 'Interrompindo'),
-        (7, "Abandonado"),
-        (8, "Pré-jogo"),
-        (9, "Quase Iniciado")
+        (0, 'Não Iniciado'),
+        (1,'Ao Vivo'),
+        (2, 'A ser corrigido') ,   
+        (3, 'Terminado'),        
+        (4, "Adiado"),
+        (5, 'Cancelado'),
+        (6, "W.O"),
+        (7, "Interrompido"),
+        (8, "Abandonado"),
+        (9, "Retirado"),
+        (99, "Removido"),
     )
     
     id = models.BigIntegerField(primary_key=True, verbose_name="ID")
@@ -135,6 +137,7 @@ class League(models.Model):
 
 
 class Location(models.Model):
+    cc = models.CharField(max_length=5, verbose_name='CC', default='inter')
     name = models.CharField(max_length=45, verbose_name='Local')
     priority = models.IntegerField(default=1, verbose_name='Prioridade')
     visible = models.BooleanField(default=True, verbose_name="Visível?")

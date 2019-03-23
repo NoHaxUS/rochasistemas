@@ -22,6 +22,7 @@ def get_upcoming_events():
     today = datetime.datetime.today().strftime('%Y%m%d')
     #tomorrow = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y%m%d')
     page = 1
+    
     url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + today + "&page="
     url_page = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + today + "&page=" + str(page)
 
@@ -44,6 +45,7 @@ def get_upcoming_events():
 def get_cc_from_result(game_id):
     url = "https://api.betsapi.com/v1/bet365/result?token=20445-s1B9Vv6E9VSLU1&event_id=" + game_id
     request = requests.get(url)
+    print("cc_from_result " + game_id)
     data = request.json()
     if request.status_code == 200 and data['success'] == 1:
         return data['results'][0]['league']['cc']
@@ -102,6 +104,7 @@ def get_sport(game):
 def process_upcoming_events(data):
     if data['success'] == 1:
         for game in data['results']:
+            print(game['id'])
             game_obj, created = Game.objects.get_or_create(
                 pk=game['id'],
                 defaults={
