@@ -48,7 +48,11 @@ def get_cc_from_result(game_id):
     print("cc_from_result " + game_id)
     data = request.json()
     if request.status_code == 200 and data['success'] == 1:
-        return data['results'][0]['league']['cc']
+        league = data['results'][0].get('league', None)
+        if league:
+            return league.get('cc', None)
+    else:
+        print("Get CC from result Failed.")
 
 
 def get_game_name(game):
@@ -116,3 +120,18 @@ def process_upcoming_events(data):
                 }
             )
 
+
+
+def get_cotations(game_id):
+
+    url = "https://api.betsapi.com/v1/bet365/start_sp?token=20445-s1B9Vv6E9VSLU1&FI=" + str(game_id)
+    response = requests.get(url)
+    data = response.json()
+
+    if response.status_code == 200 and data['success'] == 1:
+        if data[0].get('goals', None): 
+            get_goals_cotations(data[0]['goals'])
+
+
+
+def get_goals_cotations
