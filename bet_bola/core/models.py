@@ -172,7 +172,7 @@ class Market(models.Model):
 
 class Cotation(models.Model):
     SETTLEMENT_STATUS = (
-            (None, "Em Aberto"),
+            (0, "Em Aberto"),
             (-1, "Cancelada"),
             (1, "Perdeu"),
             (2, "Ganhou"),
@@ -187,18 +187,18 @@ class Cotation(models.Model):
             (3, "Finalizada")
         )
 
-    id = models.BigIntegerField(primary_key=True, verbose_name="ID")
+    id = models.BigAutoField(primary_key=True, verbose_name="ID")
     #id_string = models.CharField(max_length=40, default="")
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
     start_price = models.DecimalField(max_digits=30, decimal_places=2, default=0,verbose_name='Valor Original')
     price = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
     game = models.ForeignKey('Game', related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
-    settlement = models.IntegerField(choices=SETTLEMENT_STATUS, null=True, blank=True, verbose_name="Resultado")
+    settlement = models.IntegerField(default=0, choices=SETTLEMENT_STATUS, null=True, blank=True, verbose_name="Resultado")
     status = models.IntegerField(default=1, choices=COTATION_STATUS, verbose_name="Status da Cota")
     market = models.ForeignKey('Market', related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
-    line = models.CharField(max_length=30, null=True, blank=True)
-    base_line = models.CharField(max_length=30, null=True, blank=True)
-    last_update = models.DateTimeField(null=True, blank=True, verbose_name="Última atualização")
+    #line = models.CharField(max_length=30, null=True, blank=True)
+    #base_line = models.CharField(max_length=30, null=True, blank=True)
+    last_update = models.DateTimeField(auto_now=True,null=True, blank=True, verbose_name="Última atualização")
     
 
     def get_settlement_display_modified(self):
