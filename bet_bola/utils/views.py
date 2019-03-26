@@ -1,10 +1,20 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
-from .serializers import GeneralConfigurationsSerializer
-from .models import GeneralConfigurations
+from .serializers import GeneralConfigurationsSerializer, ExcludedGameSerializer, ExcludedLeagueSerializer
+from .models import GeneralConfigurations, ExcludedGame, ExcludedLeague
 
 class GeneralConfigurationsView(ModelViewSet):
     queryset = GeneralConfigurations.objects.all()
     serializer_class = GeneralConfigurationsSerializer
+
+
+class ExcludedGameView(ModelViewSet):
+    queryset = ExcludedGame.objects.all()
+    serializer_class = ExcludedGameSerializer
+
+
+class ExcludedLeagueView(ModelViewSet):
+    queryset = ExcludedLeague.objects.all()
+    serializer_class = ExcludedLeagueSerializer
 
 
 # class ValidateTicket(View):

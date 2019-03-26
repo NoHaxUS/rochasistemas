@@ -59,29 +59,16 @@ class MarketView(ModelViewSet):
 
 class APIRootView(APIView):
     def get(self, request):        
-        data = {  
-            'configuration': reverse('utils:generalconfigurations-list', request=request),
-            'stores': reverse('core:store-list', request=request),             
+        data = {                          
             'sellers': reverse('user:seller-list', request=request),           
             'managers': reverse('user:manager-list', request=request),
             'punters': reverse('user:punter-list', request=request),   
-            'tickets': reverse('ticket:ticket-list', request=request), 
-            'rewards': reverse('ticket:reward-list', request=request), 
-            'payments': reverse('ticket:payment-list', request=request), 
+            'tickets': reverse('ticket:ticket-list', request=request),                         
             'games': reverse('core:game-list', request=request),
             'leagues': reverse('core:league-list', request=request),
             'locations': reverse('core:location-list', request=request),
-            'cotations': reverse('core:cotation-list', request=request),
-            'cotationshistory': reverse('core:cotationhistory-list', request=request),
-            'markets': reverse('core:market-list', request=request),
-            'sports': reverse('core:sport-list', request=request),
-            'normal-users': reverse('user:normaluser-list', request=request),                        
-            'seller-sales-history': reverse('history:sellersaleshistory-list', request=request),                        
-            'manager-transactions-history': reverse('history:managertransactions-list', request=request),                        
-            'revenue-history-seller': reverse('history:revenuehistoryseller-list', request=request),                        
-            'revenue-history-manager': reverse('history:revenuehistorymanager-list', request=request),                        
-            'punter-payed-history': reverse('history:punterpayedhistory-list', request=request),                        
-            'ticket-cancelation-history': reverse('history:ticketcancelationhistory-list', request=request),                        
+            'today_games': reverse('core:today_games', request=request),
+            'tomorrow_games': reverse('core:tomorrow_games', request=request),
         }
         return Response(data)
 
@@ -145,7 +132,16 @@ class TodayGamesView(ModelViewSet):
     
 
     def list(self, request, pk=None):
-        page = self.paginate_queryset(self.queryset)
+        from utils.models import ExcludedGame,ExcludedLeague
+
+        store_id = request.GET['store']
+        store = Store.objects.get(pk=store_id)
+
+        id_list_excluded_games = [excluded_games.game.id for excluded_games in ExcludedGame.objects.filter(store=store)]
+        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store)]
+        
+        
+        page = self.paginate_queryset(self.queryset.exclude(id__in=id_list_excluded_games).exclude(league__id__in=id_list_excluded_leagues))
         serializer = self.get_serializer(page, many=True)
 
         return self.get_paginated_response(serializer.data)
@@ -158,6 +154,25 @@ class TodayGamesView(ModelViewSet):
     filter_backends = (drf_filters.SearchFilter,)
     search_fields = ('name',)
             
+
+# class TodayGamesView(APIView):
+    
+#     def get(self, request):
+#         my_qs = Cotation.objects.filter(market__name="1X2")
+#         queryset = Game.objects.filter(start_date__gt=tzlocal.now(),
+#         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+#         game_status__in=[1,8,9],
+#         visible=True)\
+#         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
+#         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
+#         .annotate(cotations_count=Count('cotations'))\
+#         .filter(cotations_count__gte=3).order_by('-league__location__priority',
+#         '-league__priority', 'league__location__name', 'league__name')
+
+        
+#         data = GameViewSerializer(list(queryset.values()), many=True).data
+#         return Response(data)
+
 
 class TomorrowGamesView(ModelViewSet):     
     my_qs = Cotation.objects.filter(market__name="1X2")

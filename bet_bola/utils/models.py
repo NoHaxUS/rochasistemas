@@ -307,10 +307,6 @@ class MarketRemotion(models.Model):
         verbose_name_plural = 'Remoção de Apostas'
 
 
-
-
-
-
 class MarketReduction(models.Model):
 
     MARKET_LIST = (
@@ -455,3 +451,11 @@ class MarketReduction(models.Model):
         verbose_name_plural = 'Reduções de Cotas'
 
 
+class ExcludedGame(models.Model):
+    store = models.ForeignKey('core.Store', related_name='my_excluded_games', on_delete=models.CASCADE)
+    game = models.ForeignKey('core.Game', on_delete=models.CASCADE)
+
+
+class ExcludedLeague(models.Model):
+    store = models.ForeignKey('core.Store', related_name='my_excluded_leagues', on_delete=models.CASCADE)
+    league = models.ForeignKey('core.League', on_delete=models.CASCADE)

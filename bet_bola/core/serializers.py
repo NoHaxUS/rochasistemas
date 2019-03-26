@@ -51,7 +51,7 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
 class FilteredCotationSerializer(serializers.ListSerializer):
 
 	def to_representation(self, data):
-		game_id = self.context['request'].GET.get('cotations__game__id')
+		game_id = self.context['request'].GET.get('cotations__game__id')		
 		data = data.filter(game__id=game_id)		
 		return super(FilteredCotationSerializer, self).to_representation(data)
 
@@ -117,20 +117,45 @@ class LeagueGameTodaySerializer(serializers.HyperlinkedModelSerializer):
 
 class GameListSerializer(serializers.ListSerializer):
 
-	def to_representation(self, data):
-		
-		#store_id =  self.context['request'].GET.get('store')
-		return super(GameListSerializer, self).to_representation(data)
+	def to_representation(self, data):		
+		from utils.models import ExcludedGame, ExcludedLeague
+
+		store_id =  self.context['request'].GET.get('store')
+		store = Store.objects.get(pk=store_id)
+		id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]
+		id_list_excluded_leagues = [excluded_leagues.id for excluded_leagues in ExcludedLeague.objects.filter(store=store)]
+
+		help(data)
+		data = data.filter(pk__in=id_list_excluded_games)
+
+		return super(GameListSerializer	, self).to_representation(data)
+
 
 class GameSerializer(serializers.HyperlinkedModelSerializer):			
 
 	standard_cotations = MinimumCotationSerializer(many=True)
 	league = LeagueGameTodaySerializer()
 
+
 	class Meta:
-		model = Game
-		list_serializer_class = GameListSerializer
-		fields = ('id','name','start_date','game_status','league','standard_cotations')
+		model = Game		
+		fields = ('id','name','start_date','game_status','league','standard_cotations')	
+
+
+	# def to_representation(self, data):		
+	# 	from utils.models import ExcludedGame, ExcludedLeague
+
+	# 	store_id =  self.context['request'].GET.get('store')
+	# 	store = Store.objects.get(pk=store_id)
+	# 	id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]
+	# 	id_list_excluded_leagues = [excluded_leagues.league.name for excluded_leagues in ExcludedLeague.objects.filter(store=store)]
+		
+	# 	if data.id in id_list_excluded_games:
+	# 		print(data.id)
+	# 	elif data.league in id_list_excluded_leagues:
+	# 		print(data.league)
+
+	# 	return super(GameSerializer	, self).to_representation(data)
 
 
 class CountryGameTodaySerializers(serializers.HyperlinkedModelSerializer):
