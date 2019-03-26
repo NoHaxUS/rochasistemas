@@ -15,6 +15,7 @@ import time
 from .ccs import COUNTRIES
 from .sports import SPORTS
 import math
+from .get_markets import goals_over_under
 
 TOKEN="20445-s1B9Vv6E9VSLU1"
 
@@ -130,8 +131,15 @@ def get_cotations(game_id):
 
     if response.status_code == 200 and data['success'] == 1:
         if data[0].get('goals', None): 
-            get_goals_cotations(data[0]['goals'])
+            get_goals_cotations(data[0]['goals'], game_id)
 
 
 
-def get_goals_cotations
+def get_goals_cotations(goals_cotations, game_id):
+    if goals_cotations.get('sp', None):
+        if goals_cotations['sp'].get('goals_over_under', None):
+            goals_over_under(goals_cotations['sp']['goals_over_under'], 'goals_over_under', game_id)
+
+
+
+

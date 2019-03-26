@@ -154,8 +154,8 @@ class Location(models.Model):
 
 
 class Market(models.Model):
-    id = models.BigIntegerField(primary_key=True, verbose_name="ID")
-    name = models.CharField(max_length=100, verbose_name='Mercado')
+    #id = models.BigIntegerField(primary_key=True, verbose_name="ID")
+    name = models.CharField(max_length=100, verbose_name='Mercado', unique=True)
     available = models.BooleanField(default=True, verbose_name="Disponibilidade")
     
     def __str__(self):
@@ -188,13 +188,13 @@ class Cotation(models.Model):
         )
 
     id = models.BigIntegerField(primary_key=True, verbose_name="ID")
-    id_string = models.CharField(max_length=40, default="")
+    #id_string = models.CharField(max_length=40, default="")
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')
     start_price = models.DecimalField(max_digits=30, decimal_places=2, default=0,verbose_name='Valor Original')
     price = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
     game = models.ForeignKey('Game', related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
     settlement = models.IntegerField(choices=SETTLEMENT_STATUS, null=True, blank=True, verbose_name="Resultado")
-    status = models.IntegerField(choices=COTATION_STATUS, verbose_name="Status da Cota")
+    status = models.IntegerField(default=1, choices=COTATION_STATUS, verbose_name="Status da Cota")
     market = models.ForeignKey('Market', related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
     line = models.CharField(max_length=30, null=True, blank=True)
     base_line = models.CharField(max_length=30, null=True, blank=True)
