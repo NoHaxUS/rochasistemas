@@ -139,40 +139,24 @@ class TodayGamesView(ModelViewSet):
 
         id_list_excluded_games = [excluded_games.game.id for excluded_games in ExcludedGame.objects.filter(store=store)]
         id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store)]
+        queryset = self.queryset.exclude(id__in=id_list_excluded_games).exclude(league__id__in=id_list_excluded_leagues)                        
+
         
-        
-        page = self.paginate_queryset(self.queryset.exclude(id__in=id_list_excluded_games).exclude(league__id__in=id_list_excluded_leagues))
+        if request.GET.get('search'):
+            page = self.paginate_queryset(queryset.filter(Q(name__icontains=request.GET.get('search')) | Q(league__name__icontains=request.GET.get('search'))))
+            serializer = self.get_serializer(page, many=True)
+            return Response(serializer.data)
+
+        page = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page, many=True)
-
-        return self.get_paginated_response(serializer.data)
-
-
+        return Response(serializer.data)
 
 
     serializer_class = GameSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = (drf_filters.SearchFilter,)
-    search_fields = ('name',)
+    search_fields = ('name','league__name')
             
-
-# class TodayGamesView(APIView):
-    
-#     def get(self, request):
-#         my_qs = Cotation.objects.filter(market__name="1X2")
-#         queryset = Game.objects.filter(start_date__gt=tzlocal.now(),
-#         start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
-#         game_status__in=[1,8,9],
-#         visible=True)\
-#         .prefetch_related(Prefetch('cotations', queryset=my_qs, to_attr='my_cotations'))\
-#         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
-#         .annotate(cotations_count=Count('cotations'))\
-#         .filter(cotations_count__gte=3).order_by('-league__location__priority',
-#         '-league__priority', 'league__location__name', 'league__name')
-
-        
-#         data = GameViewSerializer(list(queryset.values()), many=True).data
-#         return Response(data)
-
 
 class TomorrowGamesView(ModelViewSet):     
     my_qs = Cotation.objects.filter(market__name="1X2")
@@ -183,6 +167,26 @@ class TomorrowGamesView(ModelViewSet):
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .annotate(cotations_count=Count('cotations'))\
         .filter(cotations_count__gte=3).order_by('-league__location__priority','-league__priority')
+
+    def list(self, request, pk=None):
+        from utils.models import ExcludedGame,ExcludedLeague
+
+        store_id = request.GET['store']
+        store = Store.objects.get(pk=store_id)
+
+        id_list_excluded_games = [excluded_games.game.id for excluded_games in ExcludedGame.objects.filter(store=store)]
+        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store)]
+        queryset = self.queryset.exclude(id__in=id_list_excluded_games).exclude(league__id__in=id_list_excluded_leagues)                        
+
+        
+        if request.GET.get('search'):
+            page = self.paginate_queryset(queryset.filter(Q(name__icontains=request.GET.get('search')) | Q(league__name__icontains=request.GET.get('search'))))
+            serializer = self.get_serializer(page, many=True)
+            return Response(serializer.data)
+
+        page = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(page, many=True)
+        return Response(serializer.data)
 
     serializer_class = GameSerializer
     pagination_class = StandardResultsSetPagination
@@ -199,6 +203,26 @@ class AfterTomorrowGamesView(ModelViewSet):
         .exclude(Q(league__visible=False) | Q(league__location__visible=False) )\
         .annotate(cotations_count=Count('cotations'))\
         .filter(cotations_count__gte=3).order_by('-league__location__priority','-league__priority')
+
+    def list(self, request, pk=None):
+        from utils.models import ExcludedGame,ExcludedLeague
+
+        store_id = request.GET['store']
+        store = Store.objects.get(pk=store_id)
+
+        id_list_excluded_games = [excluded_games.game.id for excluded_games in ExcludedGame.objects.filter(store=store)]
+        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store)]
+        queryset = self.queryset.exclude(id__in=id_list_excluded_games).exclude(league__id__in=id_list_excluded_leagues)                        
+
+        
+        if request.GET.get('search'):
+            page = self.paginate_queryset(queryset.filter(Q(name__icontains=request.GET.get('search')) | Q(league__name__icontains=request.GET.get('search'))))
+            serializer = self.get_serializer(page, many=True)
+            return Response(serializer.data)
+
+        page = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(page, many=True)
+        return Response(serializer.data)
 
     serializer_class = GameSerializer
     pagination_class = StandardResultsSetPagination
