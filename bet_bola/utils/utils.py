@@ -1,7 +1,7 @@
-def general_configurations():    
+def general_configurations(store):    
     from .models import GeneralConfigurations
     try:            
-        general_config = GeneralConfigurations.objects.get(pk=1)
+        general_config = GeneralConfigurations.objects.get(store=store)
         if general_config.max_reward_to_pay:
             max_reward_to_pay = general_config.max_reward_to_pay
         else:

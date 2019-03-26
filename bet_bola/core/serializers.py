@@ -64,6 +64,7 @@ class CotationSerializer(serializers.HyperlinkedModelSerializer):
 		model = Cotation
 		list_serializer_class = FilteredCotationSerializer
 		fields = ('id','name','game','price','line','base_line')
+		
 
 class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -71,7 +72,7 @@ class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Cotation		
-		fields = ('id','name','game','price','line','base_line')
+		fields = ('id','name','game','price')
 		
 
 class MarketSerializer(serializers.HyperlinkedModelSerializer):
@@ -140,23 +141,7 @@ class GameSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Game		
 		fields = ('id','name','start_date','game_status','league','standard_cotations')	
-
-
-	# def to_representation(self, data):		
-	# 	from utils.models import ExcludedGame, ExcludedLeague
-
-	# 	store_id =  self.context['request'].GET.get('store')
-	# 	store = Store.objects.get(pk=store_id)
-	# 	id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]
-	# 	id_list_excluded_leagues = [excluded_leagues.league.name for excluded_leagues in ExcludedLeague.objects.filter(store=store)]
-		
-	# 	if data.id in id_list_excluded_games:
-	# 		print(data.id)
-	# 	elif data.league in id_list_excluded_leagues:
-	# 		print(data.league)
-
-	# 	return super(GameSerializer	, self).to_representation(data)
-
+	
 
 class CountryGameTodaySerializers(serializers.HyperlinkedModelSerializer):
 	itens = LeagueGameTodaySerializer(many=True, source='my_leagues')

@@ -46,7 +46,7 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 	creation_date = serializers.DateTimeField(read_only=True)	
 	payment = PaymentSerializer(read_only=True)	
 	reward = serializers.SlugRelatedField(read_only=True, slug_field='reward_status')	
-	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(), required=True)
+	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(game=4414677), required=True)
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')	
 		
 	def update(self, instance, validated_data):
@@ -70,7 +70,9 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
             
 
 	def validate_value(self, value):
-		configurations = general_configurations()
+		store = self.context['request'].GET.get('store')
+		configurations = general_configurations(store)
+		print(configurations)
 		if value < configurations["min_bet_value"]:
 			if value <= 0:	                       
 				raise serializers.ValidationError("Valor da aposta inválido.")	        	       
@@ -79,9 +81,11 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 			raise serializers.ValidationError("A aposta ultrapassou o valor maximo de R$ " + str(configurations["max_bet_value"]))	
 		return value	
 
-	def validate_cotations(self, cotations):		
+	def validate_cotations(self, cotations):
+		store = self.context['request'].GET.get('store')		
 		game_list = [cotation.game for cotation in cotations]
-		configurations = general_configurations()
+		configurations = general_configurations(store)
+		print(configurations)
 		
 		if len(cotations) < configurations["min_number_of_choices_per_bet"]:			
 			raise serializers.ValidationError("Desculpe, Aposte em pelo menos " + str(configurations["min_number_of_choices_per_bet"]) + " jogo.")
