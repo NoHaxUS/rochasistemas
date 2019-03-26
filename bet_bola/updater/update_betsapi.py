@@ -1,20 +1,15 @@
 import requests
-import time
 import datetime
-import pika
-import json
+import math
+import time
 from core.models import Location, League, Sport, Market, Game, Cotation
 from ticket.models import Ticket
-#from .real_time import process_fixture_metadata, process_markets_realtime, process_settlements
-from .translations import get_translated_cotation, get_translated_market, get_translated_league
-from utils.models import MarketReduction, GeneralConfigurations
 from django.db.models import Q , Count
-from django.utils.dateparse import parse_datetime
 from .countries import COUNTRIES
-import time
 from .ccs import COUNTRIES
 from .sports import SPORTS
-import math
+from .get_markets import goals_over_under
+
 
 TOKEN="20445-s1B9Vv6E9VSLU1"
 
@@ -120,6 +115,8 @@ def process_upcoming_events(data):
                 }
             )
 
+            get_cotations(game['id'])
+
 
 
 def get_cotations(game_id):
@@ -129,9 +126,17 @@ def get_cotations(game_id):
     data = response.json()
 
     if response.status_code == 200 and data['success'] == 1:
-        if data[0].get('goals', None): 
-            get_goals_cotations(data[0]['goals'])
+        #print(data)
+        if data.get('results', None) and data['results'][0].get('goals', None):
+            get_goals_cotations(data['results'][0]['goals'], game_id)
 
 
 
-def get_goals_cotations
+def get_goals_cotations(goals_cotations, game_id):
+    if goals_cotations.get('sp', None):
+        if goals_cotations['sp'].get('goals_over_under', None):
+            goals_over_under(goals_cotations['sp']['goals_over_under'], 'goals_over_under', game_id)
+
+
+
+
