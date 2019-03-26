@@ -8,7 +8,7 @@ from django.db.models import Q , Count
 from .countries import COUNTRIES
 from .ccs import COUNTRIES
 from .sports import SPORTS
-from .get_markets import goals_over_under
+from .get_markets import cotation_with_header, cotation_without_header
 
 
 TOKEN="20445-s1B9Vv6E9VSLU1"
@@ -135,8 +135,54 @@ def get_cotations(game_id):
 def get_goals_cotations(goals_cotations, game_id):
     if goals_cotations.get('sp', None):
         if goals_cotations['sp'].get('goals_over_under', None):
-            goals_over_under(goals_cotations['sp']['goals_over_under'], 'goals_over_under', game_id)
+            cotation_with_header(goals_cotations['sp']['goals_over_under'], 'goals_over_under', game_id)
+        if goals_cotations['sp'].get('alternative_total_goals', None):
+            cotation_with_header(goals_cotations['sp']['alternative_total_goals'], 'alternative_total_goals', game_id)
+        if goals_cotations['sp'].get('2nd_half_goals', None):
+            cotation_with_header(goals_cotations['sp']['2nd_half_goals'], '2nd_half_goals', game_id)
+        if goals_cotations['sp'].get('first_half_goals', None):
+            cotation_with_header(goals_cotations['sp']['first_half_goals'], 'first_half_goals', game_id)
 
+        if goals_cotations['sp'].get('result_total_goals', None):
+            cotation_without_header(goals_cotations['sp']['result_total_goals'], 'result_total_goals', game_id)
+        if goals_cotations['sp'].get('total_goals_both_teams_to_score', None):
+            cotation_without_header(goals_cotations['sp']['total_goals_both_teams_to_score'], 'total_goals_both_teams_to_score', game_id)
+        if goals_cotations['sp'].get('exact_total_goals', None):
+            cotation_without_header(goals_cotations['sp']['exact_total_goals'], 'exact_total_goals', game_id)
+        if goals_cotations['sp'].get('number_of_goals_in_match', None):
+            cotation_without_header(goals_cotations['sp']['number_of_goals_in_match'], 'number_of_goals_in_match', game_id)
+        if goals_cotations['sp'].get('both_teams_to_score', None):
+            cotation_without_header(goals_cotations['sp']['both_teams_to_score'], 'both_teams_to_score', game_id)
+        if goals_cotations['sp'].get('teams_to_score', None):
+            cotation_without_header(goals_cotations['sp']['teams_to_score'], 'teams_to_score', game_id)
+        if goals_cotations['sp'].get('both_teams_to_score_in_1st_half', None):
+            cotation_without_header(goals_cotations['sp']['both_teams_to_score_in_1st_half'], 'both_teams_to_score_in_1st_half', game_id)
+        if goals_cotations['sp'].get('both_teams_to_score_in_2nd_half', None):
+            cotation_without_header(goals_cotations['sp']['both_teams_to_score_in_2nd_half'], 'both_teams_to_score_in_2nd_half', game_id)
+        if goals_cotations['sp'].get('both_teams_to_score_1st_half_2nd_half', None):
+            cotation_without_header(goals_cotations['sp']['both_teams_to_score_1st_half_2nd_half'], 'both_teams_to_score_1st_half_2nd_half', game_id)
+        if goals_cotations['sp'].get('exact_1st_half_goals', None):
+            cotation_without_header(goals_cotations['sp']['exact_1st_half_goals'], 'exact_1st_half_goals', game_id)
+        if goals_cotations['sp'].get('exact_2nd_half_goals', None):
+            cotation_without_header(goals_cotations['sp']['exact_2nd_half_goals'], 'exact_2nd_half_goals', game_id)
+        if goals_cotations['sp'].get('half_with_most_goals', None):
+            cotation_without_header(goals_cotations['sp']['half_with_most_goals'], 'half_with_most_goals', game_id)
+        if goals_cotations['sp'].get('home_team_highest_scoring_half', None):
+            cotation_without_header(goals_cotations['sp']['home_team_highest_scoring_half'], 'home_team_highest_scoring_half', game_id)
+        if goals_cotations['sp'].get('away_team_highest_scoring_half', None):
+            cotation_without_header(goals_cotations['sp']['away_team_highest_scoring_half'], 'away_team_highest_scoring_half', game_id)
+        if goals_cotations['sp'].get('home_team_exact_goals', None):
+            cotation_without_header(goals_cotations['sp']['home_team_exact_goals'], 'home_team_exact_goals', game_id)
+        if goals_cotations['sp'].get('away_team_exact_goals', None):
+            cotation_without_header(goals_cotations['sp']['away_team_exact_goals'], 'away_team_exact_goals', game_id)
+        if goals_cotations['sp'].get('goals_odd_even', None):
+            cotation_without_header(goals_cotations['sp']['goals_odd_even'], 'goals_odd_even', game_id)
+        if goals_cotations['sp'].get('home_team_odd_even_goals', None):
+            cotation_without_header(goals_cotations['sp']['home_team_odd_even_goals'], 'home_team_odd_even_goals', game_id)
+        if goals_cotations['sp'].get('away_team_odd_even_goals', None):
+            cotation_without_header(goals_cotations['sp']['away_team_odd_even_goals'], 'away_team_odd_even_goals', game_id)
+        if goals_cotations['sp'].get('1st_half_goals_odd_even', None):
+            cotation_without_header(goals_cotations['sp']['1st_half_goals_odd_even'], '1st_half_goals_odd_even', game_id)
 
 
 
