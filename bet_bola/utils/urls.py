@@ -15,11 +15,13 @@ Including another URLconf
 """
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import GeneralConfigurationsView
+from .views import GeneralConfigurationsView, ExcludedGameView, ExcludedLeagueView
 
 app_name = 'utils'
 
 router = DefaultRouter()
 router.register(r'configurations', GeneralConfigurationsView)
+router.register(r'excluded_games', ExcludedGameView)
+router.register(r'excluded_leagues', ExcludedLeagueView)
 
 urlpatterns = router.urls

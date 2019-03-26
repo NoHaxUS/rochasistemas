@@ -117,6 +117,7 @@ class Period(models.Model):
     game = models.ForeignKey('Game',related_name='periods', on_delete=models.CASCADE)
     home_score = models.IntegerField(default=0)
     away_score = models.IntegerField(default=0)
+    
 
 class League(models.Model):
 
