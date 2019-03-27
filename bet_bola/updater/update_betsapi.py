@@ -124,13 +124,31 @@ def get_cotations(game_id):
         #print(data)
         if data.get('results', None) and data['results'][0].get('goals', None):
             get_goals_cotations(data['results'][0]['goals'], game_id)
+        if data.get('results', None) and data['results'][0].get('half', None):
             get_half_cotatiosn(data['half'][0]['goals'], game_id)
 
 
 def get_half_cotatiosn(half_cotations, game_id):
     if half_cotations.get('sp', None):
         if half_cotations['sp'].get('half_time_result', None):
-            
+            cotation_without_header(half_cotations['sp']['half_time_result'], 'half_time_result', game_id)
+        if half_cotations['sp'].get('half_time_double_chance', None):
+            cotation_without_header(half_cotations['sp']['half_time_double_chance'], 'half_time_double_chance', game_id)
+        if half_cotations['sp'].get('half_time_result_both_teams_to_score', None):
+            cotation_without_header(half_cotations['sp']['half_time_result_both_teams_to_score'], 'half_time_result_both_teams_to_score', game_id)
+        if half_cotations['sp'].get('half_time_result_total_goals', None):
+            cotation_without_header(half_cotations['sp']['half_time_result_total_goals'], 'half_time_result_total_goals', game_id)
+        if half_cotations['sp'].get('half_time_correct_score', None):
+            cotation_with_header(half_cotations['sp']['half_time_correct_score'], 'half_time_correct_score', game_id)
+        if half_cotations['sp'].get('both_teams_to_score_in_1st_half', None):
+            cotation_without_header(half_cotations['sp']['both_teams_to_score_in_1st_half'], 'both_teams_to_score_in_1st_half', game_id)
+        if half_cotations['sp'].get('both_teams_to_score_in_2nd_half', None):
+            cotation_without_header(half_cotations['sp']['both_teams_to_score_in_2nd_half'], 'both_teams_to_score_in_2nd_half', game_id)
+        if half_cotations['sp'].get('both_teams_to_score_1st_half_2nd_half', None):
+            cotation_without_header(half_cotations['sp']['both_teams_to_score_1st_half_2nd_half'], 'both_teams_to_score_1st_half_2nd_half', game_id)
+        if half_cotations['sp'].get('first_half_goals', None):
+            cotation_with_header(half_cotations['sp']['first_half_goals'], 'first_half_goals', game_id)
+
 
 def get_goals_cotations(goals_cotations, game_id):
     if goals_cotations.get('sp', None):

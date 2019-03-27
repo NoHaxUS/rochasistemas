@@ -32,7 +32,6 @@ MARKET_TRANSLATIONS = {
     'both_teams_to_score_in_1st_half': 'Ambos Marcam 1° Tempo',
     'both_teams_to_score_in_2nd_half': 'Ambos Marcam 2° Tempo',
     'both_teams_to_score_1st_half_2nd_half': 'Ambos Marcam 1° e 2° Tempo',
-    'first_half_goals': 'Total de Gols 1° Tempo',
     'exact_1st_half_goals':'Total de Gols Exato 1° Tempo',
     '1st_half_goals_odd_even':'Ímpar/Par 1° Tempo',
     'to_score_in_half':'Haverá Gol',
