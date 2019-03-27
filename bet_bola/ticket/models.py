@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
 from datetime import datetime
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -145,7 +146,15 @@ class Ticket(models.Model):
 
     def validate_ticket(self, user):
         from history.models import SellerSalesHistory
-        from core.models import Store
+        from core.models import Store                
+
+        if self.cotation_sum() * self.value >= self.store.config.alert_bet_value:
+            bet_reward_value = str(round((self.cotation_sum() * self.value),2))
+            subject = 'Alerta de aposta'
+            message = 'Uma aposta com recompensa no valor de R$' + bet_reward_value + ' foi efetuada em sua plataforma'
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = ['pabllobeg@gmail.com',]
+            send_mail( subject, message, email_from, recipient_list )\
 
         if not self.payment or not self.reward:
             return {'success':False,
@@ -188,7 +197,7 @@ class Ticket(models.Model):
         value=self.value,
         seller_before_balance=seller_before_balance,
         seller_after_balance=seller_after_balance,
-        store=Store.objects.first())
+        store=self.store)
         
         return {'success':True,
             'message':'Ticket '+ str(self.pk) +' Pago com Sucesso. Ver <a href="/ticket/'+ str(self.pk) + '/">' + "Imprimir"+ '</a>'}

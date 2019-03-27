@@ -46,14 +46,13 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 	creation_date = serializers.DateTimeField(read_only=True)	
 	payment = PaymentSerializer(read_only=True)	
 	reward = serializers.SlugRelatedField(read_only=True, slug_field='reward_status')	
-	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(game__id__in=[4414677,4335770,4421081,4430107]), required=True)
-	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')	
+	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(game__id__in=[4414677,4335770,4421081,4430107]), required=True)	
 		
 	def update(self, instance, validated_data):
 		normal_user = validated_data.pop('normal_user')		
 		value = validated_data.pop('value')		
 		visible = validated_data.pop('visible')
-		cotations = validated_data.pop('cotations')	
+		cotations = validated_data.pop('cotations')		
 		cotation_ids = [cotation.id for cotation in cotations]
 
 		ticket = Ticket.objects.get(id=str(instance))
@@ -78,7 +77,7 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 				raise serializers.ValidationError("Valor da aposta inválido.")	        	       
 			raise serializers.ValidationError("A aposta mínima é: R$ " + str(configurations["min_bet_value"]))	
 		elif value > configurations["max_bet_value"]:
-			raise serializers.ValidationError("A aposta ultrapassou o valor maximo de R$ " + str(configurations["max_bet_value"]))	
+			raise serializers.ValidationError("A aposta ultrapassou o valor maximo de R$ " + str(configurations["max_bet_value"]))
 		return value	
 
 	def validate_cotations(self, cotations):
@@ -107,7 +106,7 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 
 	class Meta:
 		model = Ticket
-		fields = ('normal_user','creation_date','reward','cotations','payment','value','visible','store')
+		fields = ('normal_user','creation_date','reward','cotations','payment','value','visible')
 
 
 class CreateTicketLoggedUserSerializer(CreateTicketAnonymousUserSerializer):	
@@ -120,5 +119,5 @@ class CreateTicketLoggedUserSerializer(CreateTicketAnonymousUserSerializer):
 
 	class Meta:
 		model = Ticket
-		fields = ('normal_user','creation_date','reward','cotations','payment','value','visible','store')
+		fields = ('normal_user','creation_date','reward','cotations','payment','value','visible')
 
