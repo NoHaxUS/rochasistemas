@@ -1,4 +1,11 @@
 MARKET_TRANSLATIONS = {
+    'full_time_result':'1X2',
+    'double_chance':'Dupla Chance',
+    'correct_score':'Placar Correto',
+    'draw_no_bet':'Casa/Fora',
+    'half_time_full_time': 'Vencedor 1° Tempo / 2° Tempo',
+    'result_both_teams_to_score':'Resultado / Ambos Marcam',
+    'winning_margin':'Margem de Vitória',
     'goals_over_under': 'Gols - Acima/Abaixo',
     'alternative_total_goals': 'Total de Gols',
     '2nd_half_goals': 'Total de Gols 2° Tempo',
