@@ -31,16 +31,14 @@ def get_upcoming_events():
         num_pages = math.ceil(int(games_total) / int(per_page))
     
     while page <= num_pages:
-        #print(page)
-        #print(num_pages)
         request = requests.get(url_base + str(page))
         process_upcoming_events(request.json())
         page += 1
 
 def get_cc_from_result(game_id):
+    print("cc_from_result " + game_id)
     url = "https://api.betsapi.com/v1/bet365/result?token=20445-s1B9Vv6E9VSLU1&event_id=" + game_id
     request = requests.get(url)
-    print("cc_from_result " + game_id)
     data = request.json()
     if request.status_code == 200 and data['success'] == 1:
         league = data['results'][0].get('league', None)
@@ -73,7 +71,6 @@ def get_league_and_create_location(game):
             league.location = Location.objects.get_or_create(
                 cc="inter",
                 defaults={
-                    'cc': 'inter',
                     'name': COUNTRIES.get('inter', "Internacional")
                 }
             )[0]
@@ -81,13 +78,11 @@ def get_league_and_create_location(game):
             league.location = Location.objects.get_or_create(
                 cc=cc,
                 defaults={
-                    'cc': cc,
                     'name': country_translated
                 }
             )[0]
         
         league.save()
-
         return league
 
 def get_sport(game):
@@ -120,7 +115,7 @@ def process_upcoming_events(data):
 
 
 def get_cotations(game_id):
-
+    print("getting cotations for" + game_id)
     url = "https://api.betsapi.com/v1/bet365/start_sp?token=20445-s1B9Vv6E9VSLU1&FI=" + str(game_id)
     response = requests.get(url)
     data = response.json()
@@ -142,7 +137,7 @@ def get_goals_cotations(goals_cotations, game_id):
             cotation_with_header(goals_cotations['sp']['2nd_half_goals'], '2nd_half_goals', game_id)
         if goals_cotations['sp'].get('first_half_goals', None):
             cotation_with_header(goals_cotations['sp']['first_half_goals'], 'first_half_goals', game_id)
-
+        
         if goals_cotations['sp'].get('result_total_goals', None):
             cotation_without_header(goals_cotations['sp']['result_total_goals'], 'result_total_goals', game_id)
         if goals_cotations['sp'].get('total_goals_both_teams_to_score', None):
@@ -183,6 +178,6 @@ def get_goals_cotations(goals_cotations, game_id):
             cotation_without_header(goals_cotations['sp']['away_team_odd_even_goals'], 'away_team_odd_even_goals', game_id)
         if goals_cotations['sp'].get('1st_half_goals_odd_even', None):
             cotation_without_header(goals_cotations['sp']['1st_half_goals_odd_even'], '1st_half_goals_odd_even', game_id)
-
+        
 
 
