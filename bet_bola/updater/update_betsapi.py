@@ -8,7 +8,7 @@ from django.db.models import Q , Count
 from .countries import COUNTRIES
 from .ccs import COUNTRIES
 from .sports import SPORTS
-from .get_markets import cotation_with_header, cotation_without_header
+from .get_markets import cotation_with_header, cotation_without_header, cotation_with_header_opp, cotation_with_header_name
 
 
 TOKEN="20445-s1B9Vv6E9VSLU1"
@@ -31,16 +31,14 @@ def get_upcoming_events():
         num_pages = math.ceil(int(games_total) / int(per_page))
     
     while page <= num_pages:
-        #print(page)
-        #print(num_pages)
         request = requests.get(url_base + str(page))
         process_upcoming_events(request.json())
         page += 1
 
 def get_cc_from_result(game_id):
+    print("cc_from_result " + game_id)
     url = "https://api.betsapi.com/v1/bet365/result?token=20445-s1B9Vv6E9VSLU1&event_id=" + game_id
     request = requests.get(url)
-    print("cc_from_result " + game_id)
     data = request.json()
     if request.status_code == 200 and data['success'] == 1:
         league = data['results'][0].get('league', None)
@@ -73,7 +71,6 @@ def get_league_and_create_location(game):
             league.location = Location.objects.get_or_create(
                 cc="inter",
                 defaults={
-                    'cc': 'inter',
                     'name': COUNTRIES.get('inter', "Internacional")
                 }
             )[0]
@@ -81,13 +78,11 @@ def get_league_and_create_location(game):
             league.location = Location.objects.get_or_create(
                 cc=cc,
                 defaults={
-                    'cc': cc,
                     'name': country_translated
                 }
             )[0]
         
         league.save()
-
         return league
 
 def get_sport(game):
@@ -120,7 +115,7 @@ def process_upcoming_events(data):
 
 
 def get_cotations(game_id):
-
+    print("getting cotations for " + game_id)
     url = "https://api.betsapi.com/v1/bet365/start_sp?token=20445-s1B9Vv6E9VSLU1&FI=" + str(game_id)
     response = requests.get(url)
     data = response.json()
@@ -129,7 +124,81 @@ def get_cotations(game_id):
         #print(data)
         if data.get('results', None) and data['results'][0].get('goals', None):
             get_goals_cotations(data['results'][0]['goals'], game_id)
+        if data.get('results', None) and data['results'][0].get('half', None):
+            get_half_cotations(data['results'][0]['half'], game_id)
+        if data.get('results', None) and data['results'][0].get('main', None):
+            get_main_cotations(data['results'][0]['main'], game_id)
+        if data.get('results', None) and data['results'][0].get('specials', None):
+            get_special_cotations(data['results'][0]['specials'], game_id)
 
+def get_special_cotations(special_cotations, game_id):
+    if special_cotations.get('sp', None):
+        if special_cotations['sp'].get('specials', None):
+            cotation_with_header_name(special_cotations['sp']['specials'], 'specials', game_id)
+
+
+def get_main_cotations(main_cotations, game_id):
+    if main_cotations.get('sp', None):
+        if main_cotations['sp'].get('full_time_result', None):
+            cotation_without_header(main_cotations['sp']['full_time_result'], 'full_time_result', game_id)
+        if main_cotations['sp'].get('double_chance', None):
+            cotation_without_header(main_cotations['sp']['double_chance'], 'double_chance', game_id)
+        if main_cotations['sp'].get('correct_score', None):
+            cotation_with_header_opp(main_cotations['sp']['correct_score'], 'correct_score', game_id)
+        if main_cotations['sp'].get('half_time_full_time', None):
+            cotation_without_header(main_cotations['sp']['half_time_full_time'], 'half_time_full_time', game_id)
+        if main_cotations['sp'].get('draw_no_bet', None):
+            cotation_without_header(main_cotations['sp']['draw_no_bet'], 'draw_no_bet', game_id)
+        if main_cotations['sp'].get('result_both_teams_to_score', None):
+            cotation_with_header_name(main_cotations['sp']['result_both_teams_to_score'], 'result_both_teams_to_score', game_id)
+        if main_cotations['sp'].get('winning_margin', None):
+            cotation_with_header(main_cotations['sp']['winning_margin'], 'winning_margin', game_id)
+
+
+
+
+def get_half_cotations(half_cotations, game_id):
+    if half_cotations.get('sp', None):
+        if half_cotations['sp'].get('half_time_result', None):
+            cotation_without_header(half_cotations['sp']['half_time_result'], 'half_time_result', game_id)
+        if half_cotations['sp'].get('half_time_double_chance', None):
+            cotation_without_header(half_cotations['sp']['half_time_double_chance'], 'half_time_double_chance', game_id)
+        if half_cotations['sp'].get('half_time_result_both_teams_to_score', None):
+            cotation_without_header(half_cotations['sp']['half_time_result_both_teams_to_score'], 'half_time_result_both_teams_to_score', game_id)
+        if half_cotations['sp'].get('half_time_result_total_goals', None):
+            cotation_without_header(half_cotations['sp']['half_time_result_total_goals'], 'half_time_result_total_goals', game_id)
+        if half_cotations['sp'].get('half_time_correct_score', None):
+            cotation_with_header_opp(half_cotations['sp']['half_time_correct_score'], 'half_time_correct_score', game_id)
+        if half_cotations['sp'].get('both_teams_to_score_in_1st_half', None):
+            cotation_without_header(half_cotations['sp']['both_teams_to_score_in_1st_half'], 'both_teams_to_score_in_1st_half', game_id)
+        if half_cotations['sp'].get('both_teams_to_score_in_2nd_half', None):
+            cotation_without_header(half_cotations['sp']['both_teams_to_score_in_2nd_half'], 'both_teams_to_score_in_2nd_half', game_id)
+        
+        if half_cotations['sp'].get('both_teams_to_score_1st_half_2nd_half', None):
+            cotation_without_header(half_cotations['sp']['both_teams_to_score_1st_half_2nd_half'], 'both_teams_to_score_1st_half_2nd_half', game_id)
+        if half_cotations['sp'].get('first_half_goals', None):
+            cotation_with_header(half_cotations['sp']['first_half_goals'], 'first_half_goals', game_id)
+        if half_cotations['sp'].get('exact_1st_half_goals', None):
+            cotation_without_header(half_cotations['sp']['exact_1st_half_goals'], 'exact_1st_half_goals', game_id)
+        if half_cotations['sp'].get('1st_half_goals_odd_even', None):
+            cotation_without_header(half_cotations['sp']['1st_half_goals_odd_even'], '1st_half_goals_odd_even', game_id)
+        if half_cotations['sp'].get('to_score_in_half', None):
+            cotation_with_header_name(half_cotations['sp']['to_score_in_half'], 'to_score_in_half', game_id)
+        if half_cotations['sp'].get('half_with_most_goals', None):
+            cotation_without_header(half_cotations['sp']['half_with_most_goals'], 'half_with_most_goals', game_id)
+        
+        if half_cotations['sp'].get('home_team_highest_scoring_half', None):
+            cotation_without_header(half_cotations['sp']['home_team_highest_scoring_half'], 'home_team_highest_scoring_half', game_id)
+        if half_cotations['sp'].get('away_team_highest_scoring_half', None):
+            cotation_without_header(half_cotations['sp']['away_team_highest_scoring_half'], 'away_team_highest_scoring_half', game_id)
+        if half_cotations['sp'].get('2nd_half_result', None):
+            cotation_without_header(half_cotations['sp']['2nd_half_result'], '2nd_half_result', game_id)
+        if half_cotations['sp'].get('2nd_half_goals', None):
+            cotation_with_header(half_cotations['sp']['2nd_half_goals'], '2nd_half_goals', game_id)
+        if half_cotations['sp'].get('exact_2nd_half_goals', None):
+            cotation_without_header(half_cotations['sp']['exact_2nd_half_goals'], 'exact_2nd_half_goals', game_id)
+        if half_cotations['sp'].get('2nd_half_goals_odd_even', None):
+            cotation_without_header(half_cotations['sp']['2nd_half_goals_odd_even'], '2nd_half_goals_odd_even', game_id)
 
 
 def get_goals_cotations(goals_cotations, game_id):
@@ -138,10 +207,6 @@ def get_goals_cotations(goals_cotations, game_id):
             cotation_with_header(goals_cotations['sp']['goals_over_under'], 'goals_over_under', game_id)
         if goals_cotations['sp'].get('alternative_total_goals', None):
             cotation_with_header(goals_cotations['sp']['alternative_total_goals'], 'alternative_total_goals', game_id)
-        if goals_cotations['sp'].get('2nd_half_goals', None):
-            cotation_with_header(goals_cotations['sp']['2nd_half_goals'], '2nd_half_goals', game_id)
-        if goals_cotations['sp'].get('first_half_goals', None):
-            cotation_with_header(goals_cotations['sp']['first_half_goals'], 'first_half_goals', game_id)
 
         if goals_cotations['sp'].get('result_total_goals', None):
             cotation_without_header(goals_cotations['sp']['result_total_goals'], 'result_total_goals', game_id)
@@ -155,22 +220,7 @@ def get_goals_cotations(goals_cotations, game_id):
             cotation_without_header(goals_cotations['sp']['both_teams_to_score'], 'both_teams_to_score', game_id)
         if goals_cotations['sp'].get('teams_to_score', None):
             cotation_without_header(goals_cotations['sp']['teams_to_score'], 'teams_to_score', game_id)
-        if goals_cotations['sp'].get('both_teams_to_score_in_1st_half', None):
-            cotation_without_header(goals_cotations['sp']['both_teams_to_score_in_1st_half'], 'both_teams_to_score_in_1st_half', game_id)
-        if goals_cotations['sp'].get('both_teams_to_score_in_2nd_half', None):
-            cotation_without_header(goals_cotations['sp']['both_teams_to_score_in_2nd_half'], 'both_teams_to_score_in_2nd_half', game_id)
-        if goals_cotations['sp'].get('both_teams_to_score_1st_half_2nd_half', None):
-            cotation_without_header(goals_cotations['sp']['both_teams_to_score_1st_half_2nd_half'], 'both_teams_to_score_1st_half_2nd_half', game_id)
-        if goals_cotations['sp'].get('exact_1st_half_goals', None):
-            cotation_without_header(goals_cotations['sp']['exact_1st_half_goals'], 'exact_1st_half_goals', game_id)
-        if goals_cotations['sp'].get('exact_2nd_half_goals', None):
-            cotation_without_header(goals_cotations['sp']['exact_2nd_half_goals'], 'exact_2nd_half_goals', game_id)
-        if goals_cotations['sp'].get('half_with_most_goals', None):
-            cotation_without_header(goals_cotations['sp']['half_with_most_goals'], 'half_with_most_goals', game_id)
-        if goals_cotations['sp'].get('home_team_highest_scoring_half', None):
-            cotation_without_header(goals_cotations['sp']['home_team_highest_scoring_half'], 'home_team_highest_scoring_half', game_id)
-        if goals_cotations['sp'].get('away_team_highest_scoring_half', None):
-            cotation_without_header(goals_cotations['sp']['away_team_highest_scoring_half'], 'away_team_highest_scoring_half', game_id)
+    
         if goals_cotations['sp'].get('home_team_exact_goals', None):
             cotation_without_header(goals_cotations['sp']['home_team_exact_goals'], 'home_team_exact_goals', game_id)
         if goals_cotations['sp'].get('away_team_exact_goals', None):
@@ -181,8 +231,6 @@ def get_goals_cotations(goals_cotations, game_id):
             cotation_without_header(goals_cotations['sp']['home_team_odd_even_goals'], 'home_team_odd_even_goals', game_id)
         if goals_cotations['sp'].get('away_team_odd_even_goals', None):
             cotation_without_header(goals_cotations['sp']['away_team_odd_even_goals'], 'away_team_odd_even_goals', game_id)
-        if goals_cotations['sp'].get('1st_half_goals_odd_even', None):
-            cotation_without_header(goals_cotations['sp']['1st_half_goals_odd_even'], '1st_half_goals_odd_even', game_id)
 
 
 
