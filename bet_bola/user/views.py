@@ -10,6 +10,19 @@ class PunterView(ModelViewSet):
     queryset = Punter.objects.all()
     serializer_class = PunterSerializer
 
+    def list(self, request, pk=None):
+        store_id = request.GET['store']   
+
+        queryset = self.queryset.filter(my_store__id=store_id)
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)     
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     # def get_permissions(self):          
     #     if self.request.method in permissions.SAFE_METHODS: 
     #         return [permissions.AllowAny(),]
@@ -20,6 +33,19 @@ class NormalUserView(ModelViewSet):
     queryset = NormalUser.objects.all()
     serializer_class = NormalUserSerializer
 
+    def list(self, request, pk=None):
+        store_id = request.GET['store'] 
+
+        queryset = self.queryset.filter(my_store__id=store_id)
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     # def get_permissions(self):    
     #     if self.request.method in permissions.SAFE_METHODS: 
     #         return [permissions.AllowAny(),]
@@ -29,6 +55,19 @@ class NormalUserView(ModelViewSet):
 class SellerView(ModelViewSet):
     queryset = Seller.objects.all()
     serializer_class = SellerSerializer
+
+    def list(self, request, pk=None):
+        store_id = request.GET['store']        
+
+        queryset = self.queryset.filter(my_store__id=store_id)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+            
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(methods=['get'], detail=True)
     def pay_seller(self, request, pk=None):
@@ -48,6 +87,19 @@ class SellerView(ModelViewSet):
 class ManagerView(ModelViewSet):
     queryset = Manager.objects.all()
     serializer_class = ManagerSerializer
+
+    def list(self, request, pk=None):
+        store_id = request.GET['store']        
+
+        queryset = self.queryset.filter(my_store__id=store_id)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)   
+                
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(methods=['get'], detail=True)
     def pay_manager(self, request, pk=None):

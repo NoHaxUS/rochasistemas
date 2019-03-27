@@ -46,7 +46,7 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 	creation_date = serializers.DateTimeField(read_only=True)	
 	payment = PaymentSerializer(read_only=True)	
 	reward = serializers.SlugRelatedField(read_only=True, slug_field='reward_status')	
-	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(game=4414677), required=True)
+	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(game__id__in=[4414677,4335770,4421081,4430107]), required=True)
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')	
 		
 	def update(self, instance, validated_data):
@@ -90,6 +90,9 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 		if len(cotations) < configurations["min_number_of_choices_per_bet"]:			
 			raise serializers.ValidationError("Desculpe, Aposte em pelo menos " + str(configurations["min_number_of_choices_per_bet"]) + " jogo.")
 		
+		if len(cotations) > configurations["max_number_of_choices_per_bet"]:			
+			raise serializers.ValidationError("Desculpe, O número máximo de " + str(configurations["max_number_of_choices_per_bet"]) + " apostas por bilhete foi excedido.")
+
 		if game_list.__len__() != list(set(game_list)).__len__():
 			raise serializers.ValidationError("Desculpe, não é permitido mais de uma aposta no mesmo jogo.")
 

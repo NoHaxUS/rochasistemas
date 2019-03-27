@@ -134,20 +134,23 @@ class TodayGamesView(ModelViewSet):
     def list(self, request, pk=None):
         from utils.models import ExcludedGame,ExcludedLeague
 
-        store_id = request.GET['store']
-        store = Store.objects.get(pk=store_id)
+        store_id = request.GET['store']        
 
-        id_list_excluded_games = [excluded_games.game.id for excluded_games in ExcludedGame.objects.filter(store=store)]
-        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store)]
+        id_list_excluded_games = [excluded_games.game.id for excluded_games in ExcludedGame.objects.filter(store__id=store_id)]
+        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store_id)]
         queryset = self.queryset.exclude(id__in=id_list_excluded_games).exclude(league__id__in=id_list_excluded_leagues)                        
 
-        
+        page = self.paginate_queryset(queryset)        
+
         if request.GET.get('search'):
             page = self.paginate_queryset(queryset.filter(Q(name__icontains=request.GET.get('search')) | Q(league__name__icontains=request.GET.get('search'))))
             serializer = self.get_serializer(page, many=True)
             return Response(serializer.data)
 
-        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        
         serializer = self.get_serializer(page, many=True)
         return Response(serializer.data)
 
