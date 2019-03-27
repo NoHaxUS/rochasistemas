@@ -128,6 +128,13 @@ def get_cotations(game_id):
             get_half_cotations(data['results'][0]['half'], game_id)
         if data.get('results', None) and data['results'][0].get('main', None):
             get_main_cotations(data['results'][0]['main'], game_id)
+        if data.get('results', None) and data['results'][0].get('specials', None):
+            get_special_cotations(data['results'][0]['specials'], game_id)
+
+def get_special_cotations(special_cotations, game_id):
+    if special_cotations.get('sp', None):
+        if special_cotations['sp'].get('specials', None):
+            cotation_with_header_name(special_cotations['sp']['specials'], 'specials', game_id)
 
 
 def get_main_cotations(main_cotations, game_id):
@@ -144,6 +151,8 @@ def get_main_cotations(main_cotations, game_id):
             cotation_without_header(main_cotations['sp']['draw_no_bet'], 'draw_no_bet', game_id)
         if main_cotations['sp'].get('result_both_teams_to_score', None):
             cotation_with_header_name(main_cotations['sp']['result_both_teams_to_score'], 'result_both_teams_to_score', game_id)
+        if main_cotations['sp'].get('winning_margin', None):
+            cotation_with_header(main_cotations['sp']['winning_margin'], 'winning_margin', game_id)
 
 
 

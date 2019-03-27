@@ -44,5 +44,6 @@ MARKET_TRANSLATIONS = {
     'to_score_in_half':'Haverá Gol',
     'half_with_most_goals':'Etapa com mais Gols',
     '2nd_half_result':'Resultado 2° Tempo',
-    '2nd_half_goals_odd_even':'Ímpar/Par 2° Tempo'
+    '2nd_half_goals_odd_even':'Ímpar/Par 2° Tempo',
+    'specials':"Especiais"
 }
