@@ -124,8 +124,13 @@ def get_cotations(game_id):
         #print(data)
         if data.get('results', None) and data['results'][0].get('goals', None):
             get_goals_cotations(data['results'][0]['goals'], game_id)
+            get_half_cotatiosn(data['half'][0]['goals'], game_id)
 
 
+def get_half_cotatiosn(half_cotations, game_id):
+    if half_cotations.get('sp', None):
+        if half_cotations['sp'].get('half_time_result', None):
+            
 
 def get_goals_cotations(goals_cotations, game_id):
     if goals_cotations.get('sp', None):
