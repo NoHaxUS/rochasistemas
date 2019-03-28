@@ -1,12 +1,11 @@
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet, ViewSet
-from rest_framework import permissions, mixins, generics
+from rest_framework import permissions, mixins, generics, status
 from rest_framework.response import Response
-from rest_framework import status
 from user.models import Punter, NormalUser, CustomUser, Seller, Manager
 from ticket.models import Ticket
 from .serializers import PunterSerializer, NormalUserSerializer, SellerSerializer, ManagerSerializer
-
+from .permissions import IsSuperUser
 
 class PunterView(ModelViewSet):
     queryset = Punter.objects.all()
@@ -25,10 +24,10 @@ class PunterView(ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    # def get_permissions(self):          
-    #     if self.request.method in permissions.SAFE_METHODS: 
-    #         return [permissions.AllowAny(),]
-    #     return [permissions.IsAdminUser(),]
+    def get_permissions(self):    
+        if self.request.method in permissions.SAFE_METHODS:             
+            return [permissions.AllowAny(),]
+        return [IsSuperUser(),]
 
 
 class NormalUserView(ModelViewSet):
@@ -48,10 +47,10 @@ class NormalUserView(ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    # def get_permissions(self):    
-    #     if self.request.method in permissions.SAFE_METHODS: 
-    #         return [permissions.AllowAny(),]
-    #     return [permissions.IsAdminUser(),]
+    def get_permissions(self):    
+        if self.request.method in permissions.SAFE_METHODS:             
+            return [permissions.AllowAny(),]
+        return [IsSuperUser(),]
 
 
 class SellerView(ModelViewSet):
@@ -80,9 +79,7 @@ class SellerView(ModelViewSet):
 
         self.perform_destroy(seller)        
         return Response(status=status.HTTP_204_NO_CONTENT)
-        
-        
-
+                
 
     @action(methods=['get'], detail=True)
     def pay_seller(self, request, pk=None):
@@ -93,10 +90,10 @@ class SellerView(ModelViewSet):
         return Response({'success':'Cambistas Pagos'})
 
 
-    # def get_permissions(self):    
-    #     if self.request.method in permissions.SAFE_METHODS: 
-    #         return [permissions.AllowAny(),]
-    #     return [permissions.IsAdminUser(),]
+    def get_permissions(self):    
+        if self.request.method in permissions.SAFE_METHODS:             
+            return [permissions.AllowAny(),]
+        return [IsSuperUser(),]
 
 
 class ManagerView(ModelViewSet):
@@ -123,10 +120,11 @@ class ManagerView(ModelViewSet):
         manager.reset_revenue(who_reseted_revenue)
         
         messages.success(request, 'Gerentes Pagos')
-    # def get_permissions(self):        
-    #     if self.request.method in permissions.SAFE_METHODS: 
-    #         return [permissions.AllowAny(),]
-    #     return [permissions.IsAdminUser(),]
+    
+    def get_permissions(self):    
+        if self.request.method in permissions.SAFE_METHODS:             
+            return [permissions.AllowAny(),]
+        return [IsSuperUser(),]
 
 
 

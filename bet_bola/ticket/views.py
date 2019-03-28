@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from core.models import Cotation, CotationHistory, Store
 from utils import timezone as tzlocal
+from .permissions import CreateBet
 from .models import *
 from .serializers import *
 
@@ -196,6 +197,11 @@ class TicketView(ModelViewSet):
 		    context = {'show_ticket': False}
 
 		return Response(context)
+		
+	def get_permissions(self):    
+		if self.request.method in permissions.SAFE_METHODS:	
+			return [permissions.AllowAny(),]
+		return [CreateBet(),]
 
 
 
