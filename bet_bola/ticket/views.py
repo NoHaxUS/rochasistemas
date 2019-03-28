@@ -118,6 +118,7 @@ class TicketView(ModelViewSet):
 	def validar_ticket(self, request, pk=None):
 		if request.user.has_perm('user.be_seller'):
 			ticket = self.get_object()
+			print(request.user)
 			return Response(ticket.validate_ticket(request.user))
 		return Response({"failed":"Usuário não é vendedor"})
 

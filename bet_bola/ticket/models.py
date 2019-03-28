@@ -186,7 +186,8 @@ class Ticket(models.Model):
             user.seller.credit_limit -= self.value
             seller_after_balance = user.seller.credit_limit
             user.seller.save()
-        
+            
+        self.seller = user.seller        
         self.save()
         self.payment.status_payment = Payment.PAYMENT_STATUS[1][1]
         self.payment.payment_date = tzlocal.now()

@@ -2,7 +2,9 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework import permissions, mixins, generics
 from rest_framework.response import Response
+from rest_framework import status
 from user.models import Punter, NormalUser, CustomUser, Seller, Manager
+from ticket.models import Ticket
 from .serializers import PunterSerializer, NormalUserSerializer, SellerSerializer, ManagerSerializer
 
 
@@ -68,6 +70,19 @@ class SellerView(ModelViewSet):
             
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        seller = self.get_object()
+
+        tickets = Ticket.objects.filter(seller=seller)
+        if [(ticket.reward.reward_status in ['Venceu, Pagar Apostador','Aguardando Resultados']) for ticket in tickets.all()]:
+            return Response({'Error':'Cambista não pode ser deletado, pois possui bilhetes pendentes.'})
+
+        self.perform_destroy(seller)        
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        
+
 
     @action(methods=['get'], detail=True)
     def pay_seller(self, request, pk=None):
