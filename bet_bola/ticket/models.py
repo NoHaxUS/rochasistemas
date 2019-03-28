@@ -147,14 +147,15 @@ class Ticket(models.Model):
     def validate_ticket(self, user):
         from history.models import SellerSalesHistory
         from core.models import Store                
-
+        
         if self.cotation_sum() * self.value >= self.store.config.alert_bet_value:
             bet_reward_value = str(round((self.cotation_sum() * self.value),2))
-            subject = 'Alerta de aposta'
-            message = 'Uma aposta com recompensa no valor de R$' + bet_reward_value + ' foi efetuada em sua plataforma'
-            email_from = settings.EMAIL_HOST_USER
-            recipient_list = ['pabllobeg@gmail.com',]
-            send_mail( subject, message, email_from, recipient_list )\
+            if self.store.email:
+                subject = 'Alerta de aposta'
+                message = 'Uma aposta com recompensa no valor de R$' + bet_reward_value + ' foi efetuada em sua plataforma'
+                email_from = store
+                recipient_list = ['pabllobeg@gmail.com',]
+                send_mail( subject, message, email_from, recipient_list )\
 
         if not self.payment or not self.reward:
             return {'success':False,

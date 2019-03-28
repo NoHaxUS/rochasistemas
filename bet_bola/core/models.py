@@ -19,6 +19,7 @@ class Store(models.Model):
     fantasy = models.CharField(max_length=150, verbose_name="Nome da Banca")
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name="Data de Criação")    
     config = models.ForeignKey('utils.GeneralConfigurations', related_name='store', verbose_name="Configurações Gerais", on_delete=models.SET_NULL, null=True)
+    email = models.EmailField(max_length=100,blank=True, null= True)
 
     def __str__(self):
         return self.fantasy
