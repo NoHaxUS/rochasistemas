@@ -9,7 +9,7 @@ class PunterSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model=Punter
-		fields = ('username','password','first_name', 'last_name', 'cellphone', 'email')
+		fields = ('id','username','password','first_name', 'last_name', 'cellphone', 'email')
 
 
 	def create(self, validated_data):				
@@ -27,7 +27,7 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model=Seller
-		fields = ('username','password','first_name', 'last_name', 'cpf','can_sell_unlimited','credit_limit','limit_time_to_cancel','my_manager','email')
+		fields = ('id','username','password','first_name', 'last_name', 'cpf','can_sell_unlimited','credit_limit','limit_time_to_cancel','my_manager','email')
 
 	def create(self, validated_data):				
 		obj = Seller(**validated_data)
@@ -41,7 +41,7 @@ class NormalUserSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model=NormalUser
-		fields = ('first_name','cellphone')
+		fields = ('id','first_name','cellphone')
 
 	def create(self, validated_data):				
 		obj = NormalUser(**validated_data)		
@@ -58,7 +58,7 @@ class ManagerSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Manager
-		fields = ('username','password','first_name', 'last_name', 'cpf','cellphone','address', 'email','commission','credit_limit_to_add','can_cancel_ticket','limit_time_to_cancel','can_sell_unlimited','can_change_limit_time','based_on_profit','my_store')
+		fields = ('id','username','password','first_name', 'last_name', 'cpf','cellphone','address', 'email','commission','credit_limit_to_add','can_cancel_ticket','limit_time_to_cancel','can_sell_unlimited','can_change_limit_time','based_on_profit','my_store')
 
 	def create(self, validated_data):				
 		obj = Manager(**validated_data)		

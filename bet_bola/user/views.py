@@ -1,34 +1,85 @@
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet, ViewSet
-from rest_framework import permissions, mixins, generics
+from rest_framework import permissions, mixins, generics, status
 from rest_framework.response import Response
 from user.models import Punter, NormalUser, CustomUser, Seller, Manager
+from ticket.models import Ticket
 from .serializers import PunterSerializer, NormalUserSerializer, SellerSerializer, ManagerSerializer
-
+from .permissions import IsSuperUser
 
 class PunterView(ModelViewSet):
     queryset = Punter.objects.all()
     serializer_class = PunterSerializer
 
-    # def get_permissions(self):          
-    #     if self.request.method in permissions.SAFE_METHODS: 
+    def list(self, request, pk=None):
+        store_id = request.GET['store']   
+
+        queryset = self.queryset.filter(my_store__id=store_id)
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)     
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    # def get_permissions(self):    
+    #     if self.request.method in permissions.SAFE_METHODS:             
     #         return [permissions.AllowAny(),]
-    #     return [permissions.IsAdminUser(),]
+    #     return [IsSuperUser(),]
 
 
 class NormalUserView(ModelViewSet):
     queryset = NormalUser.objects.all()
     serializer_class = NormalUserSerializer
 
+    def list(self, request, pk=None):
+        store_id = request.GET['store'] 
+
+        queryset = self.queryset.filter(my_store__id=store_id)
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     # def get_permissions(self):    
-    #     if self.request.method in permissions.SAFE_METHODS: 
+    #     if self.request.method in permissions.SAFE_METHODS:             
     #         return [permissions.AllowAny(),]
-    #     return [permissions.IsAdminUser(),]
+    #     return [IsSuperUser(),]
 
 
 class SellerView(ModelViewSet):
     queryset = Seller.objects.all()
     serializer_class = SellerSerializer
+
+    def list(self, request, pk=None):
+        store_id = request.GET['store']        
+
+        queryset = self.queryset.filter(my_store__id=store_id)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+            
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        seller = self.get_object()
+
+        tickets = Ticket.objects.filter(seller=seller)
+        if [(ticket.reward.reward_status in ['Venceu, Pagar Apostador','Aguardando Resultados']) for ticket in tickets.all()]:
+            return Response({'Error':'Cambista não pode ser deletado, pois possui bilhetes pendentes.'})
+
+        self.perform_destroy(seller)        
+        return Response(status=status.HTTP_204_NO_CONTENT)
+                
 
     @action(methods=['get'], detail=True)
     def pay_seller(self, request, pk=None):
@@ -39,15 +90,28 @@ class SellerView(ModelViewSet):
         return Response({'success':'Cambistas Pagos'})
 
 
-    # def get_permissions(self):    
-    #     if self.request.method in permissions.SAFE_METHODS: 
-    #         return [permissions.AllowAny(),]
-    #     return [permissions.IsAdminUser(),]
+    def get_permissions(self):    
+        if self.request.method in permissions.SAFE_METHODS:             
+            return [permissions.AllowAny(),]
+        return [IsSuperUser(),]
 
 
 class ManagerView(ModelViewSet):
     queryset = Manager.objects.all()
     serializer_class = ManagerSerializer
+
+    def list(self, request, pk=None):
+        store_id = request.GET['store']        
+
+        queryset = self.queryset.filter(my_store__id=store_id)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)   
+                
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(methods=['get'], detail=True)
     def pay_manager(self, request, pk=None):
@@ -56,10 +120,11 @@ class ManagerView(ModelViewSet):
         manager.reset_revenue(who_reseted_revenue)
         
         messages.success(request, 'Gerentes Pagos')
-    # def get_permissions(self):        
-    #     if self.request.method in permissions.SAFE_METHODS: 
-    #         return [permissions.AllowAny(),]
-    #     return [permissions.IsAdminUser(),]
+    
+    def get_permissions(self):    
+        if self.request.method in permissions.SAFE_METHODS:             
+            return [permissions.AllowAny(),]
+        return [IsSuperUser(),]
 
 
 
