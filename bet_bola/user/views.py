@@ -24,10 +24,10 @@ class PunterView(ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    def get_permissions(self):    
-        if self.request.method in permissions.SAFE_METHODS:             
-            return [permissions.AllowAny(),]
-        return [IsSuperUser(),]
+    # def get_permissions(self):    
+    #     if self.request.method in permissions.SAFE_METHODS:             
+    #         return [permissions.AllowAny(),]
+    #     return [IsSuperUser(),]
 
 
 class NormalUserView(ModelViewSet):
@@ -47,10 +47,10 @@ class NormalUserView(ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    def get_permissions(self):    
-        if self.request.method in permissions.SAFE_METHODS:             
-            return [permissions.AllowAny(),]
-        return [IsSuperUser(),]
+    # def get_permissions(self):    
+    #     if self.request.method in permissions.SAFE_METHODS:             
+    #         return [permissions.AllowAny(),]
+    #     return [IsSuperUser(),]
 
 
 class SellerView(ModelViewSet):
