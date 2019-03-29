@@ -121,7 +121,6 @@ def get_cotations(game_id):
     data = response.json()
 
     if response.status_code == 200 and data['success'] == 1:
-        #print(data)
         if data.get('results', None) and data['results'][0].get('goals', None):
             get_goals_cotations(data['results'][0]['goals'], game_id)
         if data.get('results', None) and data['results'][0].get('half', None):
@@ -130,6 +129,7 @@ def get_cotations(game_id):
             get_main_cotations(data['results'][0]['main'], game_id)
         if data.get('results', None) and data['results'][0].get('specials', None):
             get_special_cotations(data['results'][0]['specials'], game_id)
+
 
 def get_special_cotations(special_cotations, game_id):
     if special_cotations.get('sp', None):
