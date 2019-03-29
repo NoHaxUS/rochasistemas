@@ -1,5 +1,6 @@
 from core.models import Cotation, Game, Market
 from .market_translations import MARKET_TRANSLATIONS
+import re
 
 def get_translated_cotation_with_header_goals(cotation_name):
     TRANSLATE_TABLE = {
@@ -13,7 +14,7 @@ def get_translated_cotation_with_header_goals(cotation_name):
 
     cotation_translated = cotation_name.strip()
     for header in TRANSLATE_TABLE.keys():
-        cotation_translated = cotation_translated.replace(header, TRANSLATE_TABLE.get(header, header))
+        cotation_translated = re.sub('\\b' + header + '\\b', TRANSLATE_TABLE.get(header, header), cotation_translated)
     return cotation_translated
 
 
@@ -27,7 +28,7 @@ def get_translated_cotation_with_header_name(cotation_name):
     }
     cotation_translated = cotation_name.strip()
     for header in TRANSLATE_TABLE.keys():
-        cotation_translated = cotation_translated.replace(header, TRANSLATE_TABLE.get(header, header))
+        cotation_translated = re.sub('\\b' + header + '\\b', TRANSLATE_TABLE.get(header, header), cotation_translated)
     return cotation_translated
 
 
@@ -43,7 +44,7 @@ def get_translated_cotation_with_header_name_special(cotation_name):
 
     cotation_translated = cotation_name.strip()
     for header in TRANSLATE_TABLE.keys():
-        cotation_translated = cotation_translated.replace(header, TRANSLATE_TABLE.get(header, header))
+        cotation_translated = re.sub('\\b' + header + '\\b', TRANSLATE_TABLE.get(header, header), cotation_translated)
     return cotation_translated
 
 
@@ -74,9 +75,9 @@ def get_translated_cotation_with_opp(cotation_name):
         'Away':'Fora',
         'X':'Empate'
     }
-    cotation_translated = cotation_name
+    cotation_translated = cotation_name.strip()
     for header in TRANSLATE_TABLE.keys():
-        cotation_translated = cotation_translated.replace(header, TRANSLATE_TABLE.get(header, header))
+        cotation_translated = re.sub('\\b' + header + '\\b', TRANSLATE_TABLE.get(header, header), cotation_translated)
     return cotation_translated
   
 
@@ -86,9 +87,10 @@ def get_translated_cotation_with_opp_standard(cotation_name):
         '2': 'Fora',
         'X':'Empate',
     }
-    cotation_translated = cotation_name
+    
+    cotation_translated = cotation_name.strip()
     for header in TRANSLATE_TABLE.keys():
-        cotation_translated = cotation_translated.replace(header, TRANSLATE_TABLE.get(header, header))
+        cotation_translated = re.sub('\\b' + header + '\\b', TRANSLATE_TABLE.get(header, header), cotation_translated)
     return cotation_translated
 
 
