@@ -153,8 +153,8 @@ class Ticket(models.Model):
             if self.store.email:
                 subject = 'Alerta de aposta'
                 message = 'Uma aposta com recompensa no valor de R$' + bet_reward_value + ' foi efetuada em sua plataforma'
-                email_from = store
-                recipient_list = ['pabllobeg@gmail.com',]
+                email_from = settings.EMAIL_HOST_USER
+                recipient_list = [self.store.email,]
                 send_mail( subject, message, email_from, recipient_list )\
 
         if not self.payment or not self.reward:
