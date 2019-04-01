@@ -25,13 +25,12 @@ SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+ALLOWED_HOSTS = ['*']
 DB_SWAP_LOCAL = True
 
-ALLOWED_HOSTS = ['*']
+
 
 APP_VERBOSE_NAME = 'sitename'
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -92,7 +91,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
@@ -126,27 +125,38 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend', # this is default
 )
 
+ADMINS = [('pablo', 'pabllobeg@gmail.com'),]
+
 #Logging
-LOG_ALL_ERRORS_DEFAULT = False
+LOG_ALL_ERRORS_DEFAULT = True
 if LOG_ALL_ERRORS_DEFAULT:
     LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'handlers': {
-            'file': {
-                'level': 'DEBUG',
-                'class': 'logging.FileHandler',
-                'filename': 'debug.log',
-            },
+    'version':1,
+    'disable_existing_loggers': False,
+    'formatters':{
+        'large':{
+            'format':'%(asctime)s  %(levelname)s  %(process)d  %(pathname)s  %(funcName)s  %(lineno)d  %(message)s  '
         },
-        'loggers': {
-            'django': {
-                'handlers': ['file'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
+        'tiny':{
+            'format':'%(asctime)s  %(message)s  '
+        }
+    },
+    'handlers':{        
+        'debug_file':{
+            'level':'INFO',
+            'class': 'logging.FileHandler',            
+            'filename':'logs/DebugLoggers.log',
+            'formatter':'large',
         },
-    }
+    },
+    'loggers':{        
+        'debug_logger':{
+            'handlers':['debug_file'],
+            'level':'DEBUG',
+            'propagate':True,
+        },
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
