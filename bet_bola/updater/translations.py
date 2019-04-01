@@ -166,15 +166,3 @@ def get_translated_cotation(market, name):
 def get_translated_market(market):
     return REAL_MARKET_NAMES.get(market, market)
 
-"""
-"No Goal 0.0": "Sem Gol 0.0",
-"1 4 Or More":"Casa 4 ou mais",
-"1 1.0":"Casa 1.0",
-"2 1.0": "Fora 1.0",
-"X 0.0": "Empate 0.0",
-"2 3.0":"Fora 3.0",
-"1 3.0":"Casa 3.0",
-"2 4 Or More":"Fora 4 ou mais",
-"2 2.0":"Fora 2.0",
-"1 2.0":"Casa 2.0"
-"""
