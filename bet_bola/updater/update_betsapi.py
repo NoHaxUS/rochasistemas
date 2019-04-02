@@ -85,7 +85,7 @@ def get_league_and_create_location(game):
             )[0]
         
         league.save()
-        return league
+    return league
 
 def get_sport(game):
     sport = Sport.objects.get_or_create(
@@ -101,7 +101,7 @@ def process_upcoming_events(data):
     if data['success'] == 1:
         for game in data['results']:
             print(game['id'])
-            game_obj, created = Game.objects.get_or_create(
+            Game.objects.get_or_create(
                 pk=game['id'],
                 defaults={
                     'name': get_game_name(game),
@@ -111,9 +111,7 @@ def process_upcoming_events(data):
                     'game_status': int(game['time_status'])
                 }
             )
-
             get_cotations(game['id'])
-
 
 
 def get_cotations(game_id, err_count=0):
