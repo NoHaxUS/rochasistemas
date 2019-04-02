@@ -163,10 +163,10 @@ class TodayGamesView(ModelViewSet):
             return Response(serializer.data)
 
         if page is not None:
-            serializer = self.get_serializer(page, many=True, context=request.GET['store'])
+            serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
         
-        serializer = self.get_serializer(page, many=True, context=request.GET['store'])
+        serializer = self.get_serializer(page, many=True)
         return Response(serializer.data)
 
 
@@ -218,10 +218,10 @@ class TomorrowGamesView(ModelViewSet):
             return Response(serializer.data)
 
         if page is not None:
-            serializer = self.get_serializer(page, many=True, context=request.GET['store'])
+            serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
         
-        serializer = self.get_serializer(page, many=True, context=request.GET['store'])
+        serializer = self.get_serializer(page, many=True)
         return Response(serializer.data)
 
 
@@ -273,10 +273,10 @@ class AfterTomorrowGamesView(ModelViewSet):
             return Response(serializer.data)
 
         if page is not None:
-            serializer = self.get_serializer(page, many=True, context=request.GET['store'])
+            serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
         
-        serializer = self.get_serializer(page, many=True, context=request.GET['store'])
+        serializer = self.get_serializer(page, many=True)
         return Response(serializer.data)
 
 
