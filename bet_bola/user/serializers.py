@@ -6,28 +6,35 @@ from .models import *
 class PunterSerializer(serializers.HyperlinkedModelSerializer):	
 	
 	password = serializers.CharField(style={'input_type': 'password'})
+	my_store = serializers.SlugRelatedField(read_only=True, slug_field='id')	
 
 	class Meta:
 		model=Punter
-		fields = ('id','username','password','first_name', 'last_name', 'cellphone', 'email')
+		fields = ('id','username','password','first_name', 'last_name', 'cellphone', 'email','my_store')
 
 
 	def create(self, validated_data):				
-		obj = Punter.objects.create(**validated_data)		
+		obj = Punter(**validated_data)		
 		store = Store.objects.get(id=self.context['request'].GET.get('store'))
 		obj.my_store=store
 		obj.save()
 		return obj
 
+	def validate_email(self, value):
+		if Punter.objects.filter(email=value):
+			raise serializers.ValidationError("Email ja cadastrado.")
+		return value
+
 
 class SellerSerializer(serializers.HyperlinkedModelSerializer):	
 	
 	my_manager = serializers.SlugRelatedField(read_only=True , slug_field='first_name')
-	password = serializers.CharField(style={'input_type': 'password'})	
+	password = serializers.CharField(style={'input_type': 'password'})
+	my_store = serializers.SlugRelatedField(read_only=True, slug_field='id')	
 
 	class Meta:
 		model=Seller
-		fields = ('id','username','password','first_name', 'last_name', 'cpf','can_sell_unlimited','credit_limit','limit_time_to_cancel','my_manager','email')
+		fields = ('id','username','password','first_name', 'last_name', 'cpf','can_sell_unlimited','credit_limit','limit_time_to_cancel','my_manager','email','my_store')
 
 	def create(self, validated_data):				
 		obj = Seller(**validated_data)
@@ -35,6 +42,11 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
 		obj.my_store=store
 		obj.save()
 		return obj
+
+	def validate_email(self, value):
+		if Punter.objects.filter(email=value):
+			raise serializers.ValidationError("Email ja cadastrado.")
+		return value
 
 
 class NormalUserSerializer(serializers.HyperlinkedModelSerializer):		
@@ -66,3 +78,8 @@ class ManagerSerializer(serializers.HyperlinkedModelSerializer):
 		obj.my_store=store
 		obj.save()
 		return obj
+
+	def validate_email(self, value):
+		if Punter.objects.filter(email=value):
+			raise serializers.ValidationError("Email ja cadastrado.")
+		return value

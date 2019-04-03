@@ -1,10 +1,26 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
-from .serializers import GeneralConfigurationsSerializer, ExcludedGameSerializer, ExcludedLeagueSerializer
-from .models import GeneralConfigurations, ExcludedGame, ExcludedLeague
+from .serializers import GeneralConfigurationsSerializer, ExcludedGameSerializer, ExcludedLeagueSerializer, RulesMessageSerializer
+from .models import GeneralConfigurations, ExcludedGame, ExcludedLeague, RulesMessage
+from rest_framework.response import Response
 
 class GeneralConfigurationsView(ModelViewSet):
     queryset = GeneralConfigurations.objects.all()
     serializer_class = GeneralConfigurationsSerializer
+
+
+class RulesMessageView(ModelViewSet):
+	queryset = RulesMessage.objects.all()
+	serializer_class = RulesMessageSerializer
+
+	def list(self, request, pk=None):
+		from core.models import Store
+		store_id = request.GET['store']
+		store = Store.objects.get(pk=store_id)
+
+		rules= RulesMessage.objects.filter(store=store)
+		serializer = self.get_serializer(rules, many=True)
+
+		return Response(serializer.data)
 
 
 class ExcludedGameView(ModelViewSet):

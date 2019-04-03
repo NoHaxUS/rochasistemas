@@ -3,6 +3,8 @@ from rest_framework import serializers
 from .models import Store, CotationHistory, Sport, Game, League, Location, Market, Cotation
 from ticket.models import Ticket
 from user.models import CustomUser
+import utils.timezone as tzlocal
+from django.utils import timezone
 from utils.models import GeneralConfigurations
 
 class StoreSerializer(serializers.HyperlinkedModelSerializer):	
@@ -86,14 +88,14 @@ class MarketSerializer(serializers.HyperlinkedModelSerializer):
 class MinimumListCotationSerializer(serializers.ListSerializer):
 
 	def to_representation(self, data):
-		#print(data)
-		store_id =  self.context['request'].GET.get('store')
-		store = Store.objects.get(pk=store_id)
-		config = store.config
-		if config:
-			if config.cotations_percentage:
-				for cotation in data:
-					cotation.price = (cotation.price * config.cotations_percentage / 100)
+		# print(self.context.items())
+		# store_id =  self.context['request'].GET.get('store')
+		# store = Store.objects.get(pk=store_id)
+		# config = store.config
+		# if config:
+		# 	if config.cotations_percentage:
+		# 		for cotation in data:
+		# 			cotation.price = (cotation.price * config.cotations_percentage / 100)
 
 		return super(MinimumListCotationSerializer, self).to_representation(data)
 
@@ -106,45 +108,36 @@ class MinimumCotationSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','name','price')
 
 
-class LeagueGameTodaySerializer(serializers.HyperlinkedModelSerializer):
+class GameSerializer(serializers.HyperlinkedModelSerializer):			
+
+	standard_cotations = MinimumCotationSerializer(many=True)	
+	league = serializers.SlugRelatedField(queryset=League.objects.all(), slug_field='name')
+
+	class Meta:
+		model = Game				
+		fields = ('id','name','start_date','game_status','league','standard_cotations')	
+
+
+class LeagueGameSerializer(serializers.HyperlinkedModelSerializer):
 	league = serializers.CharField(source='name')
 	location = serializers.SlugRelatedField(queryset=Location.objects.all(), slug_field='name')
+	games = serializers.SerializerMethodField()
 
 	class Meta:
 		model = League
-		fields = ('id','league','location')
+		fields = ('id','league','location','games')
 
+	def get_games(self, league):	
+		from utils.models import ExcludedGame, ExcludedLeague					
+		qs = league.games
 
-
-class GameListSerializer(serializers.ListSerializer):
-
-	def to_representation(self, data):		
-		from utils.models import ExcludedGame, ExcludedLeague
-
-		store_id =  self.context['request'].GET.get('store')
-		store = Store.objects.get(pk=store_id)
-		id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]
-		id_list_excluded_leagues = [excluded_leagues.id for excluded_leagues in ExcludedLeague.objects.filter(store=store)]
-
-		help(data)
-		data = data.filter(pk__in=id_list_excluded_games)
-
-		return super(GameListSerializer	, self).to_representation(data)
-
-
-class GameSerializer(serializers.HyperlinkedModelSerializer):			
-
-	standard_cotations = MinimumCotationSerializer(many=True)
-	league = LeagueGameTodaySerializer()
-
-
-	class Meta:
-		model = Game		
-		fields = ('id','name','start_date','game_status','league','standard_cotations')	
+		
+		serializer = GameSerializer(qs,many=True)
+		return serializer.data
 	
 
 class CountryGameTodaySerializers(serializers.HyperlinkedModelSerializer):
-	itens = LeagueGameTodaySerializer(many=True, source='my_leagues')
+	itens = LeagueGameSerializer(many=True, source='my_leagues')
 
 	class Meta:
 		model = Location
