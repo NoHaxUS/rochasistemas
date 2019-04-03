@@ -1,5 +1,6 @@
-from django.db.models import Count
+from rest_framework.response import Response
 from rest_framework import serializers
+from django.db.models import Count
 from .models import Store, CotationHistory, Sport, Game, League, Location, Market, Cotation
 from ticket.models import Ticket
 from user.models import CustomUser
@@ -52,11 +53,12 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
 
 class FilteredCotationSerializer(serializers.ListSerializer):
 
-	def to_representation(self, data):
-		
-		if self.context['request'].GET.get('game_id'):
-			game_id = self.context['request'].GET.get('game_id')	
-			data = data.filter(game__id=game_id)		
+	def to_representation(self, data):			
+		if not self.context['request'].GET.get('game_id'):
+			raise serializers.ValidationError({'game_id': ['this field was not inserted']})
+
+		game_id = self.context['request'].GET.get('game_id')
+		data = data.filter(game__id=game_id)		
 
 		store_id =  self.context['request'].GET.get('store')
 		store = Store.objects.get(pk=store_id)
