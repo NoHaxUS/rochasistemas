@@ -39,7 +39,11 @@ def process_games(game_json):
 
 
 def process_1X2(scores, cotations):
-    
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1, status=3)
+        cotations.filter(name='Casa')
+
 
 
 

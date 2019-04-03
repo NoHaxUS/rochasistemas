@@ -18,10 +18,11 @@ TOKEN="20445-s1B9Vv6E9VSLU1"
 def get_upcoming_events():
     today = datetime.datetime.today().strftime('%Y%m%d')
     #tomorrow = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y%m%d')
+    yesterday = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime('%Y%m%d')
     page = 1
     
-    url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + today + "&page="
-    url_page = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + today + "&page=" + str(page)
+    url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + yesterday + "&page="
+    url_page = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + yesterday + "&page=" + str(page)
 
     request = requests.get(url_page)
     data = request.json()
