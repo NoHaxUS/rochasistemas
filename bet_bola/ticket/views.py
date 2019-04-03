@@ -2,6 +2,7 @@ from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import permissions
+from django.shortcuts import get_object_or_404
 from core.models import Cotation, CotationHistory, Store
 from utils import timezone as tzlocal
 from .permissions import CreateBet
@@ -25,6 +26,14 @@ class TicketView(ModelViewSet):
 		
 		serializer = self.get_serializer(queryset, many=True)
 
+		return Response(serializer.data)
+
+	def retrieve(self, request, pk=None):
+		store_id = request.GET['store']     
+
+		queryset = Ticket.objects.filter(store__id=store_id)
+		user = get_object_or_404(queryset, pk=pk)
+		serializer = self.get_serializer(user)
 		return Response(serializer.data)
 
 	def get_serializer_class(self):		
