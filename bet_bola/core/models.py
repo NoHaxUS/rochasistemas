@@ -78,11 +78,10 @@ class Game(models.Model):
     league = models.ForeignKey('League', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Liga')
     sport = models.ForeignKey('Sport', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Esporte')
     game_status = models.IntegerField(choices=GAME_STATUS,verbose_name='Status do Jogo')
-    last_update = models.DateTimeField(verbose_name='Última Atualização', auto_now=True)
-    visible = models.BooleanField(default=True, verbose_name='Visível?')
     results_calculated = models.BooleanField(default=False, verbose_name='Resultados Calculados?')
+    visible = models.BooleanField(default=True, verbose_name='Visível?')
     can_be_modified_by_api = models.BooleanField(default=True, verbose_name='API pode modificar?')
-
+    last_update = models.DateTimeField(verbose_name='Última Atualização', auto_now=True)
 
     @property
     def standard_cotations(self):
@@ -188,7 +187,7 @@ class Cotation(models.Model):
     game = models.ForeignKey('Game', related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
     settlement = models.IntegerField(default=0, choices=SETTLEMENT_STATUS, verbose_name="Resultado")
     market = models.ForeignKey('Market', related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
-    #line = models.CharField(max_length=30, null=True, blank=True)
+    total_goals = models.DecimalField(null=True, blank=True, max_digits=6, decimal_places=2, verbose_name='Total Acima/Abaixo')
     last_update = models.DateTimeField(auto_now=True,null=True, blank=True, verbose_name="Última atualização")
     
 

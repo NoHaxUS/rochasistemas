@@ -94,11 +94,17 @@ def get_translated_cotation_with_opp_standard(cotation_name):
     return cotation_translated
 
 
+def extract_goals_from_string(string):
+    total_goals = re.findall(r"[-+]?\d*\.\d+|\d+", string)
+    return total_goals[-1] if total_goals else None
+
+
 def cotation_with_header_goals(cotations, market_name, game_id):
     for cotation in cotations:
         Cotation.objects.update_or_create(
             name=get_translated_cotation_with_header_goals(cotation['header'] + ' ' + cotation['goals']),
             game=Game.objects.get(pk=game_id),
+            total_goals=extract_goals_from_string(cotation['goals'].strip()),
             market=Market.objects.get_or_create(
                 name=MARKET_TRANSLATIONS.get(market_name, market_name),
             )[0],
@@ -153,10 +159,10 @@ def cotation_with_header_name_special(cotations, market_name, game_id):
 
 
 
-def cotation_without_header(cotations, market_name, game_id):
+def cotation_without_header(cotations, market_name, game_id, need_extract=False):
 
     for cotation in cotations:
-        Cotation.objects.update_or_create(
+        obj, created = Cotation.objects.update_or_create(
             name=get_translated_cotation_with_opp(cotation['opp']),
             game=Game.objects.get(pk=game_id),
             market=Market.objects.get_or_create(
@@ -167,6 +173,9 @@ def cotation_without_header(cotations, market_name, game_id):
             }
         )
 
+        if need_extract:
+            obj.total_goals = extract_goals_from_string(cotation['opp'])
+            obj.save()
 
 def cotation_without_header_standard(cotations, market_name, game_id):
 

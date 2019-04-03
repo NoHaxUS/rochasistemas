@@ -173,7 +173,7 @@ def get_half_cotations(half_cotations, game_id):
         if half_cotations['sp'].get('half_time_result_both_teams_to_score', None):
             cotation_without_header(half_cotations['sp']['half_time_result_both_teams_to_score'], 'half_time_result_both_teams_to_score', game_id)
         if half_cotations['sp'].get('half_time_result_total_goals', None):
-            cotation_without_header(half_cotations['sp']['half_time_result_total_goals'], 'half_time_result_total_goals', game_id)
+            cotation_without_header(half_cotations['sp']['half_time_result_total_goals'], 'half_time_result_total_goals', game_id, need_extract=True)
         if half_cotations['sp'].get('half_time_correct_score', None):
             cotation_with_header_opp(half_cotations['sp']['half_time_correct_score'], 'half_time_correct_score', game_id)
         if half_cotations['sp'].get('both_teams_to_score_in_1st_half', None):
@@ -186,7 +186,7 @@ def get_half_cotations(half_cotations, game_id):
         if half_cotations['sp'].get('first_half_goals', None):
             cotation_with_header_goals(half_cotations['sp']['first_half_goals'], 'first_half_goals', game_id)
         if half_cotations['sp'].get('exact_1st_half_goals', None):
-            cotation_without_header(half_cotations['sp']['exact_1st_half_goals'], 'exact_1st_half_goals', game_id)
+            cotation_without_header(half_cotations['sp']['exact_1st_half_goals'], 'exact_1st_half_goals', game_id, need_extract=True)
         if half_cotations['sp'].get('1st_half_goals_odd_even', None):
             cotation_without_header(half_cotations['sp']['1st_half_goals_odd_even'], '1st_half_goals_odd_even', game_id)
         if half_cotations['sp'].get('to_score_in_half', None):
@@ -203,7 +203,7 @@ def get_half_cotations(half_cotations, game_id):
         if half_cotations['sp'].get('2nd_half_goals', None):
             cotation_with_header_goals(half_cotations['sp']['2nd_half_goals'], '2nd_half_goals', game_id)
         if half_cotations['sp'].get('exact_2nd_half_goals', None):
-            cotation_without_header(half_cotations['sp']['exact_2nd_half_goals'], 'exact_2nd_half_goals', game_id)
+            cotation_without_header(half_cotations['sp']['exact_2nd_half_goals'], 'exact_2nd_half_goals', game_id, need_extract=True)
         if half_cotations['sp'].get('2nd_half_goals_odd_even', None):
             cotation_without_header(half_cotations['sp']['2nd_half_goals_odd_even'], '2nd_half_goals_odd_even', game_id)
 
@@ -216,11 +216,11 @@ def get_goals_cotations(goals_cotations, game_id):
             cotation_with_header_goals(goals_cotations['sp']['alternative_total_goals'], 'alternative_total_goals', game_id)
 
         if goals_cotations['sp'].get('result_total_goals', None):
-            cotation_without_header(goals_cotations['sp']['result_total_goals'], 'result_total_goals', game_id)
+            cotation_without_header(goals_cotations['sp']['result_total_goals'], 'result_total_goals', game_id, need_extract=True)
         if goals_cotations['sp'].get('total_goals_both_teams_to_score', None):
-            cotation_without_header(goals_cotations['sp']['total_goals_both_teams_to_score'], 'total_goals_both_teams_to_score', game_id)
+            cotation_without_header(goals_cotations['sp']['total_goals_both_teams_to_score'], 'total_goals_both_teams_to_score', game_id, need_extract=True)
         if goals_cotations['sp'].get('exact_total_goals', None):
-            cotation_without_header(goals_cotations['sp']['exact_total_goals'], 'exact_total_goals', game_id)
+            cotation_without_header(goals_cotations['sp']['exact_total_goals'], 'exact_total_goals', game_id, need_extract=True)
         if goals_cotations['sp'].get('number_of_goals_in_match', None):
             cotation_without_header(goals_cotations['sp']['number_of_goals_in_match'], 'number_of_goals_in_match', game_id)
         if goals_cotations['sp'].get('both_teams_to_score', None):
@@ -229,9 +229,9 @@ def get_goals_cotations(goals_cotations, game_id):
             cotation_without_header(goals_cotations['sp']['teams_to_score'], 'teams_to_score', game_id)
     
         if goals_cotations['sp'].get('home_team_exact_goals', None):
-            cotation_without_header(goals_cotations['sp']['home_team_exact_goals'], 'home_team_exact_goals', game_id)
+            cotation_without_header(goals_cotations['sp']['home_team_exact_goals'], 'home_team_exact_goals', game_id, need_extract=True)
         if goals_cotations['sp'].get('away_team_exact_goals', None):
-            cotation_without_header(goals_cotations['sp']['away_team_exact_goals'], 'away_team_exact_goals', game_id)
+            cotation_without_header(goals_cotations['sp']['away_team_exact_goals'], 'away_team_exact_goals', game_id, need_extract=True)
         if goals_cotations['sp'].get('goals_odd_even', None):
             cotation_without_header(goals_cotations['sp']['goals_odd_even'], 'goals_odd_even', game_id)
         if goals_cotations['sp'].get('home_team_odd_even_goals', None):
