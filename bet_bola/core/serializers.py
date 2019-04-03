@@ -1,5 +1,6 @@
-from django.db.models import Count
+from rest_framework.response import Response
 from rest_framework import serializers
+from django.db.models import Count
 from .models import Store, CotationHistory, Sport, Game, League, Location, Market, Cotation
 from ticket.models import Ticket
 from user.models import CustomUser
@@ -52,20 +53,33 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
 
 class FilteredCotationSerializer(serializers.ListSerializer):
 
-	def to_representation(self, data):
-		game_id = self.context['request'].GET.get('cotations__game__id')		
+	def to_representation(self, data):			
+		if not self.context['request'].GET.get('game_id'):
+			raise serializers.ValidationError({'game_id': ['this field was not inserted']})
+
+		game_id = self.context['request'].GET.get('game_id')
 		data = data.filter(game__id=game_id)		
-		return super(FilteredCotationSerializer, self).to_representation(data)
+
+		store_id =  self.context['request'].GET.get('store')
+		store = Store.objects.get(pk=store_id)
+		config = store.config
+		lista = list()
+
+		if config:
+			if config.cotations_percentage:			
+				for cotation in data.all():
+					cotation.price = (cotation.price * config.cotations_percentage / 100)	
+					lista.append(cotation)
+		
+		return super(FilteredCotationSerializer, self).to_representation(lista)
 
 
 class CotationSerializer(serializers.HyperlinkedModelSerializer):
-
-	game = serializers.PrimaryKeyRelatedField(read_only=True)
-
+	
 	class Meta:
 		model = Cotation
 		list_serializer_class = FilteredCotationSerializer
-		fields = ('id','name','game','price','line','base_line')
+		fields = ('id','name','price')
 		
 
 class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):
@@ -74,28 +88,19 @@ class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Cotation		
-		fields = ('id','name','game','price')
-		
-
-class MarketSerializer(serializers.HyperlinkedModelSerializer):
-	cotations = CotationSerializer(many=True)
-	
-	class Meta:
-		model = Market
-		fields = ('id','name','cotations')
+		fields = ('id','name','game','price')	
 
 
 class MinimumListCotationSerializer(serializers.ListSerializer):
 
-	def to_representation(self, data):
-		# print(self.context.items())
-		# store_id =  self.context['request'].GET.get('store')
-		# store = Store.objects.get(pk=store_id)
-		# config = store.config
-		# if config:
-		# 	if config.cotations_percentage:
-		# 		for cotation in data:
-		# 			cotation.price = (cotation.price * config.cotations_percentage / 100)
+	def to_representation(self, data):			
+		store_id =  self.root.context['context']['request'].GET.get('store')
+		store = Store.objects.get(pk=store_id)
+		config = store.config
+		if config:
+			if config.cotations_percentage:
+				for cotation in data:
+					cotation.price = (cotation.price * config.cotations_percentage / 100)
 
 		return super(MinimumListCotationSerializer, self).to_representation(data)
 
@@ -106,6 +111,14 @@ class MinimumCotationSerializer(serializers.HyperlinkedModelSerializer):
 		model = Cotation
 		list_serializer_class = MinimumListCotationSerializer
 		fields = ('id','name','price')
+
+
+class MarketSerializer(serializers.HyperlinkedModelSerializer):
+	cotations = CotationSerializer(many=True)
+	
+	class Meta:
+		model = Market
+		fields = ('id','name','cotations')
 
 
 class GameSerializer(serializers.HyperlinkedModelSerializer):			
@@ -130,9 +143,8 @@ class LeagueGameSerializer(serializers.HyperlinkedModelSerializer):
 	def get_games(self, league):	
 		from utils.models import ExcludedGame, ExcludedLeague					
 		qs = league.games
-
 		
-		serializer = GameSerializer(qs,many=True)
+		serializer = GameSerializer(qs,many=True,context={'context':self.context})
 		return serializer.data
 	
 
