@@ -93,9 +93,8 @@ class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):
 
 class MinimumListCotationSerializer(serializers.ListSerializer):
 
-	def to_representation(self, data):
-		print(self.context.items())
-		store_id =  self.context['request'].GET.get('store')
+	def to_representation(self, data):			
+		store_id =  self.root.context['context']['request'].GET.get('store')
 		store = Store.objects.get(pk=store_id)
 		config = store.config
 		if config:
@@ -144,9 +143,8 @@ class LeagueGameSerializer(serializers.HyperlinkedModelSerializer):
 	def get_games(self, league):	
 		from utils.models import ExcludedGame, ExcludedLeague					
 		qs = league.games
-
 		
-		serializer = GameSerializer(qs,many=True)
+		serializer = GameSerializer(qs,many=True,context={'context':self.context})
 		return serializer.data
 	
 

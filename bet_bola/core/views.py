@@ -223,8 +223,11 @@ class TomorrowGamesView(ModelViewSet):
         
         queryset = League.objects.all().prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'))
         
-        queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__start_date__gt=tzlocal.now(),my_games__start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),my_games__game_status=0)))\
+        queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),my_games__game_status=0)))\
         .filter(games_count__gt=0)
+
+        for game in queryset.all():
+            print(str(game.games_count))
 
         store_id = request.GET['store']
         store = Store.objects.get(pk=store_id)
@@ -277,9 +280,9 @@ class AfterTomorrowGamesView(ModelViewSet):
         
         queryset = League.objects.all().prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'))
         
-        queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__start_date__gt=tzlocal.now(),my_games__start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),my_games__game_status=0)))\
+        queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),my_games__game_status=0)))\
         .filter(games_count__gt=0)
-
+        
         store_id = request.GET['store']
         store = Store.objects.get(pk=store_id)
 
