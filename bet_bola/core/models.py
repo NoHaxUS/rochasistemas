@@ -80,6 +80,7 @@ class Game(models.Model):
     game_status = models.IntegerField(choices=GAME_STATUS,verbose_name='Status do Jogo')
     last_update = models.DateTimeField(verbose_name='Última Atualização', auto_now=True)
     visible = models.BooleanField(default=True, verbose_name='Visível?')
+    results_calculated = models.BooleanField(default=False, verbose_name='Resultados Calculados?')
     can_be_modified_by_api = models.BooleanField(default=True, verbose_name='API pode modificar?')
 
 
