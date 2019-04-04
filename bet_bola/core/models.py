@@ -190,19 +190,32 @@ class Cotation(models.Model):
     total_goals = models.DecimalField(null=True, blank=True, max_digits=6, decimal_places=2, verbose_name='Total Acima/Abaixo')
     last_update = models.DateTimeField(auto_now=True,null=True, blank=True, verbose_name="Última atualização")
     
-
+    # GAME_STATUS = (
+    #     (0, 'Não Iniciado'),
+    #     (1,'Ao Vivo'),
+    #     (2, 'A ser corrigido') ,   
+    #     (3, 'Terminado'),        
+    #     (4, "Adiado"),
+    #     (5, 'Cancelado'),
+    #     (6, "W.O"),
+    #     (7, "Interrompido"),
+    #     (8, "Abandonado"),
+    #     (9, "Retirado"),
+    #     (99, "Removido"),
+    # )
     def get_settlement_display_modified(self):
         if self.game.game_status == 4:
-            return "Jogo Cancelado"
-        elif self.game.game_status == 5:
             return "Jogo Adiado"
-        elif self.game.game_status == 6:
-            return "Jogo Interrompido"
+        elif self.game.game_status == 5:
+            return "Jogo Cancelado"            
         elif self.game.game_status == 7:
-            return "Jogo Abandonado"
+            return "Jogo Interrompido"
         elif self.game.game_status == 8:
-            return "Jogo Perdeu a Cobertura"
-        
+            return "Jogo Abandonado"
+        elif self.game.game_status == 9:
+            return "Jogo retirado"
+        elif self.game.game_status == 99:
+            return "Jogo removido"
         return self.get_settlement_display()
 
     #def save(self, *args, **kwargs):
