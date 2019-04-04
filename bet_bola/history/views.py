@@ -9,15 +9,57 @@ class SellerSalesHistoryView(ModelViewSet):
     queryset = SellerSalesHistory.objects.all()
     serializer_class = SellerSalesHistorySerializer
 
+    def list(self, request, pk=None):
+        store_id = request.GET['store']     
+
+        queryset = self.queryset.filter(store__id=store_id)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)   
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response(serializer.data)    
+
 
 class ManagerTransactionsHistoryView(ModelViewSet):
     queryset = ManagerTransactions.objects.all()
     serializer_class = ManagerTransactionsSerializer
 
+    def list(self, request, pk=None):
+        store_id = request.GET['store']     
+
+        queryset = self.queryset.filter(store__id=store_id)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)   
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response(serializer.data)
+
 
 class RevenueHistorySellerView(ModelViewSet):
     queryset = RevenueHistorySeller.objects.all()
     serializer_class = RevenueHistorySellerSerializer
+
+    def list(self, request, pk=None):
+        store_id = request.GET['store']     
+
+        queryset = self.queryset.filter(store__id=store_id)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)   
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response(serializer.data)    
 
 
 class RevenueHistoryManagerView(ModelViewSet):
@@ -25,11 +67,53 @@ class RevenueHistoryManagerView(ModelViewSet):
     serializer_class = RevenueHistoryManagerSerializer
 
 
-class PunterPayedHistoryView(ModelViewSet):
-	queryset = PunterPayedHistory.objects.all()
-	serializer_class = PunterPayedHistorySerializer
+    def list(self, request, pk=None):
+        store_id = request.GET['store']     
 
+        queryset = self.queryset.filter(store__id=store_id)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)   
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response(serializer.data)    
+
+
+class PunterPayedHistoryView(ModelViewSet):
+    queryset = PunterPayedHistory.objects.all()
+    serializer_class = PunterPayedHistorySerializer
+
+    def list(self, request, pk=None):
+        store_id = request.GET['store']     
+
+        queryset = self.queryset.filter(store__id=store_id)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)   
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response(serializer.data)    
 
 class TicketCancelationHistoryView(ModelViewSet):
-	queryset = TicketCancelationHistory.objects.all()
-	serializer_class = TicketCancelationHistorySerializer
+    queryset = TicketCancelationHistory.objects.all()
+    serializer_class = TicketCancelationHistorySerializer
+
+    def list(self, request, pk=None):
+        store_id = request.GET['store']     
+
+        queryset = self.queryset.filter(store__id=store_id)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)   
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response(serializer.data)
