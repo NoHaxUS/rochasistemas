@@ -106,6 +106,8 @@ def process_upcoming_events(data):
                 pk=game['id'],
                 defaults={
                     'name': get_game_name(game),
+                    'home_team': game['home']['name'],
+                    'away_team': game['away']['name'],
                     'start_date': get_start_date_from_timestamp(game),
                     'league': get_league_and_create_location(game),
                     'sport': get_sport(game),
