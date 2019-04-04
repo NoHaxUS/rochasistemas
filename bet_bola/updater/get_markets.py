@@ -15,7 +15,7 @@ def get_translated_cotation_with_header_goals(cotation_name):
     cotation_translated = cotation_name.strip()
     for header in TRANSLATE_TABLE.keys():
         cotation_translated = re.sub('\\b' + header + '\\b', TRANSLATE_TABLE.get(header, header), cotation_translated)
-    return cotation_translated
+    return cotation_translated.strip()
 
 
 def get_translated_cotation_with_header_name(cotation_name):
@@ -29,7 +29,7 @@ def get_translated_cotation_with_header_name(cotation_name):
     cotation_translated = cotation_name.strip()
     for header in TRANSLATE_TABLE.keys():
         cotation_translated = re.sub('\\b' + header + '\\b', TRANSLATE_TABLE.get(header, header), cotation_translated)
-    return cotation_translated
+    return cotation_translated.strip()
 
 
 def get_translated_cotation_with_header_name_special(cotation_name):
@@ -45,7 +45,7 @@ def get_translated_cotation_with_header_name_special(cotation_name):
     cotation_translated = cotation_name.strip()
     for header in TRANSLATE_TABLE.keys():
         cotation_translated = re.sub('\\b' + header + '\\b', TRANSLATE_TABLE.get(header, header), cotation_translated)
-    return cotation_translated
+    return cotation_translated.strip()
 
 
 
@@ -78,7 +78,7 @@ def get_translated_cotation_with_opp(cotation_name):
     cotation_translated = cotation_name.strip()
     for header in TRANSLATE_TABLE.keys():
         cotation_translated = re.sub('\\b' + header + '\\b', TRANSLATE_TABLE.get(header, header), cotation_translated)
-    return cotation_translated
+    return cotation_translated.strip()
   
 
 def get_translated_cotation_with_opp_standard(cotation_name):
@@ -91,7 +91,7 @@ def get_translated_cotation_with_opp_standard(cotation_name):
     cotation_translated = cotation_name.strip()
     for header in TRANSLATE_TABLE.keys():
         cotation_translated = re.sub('\\b' + header + '\\b', TRANSLATE_TABLE.get(header, header), cotation_translated)
-    return cotation_translated
+    return cotation_translated.strip()
 
 
 def extract_goals_from_string(string):
