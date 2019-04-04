@@ -74,6 +74,8 @@ class Game(models.Model):
     
     id = models.BigIntegerField(primary_key=True, verbose_name="ID")
     name = models.CharField(max_length=80, verbose_name='Nome do Jogo')
+    home_team = models.CharField(max_length=80, verbose_name='Time Casa')
+    away_team = models.CharField(max_length=80, verbose_name='Time Fora')
     start_date = models.DateTimeField(verbose_name='Início da Partida')
     league = models.ForeignKey('League', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Liga')
     sport = models.ForeignKey('Sport', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Esporte')
