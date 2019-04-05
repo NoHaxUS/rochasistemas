@@ -2,7 +2,8 @@ from core.models import Game
 from django.utils import timezone
 from utils.timezone import  tzlocal
 import requests
-
+import re
+from django.db.models import Max
 
 def process_results():
 
@@ -353,4 +354,71 @@ def total_goals_both_teams_to_score(scores, cotations):
 
 
 def exact_total_goals(scores, cotations):
-    pass
+    home = int(scores['2']['home'])
+    away = int(scores['2']['away'])
+    total_goals = home + away
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        cotations.filter(name__contains=str(int(total_goals)).update(settlement=2)
+        latest_total_goals  = cotations.latest('total_goals')
+        if total_goals > latest_total_goals.total_goals:
+            latest_total_goals.update(settlement=2)
+
+        
+def both_teams_to_score(scores, cotations):
+    home = int(scores['2']['home'])
+    away = int(scores['2']['away'])
+    both_mark = home and away
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+        if both_mark:
+            cotations.filter(name='Sim').update(settlement=2)
+        else:
+            cotations.filter(name='Não').update(settlement=2)
+
+
+def teams_to_score(scores, cotations, home_name, away_name):
+    home = int(scores['2']['home'])
+    away = int(scores['2']['away'])
+
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        if home > 0 and away == 0:
+            cotations.filter(name__icontains=home_name, name__contains='Apenas').update(settlement=2)
+        elif away > 0 and home == 0:
+            cotations.filter(name__icontains=away_name, name__contains='Apenas').update(settlement=2)
+        elif home > 0 and away > 0:
+            cotations.filter(name='Ambos os Times').update(settlement=2)
+        elif home == 0 and away == 0:
+            cotaions.filter(name='Sem Gols').update(settlement=2)
+
+
+
+def home_team_exact_goals(scores, cotations):
+    home = int(scores['2']['home'])
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        cotations.filter(name__contains=str(int(home)).update(settlement=2)
+        latest_total_goals  = cotations.latest('total_goals')
+        if home > latest_total_goals.total_goals:
+            latest_total_goals.update(settlement=2)
+
+
+def away_team_exact_goals(scores, cotations):
+    away = int(scores['2']['away'])
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        cotations.filter(name__contains=str(int(away)).update(settlement=2)
+        latest_total_goals  = cotations.latest('total_goals')
+        if away > latest_total_goals.total_goals:
+            latest_total_goals.update(settlement=2)
+
