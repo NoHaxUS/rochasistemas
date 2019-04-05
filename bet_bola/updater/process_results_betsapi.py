@@ -335,7 +335,7 @@ def result_total_goals(scores, cotations, home_name, away_name):
 
 
 
-def total_goals_both_teams_to_score(score, cotations):
+def total_goals_both_teams_to_score(scores, cotations):
     home = int(scores['2']['home'])
     away = int(scores['2']['away'])
     total_goals = home + away
@@ -351,3 +351,6 @@ def total_goals_both_teams_to_score(score, cotations):
             cotations.filter(name__iendswith='Não', name__contains='Acima', total_goals__lt=total_goals).update(settlement=2)
             cotations.filter(name__iendswith='Não', name__contains='Abaixo', total_goals__gt=total_goals).update(settlement=2)
 
+
+def exact_total_goals(scores, cotations):
+    pass
