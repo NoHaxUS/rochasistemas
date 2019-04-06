@@ -48,16 +48,16 @@ class Ticket(models.Model):
         if self.payment.status_payment == Payment.PAYMENT_STATUS[2][1]:
             return Payment.PAYMENT_STATUS[2][1]
 
-        if self.cotations.filter(settlement__in=[1,3,4]).exclude(game__game_status__in = (4,5,6,7,8)).count() > 0:
+        if self.cotations.filter(settlement__in=[1]).exclude(game__game_status__in = (4,5,7,8,9,99)).count() > 0:
             return Ticket.TICKET_STATUS['Não Venceu']
 
-        if self.cotations.filter(settlement__isnull=True).exclude(game__game_status__in = (4,5,6,7,8)).count() > 0:
+        if self.cotations.filter(Q(settlement__isnull=True) | Q(settlement=0)).exclude(game__game_status__in = (4,5,7,8,9,99)).count() > 0:
             return Ticket.TICKET_STATUS['Aguardando Resultados']
 
-        if not self.cotations.filter(settlement__in=[1,3,4]).exclude(game__game_status__in = (4,5,6,7,8)).count() > 0 and self.cotations.exclude(game__game_status__in = (4,5,6,7,8)).exclude(settlement=-1).count() > 0 and self.payment.status_payment == 'Pago':
+        if self.cotations.filter(settlement__in=[2]).exclude(game__game_status__in = (4,5,7,8,9,99)).count() > 0 and self.cotations.exclude(game__game_status__in = (4,5,6,7,8)).exclude(settlement=-1).count() > 0 and self.payment.status_payment == 'Pago':
             return Ticket.TICKET_STATUS["Venceu"]
         
-        if not self.cotations.filter(settlement__in=[1,3,4]).exclude(game__game_status__in = (4,5,6,7,8)).count() > 0 and self.cotations.exclude(game__game_status__in = (4,5,6,7,8)).exclude(settlement=-1).count() > 0 and self.payment.status_payment == Payment.PAYMENT_STATUS[0][1]:
+        if self.cotations.filter(settlement__in=[2]).exclude(game__game_status__in = (4,5,7,8,9,99)).count() > 0 and self.cotations.exclude(game__game_status__in = (4,5,6,7,8)).exclude(settlement=-1).count() > 0 and self.payment.status_payment == Payment.PAYMENT_STATUS[0][1]:
             return Ticket.TICKET_STATUS["Venceu, não pago"]
         
         return "Bilhete Anulado"
@@ -123,6 +123,9 @@ class Ticket(models.Model):
                 return {'success':False,
                     'message':' Tempo limite para cancelar o Ticket '+ str(self.pk) +' excedido.'}
 
+        if user != self.payment.who_set_payment:
+            return {'success':False,
+                    'message':'Vendedor ' + user.first_name+ ' não tem permissão para cancelar este ticket.'}
         
         seller = self.payment.who_set_payment
         if not seller.can_sell_unlimited:
@@ -157,6 +160,9 @@ class Ticket(models.Model):
                 recipient_list = [self.store.email,]
                 send_mail( subject, message, email_from, recipient_list )\
 
+        #CHECAR ISSO
+        print(self.ticket_status)
+        print(Ticket.TICKET_STATUS['Aguardando Resultados'])
         if not self.payment or not self.reward:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
@@ -241,7 +247,8 @@ class Ticket(models.Model):
         PunterPayedHistory.objects.create(punter_payed=punter_payed,
             seller=user.seller,
             ticket_winner=self,
-            payed_value=self.reward.real_value)
+            payed_value=self.reward.real_value,
+            store=self.store)
 
         return {'success':True,
                 'message':'O Apostador ' + punter_payed  + ' foi marcado como Pago'}

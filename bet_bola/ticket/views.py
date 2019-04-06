@@ -94,7 +94,11 @@ class TicketView(ModelViewSet):
 	@action(methods=['get'], detail=True)
 	def pay_winner_punter(self, request, pk=None):
 		if request.user.has_perm('user.be_seller'):
+			if not str(request.GET['store']):
+				return Response({"failed":"Entrada da banca não inserida"})						
 			ticket = self.get_object()	
+			if str(request.user.seller.my_store.id) != str(request.GET['store']):
+				return Response({"failed":"Ticket não é pertencente a esta banca"})						
 			response = ticket.pay_winner_punter(request.user)
 			return Response(response)
 		return Response({"failed":"Usuário não é vendedor"})
@@ -127,14 +131,19 @@ class TicketView(ModelViewSet):
 	@action(methods=['get'], detail=True)
 	def validar_ticket(self, request, pk=None):
 		if request.user.has_perm('user.be_seller'):
-			ticket = self.get_object()
-			print(request.user)
+			if not str(request.GET['store']):
+				return Response({"failed":"Entrada da banca não inserida"})						
+			if str(request.user.seller.my_store.id) != str(request.GET['store']):
+				return Response({"failed":"Usuário não é vendedor desta banca"})						
+			ticket = self.get_object()			
 			return Response(ticket.validate_ticket(request.user))
 		return Response({"failed":"Usuário não é vendedor"})
 
 	@action(methods=['get'], detail=True)
 	def cancel_ticket(self, request, pk=None):		
 		ticket = self.get_object()
+		if str(request.user.seller.my_store.id) != str(request.GET['store']):
+				return Response({"failed":"Usuário não é vendedor desta banca"})						
 		return Response(ticket.cancel_ticket(request.user.seller))
 
 	@action(methods=['get'], detail=True)

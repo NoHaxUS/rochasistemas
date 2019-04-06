@@ -15,11 +15,17 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	payment = serializers.SlugRelatedField(queryset = Payment.objects.all(),slug_field='status_payment')
 	reward = serializers.SlugRelatedField(queryset = Reward.objects.all(),slug_field='id')
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
+	ticket_status = serializers.SerializerMethodField()
 	cotations = CotationTicketSerializer(many=True)
 
 	class Meta:
 		model = Ticket
-		fields = ('id','user','seller','normal_user','cotations','creation_date','reward','payment','value','visible','store')
+		fields = ('id','user','seller','normal_user','cotations','creation_date','reward','payment','value','visible','ticket_status','store')
+
+	def get_ticket_status(self, obj):
+		return obj.ticket_status
+	
+
 
 
 class RewardSerializer(serializers.HyperlinkedModelSerializer):
@@ -46,7 +52,7 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 	creation_date = serializers.DateTimeField(read_only=True)	
 	payment = PaymentSerializer(read_only=True)	
 	reward = serializers.SlugRelatedField(read_only=True, slug_field='reward_status')	
-	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(game__id__in=[79853785]), required=True)	
+	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(game__id__in=[79890505]), required=True)	
 		
 	def update(self, instance, validated_data):
 		normal_user = validated_data.pop('normal_user')		
