@@ -32,7 +32,7 @@ def get_games(games):
 
 def process_games(game_json):
     game = Game.objects.filter(pk=game_json['id']).first()
-    game_scores = game_json.get('scores', None):
+    game_scores = game_json.get('scores', None)
     if game_scores and game:
         process_1X2(game_scores, game.cotations.filter(market__name='1X2'))
         goals_over_under(game_scores, game.cotations.filter(market__name='Gols - Acima/Abaixo'))
@@ -362,9 +362,9 @@ def exact_total_goals(scores, cotations):
         cotations.update(settlement=1)
 
         cotations.filter(name__contains=str(int(total_goals)).update(settlement=2)
-        latest_total_goals  = cotations.latest('total_goals')
-        if total_goals > latest_total_goals.total_goals:
-            latest_total_goals.update(settlement=2)
+        latest_total_goals  = cotations.latest('total_goals').total_goals
+        if total_goals > latest_total_goals:
+            cotations.filter(name__contains=int(latest_total_goals)).update(settlement=2)
 
         
 def both_teams_to_score(scores, cotations):
@@ -406,9 +406,9 @@ def home_team_exact_goals(scores, cotations):
         cotations.update(settlement=1)
 
         cotations.filter(name__contains=str(int(home)).update(settlement=2)
-        latest_total_goals  = cotations.latest('total_goals')
-        if home > latest_total_goals.total_goals:
-            latest_total_goals.update(settlement=2)
+        latest_total_goals  = cotations.latest('total_goals').total_goals
+        if home > latest_total_goals:
+            cotations.filter(name__contains=int(latest_total_goals)).update(settlement=2)
 
 
 def away_team_exact_goals(scores, cotations):
@@ -418,7 +418,272 @@ def away_team_exact_goals(scores, cotations):
         cotations.update(settlement=1)
 
         cotations.filter(name__contains=str(int(away)).update(settlement=2)
-        latest_total_goals  = cotations.latest('total_goals')
-        if away > latest_total_goals.total_goals:
-            latest_total_goals.update(settlement=2)
+        latest_total_goals  = cotations.latest('total_goals').total_goals
+        if away > latest_total_goals:
+            cotations.filter(name__contains=int(latest_total_goals)).update(settlement=2)
+
+
+def half_time_result_both_teams_to_score(scores, cotations, home_name, away_name):
+    home = int(scores['1']['home'])
+    away = int(scores['1']['away'])
+    both_mark = home and away
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+        
+        if home > away and both_mark:
+            cotations.filter(name__istartswith=home_name, name__contains='Sim').update(settlement=2)
+        else:
+            cotations.filter(name__istartswith=home_name, name__contains='Não').update(settlement=2)
+
+        if home < away and both_mark:
+            cotations.filter(name__istartswith=away_name, name__contains='Sim').update(settlement=2)
+        else:
+            cotations.filter(name__istartswith=away_name, name__contains='Não').update(settlement=2)
+        
+        if home == away and both_mark:
+            cotations.filter(name__istartswith='Empate', name__contains='Sim').update(settlement=2)
+        else:
+            cotations.filter(name__istartswith='Empate', name__contains='Não').update(settlement=2)
+
+
+def half_time_result_total_goals(scores, cotations, home_name, away_name):
+    home = int(scores['1']['home'])
+    away = int(scores['1']['away'])
+    total_goals = home + away
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+        
+        if home > away:
+            cotations.filter(name__istartswith=home_name, name__contains='Acima', total_goals__lt=total_goals).update(settlement=2)
+            cotations.filter(name__istartswith=home_name, name__contains='Abaixo', total_goals__gt=total_goals).update(settlement=2)
+        elif home < away:
+            cotations.filter(name__istartswith=away_name, name__contains='Acima', total_goals__lt=total_goals).update(settlement=2)
+            cotations.filter(name__istartswith=away_name, name__contains='Abaixo', total_goals__gt=total_goals).update(settlement=2)
+        elif home == away:
+            cotations.filter(name__istartswith='Empate', name__contains='Acima', total_goals__lt=total_goals).update(settlement=2)
+            cotations.filter(name__istartswith='Empate', name__contains='Abaixo', total_goals__gt=total_goals).update(settlement=2)
+
+
+def both_teams_to_score_in_1st_half(scores):
+    home = int(scores['1']['home'])
+    away = int(scores['1']['away'])
+    both_mark = home and away
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        if both_mark:
+            cotations.filter(name__contains='Sim').update(settlement=2)
+        else:
+            cotations.filter(name__contains'Não').update(settlement=2)
+
+
+def both_teams_to_score_in_2nd_half(scores):
+    home_1 = int(scores['1']['home'])
+    away_2 = int(scores['1']['away'])
+
+    home_2 = int(scores['2']['home']) - home_1
+    away_2 = int(scores['2']['away']) - away_1
+
+    both_mark = home_2 and away_2
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        if both_mark:
+            cotations.filter(name__contains='Sim').update(settlement=2)
+        else:
+            cotations.filter(name__contains'Não').update(settlement=2)
+
+
+def both_teams_to_score_1st_half_2nd_half(scores):
+    home_1 = int(scores['1']['home'])
+    away_2 = int(scores['1']['away'])
+
+    both_mark_1 = home_1 and away_1
+
+    home_2 = int(scores['2']['home']) - home_1
+    away_2 = int(scores['2']['away']) - away_1
+
+    both_mark_2 = home_2 and away_2
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        if both_mark_1:
+            if both_mark_2:
+                cotations.filter(name__istartswith='Sim', name__iendswith='Sim').update(settlement=2)
+            else:
+                cotations.filter(name__istartswith='Sim', name__iendswith='Não').update(settlement=2)
+        else:
+            if both_mark_2:
+                cotations.filter(name__istartswith='Não', name__iendswith='Sim').update(settlement=2)
+            else:
+                cotations.filter(name__istartswith='Não', name__iendswith='Não').update(settlement=2)
+
+
+def first_half_goals(scores, cotations):
+    home = int(scores['1']['home'])
+    away = int(scores['1']['away'])
+    total_goals = home + away
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+        
+        cotations.filter(name__contains='Acima', total_goals__lt=total_goals).update(settlement=2)
+        cotations.filter(name__contains='Abaixo', total_goals__gt=total_goals).update(settlement=2)
+
+
+def exact_1st_half_goals(scores, cotations):
+    home = int(scores['1']['home'])
+    away = int(scores['1']['away'])
+    total_goals = home + away
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        cotations.filter(name__contains=str(int(total_goals)).update(settlement=2)
+        latest_total_goals  = cotations.latest('total_goals').total_goals
+        if total_goals > latest_total_goals:
+            cotations.filter(name__contains=int(latest_total_goals)).update(settlement=2)
+
+
+def exact_2nd_half_goals(scores, cotations):
+    home_1 = int(scores['1']['home'])
+    away_1 = int(scores['1']['away'])
+
+    home_2 = int(scores['2']['home']) - home_1
+    away_2 = int(scores['2']['away']) - away_1
+
+    total_goals = home_2 + away_2
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        cotations.filter(name__contains=str(int(total_goals)).update(settlement=2)
+        latest_total_goals  = cotations.latest('total_goals').total_goals
+        if total_goals > latest_total_goals:
+            cotations.filter(name__contains=int(latest_total_goals)).update(settlement=2)
+
+
+def to_score_in_half(scores, cotations):
+    home_1 = int(scores['1']['home'])
+    away_1 = int(scores['1']['away'])
+
+    home_2 = int(scores['2']['home']) - home_1
+    away_2 = int(scores['2']['away']) - away_1
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        if home_1 > 0 or away_1 > 0:
+            cotations.filter(name__contains='1° Tempo', name__contains='Sim').update(settlement=2)
+        if home_2 > 0 or away_2 > 0:
+            cotations.filter(name__contains='2° Tempo', name__contains='Sim').update(settlement=2)
+
+
+def half_with_most_goals(scores, cotations):
+    home_1 = int(scores['1']['home'])
+    away_1 = int(scores['1']['away'])
+    total_1 = home_1 + away_1
+
+    home_2 = int(scores['2']['home']) - home_1
+    away_2 = int(scores['2']['away']) - away_1
+    total_2 = home_2 + away_2
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        if total_1 > total_2:
+            cotations.filter(name='1° Tempo').update(settlement=2)
+        elif total_2 < total_2:
+            cotations.filter(name='2° Tempo').update(settlement=2)
+        else:
+            cotations.filter(name='Igual').update(settlement=2)
+
+
+def process_2nd_half_result(scores, cotations):
+    home_1 = int(scores['1']['home'])
+    away_1 = int(scores['1']['away'])
+
+
+    home_2 = int(scores['2']['home']) - home_1
+    away_2 = int(scores['2']['away']) - away_1
+  
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        if home_2 > away_2:
+            cotations.filter(name='Casa').update(settlement=2)
+        elif home_2 < away_2:
+            cotations.filter(name='Fora').update(settlement=2)
+        else:
+            cotations.filter(name='Empate').update(settlement=2)
+        
+
+def exact_2nd_half_goals(scores, cotations):
+    home = int(scores['2']['home'])
+    away = int(scores['2']['away'])
+    total_goals = home + away
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        cotations.filter(name__contains=str(int(total_goals)).update(settlement=2)
+        latest_total_goals  = cotations.latest('total_goals').total_goals
+        if total_goals > latest_total_goals:
+            cotations.filter(name__contains=int(latest_total_goals)).update(settlement=2)
+
+
+def result_both_teams_to_score(scores, cotations, home_name, away_name):
+    home = int(scores['2']['home'])
+    away = int(scores['2']['away'])
+    both_mark = home and away
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+        
+        if home > away and both_mark:
+            cotations.filter(name__istartswith=home_name, name__contains='Sim').update(settlement=2)
+        else:
+            cotations.filter(name__istartswith=home_name, name__contains='Não').update(settlement=2)
+
+        if home < away and both_mark:
+            cotations.filter(name__istartswith=away_name, name__contains='Sim').update(settlement=2)
+        else:
+            cotations.filter(name__istartswith=away_name, name__contains='Não').update(settlement=2)
+        
+        if home == away and both_mark:
+            cotations.filter(name__istartswith='Empate', name__contains='Sim').update(settlement=2)
+        else:
+            cotations.filter(name__istartswith='Empate', name__contains='Não').update(settlement=2)
+
+
+def winning_margin(scores, cotations):
+    home = int(scores['2']['home'])
+    away = int(scores['2']['away'])
+    has_goals = home and away
+    goals_difference = home - away
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        if goals_difference > 0:
+            cotations.filter(name__contains='Casa', name__contains=abs(goals_difference)).update(settlement=2)
+        elif goals_difference < 0:
+            cotations.filter(name__contains='Fora', name__contains=abs(goals_difference)).update(settlement=2)
+        elif goals_difference == 0:
+            cotations.filter(name__contains='Empate').update(settlement=2)
+        elif not has_goals:
+            cotations.filter(name__contains='Nenhum Gol').update(settlement=2)
+
+        latest_total_goals  = cotations.latest('total_goals').total_goals
+        if total_goals > latest_total_goals:
+            cotations.filter(name__contains=int(latest_total_goals)).update(settlement=2)
+
+
+
 
