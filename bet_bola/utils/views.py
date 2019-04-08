@@ -1,6 +1,6 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
-from .serializers import GeneralConfigurationsSerializer, ExcludedGameSerializer, ExcludedLeagueSerializer, RulesMessageSerializer
-from .models import GeneralConfigurations, ExcludedGame, ExcludedLeague, RulesMessage
+from .serializers import GeneralConfigurationsSerializer, ExcludedGameSerializer, ExcludedLeagueSerializer, RulesMessageSerializer, RewardRelatedSerializer, MarketReductionSerializer, MarketRemotionSerializer
+from .models import GeneralConfigurations, ExcludedGame, ExcludedLeague, RulesMessage, RewardRelated, MarketReduction, MarketRemotion
 from rest_framework.response import Response
 
 class GeneralConfigurationsView(ModelViewSet):
@@ -24,14 +24,78 @@ class RulesMessageView(ModelViewSet):
 
 
 class ExcludedGameView(ModelViewSet):
-    queryset = ExcludedGame.objects.all()
-    serializer_class = ExcludedGameSerializer
+	queryset = ExcludedGame.objects.all()
+	serializer_class = ExcludedGameSerializer
+
+	def list(self, request, pk=None):
+		from core.models import Store
+		store_id = request.GET['store']
+		store = Store.objects.get(pk=store_id)
+
+		excluded_game= ExcludedGame.objects.filter(store=store)
+		serializer = self.get_serializer(excluded_game, many=True)
+
+		return Response(serializer.data)
 
 
 class ExcludedLeagueView(ModelViewSet):
-    queryset = ExcludedLeague.objects.all()
-    serializer_class = ExcludedLeagueSerializer
+	queryset = ExcludedLeague.objects.all()
+	serializer_class = ExcludedLeagueSerializer
 
+	def list(self, request, pk=None):
+		from core.models import Store
+		store_id = request.GET['store']
+		store = Store.objects.get(pk=store_id)
+
+		excluded_league= ExcludedLeague.objects.filter(store=store)
+		serializer = self.get_serializer(excluded_league, many=True)
+
+		return Response(serializer.data)
+
+
+class RewardRelatedView(ModelViewSet):
+	queryset = RewardRelated.objects.all()
+	serializer_class = RewardRelatedSerializer
+
+	def list(self, request, pk=None):
+		from core.models import Store
+		store_id = request.GET['store']
+		store = Store.objects.get(pk=store_id)
+
+		rewards_related= RewardRelated.objects.filter(store=store)
+		serializer = self.get_serializer(rewards_related, many=True)
+
+		return Response(serializer.data)
+
+
+class MarketReductionView(ModelViewSet):
+	queryset = MarketReduction.objects.all()
+	serializer_class = MarketReductionSerializer
+
+	def list(self, request, pk=None):
+		from core.models import Store
+		store_id = request.GET['store']
+		store = Store.objects.get(pk=store_id)
+
+		markets_reduction= MarketReduction.objects.filter(store=store)
+		serializer = self.get_serializer(markets_reduction, many=True)
+
+		return Response(serializer.data)
+
+
+class MarketRemotionView(ModelViewSet):
+	queryset = MarketRemotion.objects.all()
+	serializer_class = MarketRemotionSerializer
+
+	def list(self, request, pk=None):
+		from core.models import Store
+		store_id = request.GET['store']
+		store = Store.objects.get(pk=store_id)
+
+		markets_remotion= MarketRemotion.objects.filter(store=store)
+		serializer = self.get_serializer(markets_remotion, many=True)
+
+		return Response(serializer.data)
 
 # class ValidateTicket(View):
 

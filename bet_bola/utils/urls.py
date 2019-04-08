@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import GeneralConfigurationsView, ExcludedGameView, ExcludedLeagueView, RulesMessageView
+from .views import GeneralConfigurationsView, ExcludedGameView, ExcludedLeagueView, RulesMessageView, RewardRelatedView, MarketReductionView, MarketRemotionView
 
 app_name = 'utils'
 
@@ -24,5 +24,8 @@ router.register(r'configurations', GeneralConfigurationsView)
 router.register(r'rules_message', RulesMessageView)
 router.register(r'excluded_games', ExcludedGameView)
 router.register(r'excluded_leagues', ExcludedLeagueView)
+router.register(r'rewards_related', RewardRelatedView)
+router.register(r'markets_reduction', MarketReductionView)
+router.register(r'markets_remotion', MarketRemotionView)
 
 urlpatterns = router.urls

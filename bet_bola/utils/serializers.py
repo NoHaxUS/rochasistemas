@@ -28,6 +28,14 @@ class RewardRelatedSerializer(serializers.HyperlinkedModelSerializer):
 		model = RewardRelated
 		fields = ('value_max','reward_value_max','store')
 
+	def validate(self, data):        
+		if data['value_max'] < 0:
+			raise serializers.ValidationError("Valor não pode ser negativo")
+		if data['reward_value_max'] < 0:
+			raise serializers.ValidationError("Valor não pode ser negativo")
+
+		return data
+
 
 class TicketCustomMessageSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -73,6 +81,15 @@ class ExcludedGameSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = ExcludedGame
 		fields = ('store','game')
+
+
+class MarketReductionSerializer(serializers.HyperlinkedModelSerializer):
+	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
+
+	class Meta:
+		model = MarketReduction
+		fields = ('market_to_reduct', 'reduction_percentual', 'store')
+
 
 class ExcludedLeagueSerializer(serializers.HyperlinkedModelSerializer):
 	
