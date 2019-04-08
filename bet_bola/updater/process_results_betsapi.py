@@ -665,6 +665,7 @@ def result_both_teams_to_score(scores, cotations, home_name, away_name):
 def winning_margin(scores, cotations):
     home = int(scores['2']['home'])
     away = int(scores['2']['away'])
+    total_goals = home + away
     has_goals = home and away
     goals_difference = home - away
 
@@ -682,7 +683,75 @@ def winning_margin(scores, cotations):
 
         latest_total_goals  = cotations.latest('total_goals').total_goals
         if total_goals > latest_total_goals:
-            cotations.filter(name__contains=int(latest_total_goals)).update(settlement=2)
+            if goals_difference > 0:
+                cotations.filter(name__contains='Casa', name__contains=int(latest_total_goals)).update(settlement=2)
+            elif goals_difference < 0:
+                cotations.filter(name__contains='Fora', name__contains=int(latest_total_goals)).update(settlement=2)
+
+
+def win_without_taking_goals(scores, cotations):
+    home = int(scores['2']['home'])
+    away = int(scores['2']['away'])
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        if home > away and away == 0:
+            cotations.filter(name='Casa - Ganhar sem tomar Gol').update(settlement=2)
+        elif home < away and home == 0:
+            cotations.filter(name='Fora - Ganhar sem tomar Gol').update(settlement=2)
+
+
+def win_whatever_half(scores, cotations):
+    home_1 = int(scores['1']['home'])
+    away_1 = int(scores['1']['away'])
+
+    home_2 = int(scores['2']['home']) - home_1
+    away_2 = int(scores['2']['away']) - away_1
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        if home_1 > away_1 or home_2 > away_2:
+            cotations.filter(name='Casa - Ganhar Qualquer Etapa').update(settlement=2)
+        elif home_1 < away_1 or home_2 < away_2:
+            cotations.filter(name='Fora - Ganhar Qualquer Etapa').update(settlement=2)
+
+
+def win_both_halves(scores, cotations):
+    home_1 = int(scores['1']['home'])
+    away_1 = int(scores['1']['away'])
+
+    home_2 = int(scores['2']['home']) - home_1
+    away_2 = int(scores['2']['away']) - away_1
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        if home_1 > away_1 and home_2 > away_2:
+            cotations.filter(name='Casa - Ganhar Qualquer Etapa').update(settlement=2)
+        elif home_1 < away_1 and home_2 < away_2:
+            cotations.filter(name='Fora - Ganhar Qualquer Etapa').update(settlement=2)
+
+
+def mark_both_halves(scores, cotations):
+    home_1 = int(scores['1']['home'])
+    away_1 = int(scores['1']['away'])
+
+    home_2 = int(scores['2']['home']) - home_1
+    away_2 = int(scores['2']['away']) - away_1
+
+    if cotations.count() > 0:
+        cotations.update(settlement=1)
+
+        if home_1 > 0 and home_2 > 0:
+            cotations.filter(name='Casa - Marcar em Ambas Etapas').update(settlement=2)
+        elif away_1 > 0 and away_2 > 0:
+            cotations.filter(name='Fora - Marcar em Ambas Etapas').update(settlement=2)
+
+
+
+
 
 
 
