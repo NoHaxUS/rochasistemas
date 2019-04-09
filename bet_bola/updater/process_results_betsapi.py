@@ -39,7 +39,43 @@ def process_games(game_json):
         goals_odd_even(game_scores, game.cotations.filter(market__name='Total de Gols Ímpar/Par'))
         home_team_odd_even_goals(game_scores, game.cotations.filter(market__name='Time Casa - Total de Gols Ímpar/Par'))
         away_team_odd_even_goals(game_scores, game.cotations.filter(market__name='Time Fora - Total de Gols Ímpar/Par'))
-
+        half_time_result(game_scores, game.cotations.filter(market__name='Resultado no 1° Tempo'))
+        half_time_double_chance(game_scores, game.cotations.filter(market__name='Dupla Chance 1° Tempo'))
+        half_time_correct_score(game_scores, game.cotations.filter(market__name='Placar correto 1° Tempo'))
+        process_1st_half_goals_odd_even(game_scores, game.cotations.filter(market__name='Total de Gols Ímpar/Par 1° Tempo'))
+        home_team_highest_scoring_half(game_scores, game.cotations.filter(market__name='Metade com maior quantidade de Gols - Time Casa'), game.home_team)
+        away_team_highest_scoring_half(game_scores, game.cotations.filter(market__name='Metade com maior quantiade de Gols - Time Fora'), game.away_team)
+        process_2nd_half_goals_odd_even(game_scores, game.cotations.filter(market_name='Ímpar/Par 2° Tempo'))
+        double_chance(game_scores, game.cotations.filter(market__name='Dupla Chance'))
+        correct_score(game_scores, game.cotations.filter(market__name='Placar Correto'))
+        half_time_full_time(game_scores, game.cotations.filter(market__name='Vencedor 1° Tempo / 2° Tempo'), game.home_team, game.away_team)
+        draw_no_bet(game_scores, game.cotations.filter(market__name='Casa/Fora'), game.home_team, game.away_team)
+        alternative_total_goals(game_scores, game.cotations.filter(market__name='Total de Gols'))
+        result_total_goals(game_scores, game.cotations.filter(market__name='Resultado / Total de Gols'), game.home_team, game.away_team)
+        total_goals_both_teams_to_score(game_scores, game.cotations.filter(market__name='Total de Gols / Ambos  Marcam'))
+        exact_total_goals(game_scores, game.cotations.filter(market__name='Total de Gols Exato'))
+        both_teams_to_score(game_scores, game.cotations.filter(market__name='Ambos Marcam'))
+        teams_to_score(game_scores, game.cotations.filter(market__name='Times que Marcam'), game.home_team, game.away_team)
+        home_team_exact_goals(game_scores, game.cotations.filter(market__name='Time Casa - Total de Gols Exato'))
+        away_team_exact_goals(game_scores, game.cotations.filter(market__name='Time Fora - Total de Gols Exato'))
+        half_time_result_both_teams_to_score(game_scores, game.cotations.filter(market__name='Resultado 1° Tempo / Ambos Marcam'), game.home_team, game.away_team)
+        half_time_result_total_goals(game_scores, game.cotations.filter(market__namer='Resultado 1° Tempo / Total de Gols'), game.home_team, game.away_team)
+        both_teams_to_score_in_1st_half(game_scores, game.cotatations.filter(market__name='Ambos marcam 1° Tempo'))
+        both_teams_to_score_in_2nd_half(game_scores, game.cotatations.filter(market__name='Ambos marcam 2° Tempo'))
+        both_teams_to_score_1st_half_2nd_half(game_scores, game.cotations.filter(market__name='Ambos Marcam 1° e 2° Tempo'))
+        first_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols 1° Tempo'))
+        exact_1st_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols Exato 1° Tempo'))
+        exact_2nd_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols Exato 2° Tempo'))
+        to_score_in_half(game_scores, game.cotations.filter(market__name='Haverá Gol'))
+        half_with_most_goals(game_scores, game.cotations.filter(market__name='Metade com mais Gols'))
+        process_2nd_half_result(game_scores, game.cotations.filter(market__name='Resultado 2° Tempo'))
+        exact_2nd_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols Exato 2° Tempo'))
+        result_both_teams_to_score(game_scores, game.cotations.filter(market__name='Resultado / Ambos Marcam'), game.home_team, game.away_team)
+        winning_margin(game_scores, game.cotations.filter(market__name='Margem de Vitória'))
+        win_without_taking_goals(game_scores, game.cotations.filter(market__name='Especiais'))
+        win_whatever_half(game_scores, game.cotations.filter(market__name='Especiais'))
+        win_both_halves(game_scores, game.cotations.filter(market__name='Especiais'))
+        mark_both_halves(game_scores, game.cotations.filter(market__name='Especiais'))
 
 
 
@@ -291,7 +327,7 @@ def half_time_full_time(scores, cotations, home_name, away_name):
             cotations.filter(name__istartswith='Empate', name__iendswith='Empate').update(settlement=2)
 
 
-def draw_no_bet(scores, cotations, away_name, home_name):
+def draw_no_bet(scores, cotations, home_name, away_name):
     home = int(scores['2']['home'])
     away = int(scores['2']['away'])
 
@@ -466,7 +502,7 @@ def half_time_result_total_goals(scores, cotations, home_name, away_name):
             cotations.filter(name__istartswith='Empate', name__contains='Abaixo', total_goals__gt=total_goals).update(settlement=2)
 
 
-def both_teams_to_score_in_1st_half(scores):
+def both_teams_to_score_in_1st_half(scores, cotations):
     home = int(scores['1']['home'])
     away = int(scores['1']['away'])
     both_mark = home and away
@@ -480,7 +516,7 @@ def both_teams_to_score_in_1st_half(scores):
             cotations.filter(name__contains'Não').update(settlement=2)
 
 
-def both_teams_to_score_in_2nd_half(scores):
+def both_teams_to_score_in_2nd_half(scores, cotations):
     home_1 = int(scores['1']['home'])
     away_2 = int(scores['1']['away'])
 
@@ -498,7 +534,7 @@ def both_teams_to_score_in_2nd_half(scores):
             cotations.filter(name__contains'Não').update(settlement=2)
 
 
-def both_teams_to_score_1st_half_2nd_half(scores):
+def both_teams_to_score_1st_half_2nd_half(scores, cotations):
     home_1 = int(scores['1']['home'])
     away_2 = int(scores['1']['away'])
 
