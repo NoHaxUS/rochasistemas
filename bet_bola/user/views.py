@@ -87,7 +87,7 @@ class SellerView(ModelViewSet):
         who_reseted_revenue = str(request.user.pk) + ' - ' + request.user.username
         seller.reset_revenue(who_reseted_revenue)
 
-        return Response({'success':'Cambistas Pagos'})
+        return Response({'success':'Cambista Pago'})
 
     @action(methods=['post'], detail=True)
     def add_credit(self, request, pk=None):

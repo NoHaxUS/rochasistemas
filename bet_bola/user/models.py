@@ -75,7 +75,7 @@ class Seller(CustomUser):
     my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)    
 
     def reset_revenue(self, who_reseted_revenue):
-        from core.models import Payment
+        from ticket.models import Payment
         from history.models import RevenueHistorySeller, PunterPayedHistory
 
         RevenueHistorySeller.objects.create(who_reseted_revenue=who_reseted_revenue,
@@ -83,7 +83,8 @@ class Seller(CustomUser):
         final_revenue=self.actual_revenue(),
         earned_value=self.net_value(),
         final_out_value=self.out_money(),
-        profit = self.actual_revenue() - self.out_money())
+        profit = self.actual_revenue() - self.out_money(),
+        store=self.my_store)
 
         payments = Payment.objects.filter(who_set_payment=self, seller_was_rewarded=False)
         payments.update(seller_was_rewarded=True)
