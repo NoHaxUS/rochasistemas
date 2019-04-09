@@ -349,7 +349,8 @@ class Manager(CustomUser):
                 manager_before_balance=manager_before_balance,
                 manager_after_balance=manager_balance_after,
                 seller_before_balance=seller_before_balance,
-                seller_after_balance=seller_after_balance)
+                seller_after_balance=seller_after_balance,
+                store=self.my_store)
         else:
             ManagerTransactions.objects.create(manager=self,
             seller=seller,
@@ -357,7 +358,8 @@ class Manager(CustomUser):
             manager_before_balance=manager_before_balance,
             manager_after_balance=manager_balance_after,
             seller_before_balance=seller_before_balance,
-            seller_after_balance=seller_after_balance)
+            seller_after_balance=seller_after_balance,
+            store=self.my_store)
 
         return {'success': True,
             'message': 'Transação realizada.'}

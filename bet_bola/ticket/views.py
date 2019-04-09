@@ -45,6 +45,18 @@ class TicketView(ModelViewSet):
 				return CreateTicketLoggedUserSerializer
 			return CreateTicketAnonymousUserSerializer
 
+	def create(self, request, *args, **kwargs):
+		serializer = self.get_serializer(data=request.data)
+		serializer.is_valid(raise_exception=True)
+		message = self.perform_create(serializer)
+		headers = self.get_success_headers(serializer.data)
+		if message:		
+			data = [serializer.data,{'Validation':message}]		
+			return Response(data, status=status.HTTP_201_CREATED, headers=headers)		
+			
+		data = serializer.data
+		return Response(data, status=status.HTTP_201_CREATED, headers=headers)		
+
 	def perform_create(self, serializer):
 		data = {
 			'success': True
@@ -88,8 +100,8 @@ class TicketView(ModelViewSet):
 				market=i_cotation.market						
 			).save()
 
-		if self.request.user.has_perm('user.be_seller'):
-			instance.validate_ticket(self.request.user.seller)
+		if self.request.user.has_perm('user.be_seller'):			
+			return instance.validate_ticket(self.request.user.seller)
 
 	@action(methods=['get'], detail=True)
 	def pay_winner_punter(self, request, pk=None):

@@ -41,7 +41,7 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
 		store = Store.objects.get(id=self.context['request'].GET.get('store'))
 		obj.my_store=store
 		obj.save()
-		return obj
+		return obj	
 
 	def validate_email(self, value):
 		if Punter.objects.filter(email=value):

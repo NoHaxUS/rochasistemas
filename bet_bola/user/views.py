@@ -68,7 +68,7 @@ class SellerView(ModelViewSet):
             return self.get_paginated_response(serializer.data)
             
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data)    
 
     def destroy(self, request, *args, **kwargs):
         seller = self.get_object()
@@ -89,11 +89,27 @@ class SellerView(ModelViewSet):
 
         return Response({'success':'Cambistas Pagos'})
 
+    @action(methods=['post'], detail=True)
+    def add_credit(self, request, pk=None):
+        try:
+            valor = request.data['value']
+        except KeyError:
+            return Response({"Error": "Entrada invalida. Dica:{'value':'?'}"})
 
-    def get_permissions(self):    
-        if self.request.method in permissions.SAFE_METHODS:             
-            return [permissions.AllowAny(),]
-        return [IsSuperUser(),]
+        instance = self.get_object()        
+        if request.user.has_perm('user.be_manager'):            
+            if request.user.manager.my_store.pk != instance.my_store.pk:
+                return Response({'failed':'Gerente não pertence a mesma loja que o vendedor em questão'})
+            instance.credit_limit += valor
+            credit_transation = request.user.manager.manage_credit(instance)
+            return Response(credit_transation)
+
+        
+
+    # def get_permissions(self):    
+    #     if self.request.method in permissions.SAFE_METHODS:             
+    #         return [permissions.AllowAny(),]
+    #     return [IsSuperUser(),]
 
 
 class ManagerView(ModelViewSet):
@@ -121,10 +137,10 @@ class ManagerView(ModelViewSet):
         
         messages.success(request, 'Gerentes Pagos')
     
-    def get_permissions(self):    
-        if self.request.method in permissions.SAFE_METHODS:             
-            return [permissions.AllowAny(),]
-        return [IsSuperUser(),]
+    # def get_permissions(self):    
+    #     if self.request.method in permissions.SAFE_METHODS:             
+    #         return [permissions.AllowAny(),]
+    #     return [IsSuperUser(),]
 
 
 
