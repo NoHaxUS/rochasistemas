@@ -17,8 +17,8 @@ class Comission(models.Model):
     fourth = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Quádrupla")
     fifth = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Quíntupla")
     sixth = models. DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Sêxtupla")
-    sixth_more = models. DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Mais de  6")
-
+    sixth_more = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Mais de  6")
+    store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
 
     def total_simple(self):
         total_revenue = 0

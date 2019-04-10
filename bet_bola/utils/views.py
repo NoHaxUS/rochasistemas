@@ -1,6 +1,6 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
-from .serializers import GeneralConfigurationsSerializer, ExcludedGameSerializer, ExcludedLeagueSerializer, RulesMessageSerializer, RewardRelatedSerializer, MarketReductionSerializer, MarketRemotionSerializer
-from .models import GeneralConfigurations, ExcludedGame, ExcludedLeague, RulesMessage, RewardRelated, MarketReduction, MarketRemotion
+from .serializers import GeneralConfigurationsSerializer, ExcludedGameSerializer, ExcludedLeagueSerializer, RulesMessageSerializer, RewardRelatedSerializer, MarketReductionSerializer, MarketRemotionSerializer, ComissionSerializer
+from .models import GeneralConfigurations, ExcludedGame, ExcludedLeague, RulesMessage, RewardRelated, MarketReduction, MarketRemotion, Comission
 from rest_framework.response import Response
 
 class GeneralConfigurationsView(ModelViewSet):
@@ -94,6 +94,20 @@ class MarketRemotionView(ModelViewSet):
 
 		markets_remotion= MarketRemotion.objects.filter(store=store)
 		serializer = self.get_serializer(markets_remotion, many=True)
+
+		return Response(serializer.data)
+
+class ComissionView(ModelViewSet):
+	queryset = Comission.objects.all()
+	serializer_class = ComissionSerializer
+
+	def list(self, request, pk=None):
+		from core.models import Store
+		store_id = request.GET['store']
+		store = Store.objects.get(pk=store_id)
+
+		comission= Comission.objects.filter(store=store)
+		serializer = self.get_serializer(comission, many=True)
 
 		return Response(serializer.data)
 

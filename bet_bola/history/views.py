@@ -29,10 +29,16 @@ class ManagerTransactionsHistoryView(ModelViewSet):
     serializer_class = ManagerTransactionsSerializer
 
     def list(self, request, pk=None):
-        store_id = request.GET['store']     
+        store_id = request.GET['store']         
 
         queryset = self.queryset.filter(store__id=store_id)
 
+        if request.GET.get('manager'):            
+            queryset = queryset.filter(manager__username=request.GET['manager'])
+        if request.GET.get('seller'):
+            queryset = queryset.filter(seller__username=request.GET['seller'])
+        if request.GET.get('date'):
+            queryset = queryset.filter(transaction_date__date=request.GET['date'])
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
