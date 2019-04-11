@@ -5,7 +5,7 @@ from rest_framework import permissions
 from django.shortcuts import get_object_or_404
 from core.models import Cotation, CotationHistory, Store
 from utils import timezone as tzlocal
-from .permissions import CreateBet
+from .permissions import CreateBet, PayWinnerPermission
 from .models import *
 from .serializers import *
 
@@ -13,9 +13,10 @@ from .serializers import *
 class TicketView(ModelViewSet):
 	queryset = Ticket.objects.all()
 	serializer_class = TicketSerializer
+	permission_classes = [CreateBet,]
 
 	def list(self, request, pk=None):
-		store_id = request.GET['store']     
+		store_id = request.GET.get('store')     
 
 		queryset = self.queryset.filter(store__id=store_id)
 
@@ -83,37 +84,31 @@ class TicketView(ModelViewSet):
 				if self.request.user.has_perm('user.be_seller'):
 					normal_user = NormalUser.objects.create(first_name=serializer.validated_data['normal_user']['first_name'], cellphone=serializer.validated_data['normal_user']['cellphone'], my_store=store)
 					instance = serializer.save(seller=self.request.user,normal_user=normal_user, reward=reward, payment=payment, creation_date=creation_date,store=store)						
-				serializer.save(user=self.request.user, reward=reward, payment=payment, creation_date=creation_date, store=store)
+				instance = serializer.save(user=self.request.user, reward=reward, payment=payment, creation_date=creation_date, store=store)
 			else:					
 				normal_user = NormalUser.objects.create(first_name=serializer.validated_data['normal_user']['first_name'], cellphone=serializer.validated_data['normal_user']['cellphone'], my_store=store)
 				instance = serializer.save(normal_user=normal_user, reward=reward, payment=payment, creation_date=creation_date, store=store)
 
 
-		for i_cotation in serializer.validated_data['cotations']:			
-			CotationHistory(
-				original_cotation=i_cotation,
-				ticket=instance,
-				name=i_cotation.name,
-				start_price=i_cotation.start_price,
-				price=i_cotation.price,
-				game=i_cotation.game,								
-				market=i_cotation.market						
-			).save()
+			for i_cotation in serializer.validated_data['cotations']:			
+				CotationHistory(
+					original_cotation=i_cotation,
+					ticket=instance,
+					name=i_cotation.name,
+					start_price=i_cotation.start_price,
+					price=i_cotation.price,
+					game=i_cotation.game,								
+					market=i_cotation.market						
+				).save()
 
-		if self.request.user.has_perm('user.be_seller'):			
-			return instance.validate_ticket(self.request.user.seller)
+			if self.request.user.has_perm('user.be_seller'):			
+				return instance.validate_ticket(self.request.user.seller)
 
-	@action(methods=['get'], detail=True)
-	def pay_winner_punter(self, request, pk=None):
-		if request.user.has_perm('user.be_seller'):
-			if not str(request.GET['store']):
-				return Response({"failed":"Entrada da banca não inserida"})						
-			ticket = self.get_object()	
-			if str(request.user.seller.my_store.id) != str(request.GET['store']):
-				return Response({"failed":"Ticket não é pertencente a esta banca"})						
-			response = ticket.pay_winner_punter(request.user)
-			return Response(response)
-		return Response({"failed":"Usuário não é vendedor"})
+	@action(methods=['get'], detail=True, permission_classes=[PayWinnerPermission,])
+	def pay_winner_punter(self, request, pk=None):		
+		ticket = self.get_object()				
+		response = ticket.pay_winner_punter(request.user)
+		return Response(response)		
 
 	@action(methods=['post'], detail=False)
 	def validar_tickets(self, request, pk=None):
@@ -226,13 +221,7 @@ class TicketView(ModelViewSet):
 		else:
 		    context = {'show_ticket': False}
 
-		return Response(context)
-		
-	def get_permissions(self):    
-		if self.request.method in permissions.SAFE_METHODS:	
-			return [permissions.AllowAny(),]
-		return [CreateBet(),]
-
+		return Response(context)		
 
 
 class RewardView(ModelViewSet):

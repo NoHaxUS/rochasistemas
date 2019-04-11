@@ -5,12 +5,12 @@ from rest_framework.response import Response
 from user.models import Punter, NormalUser, CustomUser, Seller, Manager
 from ticket.models import Ticket
 from .serializers import PunterSerializer, NormalUserSerializer, SellerSerializer, ManagerSerializer
-from .permissions import IsSuperUser, General, SellerViewPermission
+from .permissions import IsSuperUser, PunterViewPermission, SellerViewPermission, ManagerViewPermission
 
 class PunterView(ModelViewSet):
     queryset = Punter.objects.all()
     serializer_class = PunterSerializer
-    permission_classes = [General,]
+    permission_classes = [PunterViewPermission,]
 
     def list(self, request, pk=None):
         store_id = request.GET['store']   
@@ -28,8 +28,7 @@ class PunterView(ModelViewSet):
 
 class NormalUserView(ModelViewSet):
     queryset = NormalUser.objects.all()
-    serializer_class = NormalUserSerializer
-    permission_classes = [General,]
+    serializer_class = NormalUserSerializer    
 
     def list(self, request, pk=None):
         store_id = request.GET['store'] 
@@ -101,7 +100,7 @@ class SellerView(ModelViewSet):
 class ManagerView(ModelViewSet):
     queryset = Manager.objects.all()
     serializer_class = ManagerSerializer
-    permission_classes = [General,]
+    permission_classes = [ManagerViewPermission,]
 
     def list(self, request, pk=None):
         store_id = request.GET['store']        

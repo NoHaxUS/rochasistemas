@@ -15,16 +15,35 @@ class IsSeller(permissions.BasePermission):
 	def has_permission(self, request, view):		
 		if request.user.has_perm('user.be_seller'):
 			return True
+		return False	
+
+
+class ManagerViewPermission(permissions.BasePermission):
+	message = "Você não tem permissão para essa operação."
+	def has_permission(self, request, view):
+		if request.user.is_superuser:
+			return True						
 		return False
 
+	def has_object_permission(self, request, view, obj):
+		if request.user.is_superuser:
+			return True		
+		return request.user.pk == obj.pk
 
-class General(permissions.BasePermission):
+class PunterViewPermission(permissions.BasePermission):
 	message = "Você não tem permissão para essa operação."
 
-	def has_permission(self, request, view):		
-		if request.method in permissions.SAFE_METHODS or request.user.is_superuser:
+	def has_permission(self, request, view):
+		if request.method in permissions.SAFE_METHODS or request.user.is_superuser or request.user.has_perm('user.be_manager'):
+			return True		
+		if request.method == 'POST':
 			return True		
 		return False
+
+	def has_object_permission(self, request, view, obj):
+		if request.user.is_superuser:
+			return True		
+		return request.user.pk == obj.pk
 
 
 class SellerViewPermission(permissions.BasePermission):
@@ -35,34 +54,11 @@ class SellerViewPermission(permissions.BasePermission):
 			return True		
 		return False
 
+	def has_object_permission(self, request, view, obj):
+		if request.user.is_superuser:
+			return True		
+		if request.user.has_perm('user.be_manager'):
+			return request.user.manager == obj.seller.my_manager
 
+		return request.user.pk == obj.pk
 
-# class IsManager(permissions.BasePermission):
-# 	def has_permission(self, request, view):		
-# 		if request.user.has_perm('user.be_manager'):
-# 			return True		
-# 		return False
-
-# class IsSeller(permissions.BasePermission):	
-# 	message = 'Usuário não é vendedor'
-
-# 	def has_permission(self, request, view):		
-# 		if request.user.has_perm('user.be_seller'):
-# 			return True
-# 		return False
-
-# class IsPunter(permissions.BasePermission):	
-# 	message = 'Usuário não é apostador'
-
-# 	def has_permission(self, request, view):		
-# 		if request.user.has_perm('user.be_punter'):
-# 			return True
-# 		return False
-
-
-# class IsAnonymous(permissions.BasePermission):	
-	
-# 	def has_permission(self, request, view):		
-# 		if request.user.is_anonymous:
-# 			return True
-# 		return False

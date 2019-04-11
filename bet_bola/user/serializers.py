@@ -21,7 +21,7 @@ class PunterSerializer(serializers.HyperlinkedModelSerializer):
 		return obj
 
 	def validate_email(self, value):
-		if Punter.objects.filter(email=value):
+		if Punter.objects.filter(email=value,my_store=self.context['request'].GET.get('store')):
 			raise serializers.ValidationError("Email ja cadastrado.")
 		return value
 
