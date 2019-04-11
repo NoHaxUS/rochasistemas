@@ -10,19 +10,18 @@ class CreateBet(permissions.BasePermission):
 				self.message = "Forneça a id da loja"
 				return False
 			return True
-		else:			
-			if not request.GET.get('store'):
-				self.message = "Forneça a id da loja"
-				return False
-			elif request.user.is_superuser or request.user.has_perm("user.be_manager"):			
-				return False			
-			elif request.user.has_perm('user.be_seller') and str(request.user.seller.my_store.id) != str(request.GET['store']):
-				self.message = "Usuario não é pertencente a esta banca"
-				return False
-			elif request.user.has_perm('user.be_punter') and str(request.user.punter.my_store.id) != str(request.GET['store']):				
-				self.message = "Usuario não é pertencente a esta banca"				
-				return False			
-			return True
+		elif not request.GET.get('store'):
+			self.message = "Forneça a id da loja"
+			return False
+		elif request.user.is_superuser or request.user.has_perm("user.be_manager"):			
+			return False			
+		elif request.user.has_perm('user.be_seller') and str(request.user.seller.my_store.id) != str(request.GET['store']):
+			self.message = "Usuario não é pertencente a esta banca"
+			return False
+		elif request.user.has_perm('user.be_punter') and str(request.user.punter.my_store.id) != str(request.GET['store']):				
+			self.message = "Usuario não é pertencente a esta banca"				
+			return False			
+		return True
 
 
 class PayWinnerPermission(permissions.BasePermission):
@@ -36,3 +35,22 @@ class PayWinnerPermission(permissions.BasePermission):
 				return False
 		self.message = "Usuário não é vendedor"
 		return True
+
+
+class ValidateTicketPermission(permissions.BasePermission):
+	message = "Você não tem permissão para essa operação."
+
+	def has_permission(self, request, view):
+		store = request.GET.get('store')
+		user = request.user
+
+		if request.user.has_perm('user.be_seller'):
+			if not store:
+				self.message = "Forneça a id da loja"
+				return False
+			if str(user.seller.my_store.id) != str(store):
+				self.message = "Usuário não é vendedor desta banca"
+				return False					
+			return True		
+		self.message = "Usuário não é vendedor"
+		return False			
