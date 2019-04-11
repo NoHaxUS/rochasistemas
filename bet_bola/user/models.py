@@ -17,8 +17,6 @@ class CustomUser(AbstractUser):
         return self.first_name + ' ' + self.last_name
     full_name.short_description = 'Nome Completo'
 
-    
-
 
 class NormalUser(models.Model):
     first_name = models.CharField(max_length=150, verbose_name='Nome')

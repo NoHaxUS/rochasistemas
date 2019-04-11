@@ -21,8 +21,19 @@ class IsSeller(permissions.BasePermission):
 class ManagerViewPermission(permissions.BasePermission):
 	message = "Você não tem permissão para essa operação."
 	def has_permission(self, request, view):
+		store = request.GET.get('store')
+		user = request.user
 		if request.user.is_superuser:
-			return True						
+			return True
+		if not request.method == 'POST':			
+			if user.has_perm("user.be_manager") and not request.GET.get('store'):
+				self.message = "Forneça a id da banca"
+				return False
+			elif user.has_perm("user.be_manager") and request.GET.get('store'):
+				if str(user.manager.my_store.pk) == str(store):
+					return True
+				self.message = "Administrador não pertence a essa banca"
+				return False
 		return False
 
 	def has_object_permission(self, request, view, obj):
@@ -34,15 +45,30 @@ class PunterViewPermission(permissions.BasePermission):
 	message = "Você não tem permissão para essa operação."
 
 	def has_permission(self, request, view):
-		if request.method in permissions.SAFE_METHODS or request.user.is_superuser or request.user.has_perm('user.be_manager'):
-			return True		
+		store = request.GET.get('store')
+		user = request.user
+		if request.user.is_superuser:		
+			return True				
 		if request.method == 'POST':
+			if not store:
+				self.message = "Forneça id da banca"
+				return False			
 			return True		
+		if user.is_authenticated and ((user.has_perm('user.be_seller') and str(user.seller.my_store.pk) != str(store)) or user.has_perm('user.be_manager') and str(user.manager.my_store.pk) != str(store)):			
+			self.message = "Usuario não pertence a essa banca"
+			return False			
+		if user.is_authenticated and ((user.has_perm('user.be_seller') and str(user.seller.my_store.pk) == str(store)) or user.has_perm('user.be_manager') and str(user.manager.my_store.pk) == str(store)):			
+			return True
+
 		return False
 
 	def has_object_permission(self, request, view, obj):
 		if request.user.is_superuser:
-			return True		
+			return True
+		else:
+			if not request.GET.get('store'):
+				self.message = "Forneça id da banca"
+				return False		
 		return request.user.pk == obj.pk
 
 
@@ -50,8 +76,20 @@ class SellerViewPermission(permissions.BasePermission):
 	message = "Você não tem permissão para essa operação."
 
 	def has_permission(self, request, view):
-		if request.method in permissions.SAFE_METHODS or request.user.is_superuser or request.user.has_perm('user.be_manager'):
-			return True		
+		store = request.GET.get('store')
+		user = request.user
+		if request.user.is_superuser:
+			return True
+		else:
+			if not store:
+				self.message = "Forneça id da "
+				return False			
+			elif user.has_perm('user.be_manager') and str(request.user.manager.my_store.pk) != store:
+				self.message = "Admnistrador não pertence a essa banca"
+				return False
+			elif user.has_perm('user.be_seller') and str(request.user.seller.my_store.pk) != store:
+				self.message = "Vendedor não pertence a essa banca"
+				return False
 		return False
 
 	def has_object_permission(self, request, view, obj):

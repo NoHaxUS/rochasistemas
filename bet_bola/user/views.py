@@ -13,7 +13,7 @@ class PunterView(ModelViewSet):
     permission_classes = [PunterViewPermission,]
 
     def list(self, request, pk=None):
-        store_id = request.GET['store']   
+        store_id = request.GET.get('store')   
 
         queryset = self.queryset.filter(my_store__id=store_id)
         
@@ -50,7 +50,7 @@ class SellerView(ModelViewSet):
     permission_classes = [SellerViewPermission,] 
 
     def list(self, request, pk=None):
-        store_id = request.GET['store']        
+        store_id = request.GET.get('store')
 
         queryset = self.queryset.filter(my_store__id=store_id)
 
