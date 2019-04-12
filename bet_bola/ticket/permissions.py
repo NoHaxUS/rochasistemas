@@ -23,6 +23,18 @@ class CreateBet(permissions.BasePermission):
 			return False			
 		return True
 
+	def has_object_permission(self, request, view, obj):
+		if request.method in permissions.SAFE_METHODS:
+			return True
+		else:
+			if request.user.has_perm('user.be_seller') and request.user.seller.my_store == obj.store:
+				return True
+			if request.user.has_perm('user.be_manager') and request.user.manager.my_store == obj.store:
+				return True
+			if request.user.is_superuser:
+				return True			
+			return False
+
 
 class PayWinnerPermission(permissions.BasePermission):
 	def has_permission(self, request, view):
@@ -53,4 +65,31 @@ class ValidateTicketPermission(permissions.BasePermission):
 				return False					
 			return True		
 		self.message = "Usuário não é vendedor"
-		return False			
+		return False
+
+
+class CancelarTicketPermission(permissions.BasePermission):
+	message = "Você não tem permissão para essa operação."
+
+	def has_permission(self, request, view):
+		store = request.GET.get('store')
+		user = request.user		
+		if request.user.has_perm('user.be_seller'):
+			if not store:
+				self.message = "Forneça a id da loja"
+				return False
+			if str(user.seller.my_store.id) != str(store):
+				self.message = "Usuário não é vendedor desta banca"
+				return False					
+			return True		
+		self.message = "Usuário não é vendedor"
+		return False
+
+	def has_object_permission(self, request, view, obj):		
+		if request.user.has_perm('user.be_seller'):
+			if request.user.pk == obj.seller.pk:
+				return True
+			self.message = "Vendedor não tem permissão sobre esse ticket" 
+			return False
+		self.message = "Usuário não é vendedor"
+		return False

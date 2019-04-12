@@ -5,7 +5,7 @@ from rest_framework import permissions
 from django.shortcuts import get_object_or_404
 from core.models import Cotation, CotationHistory, Store
 from utils import timezone as tzlocal
-from .permissions import CreateBet, PayWinnerPermission, ValidateTicketPermission
+from .permissions import CreateBet, PayWinnerPermission, ValidateTicketPermission, CancelarTicketPermission
 from .models import *
 from .serializers import *
 
@@ -141,12 +141,11 @@ class TicketView(ModelViewSet):
 		return Response(ticket.validate_ticket(request.user))
 		
 
-	@action(methods=['get'], detail=True)
-	def cancel_ticket(self, request, pk=None):		
-		ticket = self.get_object()
-		if str(request.user.seller.my_store.id) != str(request.GET['store']):
-				return Response({"failed":"Usuário não é vendedor desta banca"})						
+	@action(methods=['get'], detail=True, permission_classes=[CancelarTicketPermission,])
+	def cancel_ticket(self, request, pk=None):	
+		ticket = self.get_object()		
 		return Response(ticket.cancel_ticket(request.user.seller))
+
 
 	@action(methods=['get'], detail=True)
 	def ticket_detail(self, request, pk=None):		        
