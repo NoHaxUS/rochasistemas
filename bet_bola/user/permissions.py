@@ -6,6 +6,8 @@ class IsSuperUser(permissions.BasePermission):
 	def has_permission(self, request, view):
 		if request.user.is_superuser:			
 			return True
+		if user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
+			return True
 		return False
 
 
@@ -14,6 +16,8 @@ class IsSeller(permissions.BasePermission):
 	
 	def has_permission(self, request, view):		
 		if request.user.has_perm('user.be_seller'):
+			return True
+		if user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
 			return True
 		return False	
 
@@ -24,6 +28,8 @@ class ManagerViewPermission(permissions.BasePermission):
 		store = request.GET.get('store')
 		user = request.user
 		if request.user.is_superuser:
+			return True
+		if user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
 			return True
 		if not request.method == 'POST':			
 			if user.has_perm("user.be_manager") and not request.GET.get('store'):
@@ -48,6 +54,8 @@ class PunterViewPermission(permissions.BasePermission):
 		store = request.GET.get('store')
 		user = request.user
 		if request.user.is_superuser:		
+			return True
+		if user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
 			return True				
 		if request.method == 'POST':
 			if not store:
@@ -65,6 +73,8 @@ class PunterViewPermission(permissions.BasePermission):
 	def has_object_permission(self, request, view, obj):
 		if request.user.is_superuser:
 			return True
+		elif user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
+			return True
 		else:
 			if not request.GET.get('store'):
 				self.message = "Forneça id da banca"
@@ -78,16 +88,18 @@ class SellerViewPermission(permissions.BasePermission):
 	def has_permission(self, request, view):
 		store = request.GET.get('store')
 		user = request.user
-		if request.user.is_superuser:
+		if user.is_superuser:
+			return True
+		elif user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
 			return True
 		else:
 			if not store:
 				self.message = "Forneça id da "
 				return False			
-			elif user.has_perm('user.be_manager') and str(request.user.manager.my_store.pk) != store:
+			elif user.has_perm('user.be_manager') and str(user.manager.my_store.pk) != store:
 				self.message = "Admnistrador não pertence a essa banca"
 				return False
-			elif user.has_perm('user.be_seller') and str(request.user.seller.my_store.pk) != store:
+			elif user.has_perm('user.be_seller') and str(user.seller.my_store.pk) != store:
 				self.message = "Vendedor não pertence a essa banca"
 				return False
 		return False
@@ -100,3 +112,6 @@ class SellerViewPermission(permissions.BasePermission):
 
 		return request.user.pk == obj.pk
 
+
+# class PayManager(permissions.BasePermission):
+# 	def has_permission(self, request, view):

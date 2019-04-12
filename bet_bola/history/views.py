@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from .models import *
 from .serializers import *
+from .permissions import CancelationHistory
 
 
 class SellerSalesHistoryView(ModelViewSet):
@@ -109,9 +110,10 @@ class PunterPayedHistoryView(ModelViewSet):
 class TicketCancelationHistoryView(ModelViewSet):
     queryset = TicketCancelationHistory.objects.all()
     serializer_class = TicketCancelationHistorySerializer
+    permission_classes = [CancelationHistory,]
 
     def list(self, request, pk=None):
-        store_id = request.GET['store']     
+        store_id = request.GET.get('store')
 
         queryset = self.queryset.filter(store__id=store_id)
 
