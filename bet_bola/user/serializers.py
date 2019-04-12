@@ -38,6 +38,8 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
 
 	def create(self, validated_data):				
 		obj = Seller(**validated_data)
+		print("@@@@@@@")
+		print(self.context['request'].GET.get('store'))
 		store = Store.objects.get(id=self.context['request'].GET.get('store'))
 		obj.my_store=store
 		obj.save()

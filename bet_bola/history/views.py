@@ -3,17 +3,26 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from .models import *
 from .serializers import *
-from .permissions import CancelationHistory
+from .permissions import General
 
 
 class SellerSalesHistoryView(ModelViewSet):
     queryset = SellerSalesHistory.objects.all()
     serializer_class = SellerSalesHistorySerializer
+    permission_classes = [General,]
 
     def list(self, request, pk=None):
         store_id = request.GET['store']     
 
         queryset = self.queryset.filter(store__id=store_id)
+        if request.GET.get('seller'):
+            queryset = queryset.filter(seller__pk=request.GET.get('seller'))
+        if request.GET.get('ticket'):
+            queryset = queryset.filter(bet_ticket__pk=request.GET.get('ticket'))        
+        if request.GET.get('date'):
+            queryset = queryset.filter(sell_date__date=request.GET.get('date'))        
+        if request.user.has_perm('user.be_seller'):
+            queryset = queryset.filter(seller=request.user.seller)
 
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -110,7 +119,7 @@ class PunterPayedHistoryView(ModelViewSet):
 class TicketCancelationHistoryView(ModelViewSet):
     queryset = TicketCancelationHistory.objects.all()
     serializer_class = TicketCancelationHistorySerializer
-    permission_classes = [CancelationHistory,]
+    permission_classes = [General,]
 
     def list(self, request, pk=None):
         store_id = request.GET.get('store')

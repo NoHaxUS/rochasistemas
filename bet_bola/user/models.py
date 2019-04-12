@@ -8,7 +8,7 @@ from decimal import Decimal
 
 class CustomUser(AbstractUser):   
     email = models.EmailField(null=True, blank=True, verbose_name='E-mail')
-    first_name = models.CharField(max_length=150, verbose_name='Primeiro Nome')    
+    first_name = models.CharField(max_length=150, verbose_name='Primeiro Nome')        
 
     def __str__(self):
         return self.username
@@ -170,7 +170,7 @@ class Seller(CustomUser):
         from utils.models import Comission
         comission = Comission.objects.filter(seller_related=self)
         if not comission:
-            Comission(seller_related=self).save()
+            Comission(seller_related=self,store=self.my_store).save()
         self.define_default_permissions()
 
     def define_default_permissions(self):

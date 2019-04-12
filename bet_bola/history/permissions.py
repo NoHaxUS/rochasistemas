@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-class CancelationHistory(permissions.BasePermission):
+class General(permissions.BasePermission):
 	message = "Você não tem permissão para essa operação."
 
 	def has_permission(self, request, view):
