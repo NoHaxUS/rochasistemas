@@ -17,7 +17,7 @@ class IsSeller(permissions.BasePermission):
 	def has_permission(self, request, view):		
 		if request.user.has_perm('user.be_seller'):
 			return True
-		if user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
+		if request.user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
 			return True
 		return False	
 
@@ -27,7 +27,7 @@ class ManagerViewPermission(permissions.BasePermission):
 	def has_permission(self, request, view):
 		store = request.GET.get('store')
 		user = request.user
-		if request.user.is_superuser:
+		if user.is_superuser:
 			return True
 		if user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
 			return True
@@ -106,7 +106,9 @@ class SellerViewPermission(permissions.BasePermission):
 
 	def has_object_permission(self, request, view, obj):
 		if request.user.is_superuser:
-			return True		
+			return True
+		if request.user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
+			return True
 		if request.user.has_perm('user.be_manager'):
 			return request.user.manager == obj.seller.my_manager
 

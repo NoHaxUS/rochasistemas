@@ -141,7 +141,7 @@ class Ticket(models.Model):
         TicketCancelationHistory.objects.create(who_cancelled=who_cancelled,
         ticket_cancelled=self,
         seller_of_payed=seller,
-        store=Store.objects.first())
+        store=self.store)
 
         return {'success':True,
             'message':'O Ticket '+ str(self.pk) +' foi cancelado.'}
