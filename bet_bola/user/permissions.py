@@ -27,15 +27,15 @@ class ManagerViewPermission(permissions.BasePermission):
 	def has_permission(self, request, view):
 		store = request.GET.get('store')
 		user = request.user
+		if not request.GET.get('store'):
+			self.message = "Forneça a id da banca"
+			return False
 		if user.is_superuser:
 			return True
 		if user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
 			return True
-		if not request.method == 'POST':			
-			if user.has_perm("user.be_manager") and not request.GET.get('store'):
-				self.message = "Forneça a id da banca"
-				return False
-			elif user.has_perm("user.be_manager") and request.GET.get('store'):
+		if not request.method == 'POST':						
+			if user.has_perm("user.be_manager") and request.GET.get('store'):
 				if str(user.manager.my_store.pk) == str(store):
 					return True
 				self.message = "Administrador não pertence a essa banca"
@@ -53,6 +53,9 @@ class PunterViewPermission(permissions.BasePermission):
 	def has_permission(self, request, view):
 		store = request.GET.get('store')
 		user = request.user
+		if not request.GET.get('store'):
+			self.message = "Forneça a id da banca"
+			return False
 		if request.user.is_superuser:		
 			return True
 		if user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
@@ -89,6 +92,9 @@ class SellerViewPermission(permissions.BasePermission):
 		store = request.GET.get('store')
 		user = request.user
 		if user.is_superuser:
+			if not request.GET.get('store'):
+				self.message = "Forneça a id da banca"
+				return False
 			return True
 		elif user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
 			return True

@@ -6,6 +6,7 @@ class General(permissions.BasePermission):
 	def has_permission(self, request, view):
 		user = request.user
 		store = request.GET.get('store')		
+		print(user.has_perm('user.be_seller'),str(user.pk))
 		if store:					
 			if user.has_perm('user.be_seller') and str(user.seller.my_store.pk) == str(store):
 				return True

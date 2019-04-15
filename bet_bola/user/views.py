@@ -15,7 +15,7 @@ class PunterView(ModelViewSet):
     def list(self, request, pk=None):
         store_id = request.GET.get('store')   
 
-        queryset = self.queryset.filter(my_store__id=store_id)
+        queryset = self.queryset.filter(my_store__id=store_id)        
         
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -35,7 +35,8 @@ class NormalUserView(ModelViewSet):
 
         queryset = self.queryset.filter(my_store__id=store_id)
         
-        page = self.paginate_queryset(queryset)
+        page = self.paginate_queryset(queryset)        
+
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
@@ -54,7 +55,8 @@ class SellerView(ModelViewSet):
 
         queryset = self.queryset.filter(my_store__id=store_id)
 
-        page = self.paginate_queryset(queryset)
+        page = self.paginate_queryset(queryset)        
+
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
@@ -106,7 +108,7 @@ class ManagerView(ModelViewSet):
         store_id = request.GET['store']        
 
         queryset = self.queryset.filter(my_store__id=store_id)
-
+            
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)

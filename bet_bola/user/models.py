@@ -173,8 +173,7 @@ class Seller(CustomUser):
             Comission(seller_related=self,store=self.my_store).save()
         self.define_default_permissions()
 
-    def define_default_permissions(self):
-
+    def define_default_permissions(self):        
         be_seller_perm = Permission.objects.get(codename='be_seller')
         change_ticket_perm = Permission.objects.get(codename='change_ticket')
         view_managertransactions_perm = Permission.objects.get(codename='view_managertransactions')

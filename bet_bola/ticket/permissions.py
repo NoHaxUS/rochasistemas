@@ -4,7 +4,8 @@ from rest_framework import permissions
 class CreateBet(permissions.BasePermission):
 	message = "Desculpe, Contas administradoras ou Gerentes não são apropriados para criarem apostas. Use contas normais ou conta de vendedor."
 
-	def has_permission(self, request, view):		
+	def has_permission(self, request, view):
+		print(request.user.has_perm('user.be_seller'))						
 		if request.method in permissions.SAFE_METHODS:			
 			if not request.GET.get('store'):				
 				self.message = "Forneça a id da loja"
@@ -17,7 +18,7 @@ class CreateBet(permissions.BasePermission):
 			return False
 		elif request.user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
 			return False			
-		elif request.user.has_perm('user.be_seller') and str(request.user.seller.my_store.id) != str(request.GET['store']):
+		elif request.user.has_perm('user.be_seller') and str(request.user.seller.my_store.id) != str(request.GET['store']):			
 			self.message = "Usuario não é pertencente a esta banca"
 			return False
 		elif request.user.has_perm('user.be_punter') and str(request.user.punter.my_store.id) != str(request.GET['store']):				
