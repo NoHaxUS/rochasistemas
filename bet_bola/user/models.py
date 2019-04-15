@@ -8,8 +8,7 @@ from decimal import Decimal
 
 class CustomUser(AbstractUser):   
     email = models.EmailField(null=True, blank=True, verbose_name='E-mail')
-    first_name = models.CharField(max_length=150, verbose_name='Primeiro Nome')
-    
+    first_name = models.CharField(max_length=150, verbose_name='Primeiro Nome')        
 
     def __str__(self):
         return self.username
@@ -18,13 +17,23 @@ class CustomUser(AbstractUser):
         return self.first_name + ' ' + self.last_name
     full_name.short_description = 'Nome Completo'
 
-    
 
+class Admin(CustomUser):    
+    is_admin = models.BooleanField(default=False)
+    my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'Administrador'
+        verbose_name_plural = 'Administrador'
+
+        permissions = (
+            ('be_admin', 'Be a admin, permission.'),
+        )
 
 class NormalUser(models.Model):
     first_name = models.CharField(max_length=150, verbose_name='Nome')
-    cellphone = models.CharField(max_length=14, verbose_name='Celular')
-    my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
+    cellphone = models.CharField(max_length=14, verbose_name='Celular')   
+    my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)     
 
     def __str__(self):
         return self.first_name
@@ -32,7 +41,7 @@ class NormalUser(models.Model):
 
 class Punter(CustomUser):
     cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)    
-    my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
+    my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)    
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -71,11 +80,11 @@ class Seller(CustomUser):
     credit_limit = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Crédito')
     my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True, blank=True)
     can_cancel_ticket = models.BooleanField(default=False, verbose_name='Cancela Bilhete ?')
-    limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento", validators=[MinValueValidator(1), MaxValueValidator(45)])
-    my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)    
+    limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento", validators=[MinValueValidator(1), MaxValueValidator(45)])    
+    my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
     def reset_revenue(self, who_reseted_revenue):
-        from core.models import Payment
+        from ticket.models import Payment
         from history.models import RevenueHistorySeller, PunterPayedHistory
 
         RevenueHistorySeller.objects.create(who_reseted_revenue=who_reseted_revenue,
@@ -83,7 +92,8 @@ class Seller(CustomUser):
         final_revenue=self.actual_revenue(),
         earned_value=self.net_value(),
         final_out_value=self.out_money(),
-        profit = self.actual_revenue() - self.out_money())
+        profit = self.actual_revenue() - self.out_money(),
+        store=self.my_store)
 
         payments = Payment.objects.filter(who_set_payment=self, seller_was_rewarded=False)
         payments.update(seller_was_rewarded=True)
@@ -160,11 +170,10 @@ class Seller(CustomUser):
         from utils.models import Comission
         comission = Comission.objects.filter(seller_related=self)
         if not comission:
-            Comission(seller_related=self).save()
+            Comission(seller_related=self,store=self.my_store).save()
         self.define_default_permissions()
 
-    def define_default_permissions(self):
-
+    def define_default_permissions(self):        
         be_seller_perm = Permission.objects.get(codename='be_seller')
         change_ticket_perm = Permission.objects.get(codename='change_ticket')
         view_managertransactions_perm = Permission.objects.get(codename='view_managertransactions')
@@ -205,8 +214,8 @@ class Manager(CustomUser):
     limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento", validators=[MinValueValidator(1), MaxValueValidator(45)])
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
     can_change_limit_time = models.BooleanField(default=False, verbose_name='Pode alterar tempo de Cancelamento do Cambista?')
-    based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no líquido ?')    
-    my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
+    based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no líquido ?') 
+    my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)       
 
     def reset_revenue(self, who_reseted_revenue):
         from core.models import Payment
@@ -349,7 +358,8 @@ class Manager(CustomUser):
                 manager_before_balance=manager_before_balance,
                 manager_after_balance=manager_balance_after,
                 seller_before_balance=seller_before_balance,
-                seller_after_balance=seller_after_balance)
+                seller_after_balance=seller_after_balance,
+                store=self.my_store)
         else:
             ManagerTransactions.objects.create(manager=self,
             seller=seller,
@@ -357,7 +367,8 @@ class Manager(CustomUser):
             manager_before_balance=manager_before_balance,
             manager_after_balance=manager_balance_after,
             seller_before_balance=seller_before_balance,
-            seller_after_balance=seller_after_balance)
+            seller_after_balance=seller_after_balance,
+            store=self.my_store)
 
         return {'success': True,
             'message': 'Transação realizada.'}

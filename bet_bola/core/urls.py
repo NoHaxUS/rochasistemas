@@ -27,6 +27,7 @@ router.register(r'leagues', LeagueView)
 router.register(r'locations', LocationView)
 router.register(r'cotations', CotationView)
 router.register(r'cotationshistory', CotationHistoryView)
+router.register(r'cotationsmodified', CotationModifiedView)
 router.register(r'markets', MarketView)
 router.register(r'sports', SportView)
 

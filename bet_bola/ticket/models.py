@@ -141,7 +141,7 @@ class Ticket(models.Model):
         TicketCancelationHistory.objects.create(who_cancelled=who_cancelled,
         ticket_cancelled=self,
         seller_of_payed=seller,
-        store=Store.objects.first())
+        store=self.store)
 
         return {'success':True,
             'message':'O Ticket '+ str(self.pk) +' foi cancelado.'}
@@ -159,10 +159,7 @@ class Ticket(models.Model):
                 email_from = settings.EMAIL_HOST_USER
                 recipient_list = [self.store.email,]
                 send_mail( subject, message, email_from, recipient_list )\
-
-        #CHECAR ISSO
-        print(self.ticket_status)
-        print(Ticket.TICKET_STATUS['Aguardando Resultados'])
+            
         if not self.payment or not self.reward:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}

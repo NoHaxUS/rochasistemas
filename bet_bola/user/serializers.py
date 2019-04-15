@@ -21,14 +21,14 @@ class PunterSerializer(serializers.HyperlinkedModelSerializer):
 		return obj
 
 	def validate_email(self, value):
-		if Punter.objects.filter(email=value):
+		if Punter.objects.filter(email=value,my_store=self.context['request'].GET.get('store')):
 			raise serializers.ValidationError("Email ja cadastrado.")
 		return value
 
 
 class SellerSerializer(serializers.HyperlinkedModelSerializer):	
 	
-	my_manager = serializers.SlugRelatedField(read_only=True , slug_field='first_name')
+	my_manager = serializers.SlugRelatedField(queryset=Manager.objects.all(), allow_null=True, slug_field='username')
 	password = serializers.CharField(style={'input_type': 'password'})
 	my_store = serializers.SlugRelatedField(read_only=True, slug_field='id')	
 
@@ -38,10 +38,12 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
 
 	def create(self, validated_data):				
 		obj = Seller(**validated_data)
+		print("@@@@@@@")
+		print(self.context['request'].GET.get('store'))
 		store = Store.objects.get(id=self.context['request'].GET.get('store'))
 		obj.my_store=store
 		obj.save()
-		return obj
+		return obj	
 
 	def validate_email(self, value):
 		if Punter.objects.filter(email=value):

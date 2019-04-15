@@ -121,9 +121,6 @@ else:
         }
     }
 
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend', # this is default
-)
 
 ADMINS = [('pablo', 'pabllobeg@gmail.com'),]
 

@@ -12,6 +12,21 @@ class ComissionSerializer(serializers.HyperlinkedModelSerializer):
 		model = Comission
 		fields = ('seller_related','simple','double','triple','fourth','fifth','sixth','sixth_more')
 
+	def validate(self, value):
+		if data['simple'] < 0 or data['simple'] > 100:
+			raise serializers.ValidationError('Comissão não pode ser menor que 0 ou maior que 100')
+		if data['double'] < 0 or data['double'] > 100:
+			raise serializers.ValidationError('Comissão não pode ser menor que 0 ou maior que 100')
+		if data['triple'] < 0 or data['triple'] > 100:
+			raise serializers.ValidationError('Comissão não pode ser menor que 0 ou maior que 100')
+		if data['fourth'] < 0 or data['fourth'] > 100:
+			raise serializers.ValidationError('Comissão não pode ser menor que 0 ou maior que 100')
+		if data['fifth'] < 0 or data['fifth'] > 100:
+			raise serializers.ValidationError('Comissão não pode ser menor que 0 ou maior que 100')
+		if data['sixth'] < 0 or data['sixth'] > 100:
+			raise serializers.ValidationError('Comissão não pode ser menor que 0 ou maior que 100')
+		if data['sixth_more'] < 0 or data['sixth_more'] > 100:
+			raise serializers.ValidationError('Comissão não pode ser menor que 0 ou maior que 100')
 
 class GeneralConfigurationsSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -27,6 +42,14 @@ class RewardRelatedSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = RewardRelated
 		fields = ('value_max','reward_value_max','store')
+
+	def validate(self, data):        
+		if data['value_max'] < 0:
+			raise serializers.ValidationError("Valor não pode ser negativo")
+		if data['reward_value_max'] < 0:
+			raise serializers.ValidationError("Valor não pode ser negativo")
+
+		return data
 
 
 class TicketCustomMessageSerializer(serializers.HyperlinkedModelSerializer):
@@ -73,6 +96,15 @@ class ExcludedGameSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = ExcludedGame
 		fields = ('store','game')
+
+
+class MarketReductionSerializer(serializers.HyperlinkedModelSerializer):
+	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
+
+	class Meta:
+		model = MarketReduction
+		fields = ('market_to_reduct', 'reduction_percentual', 'store')
+
 
 class ExcludedLeagueSerializer(serializers.HyperlinkedModelSerializer):
 	
