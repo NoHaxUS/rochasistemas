@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework import serializers
 from django.db.models import Count
-from .models import Store, CotationHistory, Sport, Game, League, Location, Market, Cotation
+from .models import Store, CotationHistory, CotationModified, Sport, Game, League, Location, Market, Cotation
 from ticket.models import Ticket
 from user.models import CustomUser
 import utils.timezone as tzlocal
@@ -26,6 +26,15 @@ class CotationHistorySerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = CotationHistory
 		fields = ('original_cotation','ticket','name','start_price','price','game','market','line','base_line')
+
+
+class CotationModifiedSerializer(serializers.HyperlinkedModelSerializer):
+	cotation = serializers.SlugRelatedField(queryset=Cotation.objects.all(), slug_field='id')
+	store = serializers.SlugRelatedField(queryset=Store.objects.all(), slug_field='fantasy')
+
+	class Meta:
+		model = CotationModified	
+		fields = ('cotation','price','store')
 
 
 class SportSerializer(serializers.HyperlinkedModelSerializer):	
@@ -93,14 +102,23 @@ class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):
 
 class MinimumListCotationSerializer(serializers.ListSerializer):
 
-	def to_representation(self, data):			
-		store_id =  self.root.context['context']['request'].GET.get('store')
+	def to_representation(self, data):	
+		print()	
+		store_id = ''
+		if self.root.context.get('request'):
+			store_id =  self.root.context['request'].GET.get('store')
+		if self.root.context.get('context'):
+			store_id =  self.root.context['context']['request'].GET.get('store')
+
 		store = Store.objects.get(pk=store_id)
 		config = store.config
 		if config:
 			if config.cotations_percentage:
 				for cotation in data:
-					cotation.price = (cotation.price * config.cotations_percentage / 100)
+					if CotationModified.objects.filter(cotation=cotation, store=store):
+						cotation.price = CotationModified.objects.filter(cotation=cotation, store=store).first().price
+					else:
+						cotation.price = (cotation.price * config.cotations_percentage / 100)
 
 		return super(MinimumListCotationSerializer, self).to_representation(data)
 

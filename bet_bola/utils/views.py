@@ -1,20 +1,24 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework.response import Response
 from .serializers import GeneralConfigurationsSerializer, ExcludedGameSerializer, ExcludedLeagueSerializer, RulesMessageSerializer, RewardRelatedSerializer, MarketReductionSerializer, MarketRemotionSerializer, ComissionSerializer
 from .models import GeneralConfigurations, ExcludedGame, ExcludedLeague, RulesMessage, RewardRelated, MarketReduction, MarketRemotion, Comission
-from rest_framework.response import Response
+from .permissions import General
+
 
 class GeneralConfigurationsView(ModelViewSet):
     queryset = GeneralConfigurations.objects.all()
     serializer_class = GeneralConfigurationsSerializer
+    permission_classes = [General,]
 
 
 class RulesMessageView(ModelViewSet):
 	queryset = RulesMessage.objects.all()
 	serializer_class = RulesMessageSerializer
+	permission_classes = [General,]
 
 	def list(self, request, pk=None):
 		from core.models import Store
-		store_id = request.GET['store']
+		store_id = request.GE('store')
 		store = Store.objects.get(pk=store_id)
 
 		rules= RulesMessage.objects.filter(store=store)
@@ -26,10 +30,11 @@ class RulesMessageView(ModelViewSet):
 class ExcludedGameView(ModelViewSet):
 	queryset = ExcludedGame.objects.all()
 	serializer_class = ExcludedGameSerializer
+	permission_classes = [General,]
 
 	def list(self, request, pk=None):
 		from core.models import Store
-		store_id = request.GET['store']
+		store_id = request.GE('store')
 		store = Store.objects.get(pk=store_id)
 
 		excluded_game= ExcludedGame.objects.filter(store=store)
@@ -41,10 +46,11 @@ class ExcludedGameView(ModelViewSet):
 class ExcludedLeagueView(ModelViewSet):
 	queryset = ExcludedLeague.objects.all()
 	serializer_class = ExcludedLeagueSerializer
+	permission_classes = [General,]
 
 	def list(self, request, pk=None):
 		from core.models import Store
-		store_id = request.GET['store']
+		store_id = request.GE('store')
 		store = Store.objects.get(pk=store_id)
 
 		excluded_league= ExcludedLeague.objects.filter(store=store)
@@ -56,10 +62,12 @@ class ExcludedLeagueView(ModelViewSet):
 class RewardRelatedView(ModelViewSet):
 	queryset = RewardRelated.objects.all()
 	serializer_class = RewardRelatedSerializer
+	permission_classes = [General,]
+
 
 	def list(self, request, pk=None):
 		from core.models import Store
-		store_id = request.GET['store']
+		store_id = request.GET.get('store')
 		store = Store.objects.get(pk=store_id)
 
 		rewards_related= RewardRelated.objects.filter(store=store)
@@ -71,10 +79,11 @@ class RewardRelatedView(ModelViewSet):
 class MarketReductionView(ModelViewSet):
 	queryset = MarketReduction.objects.all()
 	serializer_class = MarketReductionSerializer
+	permission_classes = [General,]
 
 	def list(self, request, pk=None):
 		from core.models import Store
-		store_id = request.GET['store']
+		store_id = request.GE('store')
 		store = Store.objects.get(pk=store_id)
 
 		markets_reduction= MarketReduction.objects.filter(store=store)
@@ -89,7 +98,7 @@ class MarketRemotionView(ModelViewSet):
 
 	def list(self, request, pk=None):
 		from core.models import Store
-		store_id = request.GET['store']
+		store_id = request.GE('store')
 		store = Store.objects.get(pk=store_id)
 
 		markets_remotion= MarketRemotion.objects.filter(store=store)
@@ -103,7 +112,7 @@ class ComissionView(ModelViewSet):
 
 	def list(self, request, pk=None):
 		from core.models import Store
-		store_id = request.GET['store']
+		store_id = request.GE('store')
 		store = Store.objects.get(pk=store_id)	
 
 		comission = Comission.objects.filter(store=store)

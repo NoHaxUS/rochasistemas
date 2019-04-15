@@ -24,6 +24,11 @@ class CotationHistoryView(ModelViewSet):
     serializer_class = CotationHistorySerializer
 
 
+class CotationModifiedView(ModelViewSet):
+    queryset = CotationModified.objects.all()
+    serializer_class = CotationModifiedSerializer
+
+
 class SportView(ModelViewSet):
     queryset = Sport.objects.all()
     serializer_class = SportSerializer

@@ -98,6 +98,8 @@ class SellerViewPermission(permissions.BasePermission):
 			return True
 		elif user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
 			return True
+		elif user.has_perm('user.be_manager') and str(user.manager.my_store.pk) == store:
+			return True
 		else:
 			if not store:
 				self.message = "Forneça id da "
@@ -110,7 +112,7 @@ class SellerViewPermission(permissions.BasePermission):
 				return False
 		return False
 
-	def has_object_permission(self, request, view, obj):
+	def has_object_permission(self, request, view, obj):		
 		if request.user.is_superuser:
 			return True
 		if request.user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:

@@ -174,6 +174,12 @@ class Market(models.Model):
         verbose_name_plural = 'Mercados'
 
 
+class CotationModified(models.Model):
+    cotation = models.ForeignKey('Cotation', related_name='my_modifiy', on_delete=models.CASCADE, verbose_name='Cotas')
+    store = models.ForeignKey('Store', related_name='my_modifiy', on_delete=models.CASCADE, verbose_name='Bancas')
+    price = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')    
+
+
 class Cotation(models.Model):
     SETTLEMENT_STATUS = (
             (0, "Em Aberto"),
@@ -190,21 +196,9 @@ class Cotation(models.Model):
     settlement = models.IntegerField(default=0, choices=SETTLEMENT_STATUS, verbose_name="Resultado")
     market = models.ForeignKey('Market', related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
     total_goals = models.DecimalField(null=True, blank=True, max_digits=6, decimal_places=2, verbose_name='Total Acima/Abaixo')
-    last_update = models.DateTimeField(auto_now=True,null=True, blank=True, verbose_name="Última atualização")
+    last_update = models.DateTimeField(auto_now=True,null=True, blank=True, verbose_name="Última atualização")    
+
     
-    # GAME_STATUS = (
-    #     (0, 'Não Iniciado'),
-    #     (1,'Ao Vivo'),
-    #     (2, 'A ser corrigido') ,   
-    #     (3, 'Terminado'),        
-    #     (4, "Adiado"),
-    #     (5, 'Cancelado'),
-    #     (6, "W.O"),
-    #     (7, "Interrompido"),
-    #     (8, "Abandonado"),
-    #     (9, "Retirado"),
-    #     (99, "Removido"),
-    # )
     def get_settlement_display_modified(self):
         if self.game.game_status == 4:
             return "Jogo Adiado"

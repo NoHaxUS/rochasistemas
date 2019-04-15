@@ -28,7 +28,7 @@ class PunterSerializer(serializers.HyperlinkedModelSerializer):
 
 class SellerSerializer(serializers.HyperlinkedModelSerializer):	
 	
-	my_manager = serializers.SlugRelatedField(queryset=Manager.objects.all(), allow_null=True, slug_field='first_name')
+	my_manager = serializers.SlugRelatedField(queryset=Manager.objects.all(), allow_null=True, slug_field='username')
 	password = serializers.CharField(style={'input_type': 'password'})
 	my_store = serializers.SlugRelatedField(read_only=True, slug_field='id')	
 

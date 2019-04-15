@@ -37,12 +37,14 @@ class SellerSalesHistoryView(ModelViewSet):
 class ManagerTransactionsHistoryView(ModelViewSet):
     queryset = ManagerTransactions.objects.all()
     serializer_class = ManagerTransactionsSerializer
+    permission_classes = [General,]
 
     def list(self, request, pk=None):
-        store_id = request.GET['store']         
+        store_id = request.GET.get('store')
 
         queryset = self.queryset.filter(store__id=store_id)
-
+        if request.user.has_perm('user.be_manager'):
+            queryset = queryset.filter(manager=request.user.manager)
         if request.GET.get('manager'):            
             queryset = queryset.filter(manager__username=request.GET['manager'])
         if request.GET.get('seller'):
@@ -64,8 +66,8 @@ class RevenueHistorySellerView(ModelViewSet):
     serializer_class = RevenueHistorySellerSerializer
 
     def list(self, request, pk=None):
-        store_id = request.GET['store']     
-
+        store_id = request.GET.get('store')
+        
         queryset = self.queryset.filter(store__id=store_id)
 
         page = self.paginate_queryset(queryset)
@@ -84,7 +86,7 @@ class RevenueHistoryManagerView(ModelViewSet):
 
 
     def list(self, request, pk=None):
-        store_id = request.GET['store']     
+        store_id = request.GET.get('store')
 
         queryset = self.queryset.filter(store__id=store_id)
 
@@ -103,7 +105,7 @@ class PunterPayedHistoryView(ModelViewSet):
     serializer_class = PunterPayedHistorySerializer
 
     def list(self, request, pk=None):
-        store_id = request.GET['store']     
+        store_id = request.GET.get('store') 
 
         queryset = self.queryset.filter(store__id=store_id)
 
