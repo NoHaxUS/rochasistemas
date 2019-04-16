@@ -68,17 +68,16 @@ def process_games(game_json, game_id):
         both_teams_to_score_1st_half_2nd_half(game_scores, game.cotations.filter(market__name='Ambos Marcam 1° e 2° Tempo'))
         first_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols 1° Tempo'))
         exact_1st_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols Exato 1° Tempo'))
-        
         exact_2nd_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols Exato 2° Tempo'))
-        
         to_score_in_half(game_scores, game.cotations.filter(market__name='Haverá Gol'))
         half_with_most_goals(game_scores, game.cotations.filter(market__name='Etapa com mais Gols'))
         process_2nd_half_result(game_scores, game.cotations.filter(market__name='Resultado 2° Tempo'))
-        
         process_2nd_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols Exato 2° Tempo'))
-        
         result_both_teams_to_score(game_scores, game.cotations.filter(market__name='Resultado / Ambos Marcam'), game.home_team, game.away_team)
         winning_margin(game_scores, game.cotations.filter(market__name='Margem de Vitória'))
+
+        # = game.cotations.filter(market__name='Especiais')
+        
         win_without_taking_goals(game_scores, game.cotations.filter(market__name='Especiais'))
         win_whatever_half(game_scores, game.cotations.filter(market__name='Especiais'))
         win_both_halves(game_scores, game.cotations.filter(market__name='Especiais'))
@@ -600,7 +599,7 @@ def both_teams_to_score_1st_half_2nd_half(scores, cotations):
 
 
 def process_2nd_half_goals(scores, cotations):
-    if scores.get('2', None):
+    if scores.get('1', None) and scores.get('2', None):
         home_1 = int(scores['1']['home'])
         away_1 = int(scores['1']['away'])
 
@@ -737,17 +736,17 @@ def result_both_teams_to_score(scores, cotations, home_name, away_name):
             
             if home > away and both_mark:
                 cotations.filter(name__istartswith=home_name, name__contains='Sim').update(settlement=2)
-            else:
+            elif home > away and not both_mark:
                 cotations.filter(name__istartswith=home_name, name__contains='Não').update(settlement=2)
 
             if home < away and both_mark:
                 cotations.filter(name__istartswith=away_name, name__contains='Sim').update(settlement=2)
-            else:
+            elif home < away and not both_mark:
                 cotations.filter(name__istartswith=away_name, name__contains='Não').update(settlement=2)
             
             if home == away and both_mark:
                 cotations.filter(name__istartswith='Empate', name__contains='Sim').update(settlement=2)
-            else:
+            elif home == away and not both_mark:
                 cotations.filter(name__istartswith='Empate', name__contains='Não').update(settlement=2)
 
 
@@ -843,7 +842,5 @@ def mark_both_halves(scores, cotations):
                 cotations.filter(name='Casa - Marcar em Ambas Etapas').update(settlement=2)
             elif away_1 > 0 and away_2 > 0:
                 cotations.filter(name='Fora - Marcar em Ambas Etapas').update(settlement=2)
-
-
 
 
