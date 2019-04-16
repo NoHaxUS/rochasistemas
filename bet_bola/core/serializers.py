@@ -63,8 +63,12 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
 class FilteredCotationSerializer(serializers.ListSerializer):
 
 	def to_representation(self, data):			
-		if not self.context['request'].GET.get('game_id'):
+		game_id = self.context['request'].GET.get('game_id')
+
+		if not game_id:
 			raise serializers.ValidationError({'game_id': ['this field was not inserted']})
+		if not Game.objects.filter(pk=game_id):
+			raise serializers.ValidationError({'game_id': ['game does not exist']})
 
 		game_id = self.context['request'].GET.get('game_id')
 		data = data.filter(game__id=game_id)		
@@ -73,7 +77,7 @@ class FilteredCotationSerializer(serializers.ListSerializer):
 		store = Store.objects.get(pk=store_id)
 		config = store.config
 		lista = list()
-
+		print(data)
 		if config:
 			if config.cotations_percentage:			
 				for cotation in data.all():
@@ -102,8 +106,7 @@ class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):
 
 class MinimumListCotationSerializer(serializers.ListSerializer):
 
-	def to_representation(self, data):	
-		print()	
+	def to_representation(self, data):			
 		store_id = ''
 		if self.root.context.get('request'):
 			store_id =  self.root.context['request'].GET.get('store')

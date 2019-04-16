@@ -19,7 +19,7 @@ class CustomUser(AbstractUser):
 
 
 class Admin(CustomUser):    
-    is_admin = models.BooleanField(default=False)
+    # is_admin = models.BooleanField(default=False)
     my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
     class Meta:
@@ -29,6 +29,40 @@ class Admin(CustomUser):
         permissions = (
             ('be_admin', 'Be a admin, permission.'),
         )
+
+    def define_default_permissions(self):
+
+        be_admin_perm = Permission.objects.get(codename='be_admin')
+        view_managertransactions_perm = Permission.objects.get(codename='view_managertransactions')
+        view_revenuehistoryseller_perm = Permission.objects.get(codename='view_revenuehistoryseller')
+        view_sellersaleshistory_perm = Permission.objects.get(codename='view_sellersaleshistory')
+        view_punterpayedhistory_perm = Permission.objects.get(codename='view_punterpayedhistory')
+        view_revenuehistorymanager = Permission.objects.get(codename='view_revenuehistorymanager')
+        change_seller = Permission.objects.get(codename='change_seller')
+        add_seller = Permission.objects.get(codename='add_seller')
+        view_manager = Permission.objects.get(codename='view_manager')
+        add_manager = Permission.objects.get(codename='add_manager')
+        change_manager = Permission.objects.get(codename='change_manager')
+        view_ticket_perm = Permission.objects.get(codename='view_ticket')
+        view_punter_perm = Permission.objects.get(codename='view_punter')
+        change_ticket_perm = Permission.objects.get(codename='change_ticket')
+        view_ticketcancelationhistory = Permission.objects.get(codename='view_ticketcancelationhistory')
+        view_comission = Permission.objects.get(codename='view_comission')
+        
+        self.user_permissions.add(be_admin_perm,view_managertransactions_perm,
+        view_revenuehistoryseller_perm,view_sellersaleshistory_perm,
+        view_punterpayedhistory_perm, view_revenuehistorymanager, change_seller, add_seller,
+        view_manager, add_manager, change_manager, view_ticket_perm, view_punter_perm, change_ticket_perm, 
+        view_ticketcancelationhistory, view_comission)
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        if not self.password.startswith('pbkdf2'):          
+            self.set_password(self.password)
+        self.is_superuser = False
+        self.is_staff = True
+        super().save()
+        self.define_default_permissions()
 
 class NormalUser(models.Model):
     first_name = models.CharField(max_length=150, verbose_name='Nome')

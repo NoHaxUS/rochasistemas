@@ -5,8 +5,15 @@ class IsSuperUser(permissions.BasePermission):
 
 	def has_permission(self, request, view):
 		if request.user.is_superuser:			
-			return True
-		if user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:
+			return True		
+		return False
+
+
+class StoreGiven(permissions.BasePermission):
+	message = "Forneça a id da banca"
+	def has_permission(self, request, view):
+		store = request.GET.get('store')
+		if store:
 			return True
 		return False
 

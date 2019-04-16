@@ -26,6 +26,24 @@ class PunterSerializer(serializers.HyperlinkedModelSerializer):
 		return value
 
 
+class AdminSerializer(serializers.HyperlinkedModelSerializer):	
+		
+	password = serializers.CharField(style={'input_type': 'password'})
+	my_store = serializers.SlugRelatedField(read_only=True, slug_field='id')	
+
+	def create(self, validated_data):				
+		obj = Admin(**validated_data)		
+		print(self.context['request'].GET.get('store'))
+		store = Store.objects.get(id=self.context['request'].GET.get('store'))
+		obj.my_store=store
+		obj.save()
+		return obj
+
+	class Meta:
+		model = Admin
+		fields = ('id','username','password','first_name', 'last_name','email','my_store')
+
+
 class SellerSerializer(serializers.HyperlinkedModelSerializer):	
 	
 	my_manager = serializers.SlugRelatedField(queryset=Manager.objects.all(), allow_null=True, slug_field='username')
@@ -37,8 +55,7 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','username','password','first_name', 'last_name', 'cpf','can_sell_unlimited','credit_limit','limit_time_to_cancel','my_manager','email','my_store')
 
 	def create(self, validated_data):				
-		obj = Seller(**validated_data)
-		print("@@@@@@@")
+		obj = Seller(**validated_data)		
 		print(self.context['request'].GET.get('store'))
 		store = Store.objects.get(id=self.context['request'].GET.get('store'))
 		obj.my_store=store

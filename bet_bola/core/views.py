@@ -12,31 +12,37 @@ from django_filters import rest_framework as filters
 from utils.models import ExcludedLeague, ExcludedGame
 from .models import *
 from .serializers import *
+from .permissions import General, StorePermission, CotationModifyPermission
 
 
 class StoreView(ModelViewSet):
     queryset = Store.objects.all()
     serializer_class = StoreSerializer
+    permission_classes = [StorePermission,]
 
 
 class CotationHistoryView(ModelViewSet):
     queryset = CotationHistory.objects.all()
     serializer_class = CotationHistorySerializer
+    permission_classes = [General,]
 
 
 class CotationModifiedView(ModelViewSet):
     queryset = CotationModified.objects.all()
     serializer_class = CotationModifiedSerializer
+    permission_classes = [CotationModifyPermission,]
 
 
 class SportView(ModelViewSet):
     queryset = Sport.objects.all()
     serializer_class = SportSerializer
+    permission_classes = [General,]
 
 
 class GameView(ModelViewSet):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
+    permission_classes = [General,]
 
     def list(self, request, pk=None):        
         store_id = request.GET['store']        
@@ -67,11 +73,13 @@ class GameView(ModelViewSet):
 class LeagueView(ModelViewSet):
     queryset = League.objects.all()
     serializer_class = LeagueSerializer
+    permission_classes = [General,]
 
 
 class LocationView(ModelViewSet):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
+    permission_classes = [General,]
 
 
 class CotationView(ModelViewSet):
@@ -79,11 +87,13 @@ class CotationView(ModelViewSet):
     serializer_class = MinimumCotationSerializer   
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ('game__id',)
+    permission_classes = [General,]
 
 
 class MarketView(ModelViewSet):
     queryset = Market.objects.exclude(cotations__market__name='1X2').distinct()
     serializer_class = MarketSerializer    
+    permission_classes = [General,]
 
 
 class APIRootView(APIView):
@@ -98,6 +108,7 @@ class APIRootView(APIView):
             'locations': reverse('core:location-list', request=request),
             'today_games': reverse('core:today_games', request=request),
             'tomorrow_games': reverse('core:tomorrow_games', request=request),
+            'cotationsmodified': reverse('core:cotationmodified-list', request=request)
         }
         return Response(data)
 
@@ -152,6 +163,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 class TodayGamesView(ModelViewSet):         
     queryset = League.objects.all()
+    permission_classes = [General,]
         
     def list(self, request, pk=None):        
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")
@@ -207,7 +219,7 @@ class TodayGamesView(ModelViewSet):
 
 class TomorrowGamesView(ModelViewSet):             
     queryset = League.objects.all()
-        
+    permission_classes = [General,]
                
     def list(self, request, pk=None):        
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")
@@ -264,6 +276,7 @@ class TomorrowGamesView(ModelViewSet):
 
 class AfterTomorrowGamesView(ModelViewSet):         
     queryset = League.objects.all()
+    permission_classes = [General,]
 
     def list(self, request, pk=None):        
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")
