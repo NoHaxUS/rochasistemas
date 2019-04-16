@@ -2,10 +2,10 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework import permissions, mixins, generics, status
 from rest_framework.response import Response
-from user.models import Punter, NormalUser, CustomUser, Seller, Manager
+from user.models import Punter, NormalUser, CustomUser, Seller, Manager, Admin
 from ticket.models import Ticket
-from .serializers import PunterSerializer, NormalUserSerializer, SellerSerializer, ManagerSerializer
-from .permissions import IsSuperUser, PunterViewPermission, SellerViewPermission, ManagerViewPermission
+from .serializers import PunterSerializer, NormalUserSerializer, SellerSerializer, ManagerSerializer, AdminSerializer
+from .permissions import IsSuperUser, PunterViewPermission, SellerViewPermission, ManagerViewPermission, StoreGiven
 
 class PunterView(ModelViewSet):
     queryset = Punter.objects.all()
@@ -124,21 +124,19 @@ class ManagerView(ModelViewSet):
         manager.reset_revenue(who_reseted_revenue)
         
         messages.success(request, 'Gerentes Pagos')
-    
 
 
+class AdminView(ModelViewSet):
+    queryset = Admin.objects.all()
+    serializer_class = AdminSerializer    
 
-
-
-
-
-
-
-
-
-
-
-
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [IsSuperUser, StoreGiven]
+        else:
+            permission_classes = [IsSuperUser,]
+        return [permission() for permission in permission_classes]
+        
 
 # class PunterRegister(View):
 
