@@ -45,7 +45,7 @@ def process_games(game_json, game_id):
         half_time_result(game_scores, game.cotations.filter(market__name='Resultado no 1° Tempo'))
         half_time_double_chance(game_scores, game.cotations.filter(market__name='Dupla Chance 1° Tempo'))
         half_time_correct_score(game_scores, game.cotations.filter(market__name='Placar correto 1° Tempo'))
-        process_1st_half_goals_odd_even(game_scores, game.cotations.filter(market__name='Total de Gols Ímpar/Par 1° Tempo'))
+        process_1st_half_goals_odd_even(game_scores, game.cotations.filter(market__name='Ímpar/Par 1° Tempo'))
         home_team_highest_scoring_half(game_scores, game.cotations.filter(market__name='Metade com maior quantidade de Gols - Time Casa'), game.home_team)
         away_team_highest_scoring_half(game_scores, game.cotations.filter(market__name='Metade com maior quantiade de Gols - Time Fora'), game.away_team)
         process_2nd_half_goals_odd_even(game_scores, game.cotations.filter(market__name='Ímpar/Par 2° Tempo'))
@@ -63,16 +63,20 @@ def process_games(game_json, game_id):
         away_team_exact_goals(game_scores, game.cotations.filter(market__name='Time Fora - Total de Gols Exato'))
         half_time_result_both_teams_to_score(game_scores, game.cotations.filter(market__name='Resultado 1° Tempo / Ambos Marcam'), game.home_team, game.away_team)
         half_time_result_total_goals(game_scores, game.cotations.filter(market__name='Resultado 1° Tempo / Total de Gols'), game.home_team, game.away_team)
-        both_teams_to_score_in_1st_half(game_scores, game.cotations.filter(market__name='Ambos marcam 1° Tempo'))
-        both_teams_to_score_in_2nd_half(game_scores, game.cotations.filter(market__name='Ambos marcam 2° Tempo'))
+        both_teams_to_score_in_1st_half(game_scores, game.cotations.filter(market__name='Ambos Marcam 1° Tempo'))
+        both_teams_to_score_in_2nd_half(game_scores, game.cotations.filter(market__name='Ambos Marcam 2° Tempo'))
         both_teams_to_score_1st_half_2nd_half(game_scores, game.cotations.filter(market__name='Ambos Marcam 1° e 2° Tempo'))
         first_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols 1° Tempo'))
         exact_1st_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols Exato 1° Tempo'))
+        
         exact_2nd_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols Exato 2° Tempo'))
+        
         to_score_in_half(game_scores, game.cotations.filter(market__name='Haverá Gol'))
-        half_with_most_goals(game_scores, game.cotations.filter(market__name='Metade com mais Gols'))
+        half_with_most_goals(game_scores, game.cotations.filter(market__name='Etapa com mais Gols'))
         process_2nd_half_result(game_scores, game.cotations.filter(market__name='Resultado 2° Tempo'))
-        exact_2nd_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols Exato 2° Tempo'))
+        
+        process_2nd_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols Exato 2° Tempo'))
+        
         result_both_teams_to_score(game_scores, game.cotations.filter(market__name='Resultado / Ambos Marcam'), game.home_team, game.away_team)
         winning_margin(game_scores, game.cotations.filter(market__name='Margem de Vitória'))
         win_without_taking_goals(game_scores, game.cotations.filter(market__name='Especiais'))
@@ -260,10 +264,14 @@ def away_team_highest_scoring_half(scores, cotations, away_name):
 
 
 def process_2nd_half_goals_odd_even(scores, cotations):
-    if scores.get('2', None):
-        home = int(scores['2']['home'])
-        away = int(scores['2']['away'])
-        total_goals = home + away
+    if scores.get('1', None) and scores.get('2', None):
+        home_1 = int(scores['1']['home'])
+        away_1 = int(scores['1']['away'])
+        
+        home_2 = int(scores['2']['home']) - home_1
+        away_2 = int(scores['2']['away']) - away_1
+
+        total_goals = home_2 + away_2
 
         even = (total_goals % 2) == 0
 
@@ -496,17 +504,17 @@ def half_time_result_both_teams_to_score(scores, cotations, home_name, away_name
             
             if home > away and both_mark:
                 cotations.filter(name__istartswith=home_name, name__contains='Sim').update(settlement=2)
-            else:
+            elif home > away and not both_mark:
                 cotations.filter(name__istartswith=home_name, name__contains='Não').update(settlement=2)
 
             if home < away and both_mark:
                 cotations.filter(name__istartswith=away_name, name__contains='Sim').update(settlement=2)
-            else:
+            elif home < away and not both_mark:
                 cotations.filter(name__istartswith=away_name, name__contains='Não').update(settlement=2)
             
             if home == away and both_mark:
                 cotations.filter(name__istartswith='Empate', name__contains='Sim').update(settlement=2)
-            else:
+            elif home == away and not both_mark:
                 cotations.filter(name__istartswith='Empate', name__contains='Não').update(settlement=2)
 
 
@@ -589,6 +597,23 @@ def both_teams_to_score_1st_half_2nd_half(scores, cotations):
                     cotations.filter(name__istartswith='Não', name__iendswith='Sim').update(settlement=2)
                 else:
                     cotations.filter(name__istartswith='Não', name__iendswith='Não').update(settlement=2)
+
+
+def process_2nd_half_goals(scores, cotations):
+    if scores.get('2', None):
+        home_1 = int(scores['1']['home'])
+        away_1 = int(scores['1']['away'])
+
+        home_2 = int(scores['2']['home']) - home_1
+        away_2 = int(scores['2']['away']) - away_1
+
+        total_goals = home_2 + away_2
+
+        if cotations.count() > 0:
+            cotations.update(settlement=1)
+            
+            cotations.filter(name__contains='Acima', total_goals__lt=total_goals).update(settlement=2)
+            cotations.filter(name__contains='Abaixo', total_goals__gt=total_goals).update(settlement=2)
 
 
 def first_half_goals(scores, cotations):
