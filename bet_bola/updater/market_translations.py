@@ -20,7 +20,6 @@ MARKET_TRANSLATIONS = {
     'both_teams_to_score_1st_half_2nd_half': "Ambos marcam 1° Tempo / 2° Tempo",
     'first_half_goals': 'Total de Gols 1° Tempo',
     'exact_1st_half_goals': 'Total de Gols Exato 1° Tempo',
-    '2nd_half_goals': 'Total de Gols - 2° Tempo',
     'exact_2nd_half_goals': 'Total de Gols Exato 2° Tempo',
     'half_with_most_goals': 'Metade com mais Gols',
     'home_team_highest_scoring_half': "Metade com maior quantidade de Gols - Time Casa",
