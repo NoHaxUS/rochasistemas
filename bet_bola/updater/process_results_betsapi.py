@@ -37,6 +37,8 @@ def process_games(game_json, game_id):
     
     if game_scores and game:
         print("Processing game: " + str(game.id))
+        print(game.cotations.filter(market__name='Especiais'))
+        
         process_1X2(game_scores, game.cotations.filter(market__name='1X2'))
         goals_over_under(game_scores, game.cotations.filter(market__name='Gols - Acima/Abaixo'))
         goals_odd_even(game_scores, game.cotations.filter(market__name='Total de Gols Ímpar/Par'))
@@ -76,13 +78,12 @@ def process_games(game_json, game_id):
         result_both_teams_to_score(game_scores, game.cotations.filter(market__name='Resultado / Ambos Marcam'), game.home_team, game.away_team)
         winning_margin(game_scores, game.cotations.filter(market__name='Margem de Vitória'))
 
-        # = game.cotations.filter(market__name='Especiais')
-        
+        game.cotations.filter(market__name='Especiais').update(settlement=1)
+
         win_without_taking_goals(game_scores, game.cotations.filter(market__name='Especiais'))
         win_whatever_half(game_scores, game.cotations.filter(market__name='Especiais'))
         win_both_halves(game_scores, game.cotations.filter(market__name='Especiais'))
         mark_both_halves(game_scores, game.cotations.filter(market__name='Especiais'))
-
 
 
 def process_1X2(scores, cotations):
@@ -779,13 +780,13 @@ def winning_margin(scores, cotations):
                         cotations.filter(name__startswith='Fora', name__contains=int(latest_total_goals)).update(settlement=2)
 
 
+
 def win_without_taking_goals(scores, cotations):
     if scores.get('2', None):
         home = int(scores['2']['home'])
         away = int(scores['2']['away'])
 
         if cotations.count() > 0:
-            cotations.update(settlement=1)
 
             if home > away and away == 0:
                 cotations.filter(name='Casa - Ganhar sem tomar Gol').update(settlement=2)
@@ -802,7 +803,6 @@ def win_whatever_half(scores, cotations):
         away_2 = int(scores['2']['away']) - away_1
 
         if cotations.count() > 0:
-            cotations.update(settlement=1)
 
             if home_1 > away_1 or home_2 > away_2:
                 cotations.filter(name='Casa - Ganhar Qualquer Etapa').update(settlement=2)
@@ -819,7 +819,6 @@ def win_both_halves(scores, cotations):
         away_2 = int(scores['2']['away']) - away_1
 
         if cotations.count() > 0:
-            cotations.update(settlement=1)
 
             if home_1 > away_1 and home_2 > away_2:
                 cotations.filter(name='Casa - Ganhar Qualquer Etapa').update(settlement=2)
@@ -836,7 +835,6 @@ def mark_both_halves(scores, cotations):
         away_2 = int(scores['2']['away']) - away_1
 
         if cotations.count() > 0:
-            cotations.update(settlement=1)
 
             if home_1 > 0 and home_2 > 0:
                 cotations.filter(name='Casa - Marcar em Ambas Etapas').update(settlement=2)
