@@ -73,10 +73,30 @@ class RulesMessageSerializer(serializers.HyperlinkedModelSerializer):
 class OverviewSerializer(serializers.HyperlinkedModelSerializer):
 
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
+	total_revenue = serializers.SerializerMethodField()
+	total_out_money = serializers.SerializerMethodField()
+	seller_out_money = serializers.SerializerMethodField()
+	manager_out_money = serializers.SerializerMethodField()
+	total_net_value = serializers.SerializerMethodField()
 
 	class Meta:
 		model =  Overview
-		fields = ('overview','store')
+		fields = ('overview','store','total_revenue','total_out_money','seller_out_money','manager_out_money','total_net_value')
+
+	def get_total_revenue(self,obj):
+		return obj.total_revenue()
+
+	def get_total_out_money(self,obj):
+		return obj.total_out_money()
+
+	def get_seller_out_money(self,obj):
+		return obj.seller_out_money()
+
+	def get_manager_out_money(self,obj):
+		return obj.manager_out_money()
+
+	def get_total_net_value(self,obj):
+		return obj.total_net_value()
 
 
 class MarketRemotionSerializer(serializers.HyperlinkedModelSerializer):
