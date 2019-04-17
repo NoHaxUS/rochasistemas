@@ -141,8 +141,7 @@ class Seller(CustomUser):
     full_name.short_description = 'Nome Completo'
 
     
-    def net_value(self):
-        
+    def net_value(self):        
         total_net_value = self.comissions.total_comission()
         return round(total_net_value, 2)
 
