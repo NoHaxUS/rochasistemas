@@ -40,10 +40,10 @@ def process_games(game_json, game_id):
         print(game.cotations.filter(market__name='Total de Gols - 2° Tempo'))
 
         try:
-            game_scores['2']['home'] = 5
-            game_scores['2']['away'] = 0
+            game_scores['2']['home'] = 7
+            game_scores['2']['away'] = 5
             game_scores['1']['home'] = 5
-            game_scores['1']['away'] = 0
+            game_scores['1']['away'] = 4
         except KeyError:
             pass
         
@@ -830,7 +830,6 @@ def win_both_halves(scores, cotations):
         if cotations.count() > 0:
 
             if home_1 > away_1 and home_2 > away_2:
-                print("Entrou na COOOND")
                 cotations.filter(name='Casa - Ganhar Ambas Etapas').update(settlement=2)
             elif home_1 < away_1 and home_2 < away_2:
                 cotations.filter(name='Fora - Ganhar Ambas Etapas').update(settlement=2)
