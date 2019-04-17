@@ -43,7 +43,7 @@ def process_games(game_json, game_id):
             game_scores['2']['home'] = 7
             game_scores['2']['away'] = 5
             game_scores['1']['home'] = 5
-            game_scores['1']['away'] = 4
+            game_scores['1']['away'] = 1
         except KeyError:
             pass
         
@@ -798,7 +798,8 @@ def win_without_taking_goals(scores, cotations):
 
             if home > away and away == 0:
                 cotations.filter(name='Casa - Ganhar sem tomar Gol').update(settlement=2)
-            elif home < away and home == 0:
+            
+            if home < away and home == 0:
                 cotations.filter(name='Fora - Ganhar sem tomar Gol').update(settlement=2)
 
 
@@ -814,7 +815,8 @@ def win_whatever_half(scores, cotations):
 
             if home_1 > away_1 or home_2 > away_2:
                 cotations.filter(name='Casa - Ganhar Qualquer Etapa').update(settlement=2)
-            elif home_1 < away_1 or home_2 < away_2:
+            
+            if home_1 < away_1 or home_2 < away_2:
                 cotations.filter(name='Fora - Ganhar Qualquer Etapa').update(settlement=2)
 
 
@@ -828,10 +830,11 @@ def win_both_halves(scores, cotations):
         away_2 = int(scores['2']['away']) - away_1
 
         if cotations.count() > 0:
-
+            
             if home_1 > away_1 and home_2 > away_2:
                 cotations.filter(name='Casa - Ganhar Ambas Etapas').update(settlement=2)
-            elif home_1 < away_1 and home_2 < away_2:
+            
+            if home_1 < away_1 and home_2 < away_2:
                 cotations.filter(name='Fora - Ganhar Ambas Etapas').update(settlement=2)
 
 
@@ -842,12 +845,14 @@ def mark_both_halves(scores, cotations):
 
         home_2 = int(scores['2']['home']) - home_1
         away_2 = int(scores['2']['away']) - away_1
+        print(home_1,away_1, home_2, away_2)
 
         if cotations.count() > 0:
-
+            print(away_1 > 0 and away_2 > 0)
             if home_1 > 0 and home_2 > 0:
                 cotations.filter(name='Casa - Marcar em Ambas Etapas').update(settlement=2)
-            elif away_1 > 0 and away_2 > 0:
+            
+            if away_1 > 0 and away_2 > 0:
                 cotations.filter(name='Fora - Marcar em Ambas Etapas').update(settlement=2)
 
 
