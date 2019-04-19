@@ -26,6 +26,7 @@ class ComissionAdmin(admin.ModelAdmin):
             return qs.filter(seller_related__my_manager=request.user.manager)
         if request.user.has_perm('user.be_seller'):
             return qs.filter(seller_related__id=request.user.pk)
+            
 
 @admin.register(Overview)
 class OverviewAdmin(admin.ModelAdmin):

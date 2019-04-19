@@ -21,7 +21,7 @@ class SellerSalesHistoryView(ModelViewSet):
             queryset = queryset.filter(bet_ticket__pk=request.GET.get('ticket'))        
         if request.GET.get('date'):
             queryset = queryset.filter(sell_date__date=request.GET.get('date'))        
-        if request.user.has_perm('user.be_seller'):
+        if request.user.has_perm('user.be_seller') and not request.user.is_superuser:
             queryset = queryset.filter(seller=request.user.seller)
 
         page = self.paginate_queryset(queryset)

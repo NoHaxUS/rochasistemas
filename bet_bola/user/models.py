@@ -142,7 +142,7 @@ class Seller(CustomUser):
 
     
     def net_value(self):        
-        total_net_value = self.comissions.total_comission()
+        total_net_value = self.comissions.total_comission(None,None)
         return round(total_net_value, 2)
 
     net_value.short_description = 'Comissão'

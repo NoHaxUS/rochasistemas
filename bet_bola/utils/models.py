@@ -20,7 +20,7 @@ class Comission(models.Model):
     sixth_more = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Mais de  6")
     store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
 
-    def total_simple(self):
+    def total_simple(self, date_from, date_to):
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(
             payment__who_set_payment=self.seller_related, 
@@ -32,7 +32,7 @@ class Comission(models.Model):
 
     total_simple.short_description = "Simples"
     
-    def total_double(self):
+    def total_double(self, date_from, date_to):
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(
             payment__who_set_payment=self.seller_related, 
@@ -43,7 +43,7 @@ class Comission(models.Model):
         return round(total_revenue * (self.double / Decimal(100)),2)
     total_double.short_description = "Dupla"
     
-    def total_triple(self):
+    def total_triple(self, date_from, date_to):
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(
             payment__who_set_payment=self.seller_related, 
@@ -54,7 +54,7 @@ class Comission(models.Model):
         return round(total_revenue * (self.triple / Decimal(100)),2)
     total_triple.short_description = "Tripla"
 
-    def total_fourth(self):
+    def total_fourth(self, date_from, date_to):
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(
             payment__who_set_payment=self.seller_related, 
@@ -66,7 +66,7 @@ class Comission(models.Model):
     total_fourth.short_description = "Quádrupla"
 
 
-    def total_fifth(self):
+    def total_fifth(self, date_from, date_to):
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(
             payment__who_set_payment=self.seller_related, 
@@ -78,7 +78,7 @@ class Comission(models.Model):
     total_fifth.short_description = "Quíntupla"
 
 
-    def total_sixth(self):
+    def total_sixth(self, date_from, date_to):
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(
             payment__who_set_payment=self.seller_related, 
@@ -90,7 +90,7 @@ class Comission(models.Model):
     total_sixth.short_description = "Sêxtupla"
 
     
-    def total_sixth_more(self):
+    def total_sixth_more(self, date_from, date_to):
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(
             payment__who_set_payment=self.seller_related, 
@@ -102,14 +102,14 @@ class Comission(models.Model):
     total_sixth_more.short_description = "Mais de 6"
     
 
-    def total_comission(self):
-        return round(self.total_simple() + 
-        self.total_double() + 
-        self.total_triple() + 
-        self.total_fourth() +
-        self.total_fifth() +
-        self.total_sixth() +
-        self.total_sixth_more(),2)
+    def total_comission(self, date_from, date_to):
+        return round(self.total_simple(date_from, date_from) + 
+        self.total_double(date_from, date_from) + 
+        self.total_triple(date_from, date_from) + 
+        self.total_fourth(date_from, date_from) +
+        self.total_fifth(date_from, date_from) +
+        self.total_sixth(date_from, date_from) +
+        self.total_sixth_more(date_from, date_from),2)
     total_comission.short_description = "Comissão Total"
 
     def __str__(self):
