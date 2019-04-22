@@ -11,7 +11,7 @@ class General(permissions.BasePermission):
 			if request.method == 'POST':
 				return False			
 			return True
-
+		
 		self.message = "Forneça o id da baca"
 		return False
 
