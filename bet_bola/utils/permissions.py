@@ -35,8 +35,7 @@ class Date(permissions.BasePermission):
 	def has_permission(self, request, view):
 		if request.GET.get('from') and request.GET.get('to'):
 			_from = re.findall("(19|20)\\d\\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])", request.GET.get('from'))
-			_to = re.findall("(19|20)\\d\\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])", request.GET.get('to'))
-			print(_from,_to)
+			_to = re.findall("(19|20)\\d\\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])", request.GET.get('to'))			
 			if not _from or not _to:
 				self.message = "Informe as datas no formato yyyy-mm-dd"
 				return False
