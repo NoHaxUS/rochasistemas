@@ -26,6 +26,12 @@ class Comission(models.Model):
             payment__who_set_payment=self.seller_related, 
             payment__seller_was_rewarded=False,
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=1)
+
+        if date_from and date_to:        
+            tickets_not_rewarded = Ticket.objects.filter(
+            payment__who_set_payment=self.seller_related, 
+            payment__seller_was_rewarded=False,
+            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=1).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
         return round(total_revenue * (self.simple / Decimal(100)),2)
@@ -38,6 +44,11 @@ class Comission(models.Model):
             payment__who_set_payment=self.seller_related, 
             payment__seller_was_rewarded=False,
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=2)
+        if date_from and date_to:
+            tickets_not_rewarded = Ticket.objects.filter(
+            payment__who_set_payment=self.seller_related, 
+            payment__seller_was_rewarded=False,
+            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=2).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
         return round(total_revenue * (self.double / Decimal(100)),2)
@@ -49,6 +60,12 @@ class Comission(models.Model):
             payment__who_set_payment=self.seller_related, 
             payment__seller_was_rewarded=False,
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=3)
+        if date_from and date_to:
+            tickets_not_rewarded = Ticket.objects.filter(
+            payment__who_set_payment=self.seller_related, 
+            payment__seller_was_rewarded=False,
+            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=3).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
+
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
         return round(total_revenue * (self.triple / Decimal(100)),2)
@@ -60,6 +77,11 @@ class Comission(models.Model):
             payment__who_set_payment=self.seller_related, 
             payment__seller_was_rewarded=False,
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=4)
+        if date_from and date_to:
+            tickets_not_rewarded = Ticket.objects.filter(
+            payment__who_set_payment=self.seller_related, 
+            payment__seller_was_rewarded=False,
+            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=4).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
         return round(total_revenue * (self.fourth / Decimal(100)),2)
@@ -71,7 +93,12 @@ class Comission(models.Model):
         tickets_not_rewarded = Ticket.objects.filter(
             payment__who_set_payment=self.seller_related, 
             payment__seller_was_rewarded=False,
-            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=5)
+            ).annotate(cotations_count=Count('cotations'))
+        if date_from and date_to:
+            tickets_not_rewarded = Ticket.objects.filter(
+            payment__who_set_payment=self.seller_related, 
+            payment__seller_was_rewarded=False,
+            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=5).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
         return round(total_revenue * (self.fifth / Decimal(100)),2)
@@ -84,6 +111,11 @@ class Comission(models.Model):
             payment__who_set_payment=self.seller_related, 
             payment__seller_was_rewarded=False,
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=6)
+        if date_from and date_to:
+            tickets_not_rewarded = Ticket.objects.filter(
+            payment__who_set_payment=self.seller_related, 
+            payment__seller_was_rewarded=False,
+            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=6).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
         return round(total_revenue * (self.sixth / Decimal(100)),2)
@@ -96,6 +128,11 @@ class Comission(models.Model):
             payment__who_set_payment=self.seller_related, 
             payment__seller_was_rewarded=False,
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=6)
+        if date_from and date_to:
+            tickets_not_rewarded = Ticket.objects.filter(
+            payment__who_set_payment=self.seller_related, 
+            payment__seller_was_rewarded=False,
+            ).annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=6).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
         return round(total_revenue * (self.sixth_more / Decimal(100)),2)

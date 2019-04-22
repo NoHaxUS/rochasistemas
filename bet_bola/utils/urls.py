@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import GeneralConfigurationsView, ExcludedGameView, ExcludedLeagueView, RulesMessageView, RewardRelatedView, MarketReductionView, MarketRemotionView, ComissionView, OverviewView, SellerBalance
+from .views import GeneralConfigurationsView, ExcludedGameView, ExcludedLeagueView, RulesMessageView, RewardRelatedView, MarketReductionView, MarketRemotionView, ComissionView, OverviewView, Balance
 
 app_name = 'utils'
 
@@ -31,7 +31,7 @@ router.register(r'markets_remotion', MarketRemotionView)
 router.register(r'overviews', OverviewView)
 
 urlpatterns = [
-	path('sellers_balance/', SellerBalance.as_view(), name='seller-balance'),
+	path('balance/', Balance.as_view(), name='balance'),
 ]
 
 urlpatterns += router.urls

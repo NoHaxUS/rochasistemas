@@ -2,12 +2,13 @@ from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.db.models import Sum
+from django.db.models import Q
 from .serializers import GeneralConfigurationsSerializer, ExcludedGameSerializer, ExcludedLeagueSerializer, RulesMessageSerializer, RewardRelatedSerializer, MarketReductionSerializer, MarketRemotionSerializer, ComissionSerializer, OverviewSerializer
 from ticket.serializers import TicketSerializer
 from .models import GeneralConfigurations, ExcludedGame, ExcludedLeague, RulesMessage, RewardRelated, MarketReduction, MarketRemotion, Comission, Overview
 from ticket.models import Ticket
 from user.models import Seller
-from .permissions import General, Balance
+from .permissions import General, Balance, ManagerAndSellerConflict, Date
 
 
 class GeneralConfigurationsView(ModelViewSet):
@@ -133,17 +134,23 @@ class ComissionView(ModelViewSet):
 
 		return Response(serializer.data)
 
-class SellerBalance(APIView):
-	permission_classes = [Balance,]
+class Balance(APIView):
+	permission_classes = [Balance,ManagerAndSellerConflict, Date]
 
 	def get(self, request):
 		store_id = request.GET.get('store')
-		seller = request.GET.get('seller')		
+		seller = request.GET.get('seller')				
+		_from = request.GET.get('from')
+		_to = request.GET.get('to')
+		manager = request.GET.get('manager')				
 		itens = {}
 		if seller:
-			seller = Seller.objects.get(username=seller)
+			seller = Seller.objects.get(username=seller)			
 			comissions = Comission.objects.get(seller_related=seller).total_comission(None, None)
 			tickets = Ticket.objects.filter(seller=seller)
+			if _from and _to:			
+				comissions = Comission.objects.get(seller_related=seller).total_comission(_from, _to)
+				tickets = Ticket.objects.filter(seller=seller).filter(Q(creation_date__date__gte=_from) & Q(creation_date__date__lte=_to))
 			tickets_count = tickets.count()
 			entries = tickets.aggregate(value_sum=Sum('value'))['value_sum']
 			outs = seller.out_money()
@@ -152,15 +159,22 @@ class SellerBalance(APIView):
 			itens = {'seller':seller.username, 'comissions':comissions, 'tickets_quantity':tickets_count,'tickets':tickets.data	, 'entries':entries, 'outs': outs, 'balance':balance}
 			return Response(itens)
 
-		for seller in Seller.objects.filter(my_store__pk=store_id):			
+		sellers = Seller.objects.filter(my_store__pk=store_id)
+		if manager:
+			sellers = sellers.filter(my_manager__username=manager)
+		for seller in sellers:			
 			seller = Seller.objects.get(username=seller)
 			comissions = Comission.objects.get(seller_related=seller).total_comission(None, None)
 			tickets = Ticket.objects.filter(seller=seller)
+			comissions = Comission.objects.get(seller_related=seller).total_comission(None, None)
+			tickets = Ticket.objects.filter(seller=seller)
+			if _from and _to:			
+				comissions = Comission.objects.get(seller_related=seller).total_comission(_from, _to)
+				tickets = Ticket.objects.filter(seller=seller).filter(Q(creation_date__date__gte=_from) & Q(creation_date__date__lte=_to))
 			tickets_count = tickets.count()			
 			entries = tickets.aggregate(value_sum=Sum('value')).get('value_sum') 
 			entries = entries if entries else 0
-			outs = seller.out_money()			
-			print(entries,outs,comissions)
+			outs = seller.out_money()						
 			balance = entries - (outs + comissions)
 			tickets = TicketSerializer(tickets, many=True)
 			itens[seller.username] = {'comissions':comissions, 'tickets_quantity':tickets_count, 'tickets':tickets.data, 'entries':entries, 'outs': outs, 'balance':balance}
