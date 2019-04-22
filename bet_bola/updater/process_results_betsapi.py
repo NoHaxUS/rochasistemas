@@ -14,9 +14,10 @@ def process_results():
     games_to_process = []
     for game in games:
         games_to_process.append(str(game.id))
-        if len(games_to_process) >= 10:
-            get_games(games_to_process)
-            games_to_process.clear()
+
+    while games_to_process:
+        get_games(games_to_process[:10])
+        del games_to_process[:10]
 
 
 def get_games(games):
@@ -37,8 +38,8 @@ def process_games(game_json, game_id):
     
     if game_scores and game:
         print("Processing game: " + str(game.id))
-        print(game.cotations.filter(market__name='Total de Gols - 2° Tempo'))
-
+        
+        """
         try:
             game_scores['2']['home'] = 7
             game_scores['2']['away'] = 5
@@ -46,7 +47,8 @@ def process_games(game_json, game_id):
             game_scores['1']['away'] = 1
         except KeyError:
             pass
-        
+        """
+
         process_1X2(game_scores, game.cotations.filter(market__name='1X2'))
         goals_over_under(game_scores, game.cotations.filter(market__name='Gols - Acima/Abaixo'))
         goals_odd_even(game_scores, game.cotations.filter(market__name='Total de Gols Ímpar/Par'))
@@ -821,7 +823,6 @@ def win_whatever_half(scores, cotations):
 
 
 def win_both_halves(scores, cotations):
-    print(cotations.filter(name='Casa - Ganhar Ambas Etapas'))
     if scores.get('1', None) and scores.get('2', None):
         home_1 = int(scores['1']['home'])
         away_1 = int(scores['1']['away'])
@@ -845,10 +846,8 @@ def mark_both_halves(scores, cotations):
 
         home_2 = int(scores['2']['home']) - home_1
         away_2 = int(scores['2']['away']) - away_1
-        print(home_1,away_1, home_2, away_2)
 
         if cotations.count() > 0:
-            print(away_1 > 0 and away_2 > 0)
             if home_1 > 0 and home_2 > 0:
                 cotations.filter(name='Casa - Marcar em Ambas Etapas').update(settlement=2)
             
