@@ -21,8 +21,8 @@ def get_upcoming_events():
     yesterday = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime('%Y%m%d')
     page = 1
     
-    url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + today + "&page="
-    url_page = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + today + "&page=" + str(page)
+    url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + yesterday + "&page="
+    url_page = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + yesterday + "&page=" + str(page)
 
     request = requests.get(url_page)
     data = request.json()
@@ -100,6 +100,8 @@ def get_sport(game):
 
 def process_upcoming_events(data):
     if data['success'] == 1:
+
+        game_ids = []
         for game in data['results']:
             print(game['id'])
             Game.objects.get_or_create(
@@ -114,30 +116,39 @@ def process_upcoming_events(data):
                     'game_status': int(game['time_status'])
                 }
             )
-            get_cotations(game['id'])
+            game_ids.append(game['id'])    
+        get_cotations(game_ids)
+        
 
 
-def get_cotations(game_id, err_count=0):
+def get_cotations(games_ids, err_count=0):
     
-    print("getting cotations for " + game_id)
-    url = "https://api.betsapi.com/v1/bet365/start_sp?token=20445-s1B9Vv6E9VSLU1&FI=" + str(game_id)
-    response = requests.get(url)
-    try:
-        data = response.json()
+    while games_ids:
+        games_ids_str = ','.join(games_ids[:10])
+        print("getting cotations for " + games_ids_str)
+        url = "https://api.betsapi.com/v1/bet365/start_sp?token=20445-s1B9Vv6E9VSLU1&FI=" + games_ids_str
+        response = requests.get(url)
+        try:
+            data = response.json()
+            if response.status_code == 200 and data['success'] == 1:
 
-        if response.status_code == 200 and data['success'] == 1:
-            if data.get('results', None) and data['results'][0].get('goals', None):
-                get_goals_cotations(data['results'][0]['goals'], game_id)
-            if data.get('results', None) and data['results'][0].get('half', None):
-                get_half_cotations(data['results'][0]['half'], game_id)
-            if data.get('results', None) and data['results'][0].get('main', None):
-                get_main_cotations(data['results'][0]['main'], game_id)
-            if data.get('results', None) and data['results'][0].get('specials', None):
-                get_special_cotations(data['results'][0]['specials'], game_id)
-    except json.decoder.JSONDecodeError:
-        err_count += 1
-        if err_count <= 4:
-            get_cotations(game_id, err_count)
+                for game_cotation in data['results']:
+
+                    if game_cotation.get('goals', None):
+                        get_goals_cotations(game_cotation['goals'], game_cotation['FI'])
+                    if game_cotation.get('half', None):
+                        get_half_cotations(game_cotation['half'], game_cotation['FI'])
+                    if game_cotation.get('main', None):
+                        get_main_cotations(game_cotation['main'], game_cotation['FI'])
+                    if game_cotation.get('specials', None):
+                        get_special_cotations(game_cotation['specials'], game_cotation['FI'])
+
+                del games_ids[:10]
+
+        except json.decoder.JSONDecodeError:
+            err_count += 1
+            if err_count <= 4:
+                get_cotations(games_ids, err_count)
 
 
 def get_special_cotations(special_cotations, game_id):
