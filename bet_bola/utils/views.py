@@ -1,5 +1,6 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.db.models import Sum
 from django.db.models import Q
@@ -7,8 +8,21 @@ from .serializers import GeneralConfigurationsSerializer, ExcludedGameSerializer
 from ticket.serializers import TicketSerializer
 from .models import GeneralConfigurations, ExcludedGame, ExcludedLeague, RulesMessage, RewardRelated, MarketReduction, MarketRemotion, Comission, Overview
 from ticket.models import Ticket
-from user.models import Seller
+from user.models import Seller, CustomUser
 from .permissions import General, Balance, ManagerAndSellerConflict, Date
+
+class Info(APIView):
+	permission_classes = [IsAuthenticated,]
+
+	def get(self, request):
+		data = {
+				"user": {	
+						"id":request.user.pk,
+						"username":request.user.username,
+						"name":request.user.first_name
+					}
+		}
+		return Response(data)
 
 
 class GeneralConfigurationsView(ModelViewSet):
