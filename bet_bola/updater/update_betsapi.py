@@ -38,17 +38,22 @@ def get_upcoming_events():
         process_upcoming_events(request.json())
         page += 1
 
-def get_cc_from_result(game_id):
+def get_cc_from_result(game_id, error_count=0):
     print("cc_from_result " + game_id)
     url = "https://api.betsapi.com/v1/bet365/result?token=20445-s1B9Vv6E9VSLU1&event_id=" + game_id
     request = requests.get(url)
-    data = request.json()
-    if request.status_code == 200 and data['success'] == 1:
-        league = data['results'][0].get('league', None)
-        if league:
-            return league.get('cc', None)
-    else:
-        print("Get CC from result Failed.")
+    try:
+        data = request.json()
+        if request.status_code == 200 and data['success'] == 1:
+            league = data['results'][0].get('league', None)
+            if league:
+                return league.get('cc', None)
+        else:
+            print("Get CC from result Failed.")
+    except json.decoder.JSONDecodeError:
+        if error_count <= 5:
+            get_cc_from_result(game_id, error_count)
+            error_count += 1
 
 
 def get_game_name(game):
