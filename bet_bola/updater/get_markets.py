@@ -109,7 +109,7 @@ def cotation_with_header_goals(cotations, market_name, game_id):
                 name=MARKET_TRANSLATIONS.get(market_name, market_name),
             )[0],
             defaults={
-                'price': cotation['odds'],
+                'price': cotation['odds'] if str(cotation['odds']).isdecimal() else 0
             }
         )
 
@@ -123,7 +123,7 @@ def cotation_with_header_opp(cotations, market_name, game_id):
                 name=MARKET_TRANSLATIONS.get(market_name, market_name),
             )[0],
             defaults={
-                'price': cotation['odds'],
+                'price': cotation['odds'] if str(cotation['odds']).isdecimal() else 0
             }
         )
 
@@ -137,7 +137,7 @@ def cotation_with_header_name(cotations, market_name, game_id):
                 name=MARKET_TRANSLATIONS.get(market_name, market_name),
             )[0],
             defaults={
-                'price': cotation['odds'],
+                'price': cotation['odds'] if str(cotation['odds']).isdecimal() else 0
             }
         )
 
@@ -153,7 +153,7 @@ def cotation_with_header_name_special(cotations, market_name, game_id):
                     name=MARKET_TRANSLATIONS.get(market_name, market_name),
                 )[0],
                 defaults={
-                    'price': cotation['odds'],
+                    'price': cotation['odds'] if str(cotation['odds']).isdecimal() else 0
                 }
             )
 
@@ -169,7 +169,7 @@ def cotation_without_header(cotations, market_name, game_id, need_extract=False)
                 name=MARKET_TRANSLATIONS.get(market_name, market_name)
             )[0],
             defaults={
-                'price': cotation['odds'],
+                'price': cotation['odds'] if str(cotation['odds']).isdecimal() else 0
             }
         )
 
@@ -187,7 +187,7 @@ def cotation_without_header_standard(cotations, market_name, game_id):
                 name=MARKET_TRANSLATIONS.get(market_name, market_name)
             )[0],
             defaults={
-                'price': cotation['odds'],
+                'price': cotation['odds'] if str(cotation['odds']).isdecimal() else 0
             }
         )
 
