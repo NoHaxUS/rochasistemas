@@ -13,7 +13,7 @@ class StoreSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Store
-		fields = ('fantasy','creation_date','config')
+		fields = ('pk','fantasy','creation_date','config')
 
 
 class CotationHistorySerializer(serializers.HyperlinkedModelSerializer):	
