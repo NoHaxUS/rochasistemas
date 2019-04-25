@@ -75,9 +75,7 @@ class GameView(ModelViewSet):
         page = self.paginate_queryset(games)                
 
         if request.GET.get('game'):
-            page = self.paginate_queryset(games.filter(Q(name__icontains=request.GET.get('game'))))
-            serializer = self.get_serializer(page, many=True)
-            return Response(serializer.data)
+            page = self.paginate_queryset(games.filter(Q(name__icontains=request.GET.get('game'))))                        
 
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -258,9 +256,7 @@ class TodayGamesView(ModelViewSet):
         page = self.paginate_queryset(queryset)                
 
         if request.GET.get('game'):            
-            page = self.paginate_queryset(queryset.filter(my_games__name__icontains=request.GET.get('game')))
-            serializer = self.get_serializer(page, many=True)
-            return Response(serializer.data)
+            page = self.paginate_queryset(queryset.filter(my_games__name__icontains=request.GET.get('game')))            
 
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -315,9 +311,7 @@ class TomorrowGamesView(ModelViewSet):
         page = self.paginate_queryset(queryset)                
 
         if request.GET.get('game_id'):
-            page = self.paginate_queryset(queryset.filter(Q(name__icontains=request.GET.get('game_id'))))
-            serializer = self.get_serializer(page, many=True)
-            return Response(serializer.data)
+            page = self.paginate_queryset(queryset.filter(Q(name__icontains=request.GET.get('game_id'))))                    
 
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -370,9 +364,7 @@ class AfterTomorrowGamesView(ModelViewSet):
         page = self.paginate_queryset(queryset)                
 
         if request.GET.get('game_id'):
-            page = self.paginate_queryset(queryset.filter(Q(name__icontains=request.GET.get('game_id'))))
-            serializer = self.get_serializer(page, many=True)
-            return Response(serializer.data)
+            page = self.paginate_queryset(queryset.filter(Q(name__icontains=request.GET.get('game_id'))))            
 
         if page is not None:
             serializer = self.get_serializer(page, many=True)

@@ -21,6 +21,14 @@ class TicketView(ModelViewSet):
 		queryset = self.queryset.filter(store__id=store_id)
 
 		page = self.paginate_queryset(queryset)
+		
+		if request.GET.get('seller'):
+			page = self.paginate_queryset(queryset.filter(Q(seller__first_name__icontains=request.GET.get('seller'))))  
+		if request.GET.get('value'):
+			page = self.paginate_queryset(queryset.filter(Q(value=request.GET.get('value'))))  
+		if request.GET.get('user'):
+			page = self.paginate_queryset(queryset.filter(Q(user__first_name__icontains=request.GET.get('user'))))
+
 		if page is not None:
 			serializer = self.get_serializer(page, many=True)
 			return self.get_paginated_response(serializer.data)   
