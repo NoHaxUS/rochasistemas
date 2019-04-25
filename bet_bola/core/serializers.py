@@ -144,13 +144,13 @@ class MarketSerializer(serializers.HyperlinkedModelSerializer):
 
 class GameSerializer(serializers.HyperlinkedModelSerializer):			
 
-	cotations = MinimumCotationSerializer(many=True, source='standard_cotations')	
+	standard_cotations = MinimumCotationSerializer(many=True)	
 	league = serializers.SlugRelatedField(queryset=League.objects.all(), slug_field='name')
 	location = serializers.SerializerMethodField()
 
 	class Meta:
 		model = Game				
-		fields = ('id','name','start_date','game_status','league','location','cotations')	
+		fields = ('id','name','start_date','game_status','league','location','standard_cotations')	
 
 	def get_location(self, game):
 		return game.league.location.name
