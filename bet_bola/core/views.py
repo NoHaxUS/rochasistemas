@@ -155,6 +155,8 @@ class MarketView(ModelViewSet):
 class APIRootView(APIView):
     def get(self, request):        
         data = {                          
+            'stores': reverse('core:store-list', request=request),           
+            'configurations': reverse('utils:generalconfigurations-list', request=request),           
             'sellers': reverse('user:seller-list', request=request),           
             'managers': reverse('user:manager-list', request=request),
             'punters': reverse('user:punter-list', request=request),   

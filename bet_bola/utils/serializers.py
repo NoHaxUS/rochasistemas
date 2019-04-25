@@ -28,11 +28,11 @@ class ComissionSerializer(serializers.HyperlinkedModelSerializer):
 		if data['sixth_more'] < 0 or data['sixth_more'] > 100:
 			raise serializers.ValidationError('Comissão não pode ser menor que 0 ou maior que 100')
 
-class GeneralConfigurationsSerializer(serializers.HyperlinkedModelSerializer):
+class GeneralConfigurationsSerializer(serializers.HyperlinkedModelSerializer):	
 
 	class Meta:
 		model = GeneralConfigurations
-		fields = ('max_cotation_value','min_number_of_choices_per_bet','max_number_of_choices_per_bet','max_reward_to_pay','min_bet_value','max_bet_value','min_cotation_sum','max_cotation_sum','cotations_percentage','block_bets','auto_pay_punter','store')
+		fields = ('max_cotation_value','min_number_of_choices_per_bet','max_number_of_choices_per_bet','max_reward_to_pay','min_bet_value','max_bet_value','min_cotation_sum','max_cotation_sum','cotations_percentage','block_bets','auto_pay_punter')
 
 
 class RewardRelatedSerializer(serializers.HyperlinkedModelSerializer):
