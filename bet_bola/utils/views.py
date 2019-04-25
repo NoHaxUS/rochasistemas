@@ -54,8 +54,7 @@ class CustomAuthToken(ObtainAuthToken):
 
 class GeneralConfigurationsView(ModelViewSet):
     queryset = GeneralConfigurations.objects.all()
-    serializer_class = GeneralConfigurationsSerializer
-    permission_classes = [General,]
+    serializer_class = GeneralConfigurationsSerializer    
 
 
 class RulesMessageView(ModelViewSet):
