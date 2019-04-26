@@ -24,16 +24,18 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 
 	def get_ticket_status(self, obj):
 		return obj.ticket_status
-	
-
 
 
 class RewardSerializer(serializers.HyperlinkedModelSerializer):
 	who_rewarded = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')
+	real_value = serializers.SerializerMethodField()
 
 	class Meta:
 		model = Reward
-		fields = ('who_rewarded','reward_date','reward_status')
+		fields = ('who_rewarded','reward_date','reward_status','real_value')
+
+	def get_real_value(self, reward):
+		return reward.real_value
 
 
 class PaymentSerializer(serializers.HyperlinkedModelSerializer):

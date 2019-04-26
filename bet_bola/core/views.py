@@ -12,7 +12,7 @@ from django_filters import rest_framework as filters
 from utils.models import ExcludedLeague, ExcludedGame
 from .models import *
 from .serializers import *
-from .permissions import General, StorePermission, CotationModifyPermission
+from .permissions import General, StorePermission, CotationModifyPermission, GamePermission
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -156,17 +156,50 @@ class LocationView(ModelViewSet):
 
 
 class CotationView(ModelViewSet):
-    queryset = Cotation.objects.exclude(market__name='1X2')
-    serializer_class = MinimumCotationSerializer   
-    filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('game__id',)
+    queryset = Cotation.objects.all()
+    serializer_class = CotationSerializer       
     permission_classes = [General,]
+
+    def list(self, request, pk=None):
+        queryset = Cotation.objects.all()        
+
+        if request.GET.get('game_id'):            
+            queryset = queryset.filter(game__id=request.GET.get('game_id'))
+
+        if request.GET.get('market_excluded'):
+            queryset = queryset.exclude(market__name=request.GET.get('market_excluded'))
+
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(page, many=True)
+        return Response(serializer.data)
+
 
 
 class MarketView(ModelViewSet):
     queryset = Market.objects.exclude(cotations__market__name='1X2').distinct()
     serializer_class = MarketSerializer    
-    permission_classes = [General,]
+    permission_classes = [General, GamePermission]
+    
+    def list(self, request, pk=None):
+        queryset = Market.objects.all()
+
+        game_id = request.GET.get('game_id')
+        my_cotations_qs = Cotation.objects.filter(game=game_id).exclude(market__name='1X2')
+        queryset = queryset.prefetch_related(Prefetch('cotations', queryset=my_cotations_qs, to_attr='my_cotations'))
+        queryset = queryset.annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=0)                        
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+              
+        serializer = self.get_serializer(page, many=True)
+        return Response(serializer.data)
 
 
 class APIRootView(APIView):

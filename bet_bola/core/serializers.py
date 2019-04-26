@@ -86,13 +86,6 @@ class FilteredCotationSerializer(serializers.ListSerializer):
 		
 		return super(FilteredCotationSerializer, self).to_representation(lista)
 
-
-class CotationSerializer(serializers.HyperlinkedModelSerializer):
-	
-	class Meta:
-		model = Cotation
-		list_serializer_class = FilteredCotationSerializer
-		fields = ('id','name','price')
 		
 
 class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):
@@ -108,16 +101,17 @@ class MinimumListCotationSerializer(serializers.ListSerializer):
 
 	def to_representation(self, data):			
 		store_id = ''
+		
 		if self.root.context.get('request'):
-			store_id =  self.root.context['request'].GET.get('store')
+			store_id =  self.root.context['request'].GET.get('store')			
 		if self.root.context.get('context'):
-			store_id =  self.root.context['context']['request'].GET.get('store')
+			store_id =  self.root.context['context']['request'].GET.get('store')			
 
 		store = Store.objects.get(pk=store_id)
 		config = store.config
 		if config:
 			if config.cotations_percentage:
-				for cotation in data:
+				for cotation in data:					
 					if CotationModified.objects.filter(cotation=cotation, store=store):
 						cotation.price = CotationModified.objects.filter(cotation=cotation, store=store).first().price
 					else:
@@ -134,12 +128,29 @@ class MinimumCotationSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','name','price')
 
 
+class CotationSerializer(serializers.HyperlinkedModelSerializer):
+	game = serializers.SerializerMethodField()
+	market = serializers.SlugRelatedField(queryset=Market.objects.all(), slug_field='name')
+
+	class Meta:
+		model = Cotation
+		list_serializer_class = MinimumListCotationSerializer
+		fields = ('id','name','price','market','game')
+
+	def get_game(self, cotation):
+		return {'id':cotation.game.pk,'name':cotation.game.name}
+
+
 class MarketSerializer(serializers.HyperlinkedModelSerializer):
-	cotations = CotationSerializer(many=True)
+	cotations = serializers.SerializerMethodField()
 	
 	class Meta:
 		model = Market
 		fields = ('id','name','cotations')
+
+	def get_cotations(self, market):
+		serializer = MinimumCotationSerializer(market.my_cotations,many=True,context={'context':self.context})
+		return serializer.data
 
 
 class GameSerializer(serializers.HyperlinkedModelSerializer):			
