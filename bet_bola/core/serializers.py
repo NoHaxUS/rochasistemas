@@ -165,6 +165,7 @@ class GameSerializer(serializers.HyperlinkedModelSerializer):
 
 	def get_location(self, game):
 		return game.league.location.name
+		
 
 class LeagueGameSerializer(serializers.HyperlinkedModelSerializer):
 	league = serializers.CharField(source='name')

@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import permissions
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from core.models import Cotation, CotationHistory, Store
 from utils import timezone as tzlocal
 from .permissions import CreateBet, PayWinnerPermission, ValidateTicketPermission, CancelarTicketPermission
@@ -13,29 +14,10 @@ from .serializers import *
 class TicketView(ModelViewSet):
 	queryset = Ticket.objects.all()
 	serializer_class = TicketSerializer
+	filter_backends = (DjangoFilterBackend,)
+	filterset_fields = ('seller', 'value', 'user','store',)
 	permission_classes = [CreateBet,]
-
-	def list(self, request, pk=None):
-		store_id = request.GET.get('store')     
-
-		queryset = self.queryset.filter(store__id=store_id)
-
-		page = self.paginate_queryset(queryset)
-		
-		if request.GET.get('seller'):
-			page = self.paginate_queryset(queryset.filter(Q(seller__first_name__icontains=request.GET.get('seller'))))  
-		if request.GET.get('value'):
-			page = self.paginate_queryset(queryset.filter(Q(value=request.GET.get('value'))))  
-		if request.GET.get('user'):
-			page = self.paginate_queryset(queryset.filter(Q(user__first_name__icontains=request.GET.get('user'))))
-
-		if page is not None:
-			serializer = self.get_serializer(page, many=True)
-			return self.get_paginated_response(serializer.data)   
-		
-		serializer = self.get_serializer(queryset, many=True)
-
-		return Response(serializer.data)
+	
 
 	def retrieve(self, request, pk=None):
 		store_id = request.GET['store']     
@@ -46,10 +28,8 @@ class TicketView(ModelViewSet):
 		return Response(serializer.data)
 
 	def get_serializer_class(self):		
-			if self.action == 'list':           
-				return TicketSerializer
-			elif self.action == 'retrieve':
-				return TicketSerializer		
+			if self.action == 'list' or self.action == 'retrieve':           
+				return TicketSerializer			
 			if self.request.user.is_authenticated:				
 				return CreateTicketLoggedUserSerializer
 			return CreateTicketAnonymousUserSerializer

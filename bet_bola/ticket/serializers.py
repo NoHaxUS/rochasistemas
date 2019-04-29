@@ -16,14 +16,18 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	reward = serializers.SlugRelatedField(queryset = Reward.objects.all(),slug_field='id')
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
 	ticket_status = serializers.SerializerMethodField()
+	ticket_sum = serializers.SerializerMethodField()
 	cotations = CotationTicketSerializer(many=True)
 
 	class Meta:
 		model = Ticket
-		fields = ('id','user','seller','normal_user','cotations','creation_date','reward','payment','value','visible','ticket_status','store')
+		fields = ('id','user','seller','normal_user','cotations','ticket_sum','creation_date','reward','payment','value','visible','ticket_status','store')
 
 	def get_ticket_status(self, obj):
 		return obj.ticket_status
+
+	def get_ticket_sum(self, obj):
+		return obj.cotation_sum()
 
 
 class RewardSerializer(serializers.HyperlinkedModelSerializer):

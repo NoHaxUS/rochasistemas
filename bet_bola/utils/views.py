@@ -106,7 +106,7 @@ class ExcludedLeagueView(ModelViewSet):
 
 
 class RewardRelatedView(ModelViewSet):
-	queryset = RewardRelated.objects.all()
+	queryset = RewardRelated.objects.all().order_by('value_max','pk')
 	serializer_class = RewardRelatedSerializer
 	permission_classes = [General,]
 
