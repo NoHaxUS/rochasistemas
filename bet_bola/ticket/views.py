@@ -1,9 +1,9 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import permissions
+from rest_framework import permissions, filters
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
+from filters.mixins import FiltersMixin
 from core.models import Cotation, CotationHistory, Store
 from utils import timezone as tzlocal
 from .permissions import CreateBet, PayWinnerPermission, ValidateTicketPermission, CancelarTicketPermission
@@ -11,21 +11,16 @@ from .models import *
 from .serializers import *
 
 
-class TicketView(ModelViewSet):
+class TicketView(FiltersMixin, ModelViewSet):
 	queryset = Ticket.objects.all()
-	serializer_class = TicketSerializer
-	filter_backends = (DjangoFilterBackend,)
-	filterset_fields = ('seller', 'value', 'user','store',)
+	serializer_class = TicketSerializer	
 	permission_classes = [CreateBet,]
-	
-
-	def retrieve(self, request, pk=None):
-		store_id = request.GET['store']     
-
-		queryset = Ticket.objects.filter(store__id=store_id)
-		user = get_object_or_404(queryset, pk=pk)
-		serializer = self.get_serializer(user)
-		return Response(serializer.data)
+	filter_mappings = {'seller':'seller',
+						'value':'value',
+						'user':'user',
+						'store':'store',
+						'from':'creation_date__gte',
+						'to':'creation_date__lte',}
 
 	def get_serializer_class(self):		
 			if self.action == 'list' or self.action == 'retrieve':           
