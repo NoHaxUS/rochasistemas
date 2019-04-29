@@ -7,27 +7,38 @@ from utils.utils import general_configurations
 from utils import timezone as tzlocal
 from .models import *
 
+
+class PaymentSerializerWithSeller(serializers.HyperlinkedModelSerializer):
+
+	who_set_payment = serializers.SlugRelatedField(slug_field="first_name", read_only=True)
+
+	class Meta:
+		model = Payment
+		fields =  ('who_set_payment','status_payment','payment_date')
+
+
 class TicketSerializer(serializers.HyperlinkedModelSerializer):
 
 	seller = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='first_name')
 	user = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='first_name')
 	normal_user = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='first_name')
-	payment = serializers.SlugRelatedField(queryset = Payment.objects.all(),slug_field='status_payment')
+	payment = PaymentSerializerWithSeller()
 	reward = serializers.SlugRelatedField(queryset = Reward.objects.all(),slug_field='id')
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
 	ticket_status = serializers.SerializerMethodField()
-	ticket_sum = serializers.SerializerMethodField()
+	cotation_sum = serializers.SerializerMethodField()
 	cotations = CotationTicketSerializer(many=True)
 
 	class Meta:
 		model = Ticket
-		fields = ('id','user','seller','normal_user','cotations','ticket_sum','creation_date','reward','payment','value','visible','ticket_status','store')
+		fields = ('id','user','seller','normal_user','cotations','cotation_sum','creation_date','reward','payment','value','visible','ticket_status','store')
 
 	def get_ticket_status(self, obj):
 		return obj.ticket_status
 
-	def get_ticket_sum(self, obj):
+	def get_cotation_sum(self, obj):
 		return obj.cotation_sum()
+	
 
 
 class RewardSerializer(serializers.HyperlinkedModelSerializer):
@@ -40,6 +51,8 @@ class RewardSerializer(serializers.HyperlinkedModelSerializer):
 
 	def get_real_value(self, reward):
 		return reward.real_value
+
+
 
 
 class PaymentSerializer(serializers.HyperlinkedModelSerializer):

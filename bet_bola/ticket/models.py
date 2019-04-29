@@ -255,7 +255,7 @@ class Ticket(models.Model):
         from core.models import CotationHistory
 
         valid_cotations = CotationHistory.objects\
-        .filter(ticket=self, game__game_status__in = (1,2,3,9))\
+        .filter(ticket=self, game__game_status__in = (0,1,3))\
         .exclude(original_cotation__settlement=-1)
         
         cotation_sum = 1
