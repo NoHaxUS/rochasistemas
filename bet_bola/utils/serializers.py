@@ -28,7 +28,7 @@ class ComissionSerializer(serializers.HyperlinkedModelSerializer):
 		if data['sixth_more'] < 0 or data['sixth_more'] > 100:
 			raise serializers.ValidationError('Comissão não pode ser menor que 0 ou maior que 100')
 
-class GeneralConfigurationsSerializer(serializers.HyperlinkedModelSerializer):
+class GeneralConfigurationsSerializer(serializers.HyperlinkedModelSerializer):	
 
 	class Meta:
 		model = GeneralConfigurations

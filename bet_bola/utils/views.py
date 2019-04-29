@@ -1,20 +1,60 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.db.models import Sum
 from django.db.models import Q
+from user.serializers import SellerSerializer, AdminSerializer, PunterSerializer, ManagerSerializer
 from .serializers import GeneralConfigurationsSerializer, ExcludedGameSerializer, ExcludedLeagueSerializer, RulesMessageSerializer, RewardRelatedSerializer, MarketReductionSerializer, MarketRemotionSerializer, ComissionSerializer, OverviewSerializer
 from ticket.serializers import TicketSerializer
 from .models import GeneralConfigurations, ExcludedGame, ExcludedLeague, RulesMessage, RewardRelated, MarketReduction, MarketRemotion, Comission, Overview
 from ticket.models import Ticket
-from user.models import Seller
+from user.models import Seller, CustomUser
 from .permissions import General, Balance, ManagerAndSellerConflict, Date
+
+class CustomAuthToken(ObtainAuthToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        user_type = ""
+
+        if user.is_superuser:
+        	user_type = "superuser"
+        	user = {
+	        	"pk":user.pk,
+	        	"name":user.first_name,
+	        	"username":user.username,        	
+	        	"type":user_type
+        	}        	
+        elif user.has_perm('user.be_punter'):
+        	user = PunterSerializer(user.punter, many=False)
+        	user_type = "punter"
+        elif user.has_perm('user.be_manager'):
+        	user = ManagerSerializer(user.manager,many=False)
+        	user_type = "manager"
+        elif user.has_perm('user.be_seller'):
+        	user = SellerSerializer(user.seller,many=False)        	
+        	user_type = "seller"
+        elif user.has_perm('user.be_admin'):
+        	user = SellerSerializer(user.admin,many=False)
+        	user_type = "admin"        
+        
+        return Response({
+            'token': token.key,
+            'user': user.data,
+            'type': user_type            
+        })
 
 
 class GeneralConfigurationsView(ModelViewSet):
     queryset = GeneralConfigurations.objects.all()
-    serializer_class = GeneralConfigurationsSerializer
-    permission_classes = [General,]
+    serializer_class = GeneralConfigurationsSerializer    
 
 
 class RulesMessageView(ModelViewSet):
@@ -66,7 +106,7 @@ class ExcludedLeagueView(ModelViewSet):
 
 
 class RewardRelatedView(ModelViewSet):
-	queryset = RewardRelated.objects.all()
+	queryset = RewardRelated.objects.all().order_by('value_max','pk')
 	serializer_class = RewardRelatedSerializer
 	permission_classes = [General,]
 

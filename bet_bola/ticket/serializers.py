@@ -16,24 +16,30 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	reward = serializers.SlugRelatedField(queryset = Reward.objects.all(),slug_field='id')
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
 	ticket_status = serializers.SerializerMethodField()
+	ticket_sum = serializers.SerializerMethodField()
 	cotations = CotationTicketSerializer(many=True)
 
 	class Meta:
 		model = Ticket
-		fields = ('id','user','seller','normal_user','cotations','creation_date','reward','payment','value','visible','ticket_status','store')
+		fields = ('id','user','seller','normal_user','cotations','ticket_sum','creation_date','reward','payment','value','visible','ticket_status','store')
 
 	def get_ticket_status(self, obj):
 		return obj.ticket_status
-	
 
+	def get_ticket_sum(self, obj):
+		return obj.cotation_sum()
 
 
 class RewardSerializer(serializers.HyperlinkedModelSerializer):
 	who_rewarded = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')
+	real_value = serializers.SerializerMethodField()
 
 	class Meta:
 		model = Reward
-		fields = ('who_rewarded','reward_date','reward_status')
+		fields = ('who_rewarded','reward_date','reward_status','real_value')
+
+	def get_real_value(self, reward):
+		return reward.real_value
 
 
 class PaymentSerializer(serializers.HyperlinkedModelSerializer):
@@ -52,7 +58,7 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 	creation_date = serializers.DateTimeField(read_only=True)	
 	payment = PaymentSerializer(read_only=True)	
 	reward = serializers.SlugRelatedField(read_only=True, slug_field='reward_status')	
-	cotations = serializers.PrimaryKeyRelatedField(many=True,queryset=Cotation.objects.filter(game__id__in=[80130971]), required=True)	
+	cotations = serializers.PrimaryKeyRelatedField(many=True, queryset=Cotation.objects.filter(game__id__in=[80022957]), required=True)	
 
 	def update(self, instance, validated_data):
 		normal_user = validated_data.pop('normal_user')		

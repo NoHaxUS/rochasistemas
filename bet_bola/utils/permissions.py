@@ -15,6 +15,8 @@ class General(permissions.BasePermission):
 			if not Store.objects.filter(pk=store):
 				self.message = "Banca " + str(store) + " não existe"
 				return False
+			if request.method == permissions.SAFE_METHODS:
+				return True
 			if request.user.is_superuser:			
 				return True
 			if user.has_perm('user.be_admin') and str(user.admin.my_store.pk) == store:

@@ -14,6 +14,15 @@ class General(permissions.BasePermission):
 		
 		self.message = "Forneça o id da baca"
 		return False
+		
+
+class GamePermission(permissions.BasePermission):
+	message = "Insira game_id"
+
+	def has_permission(self, request, view):
+		if not request.GET.get('game_id'):
+			return False
+		return True
 
 
 class CotationModifyPermission(permissions.BasePermission):

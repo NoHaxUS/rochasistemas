@@ -1,6 +1,7 @@
 from core.models import Cotation, Game, Market
 from .market_translations import MARKET_TRANSLATIONS
 import re
+import decimal
 
 def get_translated_cotation_with_header_goals(cotation_name):
     TRANSLATE_TABLE = {
@@ -101,6 +102,12 @@ def extract_goals_from_string(string):
 
 def cotation_with_header_goals(cotations, market_name, game_id):
     for cotation in cotations:
+
+        try:
+            price = decimal.Decimal(cotation['odds'])
+        except decimal.InvalidOperation:
+            price = 0
+
         Cotation.objects.update_or_create(
             name=get_translated_cotation_with_header_goals(cotation['header'] + ' ' + cotation['goals']),
             game=Game.objects.get(pk=game_id),
@@ -109,13 +116,19 @@ def cotation_with_header_goals(cotations, market_name, game_id):
                 name=MARKET_TRANSLATIONS.get(market_name, market_name),
             )[0],
             defaults={
-                'price': cotation['odds'],
+                'price': price
             }
         )
 
 
 def cotation_with_header_opp(cotations, market_name, game_id):
     for cotation in cotations:
+
+        try:
+            price = decimal.Decimal(cotation['odds'])
+        except decimal.InvalidOperation:
+            price = 0
+
         Cotation.objects.update_or_create(
             name=get_translated_cotation_with_opp(cotation['header']) + ' ' + cotation['opp'],
             game=Game.objects.get(pk=game_id),
@@ -123,13 +136,19 @@ def cotation_with_header_opp(cotations, market_name, game_id):
                 name=MARKET_TRANSLATIONS.get(market_name, market_name),
             )[0],
             defaults={
-                'price': cotation['odds'],
+                'price': price
             }
         )
 
 
 def cotation_with_header_name(cotations, market_name, game_id):
     for cotation in cotations:
+
+        try:
+            price = decimal.Decimal(cotation['odds'])
+        except decimal.InvalidOperation:
+            price = 0
+
         Cotation.objects.update_or_create(
             name=get_translated_cotation_with_header_name(cotation['header'] + ' - ' + cotation['name']),
             game=Game.objects.get(pk=game_id),
@@ -137,7 +156,7 @@ def cotation_with_header_name(cotations, market_name, game_id):
                 name=MARKET_TRANSLATIONS.get(market_name, market_name),
             )[0],
             defaults={
-                'price': cotation['odds'],
+                'price': price
             }
         )
 
@@ -145,6 +164,12 @@ def cotation_with_header_name(cotations, market_name, game_id):
 def cotation_with_header_name_special(cotations, market_name, game_id):
     allowed = ('To Win to Nil','To Win Either Half','To Win Both Halves','To Score in Both Halves')
     for cotation in cotations:
+
+        try:
+            price = decimal.Decimal(cotation['odds'])
+        except decimal.InvalidOperation:
+            price = 0
+
         if cotation['name'] in allowed:
             Cotation.objects.update_or_create(
                 name=get_translated_cotation_with_header_name_special(cotation['header'] + ' - ' + cotation['name']),
@@ -153,7 +178,7 @@ def cotation_with_header_name_special(cotations, market_name, game_id):
                     name=MARKET_TRANSLATIONS.get(market_name, market_name),
                 )[0],
                 defaults={
-                    'price': cotation['odds'],
+                    'price': price
                 }
             )
 
@@ -162,6 +187,12 @@ def cotation_with_header_name_special(cotations, market_name, game_id):
 def cotation_without_header(cotations, market_name, game_id, need_extract=False):
 
     for cotation in cotations:
+        
+        try:
+            price = decimal.Decimal(cotation['odds'])
+        except decimal.InvalidOperation:
+            price = 0
+
         obj, created = Cotation.objects.update_or_create(
             name=get_translated_cotation_with_opp(cotation['opp']),
             game=Game.objects.get(pk=game_id),
@@ -169,7 +200,7 @@ def cotation_without_header(cotations, market_name, game_id, need_extract=False)
                 name=MARKET_TRANSLATIONS.get(market_name, market_name)
             )[0],
             defaults={
-                'price': cotation['odds'],
+                'price': price
             }
         )
 
@@ -180,6 +211,12 @@ def cotation_without_header(cotations, market_name, game_id, need_extract=False)
 def cotation_without_header_standard(cotations, market_name, game_id):
 
     for cotation in cotations:
+
+        try:
+            price = decimal.Decimal(cotation['odds'])
+        except decimal.InvalidOperation:
+            price = 0
+
         Cotation.objects.update_or_create(
             name=get_translated_cotation_with_opp_standard(cotation['opp']),
             game=Game.objects.get(pk=game_id),
@@ -187,7 +224,7 @@ def cotation_without_header_standard(cotations, market_name, game_id):
                 name=MARKET_TRANSLATIONS.get(market_name, market_name)
             )[0],
             defaults={
-                'price': cotation['odds'],
+                'price': price
             }
         )
 

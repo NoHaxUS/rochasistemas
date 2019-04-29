@@ -1,8 +1,9 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import permissions
+from rest_framework import permissions, filters
 from django.shortcuts import get_object_or_404
+from filters.mixins import FiltersMixin
 from core.models import Cotation, CotationHistory, Store
 from core.views import StandardResultsSetPagination
 from utils import timezone as tzlocal
@@ -11,39 +12,20 @@ from .models import *
 from .serializers import *
 
 
-class TicketView(ModelViewSet):
+class TicketView(FiltersMixin, ModelViewSet):
 	queryset = Ticket.objects.all()
 	serializer_class = TicketSerializer
-	pagination_class = StandardResultsSetPagination
 	permission_classes = [CreateBet,]
-
-	def list(self, request, pk=None):
-		store_id = request.GET.get('store')     
-
-		queryset = self.queryset.filter(store__id=store_id)
-
-		page = self.paginate_queryset(queryset)
-		if page is not None:
-			serializer = self.get_serializer(page, many=True)
-			return self.get_paginated_response(serializer.data)   
-		
-		serializer = self.get_serializer(queryset, many=True)
-
-		return Response(serializer.data)
-
-	def retrieve(self, request, pk=None):
-		store_id = request.GET['store']     
-
-		queryset = Ticket.objects.filter(store__id=store_id)
-		user = get_object_or_404(queryset, pk=pk)
-		serializer = self.get_serializer(user)
-		return Response(serializer.data)
+	filter_mappings = {'seller':'seller',
+						'value':'value',
+						'user':'user',
+						'store':'store',
+						'from':'creation_date__gte',
+						'to':'creation_date__lte',}
 
 	def get_serializer_class(self):		
-			if self.action == 'list':           
-				return TicketSerializer
-			elif self.action == 'retrieve':
-				return TicketSerializer		
+			if self.action == 'list' or self.action == 'retrieve':           
+				return TicketSerializer			
 			if self.request.user.is_authenticated:				
 				return CreateTicketLoggedUserSerializer
 			return CreateTicketAnonymousUserSerializer
