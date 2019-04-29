@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from django.shortcuts import get_object_or_404
 from core.models import Cotation, CotationHistory, Store
+from core.views import StandardResultsSetPagination
 from utils import timezone as tzlocal
 from .permissions import CreateBet, PayWinnerPermission, ValidateTicketPermission, CancelarTicketPermission
 from .models import *
@@ -13,6 +14,7 @@ from .serializers import *
 class TicketView(ModelViewSet):
 	queryset = Ticket.objects.all()
 	serializer_class = TicketSerializer
+	pagination_class = StandardResultsSetPagination
 	permission_classes = [CreateBet,]
 
 	def list(self, request, pk=None):
