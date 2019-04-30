@@ -87,14 +87,26 @@ class FilteredCotationSerializer(serializers.ListSerializer):
 		return super(FilteredCotationSerializer, self).to_representation(lista)
 
 		
+class CotationGameSerializer(serializers.HyperlinkedModelSerializer):
+	class Meta:
+		model = Game
+		fields = ('id','name','start_date')	
 
-class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):
 
-	game = serializers.PrimaryKeyRelatedField(read_only=True)
+class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):	
+
+	game = CotationGameSerializer()
+	market = serializers.SlugRelatedField(read_only=True, slug_field='name')	
+	settlement = serializers.SerializerMethodField()
 
 	class Meta:
 		model = Cotation		
-		fields = ('id','name','game','price')	
+		fields = ('id','name','market','price','settlement','game')	
+
+	def get_settlement(self, obj):
+		from core.models import SETTLEMENT_STATUS
+
+		return SETTLEMENT_STATUS[obj.settlement][1]
 
 
 class MinimumListCotationSerializer(serializers.ListSerializer):
