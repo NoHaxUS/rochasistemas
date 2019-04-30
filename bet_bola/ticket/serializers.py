@@ -33,6 +33,7 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	
 	user = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='first_name')
 	normal_user = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='first_name')
+	seller = serializers.SlugRelatedField(read_only=True, slug_field='first_name')
 	payment = PaymentSerializerWithSeller()
 	reward = RewardSerializer()
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
@@ -42,7 +43,7 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Ticket
-		fields = ('id','user','normal_user','cotations','cotation_sum','creation_date','reward','payment','value','visible','ticket_status','store')
+		fields = ('id','user','normal_user','seller','cotations','cotation_sum','creation_date','reward','payment','value','visible','ticket_status','store')
 
 	def get_ticket_status(self, obj):
 		return obj.ticket_status
