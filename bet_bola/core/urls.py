@@ -36,6 +36,7 @@ router.register(r'sports', SportView)
 urlpatterns = [
     path('', APIRootView.as_view(), name='api-root'),
     path('able_games/',GameAbleView.as_view({'get': 'list'}), name='able_games'),
+    path('able_games/<int:pk>/',GameAbleView.as_view({'get': 'retrieve'}), name='able_games_detail'),
     path('main_menu/', MainMenu.as_view()),
     path('today_games/', TodayGamesView.as_view({'get': 'list'}), name='today_games'),
     path('tomorrow_games/', TomorrowGamesView.as_view({'get': 'list'}), name='tomorrow_games'),

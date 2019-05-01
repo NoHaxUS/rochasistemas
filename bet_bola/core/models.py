@@ -15,6 +15,13 @@ from user.models import Seller
 from ticket.models import Ticket
 
 
+SETTLEMENT_STATUS = (
+            (0, "Em Aberto"),
+            (-1, "Cancelada"),
+            (1, "Perdeu"),
+            (2, "Ganhou")
+        )
+
 class Store(models.Model):
     fantasy = models.CharField(max_length=150, verbose_name="Nome da Banca")
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name="Data de Criação")    
@@ -181,12 +188,7 @@ class CotationModified(models.Model):
 
 
 class Cotation(models.Model):
-    SETTLEMENT_STATUS = (
-            (0, "Em Aberto"),
-            (-1, "Cancelada"),
-            (1, "Perdeu"),
-            (2, "Ganhou")
-        )   
+       
 
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     name = models.CharField(max_length=80, verbose_name='Nome da Cota')

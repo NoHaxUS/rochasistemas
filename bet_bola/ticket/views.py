@@ -50,7 +50,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 			if self.action == 'list' or self.action == 'retrieve':           
 				return TicketSerializer			
 			if self.request.user.is_authenticated:				
-				return CreateTicketLoggedUserSerializer
+				return CreateTicketLoggedUserSerializer			
 			return CreateTicketAnonymousUserSerializer
 
 	def create(self, request, *args, **kwargs):
