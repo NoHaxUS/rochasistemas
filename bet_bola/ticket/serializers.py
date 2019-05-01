@@ -14,7 +14,7 @@ class PaymentSerializerWithSeller(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Payment
-		fields =  ('who_set_payment','status_payment','payment_date')
+		fields =  ('who_set_payment','status','date')
 
 
 class TicketSerializer(serializers.HyperlinkedModelSerializer):
@@ -25,19 +25,19 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	payment = PaymentSerializerWithSeller()
 	reward = serializers.SlugRelatedField(queryset = Reward.objects.all(),slug_field='id')
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
-	ticket_status = serializers.SerializerMethodField()
 	cotation_sum = serializers.SerializerMethodField()
+	status = serializers.SerializerMethodField()
 	cotations = CotationTicketSerializer(many=True)
 
 	class Meta:
 		model = Ticket
-		fields = ('id','user','seller','normal_user','cotations','cotation_sum','creation_date','reward','payment','value','visible','ticket_status','store')
-
-	def get_ticket_status(self, obj):
-		return obj.ticket_status
+		fields = ('id','user','seller','normal_user','cotations','cotation_sum','creation_date','reward','payment','value','visible','status','store')
 
 	def get_cotation_sum(self, obj):
 		return obj.cotation_sum()
+	
+	def get_status(self, obj):
+		return obj.get_status_display()
 	
 
 
@@ -61,7 +61,7 @@ class PaymentSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Payment
-		fields =  ('who_set_payment','status_payment','payment_date','seller_was_rewarded','manager_was_rewarded')
+		fields =  ('who_set_payment','status','payment_date','seller_was_rewarded','manager_was_rewarded')
 
 
 #EXTRA SERIALIZERS

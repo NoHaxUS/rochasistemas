@@ -34,13 +34,17 @@ class TicketView(FiltersMixin, ModelViewSet):
 	permission_classes = [CreateBet,]
 	pagination_class = TicketPagination
 
-	filter_mappings = {'seller':'seller',
-						'value':'value',
-						'user':'user',
-						'store':'store',
-						'payment_status':'payment__status_payment',
-						'creation_date_from':'creation_date__gte',
-						'creation_date_to':'creation_date__lte',}
+	filter_mappings = {
+		'ticket_id':'pk',
+		'store':'store',
+		'ticket_status':'status',
+		'paid_by': 'payment__who_paid',
+		'start_creation_date':'creation_date__gte',
+		'end_creation_date':'creation_date__lte',
+		'payment_status':'payment__status',
+		'start_payment_date': 'payment__date__gte',
+		'end_payment_date': 'payment__date__lte'
+	}
 
 	def get_serializer_class(self):		
 			if self.action == 'list' or self.action == 'retrieve':           
@@ -80,7 +84,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 		store = Store.objects.get(id=self.request.GET['store'])
 		instance = ""
 		if data['success']:						
-			payment = Payment.objects.create(payment_date=None)
+			payment = Payment.objects.create(date=None)
 			creation_date = tzlocal.now()
 
 			if self.request.user.is_authenticated:
@@ -179,7 +183,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 		    if ticket.reward:
 		        content += "<CENTER> GANHO POSSIVEL: R$" + str("%.2f" % ticket.reward.real_value) + "<BR>"
 		    if ticket.payment:
-		        content +=  "<CENTER> STATUS: " + ticket.payment.status_payment + "<BR>"
+		        content +=  "<CENTER> STATUS: " + ticket.payment.status + "<BR>"
 		    content += "<CENTER> DATA: " + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
 		    content += "<BR><BR>"
 		    

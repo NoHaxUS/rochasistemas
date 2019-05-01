@@ -110,7 +110,7 @@ show_ticket_action.short_description = 'Exibir Tickets'
 
 def payment_status(obj):
     if obj.payment:
-        return ("%s" % obj.payment.status_payment)
+        return ("%s" % obj.payment.status)
 payment_status.short_description = 'Status do Pagamento'
 
 
@@ -163,57 +163,12 @@ class HiddenTicketFilter(admin.SimpleListFilter):
             return queryset.filter(visible=True)
 
 
-class TicketStatusListFilter(admin.SimpleListFilter):
-
-    title = _('Ticket Status')
-    parameter_name = 'ticket-status'
-
-
-    def lookups(self, request, model_admin):
-        return (
-            ("Cancelado", "Cancelado"),
-            ("Aguardando Resultados","Aguardando Resultados"),
-            ("Não Venceu", "Não Venceu"),
-            ("Venceu","Venceu"),
-            ("Venceu, não pago","Venceu, não pago")
-        )
-
-    def queryset(self, request, queryset):
-
-        if self.value() == "Cancelado":
-            return queryset.filter(payment__status_payment="Cancelado")
-
-        if self.value() == "Aguardando Resultados":
-            return queryset\
-            .annotate(cotations_open=Count('cotations__pk', filter=Q(cotations__settlement__isnull=True)))\
-            .annotate(cotations_not_winner=Count('cotations__pk', filter=Q(cotations__settlement__in=[1,3,4])))\
-            .filter(cotations_open__gt=0, cotations_not_winner=0).exclude(payment__status_payment='Cancelado')
-
-        if self.value() == "Não Venceu":
-            return queryset\
-            .annotate(cotations_not_winner=Count('cotations__pk', filter=Q(cotations__settlement__in=[1,3,4])))\
-            .filter(cotations_not_winner__gt=0).exclude(payment__status_payment='Cancelado')
-
-        if self.value() == "Venceu":
-            return queryset\
-            .annotate(cotations_open=Count('cotations__pk', filter=Q(cotations__settlement__isnull=True)) )\
-            .annotate(cotations_not_winner=Count('cotations__pk', filter=Q(cotations__settlement__in=[1,3,4]) ) )\
-            .filter(cotations_open=0, cotations_not_winner=0, payment__status_payment='Pago')
-
-        if self.value() == "Venceu, não pago":
-            return queryset\
-            .annotate(cotations_open=Count('cotations__pk', filter=Q(cotations__settlement__isnull=True)) )\
-            .annotate(cotations_not_winner=Count('cotations__pk', filter=Q(cotations__settlement__in=[1,3,4]) ) )\
-            .filter(cotations_open=0, cotations_not_winner=0).exclude(payment__status_payment='Pago')
-
-
 @admin.register(Ticket)
 class TicketAdmin(admin.ModelAdmin):
     search_fields = ['id']
     list_filter = (
-    TicketStatusListFilter,
-    'payment__who_set_payment_id',
-    'payment__status_payment',
+    'payment__who_paid',
+    'payment__status',
     HiddenTicketFilter,
     'creation_date',
     'reward__reward_status')

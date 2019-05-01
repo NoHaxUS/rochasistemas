@@ -100,7 +100,7 @@
                         <span class='bold'>Data de Criação:</span> {{ ticket.creation_date }}
                     </div>
                     <div class="row">
-                        <span class='bold'>Status do Pagamento:</span> {{ ticket.payment.status_payment }}
+                        <span class='bold'>Status do Pagamento:</span> {{ ticket.payment.status }}
                     </div>
                 
                     {% if ticket.payment.who_set_payment %}
@@ -109,9 +109,9 @@
                     </div>
                     {% endif %}
 
-                    {% if ticket.payment.payment_date %}
+                    {% if ticket.payment.date %}
                     <div class="row">
-                        <span class='bold'>Data de Pagamento:</span> {{ticket.payment.payment_date}}
+                        <span class='bold'>Data de Pagamento:</span> {{ticket.payment.date}}
                     </div>
                     {% endif %}
 

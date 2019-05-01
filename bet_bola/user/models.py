@@ -183,7 +183,7 @@ class Seller(CustomUser):
         
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(payment__who_set_payment=self,
-        payment__seller_was_rewarded=False).exclude(payment__status_payment='Cancelado')
+        payment__seller_was_rewarded=False).exclude(payment__status='Cancelado')
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
 
@@ -325,7 +325,7 @@ class Manager(CustomUser):
 
         total_revenue = 0
         for seller in sellers:
-            tickets_not_rewarded = Ticket.objects.filter(payment__who_set_payment=seller, payment__manager_was_rewarded=False).exclude(payment__status_payment='Cancelado')
+            tickets_not_rewarded = Ticket.objects.filter(payment__who_set_payment=seller, payment__manager_was_rewarded=False).exclude(payment__status='Cancelado')
             for ticket in tickets_not_rewarded:
                 total_revenue += ticket.value
         return total_revenue

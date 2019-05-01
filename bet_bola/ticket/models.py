@@ -14,13 +14,14 @@ from user.models import NormalUser, Seller, Punter
 
 class Ticket(models.Model):
 
-    TICKET_STATUS = {
-        'Aguardando Resultados':'Aguardando Resultados',
-        'Não Venceu': 'Não Venceu',
-        'Venceu':'Venceu',
-        'Venceu, não pago' : 'Venceu, não pago',
-        'Cancelado' : 'Cancelado'
-    }
+    TICKET_STATUS = (
+        (0, 'Aguardando Resultados'),
+        (1, 'Não Venceu'),
+        (2, 'Venceu'),
+        (3, 'Venceu, Vencedor não Pago'),
+        (4, 'Venceu, Vencedor Pago'),
+        (5, 'Cancelado')
+    )
     
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Apostador')
@@ -32,35 +33,11 @@ class Ticket(models.Model):
     payment = models.OneToOneField('Payment', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
     value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')    
     visible = models.BooleanField(default=True, verbose_name='Visível?')
+    status = models.IntegerField(default=0, choices=TICKET_STATUS, verbose_name='Status do Ticket')
     store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.pk)
-
-        # ('Aguardando Resultados', 'Aguardando Resultados'),
-        # ('O apostador foi pago', 'O apostador foi pago'),
-        # ('Esse ticket não venceu', 'Esse ticket não venceu'),
-        # ('Venceu, Pagar Apostador', 'Venceu, Pagar Apostador'),
-        # ('Venceu, não pago','Venceu, não pago')
-
-    @property
-    def ticket_status(self):
-        if self.payment.status_payment == Payment.PAYMENT_STATUS[2][1]:
-            return Payment.PAYMENT_STATUS[2][1]
-
-        if self.cotations.filter(settlement__in=[1]).exclude(game__game_status__in = (4,5,7,8,9,99)).count() > 0:
-            return Ticket.TICKET_STATUS['Não Venceu']
-
-        if self.cotations.filter(Q(settlement__isnull=True) | Q(settlement=0)).exclude(game__game_status__in = (4,5,7,8,9,99)).count() > 0:
-            return Ticket.TICKET_STATUS['Aguardando Resultados']
-
-        if self.cotations.filter(settlement__in=[2]).exclude(game__game_status__in = (4,5,7,8,9,99)).count() > 0 and self.cotations.exclude(game__game_status__in = (4,5,6,7,8)).exclude(settlement=-1).count() > 0 and self.payment.status_payment == 'Pago':
-            return Ticket.TICKET_STATUS["Venceu"]
-        
-        if self.cotations.filter(settlement__in=[2]).exclude(game__game_status__in = (4,5,7,8,9,99)).count() > 0 and self.cotations.exclude(game__game_status__in = (4,5,6,7,8)).exclude(settlement=-1).count() > 0 and self.payment.status_payment == Payment.PAYMENT_STATUS[0][1]:
-            return Ticket.TICKET_STATUS["Venceu, não pago"]
-        
-        return "Bilhete Anulado"
 
 
     def get_punter_name(self):
@@ -105,21 +82,21 @@ class Ticket(models.Model):
                 'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
         
         who_cancelled  = str(user.pk) + ' - ' + user.username
-        if not self.ticket_status == Ticket.TICKET_STATUS['Aguardando Resultados']:
+        if not self.status == Ticket.TICKET_STATUS[0][1]:
             return {'success':False,
                 'message':' Ticket '+ str(self.pk)+ ' não cancelado, pois não está aguardando resultados.'}
         
-        if not self.payment.status_payment == Payment.PAYMENT_STATUS[1][1]:
+        if not self.payment.status == Payment.PAYMENT_STATUS[1][1]:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Pago para ser cancelado.'}
 
         if user.has_perm('user.be_seller') and not user.is_superuser:
-            if self.payment.payment_date + timezone.timedelta(minutes=int(user.seller.limit_time_to_cancel)) < tzlocal.now():
+            if self.payment.date + timezone.timedelta(minutes=int(user.seller.limit_time_to_cancel)) < tzlocal.now():
                 return {'success':False,
                     'message':' Tempo limite para cancelar o Ticket '+ str(self.pk) +' excedido.'}
 
         if user.has_perm('user.be_manager') and not user.is_superuser:
-            if self.payment.payment_date + timezone.timedelta(minutes=int(user.manager.limit_time_to_cancel)) < tzlocal.now():
+            if self.payment.date + timezone.timedelta(minutes=int(user.manager.limit_time_to_cancel)) < tzlocal.now():
                 return {'success':False,
                     'message':' Tempo limite para cancelar o Ticket '+ str(self.pk) +' excedido.'}
 
@@ -132,8 +109,8 @@ class Ticket(models.Model):
             seller.credit_limit += self.value
             seller.save()
 
-        self.payment.status_payment = Ticket.TICKET_STATUS['Cancelado']
-        self.payment.payment_date = None
+        self.payment.status = Ticket.TICKET_STATUS[5][1]
+        self.payment.date = None
         self.payment.seller_was_rewarded = True
         self.payment.save()
         self.save()
@@ -164,7 +141,7 @@ class Ticket(models.Model):
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
         
-        if not self.payment.status_payment == Payment.PAYMENT_STATUS[0][1]:
+        if not self.payment.status == Payment.PAYMENT_STATUS[0][1]:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Aguardando Pagamento.'}
 
@@ -192,7 +169,7 @@ class Ticket(models.Model):
             
         self.seller = user.seller        
         self.save()
-        self.payment.status_payment = Payment.PAYMENT_STATUS[1][1]
+        self.payment.status = Payment.PAYMENT_STATUS[1][1]
         self.payment.payment_date = tzlocal.now()
         self.payment.who_set_payment = Seller.objects.get(pk=user.pk)
         self.payment.save()
@@ -223,7 +200,7 @@ class Ticket(models.Model):
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não Venceu'}
 
-        if not self.payment.status_payment == Payment.PAYMENT_STATUS[1][1]:
+        if not self.payment.status == Payment.PAYMENT_STATUS[1][1]:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não foi Pago.'}
 
@@ -354,14 +331,14 @@ class Payment(models.Model):
     )
     
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
-    who_set_payment = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
-    status_payment = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1], verbose_name='Status do Pagamento')
-    payment_date = models.DateTimeField(null=True, blank=True, verbose_name='Data do Pagamento')
+    who_paid = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
+    status = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1], verbose_name='Status do Pagamento')
+    date = models.DateTimeField(null=True, blank=True, verbose_name='Data do Pagamento')
     seller_was_rewarded = models.BooleanField(default=False, verbose_name='Cambista foi pago?')
     manager_was_rewarded = models.BooleanField(default=False, verbose_name='Gerente foi pago?')
 
     def __str__(self):
-        return self.status_payment
+        return self.status
 
 
     class Meta:
