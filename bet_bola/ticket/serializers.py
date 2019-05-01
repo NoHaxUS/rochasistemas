@@ -36,7 +36,7 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	seller = serializers.SlugRelatedField(read_only=True, slug_field='first_name')
 	payment = PaymentSerializerWithSeller()
 	reward = RewardSerializer()
-	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
+	store = serializers.SlugRelatedField(queryset = Store.objects.all(), slug_field='id')
 	cotation_sum = serializers.SerializerMethodField()
 	status = serializers.SerializerMethodField()
 	cotations = CotationTicketSerializer(many=True)

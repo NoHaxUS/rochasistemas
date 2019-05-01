@@ -9,7 +9,7 @@ from django.utils import timezone
 from utils.models import GeneralConfigurations
 
 class StoreSerializer(serializers.HyperlinkedModelSerializer):	
-	config = serializers.SlugRelatedField(queryset = GeneralConfigurations.objects.all(),slug_field='id')
+	config = serializers.SlugRelatedField(queryset = GeneralConfigurations.objects.all(), slug_field='id')
 
 	class Meta:
 		model = Store
@@ -18,10 +18,10 @@ class StoreSerializer(serializers.HyperlinkedModelSerializer):
 
 class CotationHistorySerializer(serializers.HyperlinkedModelSerializer):	
 	
-	original_cotation = serializers.SlugRelatedField(queryset = Cotation.objects.all(),slug_field='name')
-	ticket = serializers.SlugRelatedField(queryset = Ticket.objects.all(),slug_field='id')
-	game = serializers.SlugRelatedField(queryset = Game.objects.all(),slug_field='name')
-	market = serializers.SlugRelatedField(queryset = Market.objects.all(),slug_field='name')
+	original_cotation = serializers.SlugRelatedField(queryset = Cotation.objects.all(), slug_field='name')
+	ticket = serializers.SlugRelatedField(queryset = Ticket.objects.all(), slug_field='id')
+	game = serializers.SlugRelatedField(queryset = Game.objects.all(), slug_field='name')
+	market = serializers.SlugRelatedField(queryset = Market.objects.all(), slug_field='name')
 
 	class Meta:
 		model = CotationHistory
