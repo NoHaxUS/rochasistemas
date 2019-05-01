@@ -91,14 +91,7 @@ class GameAbleView(ModelViewSet):
         
     def list(self, request, pk=None):            
         
-        queryset = self.get_queryset()
-
-        if request.GET.get('game'):
-
-            games = Game.objects.filter(name__icontains=request.GET.get('game'))
-            queryset = League.objects.all().prefetch_related(Prefetch('my_games', queryset=games, to_attr='games'))
-            queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__start_date__gt=tzlocal.now(),my_games__start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),my_games__game_status=0, my_games__name__icontains=request.GET.get('game'))))\
-            .filter(games_count__gt=0)        
+        queryset = self.get_queryset()        
         
         page = self.paginate_queryset(queryset)                
                 
@@ -127,16 +120,26 @@ class GameAbleView(ModelViewSet):
             .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
             .filter(cotations_count__gte=3).order_by('-league__location__priority',
             '-league__priority', 'league__location__name', 'league__name')
-                
+        
+        if self.request.GET.get('game'):
+            game_name = self.request.GET.get('game')
+            my_games_qs = my_games_qs.filter(name__icontains=game_name)
+
+            queryset = League.objects.all().prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'))
+            
+            queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__start_date__gt=tzlocal.now(),my_games__start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),my_games__game_status=0, my_games__name__icontains=game_name)))\
+            .filter(games_count__gt=0)            
+
+            queryset = queryset.exclude(id__in=id_list_excluded_leagues)
+
+            return queryset        
+
         queryset = League.objects.all().prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'))
         
         queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__start_date__gt=tzlocal.now(),my_games__start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),my_games__game_status=0)))\
         .filter(games_count__gt=0)
 
-        queryset = queryset.exclude(id__in=id_list_excluded_leagues)
-
         return queryset
-
 
 
     serializer_class = LeagueGameSerializer
