@@ -104,9 +104,7 @@ class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','name','market','price','settlement','game')	
 
 	def get_settlement(self, obj):
-		from core.models import SETTLEMENT_STATUS
-
-		return SETTLEMENT_STATUS[obj.settlement][1]
+		return obj.get_settlement_display()
 
 
 class MinimumListCotationSerializer(serializers.ListSerializer):
