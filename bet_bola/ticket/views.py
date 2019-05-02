@@ -42,8 +42,8 @@ class TicketView(FiltersMixin, ModelViewSet):
 		'start_creation_date':'creation_date__gte',
 		'end_creation_date':'creation_date__lte',
 		'payment_status':'payment__status',
-		'start_payment_date': 'payment__date__gte',
-		'end_payment_date': 'payment__date__lte'
+		'start_date': 'payment__date__gte',
+		'end_date': 'payment__date__lte'
 	}
 
 	def get_serializer_class(self):		
@@ -79,7 +79,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 
 		ticket_reward_value = cotation_sum * serializer.validated_data['value']		
 
-		reward = Reward.objects.create(reward_status='Aguardando Resultados')						
+		reward = Reward.objects.create()						
 		
 		store = Store.objects.get(id=self.request.GET['store'])
 		instance = ""

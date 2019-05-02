@@ -86,7 +86,7 @@ class CancelarTicketPermission(permissions.BasePermission):
 
 	def has_object_permission(self, request, view, obj):		
 		if request.user.has_perm('user.be_seller'):
-			if request.user.pk == obj.payment.who_set_payment.pk:
+			if request.user.pk == obj.payment.who_paid.pk:
 				return True
 			self.message = "Vendedor não tem permissão sobre esse ticket" 
 			return False

@@ -129,8 +129,8 @@ class Seller(CustomUser):
         profit = self.actual_revenue() - self.out_money(),
         store=self.my_store)
 
-        payments = Payment.objects.filter(who_set_payment=self, seller_was_rewarded=False)
-        payments.update(seller_was_rewarded=True)
+        # payments = Payment.objects.filter(who_set_payment=self)
+        # payments.update(seller_was_rewarded=True)
 
         payeds_open = PunterPayedHistory.objects.filter(seller=self, is_closed_for_seller=False)
         payeds_open.update(is_closed_for_seller=True)
@@ -182,8 +182,10 @@ class Seller(CustomUser):
         from core.models import Ticket
         
         total_revenue = 0
-        tickets_not_rewarded = Ticket.objects.filter(payment__who_set_payment=self,
-        payment__seller_was_rewarded=False).exclude(payment__status='Cancelado')
+        # tickets_not_rewarded = Ticket.objects.filter(payment__who_set_payment=self,
+        # payment__seller_was_rewarded=False).exclude(payment__status='Cancelado')
+        tickets_not_rewarded = Ticket.objects.filter(payment__who_set_payment=self
+        ).exclude(payment__status='Cancelado')
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
 
@@ -264,8 +266,7 @@ class Manager(CustomUser):
 
         sellers = Seller.objects.filter(my_manager=self)
         for seller in sellers:
-            payments_not_rewarded = Payment.objects.filter(who_set_payment=seller, manager_was_rewarded=False)
-            payments_not_rewarded.update(manager_was_rewarded=True)
+            payments_not_rewarded = Payment.objects.filter(who_set_payment=seller)            
             payeds_open = PunterPayedHistory.objects.filter(seller=seller, is_closed_for_manager=False)
             payeds_open.update(is_closed_for_manager=True)
 
@@ -325,7 +326,7 @@ class Manager(CustomUser):
 
         total_revenue = 0
         for seller in sellers:
-            tickets_not_rewarded = Ticket.objects.filter(payment__who_set_payment=seller, payment__manager_was_rewarded=False).exclude(payment__status='Cancelado')
+            tickets_not_rewarded = Ticket.objects.filter(payment__who_set_payment=seller).exclude(payment__status='Cancelado')
             for ticket in tickets_not_rewarded:
                 total_revenue += ticket.value
         return total_revenue

@@ -66,10 +66,10 @@ class SellerView(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         seller = self.get_object()
-
-        tickets = Ticket.objects.filter(seller=seller)
-        if [(ticket.reward.reward_status in ['Venceu, Pagar Apostador','Aguardando Resultados']) for ticket in tickets.all()]:
-            return Response({'Error':'Cambista não pode ser deletado, pois possui bilhetes pendentes.'})
+        
+        # tickets = Ticket.objects.filter(seller=seller)
+        # if [(ticket.reward.reward_status in ['Venceu, Pagar Apostador','Aguardando Resultados']) for ticket in tickets.all()]:
+        #     return Response({'Error':'Cambista não pode ser deletado, pois possui bilhetes pendentes.'})
 
         self.perform_destroy(seller)        
         return Response(status=status.HTTP_204_NO_CONTENT)

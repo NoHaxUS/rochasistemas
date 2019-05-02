@@ -22,15 +22,21 @@ class Comission(models.Model):
 
     def total_simple(self, date_from, date_to):
         total_revenue = 0
+        # tickets_not_rewarded = Ticket.objects.filter(
+        #     payment__who_paid=self.seller_related, 
+        #     payment__seller_was_rewarded=False,
+        #     ).annotate(cotations_count=Count('cotations')).filter(cotations_count=1)
         tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_set_payment=self.seller_related, 
-            payment__seller_was_rewarded=False,
-            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=1)
+            payment__who_paid=self.seller_related).annotate(cotations_count=Count('cotations')).filter(cotations_count=1)
 
         if date_from and date_to:        
+            # tickets_not_rewarded = Ticket.objects.filter(
+            # payment__who_paid=self.seller_related, 
+            # payment__seller_was_rewarded=False,
+            # ).annotate(cotations_count=Count('cotations')).filter(cotations_count=1).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
+
             tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_set_payment=self.seller_related, 
-            payment__seller_was_rewarded=False,
+            payment__who_paid=self.seller_related,             
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=1).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
@@ -41,13 +47,11 @@ class Comission(models.Model):
     def total_double(self, date_from, date_to):
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_set_payment=self.seller_related, 
-            payment__seller_was_rewarded=False,
+            payment__who_paid=self.seller_related,             
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=2)
         if date_from and date_to:
             tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_set_payment=self.seller_related, 
-            payment__seller_was_rewarded=False,
+            payment__who_paid=self.seller_related,         
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=2).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
@@ -57,13 +61,11 @@ class Comission(models.Model):
     def total_triple(self, date_from, date_to):
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_set_payment=self.seller_related, 
-            payment__seller_was_rewarded=False,
+            payment__who_paid=self.seller_related         
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=3)
         if date_from and date_to:
             tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_set_payment=self.seller_related, 
-            payment__seller_was_rewarded=False,
+            payment__who_paid=self.seller_related             
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=3).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
 
         for ticket in tickets_not_rewarded:
@@ -74,13 +76,11 @@ class Comission(models.Model):
     def total_fourth(self, date_from, date_to):
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_set_payment=self.seller_related, 
-            payment__seller_was_rewarded=False,
+            payment__who_paid=self.seller_related             
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=4)
         if date_from and date_to:
             tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_set_payment=self.seller_related, 
-            payment__seller_was_rewarded=False,
+            payment__who_paid=self.seller_related             
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=4).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
@@ -91,13 +91,11 @@ class Comission(models.Model):
     def total_fifth(self, date_from, date_to):
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_set_payment=self.seller_related, 
-            payment__seller_was_rewarded=False,
+            payment__who_paid=self.seller_related,             
             ).annotate(cotations_count=Count('cotations'))
         if date_from and date_to:
             tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_set_payment=self.seller_related, 
-            payment__seller_was_rewarded=False,
+            payment__who_paid=self.seller_related            
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=5).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
@@ -108,13 +106,11 @@ class Comission(models.Model):
     def total_sixth(self, date_from, date_to):
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_set_payment=self.seller_related, 
-            payment__seller_was_rewarded=False,
+            payment__who_paid=self.seller_related            
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=6)
         if date_from and date_to:
             tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_set_payment=self.seller_related, 
-            payment__seller_was_rewarded=False,
+            payment__who_paid=self.seller_related            
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=6).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value
@@ -125,13 +121,11 @@ class Comission(models.Model):
     def total_sixth_more(self, date_from, date_to):
         total_revenue = 0
         tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_set_payment=self.seller_related, 
-            payment__seller_was_rewarded=False,
+            payment__who_paid=self.seller_related        
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=6)
         if date_from and date_to:
             tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_set_payment=self.seller_related, 
-            payment__seller_was_rewarded=False,
+            payment__who_paid=self.seller_related            
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=6).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
         for ticket in tickets_not_rewarded:
             total_revenue += ticket.value

@@ -32,7 +32,7 @@ def correct_cancelled_tickets(sender, **kwargs):
     cancelled_tickets = Ticket.objects.filter(ticket_status = Ticket.TICKET_STATUS[4][1])
 
     for ticket in cancelled_tickets:
-        ticket.payment.seller_was_rewarded = True
+        # ticket.payment.seller_was_rewarded = True
         ticket.payment.save()
         
 

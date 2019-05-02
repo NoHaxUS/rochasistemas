@@ -70,7 +70,7 @@ class Ticket(models.Model):
 
     def seller_related(self):
         if self.payment:
-            return self.payment.who_set_payment
+            return self.payment.who_paid
     seller_related.short_description = 'Cambista'
 
 
@@ -83,11 +83,11 @@ class Ticket(models.Model):
                 'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
         
         who_cancelled  = str(user.pk) + ' - ' + user.username
-        if not self.status == Ticket.TICKET_STATUS[0][1]:
+        if not self.status == 0:
             return {'success':False,
                 'message':' Ticket '+ str(self.pk)+ ' não cancelado, pois não está aguardando resultados.'}
         
-        if not self.payment.status == Payment.PAYMENT_STATUS[1][1]:
+        if not self.payment.status == 2:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Pago para ser cancelado.'}
 
@@ -101,18 +101,18 @@ class Ticket(models.Model):
                 return {'success':False,
                     'message':' Tempo limite para cancelar o Ticket '+ str(self.pk) +' excedido.'}
 
-        if user != self.payment.who_set_payment:
+        if user != self.payment.who_paid:
             return {'success':False,
                     'message':'Vendedor ' + user.first_name+ ' não tem permissão para cancelar este ticket.'}
         
-        seller = self.payment.who_set_payment
+        seller = self.payment.who_paid
         if not seller.can_sell_unlimited:
             seller.credit_limit += self.value
             seller.save()
 
-        self.payment.status = Ticket.TICKET_STATUS[5][1]
+        self.payment.status = 5
         self.payment.date = None
-        self.payment.seller_was_rewarded = True
+        # self.payment.seller_was_rewarded = True
         self.payment.save()
         self.save()
 
@@ -142,11 +142,11 @@ class Ticket(models.Model):
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
         
-        if not self.payment.status == Payment.PAYMENT_STATUS[0][1]:
+        if not self.payment.status == 0:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Aguardando Pagamento.'}
 
-        if not self.status == Ticket.TICKET_STATUS['Aguardando Resultados']:
+        if not self.status == 0:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Aguardando Resultados.'}
 
@@ -169,9 +169,9 @@ class Ticket(models.Model):
             user.seller.save()
                     
         self.save()
-        self.payment.status = Payment.PAYMENT_STATUS[1][1]
-        self.payment.payment_date = tzlocal.now()
-        self.payment.who_set_payment = Seller.objects.get(pk=user.pk)
+        self.payment.status = 2
+        self.payment.date = tzlocal.now()
+        self.payment.who_paid = Seller.objects.get(pk=user.pk)
         self.payment.save()
 
         SellerSalesHistory.objects.create(seller=user.seller,
@@ -190,11 +190,7 @@ class Ticket(models.Model):
 
         if not self.payment or not self.reward:
             return {'success':False,
-                'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
-        
-        if self.reward.reward_status == Reward.REWARD_STATUS[1][1]:
-            return {'success':False,
-                'message':'O Ticket '+ str(self.pk)+ ' já foi recompensado.'}
+                'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}            
         
         if not self.status == Ticket.TICKET_STATUS['Venceu']:
             return {'success':False,
@@ -204,7 +200,7 @@ class Ticket(models.Model):
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não foi Pago.'}
 
-        if not self.payment.who_set_payment.pk == user.pk:
+        if not self.payment.who_paid.pk == user.pk:
             return {'success':False,
                 'message':'Você só pode recompensar apostas pagas por você.'}
 
@@ -212,8 +208,7 @@ class Ticket(models.Model):
             punter_payed =  str(self.normal_user.pk) +' - '+ str(self.normal_user.first_name)
         elif self.user:
             punter_payed = str(self.user.pk) +' - '+ str(self.user.first_name)
-
-        self.reward.reward_status = Reward.REWARD_STATUS[1][1]
+        
         self.reward.reward_date = tzlocal.now()
         self.reward.who_rewarded = Seller.objects.get(pk=user.pk)
         self.reward.save()

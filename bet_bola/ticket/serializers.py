@@ -11,19 +11,23 @@ from .models import *
 class PaymentSerializerWithSeller(serializers.HyperlinkedModelSerializer):
 
 	who_set_payment = serializers.SlugRelatedField(slug_field="first_name", read_only=True)
-
+	status = serializers.SerializerMethodField()
+	
 	class Meta:
 		model = Payment
 		fields =  ('who_set_payment','status','date')
 
+	def get_status(self, obj):
+		return obj.get_status_display()
+
 
 class RewardSerializer(serializers.HyperlinkedModelSerializer):
-	who_rewarded = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')
+	who_rewarded_the_winner = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')
 	real_value = serializers.SerializerMethodField()
 
 	class Meta:
 		model = Reward
-		fields = ('who_rewarded','reward_date','reward_status','real_value')
+		fields = ('who_rewarded_the_winner','date','real_value')
 
 	def get_real_value(self, reward):
 		return reward.real_value
@@ -52,28 +56,17 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 		return obj.get_status_display()
 
 
-
-class RewardSerializer(serializers.HyperlinkedModelSerializer):
-	who_rewarded = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')
-	real_value = serializers.SerializerMethodField()
-
-	class Meta:
-		model = Reward
-		fields = ('who_rewarded','reward_date','reward_status','real_value')
-
-	def get_real_value(self, reward):
-		return reward.real_value
-
-
-
-
 class PaymentSerializer(serializers.HyperlinkedModelSerializer):
 
 	who_set_payment = SellerSerializer(read_only=True)
-
+	status = serializers.SerializerMethodField()
+	
 	class Meta:
 		model = Payment
-		fields =  ('who_set_payment','status','payment_date','seller_was_rewarded','manager_was_rewarded')
+		fields =  ('who_set_payment','status','date')
+
+	def get_status(self, obj):
+		return obj.get_status_display()
 
 
 #EXTRA SERIALIZERS
@@ -82,7 +75,7 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 	normal_user = NormalUserSerializer()
 	creation_date = serializers.DateTimeField(read_only=True)	
 	payment = PaymentSerializer(read_only=True)	
-	reward = serializers.SlugRelatedField(read_only=True, slug_field='reward_status')	
+	reward = RewardSerializer(read_only=True)
 	cotations = serializers.PrimaryKeyRelatedField(many=True, queryset=Cotation.objects.all(), required=True)	
 
 	def update(self, instance, validated_data):
