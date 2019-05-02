@@ -18,23 +18,24 @@ class Ticket(models.Model):
         (0, 'Aguardando Resultados'),
         (1, 'Não Venceu'),
         (2, 'Venceu'),
-        (3, 'Venceu, Vencedor não Pago'),
-        (4, 'Venceu, Vencedor Pago'),
-        (5, 'Cancelado')
+        (3, 'Venceu, Bilhete não Pago'),
+        (4, 'Venceu, Prestar Contas'),
+        (5, 'Cancelado'),
+        (6, 'Reebolsado')
     )
     
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Apostador')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_tickets', null=True, blank=True, on_delete=models.CASCADE, verbose_name='Apostador')
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
     normal_user = models.ForeignKey(NormalUser, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cliente')
     cotations = models.ManyToManyField('core.Cotation', related_name='ticket', verbose_name='Cota')
     creation_date = models.DateTimeField(verbose_name='Data da Aposta')
-    reward = models.OneToOneField('Reward', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Recompensa')
-    payment = models.OneToOneField('Payment', related_name='ticket', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Pagamento')
-    value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')    
-    visible = models.BooleanField(default=True, verbose_name='Visível?')
+    reward = models.OneToOneField('Reward', related_name='ticket', null=True, blank=True, on_delete=models.CASCADE, verbose_name='Prêmio')
+    payment = models.OneToOneField('Payment', related_name='ticket', null=True, blank=True, on_delete=models.CASCADE, verbose_name='Pagamento')
+    value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')
     status = models.IntegerField(default=0, choices=TICKET_STATUS, verbose_name='Status do Ticket')
     store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
+    visible = models.BooleanField(default=True, verbose_name='Visível?')
 
     def __str__(self):
         return str(self.pk)
@@ -135,7 +136,7 @@ class Ticket(models.Model):
                 message = 'Uma aposta com recompensa no valor de R$' + bet_reward_value + ' foi efetuada em sua plataforma'
                 email_from = settings.EMAIL_HOST_USER
                 recipient_list = [self.store.email,]
-                send_mail( subject, message, email_from, recipient_list )\
+                send_mail( subject, message, email_from, recipient_list )
             
         if not self.payment or not self.reward:
             return {'success':False,
@@ -145,7 +146,7 @@ class Ticket(models.Model):
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Aguardando Pagamento.'}
 
-        if not self.ticket_status == Ticket.TICKET_STATUS['Aguardando Resultados']:
+        if not self.status == Ticket.TICKET_STATUS['Aguardando Resultados']:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não está Aguardando Resultados.'}
 
@@ -195,7 +196,7 @@ class Ticket(models.Model):
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk)+ ' já foi recompensado.'}
         
-        if not self.ticket_status == Ticket.TICKET_STATUS['Venceu']:
+        if not self.status == Ticket.TICKET_STATUS['Venceu']:
             return {'success':False,
                 'message':'O Ticket '+ str(self.pk) +' não Venceu'}
 
@@ -265,19 +266,10 @@ class Ticket(models.Model):
 
 
 class Reward(models.Model):
-
-    REWARD_STATUS = (
-        ('Aguardando Resultados', 'Aguardando Resultados'),
-        ('O apostador foi pago', 'O apostador foi pago'),
-        ('Esse ticket não venceu', 'Esse ticket não venceu'),
-        ('Venceu, Pagar Apostador', 'Venceu, Pagar Apostador'),
-        ('Venceu, não pago','Venceu, não pago')
-    )
-
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
-    who_rewarded = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL)
-    reward_date = models.DateTimeField(null=True, blank=True)
-    reward_status = models.CharField(max_length=80, choices=REWARD_STATUS, default=REWARD_STATUS[0][1], verbose_name='Status do Prêmio')
+    who_rewarded_the_winner = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL)
+    date = models.DateTimeField(null=True, blank=True, verbose_name='Data de Pagamento do Prêmio')
+
 
     @property
     def real_value(self):
@@ -324,17 +316,19 @@ class Reward(models.Model):
 class Payment(models.Model):
 
     PAYMENT_STATUS = (
-        ('Aguardando Pagamento do Ticket', 'Aguardando Pagamento do Ticket'),
-        ('Pago', 'Pago'),
-        ('Cancelado', 'Cancelado'),
+        (0, 'Aguardando Pagamento'),
+        (1, 'Pagamento em Análise'),
+        (2, 'Pago'),
+        (3, 'Pagamento Cancelado'),
+        (4, 'Pagamento Recusado pelo Cartão'),
+        (5, 'Pagamento Reembolsado')
     )
     
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     who_paid = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
-    status = models.CharField(max_length=80, choices=PAYMENT_STATUS, default=PAYMENT_STATUS[0][1], verbose_name='Status do Pagamento')
+    status = models.IntegerField(choices=PAYMENT_STATUS, default=0, verbose_name='Status do Pagamento')
     date = models.DateTimeField(null=True, blank=True, verbose_name='Data do Pagamento')
-    seller_was_rewarded = models.BooleanField(default=False, verbose_name='Cambista foi pago?')
-    manager_was_rewarded = models.BooleanField(default=False, verbose_name='Gerente foi pago?')
+
 
     def __str__(self):
         return self.status
@@ -343,4 +337,5 @@ class Payment(models.Model):
     class Meta:
         verbose_name = 'Pagamento'
         verbose_name_plural = 'Pagamentos'
+
 
