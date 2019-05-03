@@ -111,7 +111,6 @@ class League(models.Model):
     def __str__(self):
         return self.name
 
-
     class Meta:
         ordering = ('-id',)
         verbose_name = 'Liga'
@@ -167,7 +166,7 @@ class Cotation(models.Model):
     )
 
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
-    name = models.CharField(max_length=80, verbose_name='Nome da Cota')
+    name = models.CharField(max_length=120, verbose_name='Nome da Cota')
     start_price = models.DecimalField(max_digits=30, decimal_places=2, default=0,verbose_name='Valor Original')
     price = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
     game = models.ForeignKey('Game', related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Jogo')	
@@ -175,10 +174,8 @@ class Cotation(models.Model):
     market = models.ForeignKey('Market', related_name='cotations', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Tipo da Cota')
     total_goals = models.DecimalField(null=True, blank=True, max_digits=6, decimal_places=2, verbose_name='Total Acima/Abaixo')
 
-
     def __str__(self):
         return str(self.id)
-
 
     class Meta:
         verbose_name = 'Cota'

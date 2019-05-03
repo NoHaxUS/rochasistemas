@@ -3,6 +3,7 @@ from django.contrib.auth.models import User, Permission, AbstractUser, BaseUserM
 from django.db.models import F, Q, When, Case
 from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
+from .logic import manager, seller, admin
 
 
 
@@ -14,8 +15,7 @@ class CustomUser(AbstractUser):
         return self.username
 
     def full_name(self):
-        return self.first_name + ' ' + self.last_name
-    full_name.short_description = 'Nome Completo'
+        return self.first_name + ' ' + self.last_name    
 
 
 class Admin(CustomUser):    
@@ -30,31 +30,6 @@ class Admin(CustomUser):
             ('be_admin', 'Be a admin, permission.'),
         )
 
-    def define_default_permissions(self):
-
-        be_admin_perm = Permission.objects.get(codename='be_admin')
-        view_managertransactions_perm = Permission.objects.get(codename='view_managertransactions')
-        view_revenuehistoryseller_perm = Permission.objects.get(codename='view_revenuehistoryseller')
-        view_sellersaleshistory_perm = Permission.objects.get(codename='view_sellersaleshistory')
-        view_punterpayedhistory_perm = Permission.objects.get(codename='view_punterpayedhistory')
-        view_revenuehistorymanager = Permission.objects.get(codename='view_revenuehistorymanager')
-        change_seller = Permission.objects.get(codename='change_seller')
-        add_seller = Permission.objects.get(codename='add_seller')
-        view_manager = Permission.objects.get(codename='view_manager')
-        add_manager = Permission.objects.get(codename='add_manager')
-        change_manager = Permission.objects.get(codename='change_manager')
-        view_ticket_perm = Permission.objects.get(codename='view_ticket')
-        view_punter_perm = Permission.objects.get(codename='view_punter')
-        change_ticket_perm = Permission.objects.get(codename='change_ticket')
-        view_ticketcancelationhistory = Permission.objects.get(codename='view_ticketcancelationhistory')
-        view_comission = Permission.objects.get(codename='view_comission')
-        
-        self.user_permissions.add(be_admin_perm,view_managertransactions_perm,
-        view_revenuehistoryseller_perm,view_sellersaleshistory_perm,
-        view_punterpayedhistory_perm, view_revenuehistorymanager, change_seller, add_seller,
-        view_manager, add_manager, change_manager, view_ticket_perm, view_punter_perm, change_ticket_perm, 
-        view_ticketcancelationhistory, view_comission)
-
     def save(self, *args, **kwargs):
         self.clean()
         if not self.password.startswith('pbkdf2'):          
@@ -62,7 +37,8 @@ class Admin(CustomUser):
         self.is_superuser = False
         self.is_staff = True
         super().save()
-        self.define_default_permissions()
+        admin.define_default_permissions(self)
+
 
 class AnonymousUser(models.Model):
     first_name = models.CharField(max_length=150, verbose_name='Nome')
@@ -105,7 +81,6 @@ class Punter(CustomUser):
         )
 
 
-
 class Seller(CustomUser):
     cpf = models.CharField(max_length=11, verbose_name='CPF', null=True, blank=True)
     cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)
@@ -118,81 +93,28 @@ class Seller(CustomUser):
     my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
     def reset_revenue(self, who_reseted_revenue):
-        from ticket.models import Payment
-        from history.models import RevenueHistorySeller, PunterPayedHistory
-
-        RevenueHistorySeller.objects.create(who_reseted_revenue=who_reseted_revenue,
-        seller=self,
-        final_revenue=self.actual_revenue(),
-        earned_value=self.net_value(),
-        final_out_value=self.out_money(),
-        profit = self.actual_revenue() - self.out_money(),
-        store=self.my_store)
-
-        # payments = Payment.objects.filter(who_set_payment=self)
-        # payments.update(seller_was_rewarded=True)
-
-        payeds_open = PunterPayedHistory.objects.filter(seller=self, is_closed_for_seller=False)
-        payeds_open.update(is_closed_for_seller=True)
-
+        seller.reset_revenue(self, who_reseted_revenue)
 
     def full_name(self):
-        return self.first_name + ' ' + self.last_name
-    full_name.short_description = 'Nome Completo'
-
+        return seller.full_name(self)
     
-    def net_value(self):        
-        total_net_value = self.comissions.total_comission(None,None)
-        return round(total_net_value, 2)
-
-    net_value.short_description = 'Comissão'
+    def net_value(self):                
+        return seller.net_value(self)
 
     def real_net_value(self):
-        return self.actual_revenue() -  (self.net_value() + self.out_money())
-    real_net_value.short_description = 'Lucro'
-    
+        return seller.real_net_value(self)
 
     def see_comissions(self):
-        from django.utils.html import format_html
-        return format_html(
-            '<a href="/admin/utils/comission/?q={}">Ver Comissões</a>',
-            self.username,
-        )
-    see_comissions.short_description = 'Comissões'
+        return seller.see_comissions(self)
     
     def get_commission(self):
-        return str(round(self.commission,0)) + "%"
-    get_commission.short_description = 'Comissão'
+        return seller.get_commission(self)
 
-    def out_money(self):
-        from history.models import PunterPayedHistory
-
-        payed_sum = 0
-        payeds_open = PunterPayedHistory.objects.filter(seller=self, is_closed_for_seller=False)
-
-        for payed in payeds_open:
-            payed_sum += payed.payed_value
-        return payed_sum
-
-    out_money.short_description = 'Saída'
-
+    def out_money(self):        
+        return seller.out_money(self)
 
     def actual_revenue(self):
-
-        from core.models import Ticket
-        
-        total_revenue = 0
-        # tickets_not_rewarded = Ticket.objects.filter(payment__who_set_payment=self,
-        # payment__seller_was_rewarded=False).exclude(payment__status='Cancelado')
-        tickets_not_rewarded = Ticket.objects.filter(payment__who_set_payment=self
-        ).exclude(payment__status='Cancelado')
-        for ticket in tickets_not_rewarded:
-            total_revenue += ticket.value
-
-        return total_revenue
-
-    actual_revenue.short_description = 'Entrada'
-
+        return seller.actual_revenue(self)
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -206,26 +128,7 @@ class Seller(CustomUser):
         comission = Comission.objects.filter(seller_related=self)
         if not comission:
             Comission(seller_related=self,store=self.my_store).save()
-        self.define_default_permissions()
-
-    def define_default_permissions(self):        
-        be_seller_perm = Permission.objects.get(codename='be_seller')
-        change_ticket_perm = Permission.objects.get(codename='change_ticket')
-        view_managertransactions_perm = Permission.objects.get(codename='view_managertransactions')
-        view_revenuehistoryseller_perm = Permission.objects.get(codename='view_revenuehistoryseller')
-        view_sellersaleshistory_perm = Permission.objects.get(codename='view_sellersaleshistory')
-        view_punterpayedhistory_perm = Permission.objects.get(codename='view_punterpayedhistory')
-        view_seller_perm = Permission.objects.get(codename='view_seller')
-        view_punter_perm = Permission.objects.get(codename='view_punter')
-        view_ticketcancelationhistory = Permission.objects.get(codename='view_ticketcancelationhistory')
-        view_comission = Permission.objects.get(codename='view_comission')
-        
-        self.user_permissions.add(be_seller_perm, change_ticket_perm, 
-        view_managertransactions_perm, view_revenuehistoryseller_perm, 
-        view_sellersaleshistory_perm, view_punterpayedhistory_perm,
-        view_seller_perm, view_punter_perm, view_ticketcancelationhistory, 
-        view_comission)
- 
+        seller.define_default_permissions(self)        
 
 
     class Meta:
@@ -236,7 +139,6 @@ class Seller(CustomUser):
         permissions = (
             ('be_seller', 'Be a seller, permission.'),
         )
-
 
 
 class Manager(CustomUser):
@@ -252,162 +154,30 @@ class Manager(CustomUser):
     based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no líquido ?') 
     my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)       
 
-    def reset_revenue(self, who_reseted_revenue):
-        from core.models import Payment
-        from history.models import RevenueHistoryManager, PunterPayedHistory
-
-        RevenueHistoryManager.objects.create(who_reseted_revenue=who_reseted_revenue,
-        manager=self,
-        final_revenue=self.actual_revenue(),
-        actual_comission=self.commission,
-        earned_value=self.net_value(),
-        final_out_value=self.out_money(),
-        profit = self.actual_revenue() - self.out_money())
-
-        sellers = Seller.objects.filter(my_manager=self)
-        for seller in sellers:
-            payments_not_rewarded = Payment.objects.filter(who_set_payment=seller)            
-            payeds_open = PunterPayedHistory.objects.filter(seller=seller, is_closed_for_manager=False)
-            payeds_open.update(is_closed_for_manager=True)
-
+    def reset_revenue(self, who_reseted_revenue):        
+        manager.reset_revenue(self, who_reseted_revenue)
 
     def out_money(self):
-        from history.models import PunterPayedHistory
-
-        sellers = Seller.objects.filter(my_manager=self)
-
-        payed_sum = 0
-        for seller in sellers:
-            payeds_open = PunterPayedHistory.objects.filter(seller=seller, is_closed_for_manager=False)
-
-            for payed in payeds_open:
-                payed_sum += payed.payed_value
-
-        return payed_sum
-
-    out_money.short_description = 'Saída'
-
+        return manager.out_money(self)
 
     def get_commission(self):
-        return str(round(self.commission,0)) + "%"
-    get_commission.short_description = ' % de comissão'
+        return manager.get_commission(self)    
 
     def net_value(self):
-        from core.models import Seller
-        sellers = Seller.objects.filter(my_manager=self)
-
-
-        if self.based_on_profit:
-            total_net_value = self.net_value_before_comission() * (self.commission / 100)
-            return round(total_net_value, 2)
-        else:
-            total_net_value = self.actual_revenue() * (self.commission / 100)
-            return round(total_net_value, 2)
-        
-    net_value.short_description = 'Comissão'
-
+        return manager.net_value(self)
 
     def real_net_value(self):
-        return self.net_value_before_comission() - self.net_value()
-    
-    real_net_value.short_description = 'Lucro'
-
+        return manager.real_net_value(self)    
 
     def net_value_before_comission(self):
-        return self.actual_revenue() - self.out_money()
-    net_value_before_comission.short_description = 'Líquido'
-    
+        return manager.net_value_before_comission(self)
 
     def actual_revenue(self):
-        from core.models import Seller
-        from core.models import Ticket
-
-        sellers = Seller.objects.filter(my_manager=self)
-
-        total_revenue = 0
-        for seller in sellers:
-            tickets_not_rewarded = Ticket.objects.filter(payment__who_set_payment=seller).exclude(payment__status='Cancelado')
-            for ticket in tickets_not_rewarded:
-                total_revenue += ticket.value
-        return total_revenue
-    
-    actual_revenue.short_description = 'Entrada'
-
+        return manager.actual_revenue(self)
 
     def manage_credit(self, obj, is_new=False):
-        from history.models import ManagerTransactions
-
-        seller = Seller.objects.get(pk=obj.pk)
-        manager_before_balance = self.credit_limit_to_add
-
-        if not self.can_sell_unlimited:
-            if is_new:
-                seller_before_balance = 0
-                diff = obj.credit_limit
-                seller_after_balance = obj.credit_limit
-            else:
-                seller_before_balance = seller.credit_limit
-                diff = obj.credit_limit - seller.credit_limit
-                seller_after_balance = seller.credit_limit + diff
-
-            manager_balance_after = self.credit_limit_to_add - diff
-
-
-            if manager_balance_after < 0:
-                if is_new:
-                    return {'success': False,
-                    'message': 'Você não tem saldo suficiente para adicionar crédito, porém o cambista foi criado.'}
-                else:
-                    return {'success': False,
-                    'message': 'Você não tem saldo suficiente.'}
-            
-            elif obj.credit_limit < 0:
-                return {'success': False,
-                'message': 'O cambista não pode ter saldo negativo.'}
-            else:
-                self.credit_limit_to_add -= diff
-                self.save()
-
-                if is_new:
-                    seller.credit_limit = obj.credit_limit
-                    seller.save()
-        else:
-            if obj.credit_limit < 0:
-                return {'success': False,
-                    'message': 'O cambista não pode ter saldo negativo.'}
-
-            manager_balance_after = 0
-
-            seller_before_balance = seller.credit_limit
-            diff = obj.credit_limit - seller.credit_limit
-            seller_after_balance = seller.credit_limit + diff
-
-            self.save()
-
-        if not self.can_sell_unlimited:
-            if not manager_before_balance == manager_balance_after:
-                ManagerTransactions.objects.create(manager=self,
-                seller=seller,
-                transferred_amount=diff,
-                manager_before_balance=manager_before_balance,
-                manager_after_balance=manager_balance_after,
-                seller_before_balance=seller_before_balance,
-                seller_after_balance=seller_after_balance,
-                store=self.my_store)
-        else:
-            ManagerTransactions.objects.create(manager=self,
-            seller=seller,
-            transferred_amount=diff,
-            manager_before_balance=manager_before_balance,
-            manager_after_balance=manager_balance_after,
-            seller_before_balance=seller_before_balance,
-            seller_after_balance=seller_after_balance,
-            store=self.my_store)
-
-        return {'success': True,
-            'message': 'Transação realizada.'}
+        return manager.manage_credit(self, obj, is_new)
         
-
     def save(self, *args, **kwargs):
         self.clean()
         if not self.password.startswith('pbkdf2'):
@@ -416,30 +186,7 @@ class Manager(CustomUser):
         self.is_staff = True
         super().save()
 
-        self.define_default_permissions()
-
-    def define_default_permissions(self):
-
-        be_manager_perm = Permission.objects.get(codename='be_manager')
-        view_managertransactions_perm = Permission.objects.get(codename='view_managertransactions')
-        view_revenuehistoryseller_perm = Permission.objects.get(codename='view_revenuehistoryseller')
-        view_sellersaleshistory_perm = Permission.objects.get(codename='view_sellersaleshistory')
-        view_punterpayedhistory_perm = Permission.objects.get(codename='view_punterpayedhistory')
-        view_revenuehistorymanager = Permission.objects.get(codename='view_revenuehistorymanager')
-        change_seller = Permission.objects.get(codename='change_seller')
-        add_seller = Permission.objects.get(codename='add_seller')
-        view_manager = Permission.objects.get(codename='view_manager')
-        view_ticket_perm = Permission.objects.get(codename='view_ticket')
-        view_punter_perm = Permission.objects.get(codename='view_punter')
-        change_ticket_perm = Permission.objects.get(codename='change_ticket')
-        view_ticketcancelationhistory = Permission.objects.get(codename='view_ticketcancelationhistory')
-        view_comission = Permission.objects.get(codename='view_comission')
-        
-        self.user_permissions.add(be_manager_perm,view_managertransactions_perm,
-        view_revenuehistoryseller_perm,view_sellersaleshistory_perm,
-        view_punterpayedhistory_perm, view_revenuehistorymanager, change_seller, add_seller,
-        view_manager, view_ticket_perm, view_punter_perm, change_ticket_perm, 
-        view_ticketcancelationhistory, view_comission)
+        manager.define_default_permissions(self)   
 
     class Meta:
         ordering = ('-pk',)
