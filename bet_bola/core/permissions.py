@@ -1,20 +1,12 @@
 from rest_framework import permissions
 
-class General(permissions.BasePermission):
-	message = "Você não tem permissão para essa operação."
-
+class StoreIsRequired(permissions.BasePermission):
 	def has_permission(self, request, view):
-		user = request.user
-		store = request.GET.get('store')		
-		
-		if store:			
-			if request.method == 'POST':
-				return False			
-			return True
-		
-		self.message = "Forneça o id da baca"
-		return False
-		
+		if not request.GET.get('store'):
+			self.message = "ID da Banca Obrigatório"
+			return False
+		return True
+
 
 class GamePermission(permissions.BasePermission):
 	message = "Insira game_id"

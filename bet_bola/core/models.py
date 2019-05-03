@@ -30,7 +30,7 @@ class Store(models.Model):
         verbose_name_plural = 'Bancas'
 
 
-class CotationHistory(models.Model):
+class CotationCopy(models.Model):
 
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     original_cotation = models.ForeignKey('Cotation', on_delete=models.CASCADE, verbose_name="Cotação Original", related_name='history_cotation')

@@ -224,9 +224,9 @@ class Ticket(models.Model):
 
 
     def cotation_sum(self):
-        from core.models import CotationHistory
+        from core.models import CotationCopy
 
-        valid_cotations = CotationHistory.objects\
+        valid_cotations = CotationCopy.objects\
         .filter(ticket=self, game__game_status__in = (0,1,3))\
         .exclude(original_cotation__settlement=-1)
         
