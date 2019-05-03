@@ -1,8 +1,13 @@
+from django.db.models import Prefetch, Count
+from rest_framework.viewsets import ModelViewSet
+from core.models import Market, Cotation
+from core.serializers.market import MarketSerializer
+from core.permissions import StoreIsRequired, GamePermission
 
 class MarketView(ModelViewSet):
     queryset = Market.objects.exclude(cotations__market__name='1X2').distinct()
     serializer_class = MarketSerializer    
-    permission_classes = [General, GamePermission]
+    permission_classes = [StoreIsRequired, GamePermission]
     
     def list(self, request, pk=None):
         queryset = Market.objects.all()

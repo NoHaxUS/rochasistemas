@@ -1,3 +1,16 @@
+from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+from rest_framework.pagination import PageNumberPagination
+from rest_framework import filters as drf_filters
+from django.db.models import Q, FilteredRelation, Count, Prefetch
+import utils.timezone as tzlocal
+from django_filters import rest_framework as filters
+from utils.models import ExcludedLeague, ExcludedGame
+from core.models import *
+from core.serializers.game import LeagueGameSerializer
+from core.paginations import StandardResultsSetPagination
+from core.permissions import StoreIsRequired
 
 class GameAbleView(ModelViewSet):
 
@@ -6,7 +19,7 @@ class GameAbleView(ModelViewSet):
     filter_backends = (drf_filters.SearchFilter,)
     search_fields = ('name','league__name')
     
-    permission_classes = [General,]
+    permission_classes = [StoreIsRequired,]
         
     def list(self, request, pk=None):            
         
@@ -61,7 +74,7 @@ class GameAbleView(ModelViewSet):
 
 class TodayGamesView(ModelViewSet):         
     queryset = League.objects.all()
-    permission_classes = [General,]
+    permission_classes = [StoreIsRequired,]
         
     def list(self, request, pk=None):        
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")
@@ -115,7 +128,7 @@ class TodayGamesView(ModelViewSet):
 
 class TomorrowGamesView(ModelViewSet):             
     queryset = League.objects.all()
-    permission_classes = [General,]
+    permission_classes = [StoreIsRequired,]
                
     def list(self, request, pk=None):        
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")
@@ -170,7 +183,7 @@ class TomorrowGamesView(ModelViewSet):
 
 class AfterTomorrowGamesView(ModelViewSet):         
     queryset = League.objects.all()
-    permission_classes = [General,]
+    permission_classes = [StoreIsRequired,]
 
     def list(self, request, pk=None):        
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")

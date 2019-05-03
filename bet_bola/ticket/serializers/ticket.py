@@ -1,4 +1,8 @@
 
+from rest_framework import serializers
+from user.models import CustomUser
+from ticket.serializers.reward import RewardSerializer, RewardSerializer
+
 class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	
 	user = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='first_name')

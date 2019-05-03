@@ -9,7 +9,7 @@ from django.conf import settings
 import utils.timezone as tzlocal
 from django.utils import timezone
 import utils.timezone as tzlocal
-from user.models import NormalUser, Seller, Punter
+from user.models import AnonymousUser, Seller, Punter
 from .logic import ticket, reward
 
 
@@ -28,7 +28,7 @@ class Ticket(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_tickets', null=True, blank=True, on_delete=models.CASCADE, verbose_name='Apostador')
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
-    normal_user = models.ForeignKey(NormalUser, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cliente')
+    normal_user = models.ForeignKey(AnonymousUser, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cliente')
     cotations = models.ManyToManyField('core.Cotation', related_name='ticket', verbose_name='Cota')
     creation_date = models.DateTimeField(verbose_name='Data da Aposta')
     reward = models.OneToOneField('Reward', related_name='ticket', null=True, blank=True, on_delete=models.CASCADE, verbose_name='Prêmio')

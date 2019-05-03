@@ -1,4 +1,7 @@
 
+from rest_framework import serializers
+from core.models import Location, League
+
 
 class LeagueSerializer(serializers.HyperlinkedModelSerializer):
 

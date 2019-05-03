@@ -16,13 +16,22 @@ Including another URLconf
 from django.urls import path, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-from .views import *
+# from core.views import APIRootView, MainMenu
 from django.contrib.auth import views as auth_views
+from core.my_views.games import GameAbleView, TodayGamesView, TomorrowGamesView, AfterTomorrowGamesView
+from core.my_views.sports import SportView
+from core.my_views.stores import StoreView
+from core.my_views.locations import LocationView
+from core.my_views.leagues import LeagueView
+from core.my_views.cotations import CotationView, CotationCopyView, CotationModifiedView
+from core.my_views.markets import MarketView
+from core.views import APIRootView, MainMenu
+
+
 app_name = 'core'
 
 router = DefaultRouter()
 router.register(r'stores', StoreView)
-router.register(r'games', GameView)
 router.register(r'leagues', LeagueView)
 router.register(r'locations', LocationView)
 router.register(r'cotations', CotationView)

@@ -1,4 +1,10 @@
 
+from rest_framework.viewsets import ModelViewSet
+from filters.mixins import FiltersMixin
+from ticket.models import Ticket
+from ticket.serializers.ticket import TicketSerializer
+from ticket.paginations import TicketPagination
+
 class TicketView(FiltersMixin, ModelViewSet):
 	queryset = Ticket.objects.all()
 	serializer_class = TicketSerializer

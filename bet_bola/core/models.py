@@ -2,10 +2,9 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import datetime
 from django.contrib.auth.models import User
-from user.models import NormalUser
 from django.utils import timezone
 from django.db.models import Q
-from user.models import NormalUser
+from user.models import AnonymousUser
 from django.conf import settings
 import utils.timezone as tzlocal
 from django.utils import timezone

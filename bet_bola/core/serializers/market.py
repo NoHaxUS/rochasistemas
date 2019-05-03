@@ -1,3 +1,6 @@
+from rest_framework import serializers
+from core.models import Market
+from core.serializers.cotation import MinimumCotationSerializer
 
 class MarketSerializer(serializers.HyperlinkedModelSerializer):
 	cotations = serializers.SerializerMethodField()

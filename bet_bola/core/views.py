@@ -2,7 +2,6 @@ from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.pagination import PageNumberPagination
 from rest_framework import filters as drf_filters
 from django.db.models import Prefetch
 from django.db.models import Q, FilteredRelation
@@ -11,8 +10,6 @@ import utils.timezone as tzlocal
 from django_filters import rest_framework as filters
 from utils.models import ExcludedLeague, ExcludedGame
 from .models import *
-from .serializers import *
-from .permissions import General, StorePermission, CotationModifyPermission, GamePermission
 
 
 class APIRootView(APIView):
@@ -23,8 +20,7 @@ class APIRootView(APIView):
             'sellers': reverse('user:seller-list', request=request),           
             'managers': reverse('user:manager-list', request=request),
             'punters': reverse('user:punter-list', request=request),   
-            'tickets': reverse('ticket:ticket-list', request=request),                         
-            'games': reverse('core:game-list', request=request),
+            'tickets': reverse('ticket:ticket-list', request=request),                                     
             'leagues': reverse('core:league-list', request=request),
             'locations': reverse('core:location-list', request=request),
             'today_games': reverse('core:today_games', request=request),

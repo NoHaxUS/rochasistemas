@@ -1,3 +1,7 @@
+from rest_framework import serializers
+from core.serializers.cotation import MinimumCotationSerializer
+from core.models import League, Game, Location
+
 
 class GameSerializer(serializers.HyperlinkedModelSerializer):			
 

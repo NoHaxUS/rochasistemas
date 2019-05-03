@@ -16,7 +16,9 @@ Including another URLconf
 from django.urls import path, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-from .views import *
+from ticket.my_views.tickets import TicketView
+from ticket.my_views.rewards import RewardView
+from ticket.my_views.payments import PaymentView
 
 app_name = 'core'
 
