@@ -1,10 +1,16 @@
+from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
+from rest_framework import status
 from filters.mixins import FiltersMixin
-from ticket.models import Ticket
-from ticket.serializers.ticket import TicketSerializer
+from ticket.models import Ticket, Reward, Payment
+from ticket.serializers.ticket import TicketSerializer, CreateTicketAnonymousUserSerializer, CreateTicketLoggedUserSerializer
 from ticket.paginations import TicketPagination
 from ticket.permissions import CreateBet, PayWinnerPermission, ValidateTicketPermission, CancelarTicketPermission
+from user.models import AnonymousUser
+from core.models import CotationCopy, Cotation, Store
+from utils import timezone as tzlocal
+from config import settings
 
 class TicketView(FiltersMixin, ModelViewSet):
 	queryset = Ticket.objects.all()
@@ -67,11 +73,11 @@ class TicketView(FiltersMixin, ModelViewSet):
 
 			if self.request.user.is_authenticated:
 				if self.request.user.has_perm('user.be_seller'):
-					normal_user = NormalUser.objects.create(first_name=serializer.validated_data['normal_user']['first_name'], cellphone=serializer.validated_data['normal_user']['cellphone'], my_store=store)
+					normal_user = AnonymousUser.objects.create(first_name=serializer.validated_data['normal_user']['first_name'], cellphone=serializer.validated_data['normal_user']['cellphone'], my_store=store)
 					instance = serializer.save(seller=self.request.user,normal_user=normal_user, reward=reward, payment=payment, creation_date=creation_date,store=store)						
 				instance = serializer.save(user=self.request.user, reward=reward, payment=payment, creation_date=creation_date, store=store)
 			else:					
-				normal_user = NormalUser.objects.create(first_name=serializer.validated_data['normal_user']['first_name'], cellphone=serializer.validated_data['normal_user']['cellphone'], my_store=store)
+				normal_user = AnonymousUser.objects.create(first_name=serializer.validated_data['normal_user']['first_name'], cellphone=serializer.validated_data['normal_user']['cellphone'], my_store=store)
 				instance = serializer.save(normal_user=normal_user, reward=reward, payment=payment, creation_date=creation_date, store=store)
 
 

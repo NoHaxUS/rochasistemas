@@ -145,11 +145,11 @@ def pay_winner_punter(self, user):
 
     if not self.payment or not self.reward:
         return {'success':False,
-            'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}            
-    
-    if not self.status == Ticket.TICKET_STATUS['Venceu']:
+            'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
+            
+    if not self.status == Ticket.TICKET_STATUS['Venceu']:   
         return {'success':False,
-            'message':'O Ticket '+ str(self.pk) +' não Venceu'}
+            'message':'O Ticket '+ str(self.pk) +' não Venceu'}    
 
     if not self.payment.status == Payment.PAYMENT_STATUS[1][1]:
         return {'success':False,
@@ -163,7 +163,7 @@ def pay_winner_punter(self, user):
         punter_payed =  str(self.normal_user.pk) +' - '+ str(self.normal_user.first_name)
     elif self.user:
         punter_payed = str(self.user.pk) +' - '+ str(self.user.first_name)
-    
+
     self.reward.reward_date = tzlocal.now()
     self.reward.who_rewarded = Seller.objects.get(pk=user.pk)
     self.reward.save()
@@ -178,9 +178,9 @@ def pay_winner_punter(self, user):
             'message':'O Apostador ' + punter_payed  + ' foi marcado como Pago'}
 
 def cotation_sum(self):
-    from core.models import CotationHistory
+    from core.models import CotationCopy
 
-    valid_cotations = CotationHistory.objects\
+    valid_cotations = CotationCopy.objects\
     .filter(ticket=self, game__game_status__in = (0,1,3))\
     .exclude(original_cotation__settlement=-1)
     

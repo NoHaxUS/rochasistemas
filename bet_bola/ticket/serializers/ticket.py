@@ -7,6 +7,8 @@ from core.serializers.cotation import CotationTicketSerializer
 from user.serializers.anonymous import AnonymousUserSerializer
 from ticket.paginations import TicketPagination
 from utils.models import TicketCustomMessage
+from utils.utils import general_configurations
+from utils import timezone as tzlocal
 from ticket.models import Ticket
 from user.models import CustomUser
 from core.models import Store, Cotation
@@ -106,7 +108,7 @@ class CreateTicketLoggedUserSerializer(CreateTicketAnonymousUserSerializer):
 		super(CreateTicketLoggedUserSerializer, self).__init__(*args, **kwargs)
 		request = kwargs['context']['request']		
 		if request.user.has_perm('user.be_punter'):			
-			self.fields['normal_user'] = NormalUserSerializer(read_only=True)
+			self.fields['normal_user'] = AnonymousUserSerializer(read_only=True)
 
 	class Meta:
 		model = Ticket
