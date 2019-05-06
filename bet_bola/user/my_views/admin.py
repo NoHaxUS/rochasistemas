@@ -9,7 +9,7 @@ class AdminView(ModelViewSet):
     serializer_class = AdminSerializer    
 
     def get_permissions(self):
-        if self.action == 'create':
+        if self.action == 'create':            
             permission_classes = [IsSuperUser, StoreGiven]
         else:
             permission_classes = [IsSuperUser,]
