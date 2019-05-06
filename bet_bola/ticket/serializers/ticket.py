@@ -1,7 +1,15 @@
 
 from rest_framework import serializers
-from user.models import CustomUser
+from rest_framework.response import Response
 from ticket.serializers.reward import RewardSerializer, RewardSerializer
+from ticket.serializers.payment import PaymentSerializerWithSeller, PaymentSerializer
+from core.serializers.cotation import CotationTicketSerializer
+from user.serializers.anonymous import AnonymousUserSerializer
+from ticket.paginations import TicketPagination
+from utils.models import TicketCustomMessage
+from ticket.models import Ticket
+from user.models import CustomUser
+from core.models import Store, Cotation
 
 class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	
@@ -28,7 +36,7 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer):	
-	normal_user = NormalUserSerializer()
+	normal_user = AnonymousUserSerializer()
 	creation_date = serializers.DateTimeField(read_only=True)	
 	payment = PaymentSerializer(read_only=True)	
 	reward = RewardSerializer(read_only=True)

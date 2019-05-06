@@ -1,3 +1,6 @@
+from rest_framework import serializers
+from utils.models import Comission
+from user.models import Seller
 
 class ComissionSerializer(serializers.HyperlinkedModelSerializer):
 	
@@ -7,7 +10,7 @@ class ComissionSerializer(serializers.HyperlinkedModelSerializer):
 		model = Comission
 		fields = ('seller_related','simple','double','triple','fourth','fifth','sixth','sixth_more')
 
-	def validate(self, value):
+	def validate(self, data):
 		if data['simple'] < 0 or data['simple'] > 100:
 			raise serializers.ValidationError('Comissão não pode ser menor que 0 ou maior que 100')
 		if data['double'] < 0 or data['double'] > 100:

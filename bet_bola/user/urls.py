@@ -16,7 +16,11 @@ Including another URLconf
 from django.urls import path, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-from .views import PunterView, NormalUserView, SellerView, ManagerView, AdminView
+from .my_views.punter import PunterView
+from .my_views.anon_user import AnonymousUserView
+from .my_views.seller import SellerView
+from .my_views.manager import ManagerView
+from .my_views.admin import AdminView
 
 app_name = 'user'
 
@@ -24,7 +28,7 @@ router = DefaultRouter()
 router.register(r'managers', ManagerView)
 router.register(r'sellers', SellerView)
 router.register(r'punters', PunterView)
-router.register(r'normal-users', NormalUserView)
+router.register(r'normal-users', AnonymousUserView)
 router.register(r'admins', AdminView)
 
 

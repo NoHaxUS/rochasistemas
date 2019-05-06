@@ -1,3 +1,5 @@
+from rest_framework import serializers
+from utils.models import GeneralConfigurations
 
 class GeneralConfigurationsSerializer(serializers.HyperlinkedModelSerializer):	
 

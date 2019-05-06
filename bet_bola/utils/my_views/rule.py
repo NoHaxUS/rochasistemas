@@ -1,3 +1,9 @@
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
+from utils.serializers.rule import RulesMessageSerializer
+from utils.permissions import General
+from utils.models import RulesMessage
+
 
 class RulesMessageView(ModelViewSet):
 	queryset = RulesMessage.objects.all()

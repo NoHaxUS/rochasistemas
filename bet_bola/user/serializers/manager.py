@@ -1,3 +1,6 @@
+from rest_framework import serializers
+from core.models import Store
+from user.models import Manager
 
 class ManagerSerializer(serializers.HyperlinkedModelSerializer):	
 	

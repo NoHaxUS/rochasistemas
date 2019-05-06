@@ -1,3 +1,6 @@
+from rest_framework import serializers
+from user.serializers.seller import SellerSerializer
+from ticket.models import Payment
 
 class PaymentSerializer(serializers.HyperlinkedModelSerializer):
 

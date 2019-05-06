@@ -1,3 +1,9 @@
+from rest_framework.response import Response
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from user.serializers.manager import ManagerSerializer
+from user.serializers.seller import SellerSerializer
+from user.serializers.punter import PunterSerializer
 
 class CustomAuthToken(ObtainAuthToken):
 

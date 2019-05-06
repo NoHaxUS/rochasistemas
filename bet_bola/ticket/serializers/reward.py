@@ -1,4 +1,3 @@
-
 from rest_framework import serializers
 from ticket.models import Reward
 from user.models import Seller

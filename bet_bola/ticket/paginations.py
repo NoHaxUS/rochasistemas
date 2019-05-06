@@ -1,3 +1,6 @@
+from core.paginations import PageNumberPagination
+from rest_framework.response import Response
+
 class TicketPagination(PageNumberPagination):
     page_size = 80
     page_size_query_param = 'page_size'
