@@ -8,9 +8,92 @@ import utils.timezone as tzlocal
 from django_filters import rest_framework as filters
 from utils.models import ExcludedLeague, ExcludedGame
 from core.models import *
-from core.serializers.game import LeagueGameSerializer
+from core.serializers.game import LeagueGameSerializer, GameSerializer
 from core.paginations import StandardResultsSetPagination
 from core.permissions import StoreIsRequired
+
+
+class GamesToday(ModelViewSet):
+    serializer_class = GameSerializer
+    pagination_class = StandardResultsSetPagination
+    filter_backends = (drf_filters.SearchFilter,)
+    search_fields = ('name','league__name')
+
+    def get_queryset(self):
+        my_cotation_qs = Cotation.objects.filter(market__name="1X2")
+
+        store_id = self.request.GET['store']
+        store = Store.objects.get(pk=store_id)
+
+        id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
+        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store_id)]
+
+        queryset = Game.objects.filter(start_date__gt=tzlocal.now(),
+            start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),          
+            game_status__in=[0],
+            visible=True)\
+            .prefetch_related(Prefetch('cotations', queryset=my_cotation_qs, to_attr='my_cotations'))\
+            .exclude(Q(league__visible=False) | Q(league__location__visible=False) | Q(id__in=id_list_excluded_games) | Q(league__id__in=id_list_excluded_leagues) )\
+            .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
+            .filter(cotations_count__gte=3).order_by('-league__location__priority',
+            '-league__priority', 'league__location__name', 'league__name')
+        
+        return queryset
+
+
+class GamesTomorrow(ModelViewSet):
+    serializer_class = GameSerializer
+    pagination_class = StandardResultsSetPagination
+    filter_backends = (drf_filters.SearchFilter,)
+    search_fields = ('name','league__name')
+
+    def get_queryset(self):
+        my_cotation_qs = Cotation.objects.filter(market__name="1X2")
+
+        store_id = self.request.GET['store']
+        store = Store.objects.get(pk=store_id)
+
+        id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
+        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store_id)]
+
+        queryset = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),          
+            game_status__in=[0],
+            visible=True)\
+            .prefetch_related(Prefetch('cotations', queryset=my_cotation_qs, to_attr='my_cotations'))\
+            .exclude(Q(league__visible=False) | Q(league__location__visible=False) | Q(id__in=id_list_excluded_games) | Q(league__id__in=id_list_excluded_leagues) )\
+            .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
+            .filter(cotations_count__gte=3).order_by('-league__location__priority',
+            '-league__priority', 'league__location__name', 'league__name')
+        
+        return queryset
+
+
+class GamesAfterTomorrow(ModelViewSet):
+    serializer_class = GameSerializer
+    pagination_class = StandardResultsSetPagination
+    filter_backends = (drf_filters.SearchFilter,)
+    search_fields = ('name','league__name')
+
+    def get_queryset(self):
+        my_cotation_qs = Cotation.objects.filter(market__name="1X2")
+
+        store_id = self.request.GET['store']
+        store = Store.objects.get(pk=store_id)
+
+        id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
+        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store_id)]
+
+        queryset = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),                      
+            game_status__in=[0],
+            visible=True)\
+            .prefetch_related(Prefetch('cotations', queryset=my_cotation_qs, to_attr='my_cotations'))\
+            .exclude(Q(league__visible=False) | Q(league__location__visible=False) | Q(id__in=id_list_excluded_games) | Q(league__id__in=id_list_excluded_leagues) )\
+            .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
+            .filter(cotations_count__gte=3).order_by('-league__location__priority',
+            '-league__priority', 'league__location__name', 'league__name')
+        
+        return queryset
+
 
 class GameAbleView(ModelViewSet):
 
@@ -43,7 +126,7 @@ class GameAbleView(ModelViewSet):
         id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
         id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store_id)]
 
-        my_games_qs = Game.objects.filter(start_date__gt=tzlocal.now(),           
+        my_games_qs = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
             game_status__in=[0],
             visible=True)\
             .prefetch_related(Prefetch('cotations', queryset=my_cotation_qs, to_attr='my_cotations'))\
@@ -68,9 +151,6 @@ class GameAbleView(ModelViewSet):
         .filter(games_count__gt=0)
 
         return queryset
-
-
-
 
 class TodayGamesView(ModelViewSet):         
     queryset = League.objects.all()

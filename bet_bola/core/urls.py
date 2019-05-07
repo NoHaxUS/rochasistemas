@@ -18,7 +18,7 @@ from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 # from core.views import APIRootView, MainMenu
 from django.contrib.auth import views as auth_views
-from core.my_views.games import GameAbleView, TodayGamesView, TomorrowGamesView, AfterTomorrowGamesView
+from core.my_views.games import GamesToday, GamesTomorrow, GamesAfterTomorrow, GameAbleView, TodayGamesView, TomorrowGamesView, AfterTomorrowGamesView
 from core.my_views.sports import SportView
 from core.my_views.stores import StoreView
 from core.my_views.locations import LocationView
@@ -48,6 +48,9 @@ urlpatterns = [
     path('able_games/<int:pk>/',GameAbleView.as_view({'get': 'retrieve'}), name='able_games_detail'),
     path('main_menu/', MainMenu.as_view()),
     path('today_games/', TodayGamesView.as_view({'get': 'list'}), name='today_games'),
+    path('games_today/', GamesToday.as_view({'get': 'list'}), name='games_today'),
+    path('games_tomorrow/', GamesTomorrow.as_view({'get': 'list'}), name='games_tomorrow'),
+    path('games_after_tomorrow/', GamesAfterTomorrow.as_view({'get': 'list'}), name='games_after_tomorrow'),
     path('tomorrow_games/', TomorrowGamesView.as_view({'get': 'list'}), name='tomorrow_games'),
     path('after_tomorrow_games/', AfterTomorrowGamesView.as_view({'get': 'list'}), name='after_tomorrow_games')
 ]
