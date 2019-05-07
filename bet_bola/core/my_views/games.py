@@ -126,7 +126,7 @@ class GameAbleView(ModelViewSet):
         id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
         id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store_id)]
 
-        my_games_qs = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
+        my_games_qs = Game.objects.filter(start_date__gt=tzlocal.now(),
             game_status__in=[0],
             visible=True)\
             .prefetch_related(Prefetch('cotations', queryset=my_cotation_qs, to_attr='my_cotations'))\

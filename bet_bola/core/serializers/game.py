@@ -25,6 +25,13 @@ class LeagueGameSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = League
 		fields = ('id','league','location','games')
+	
+	# def to_representation(self, instance):
+	# 	if instance.games.__len__() == 0:
+	# 		return {} 
+			
+	# 	data = super(LeagueGameSerializer, self).to_representation(instance)
+	# 	return data
 
 	def get_games(self, league):	
 		from utils.models import ExcludedGame, ExcludedLeague					

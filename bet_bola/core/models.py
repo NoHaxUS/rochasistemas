@@ -6,7 +6,6 @@ from django.utils import timezone
 from django.db.models import Q
 from user.models import AnonymousUser
 from django.conf import settings
-import utils.timezone as tzlocal
 from django.utils import timezone
 import utils.timezone as tzlocal
 from utils.models import GeneralConfigurations
