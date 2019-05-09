@@ -11,11 +11,29 @@ class GameSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Game				
-		fields = ('id','name','start_date','game_status','league','location','standard_cotations')	
+		fields = ('id','name','start_date','game_status','league','location','standard_cotations')
 
 	def get_location(self, game):
 		return game.league.location.name
-		
+
+class GameTableSerializer(serializers.HyperlinkedModelSerializer):			
+
+	cotations = serializers.SerializerMethodField()
+	league = serializers.SlugRelatedField(queryset=League.objects.all(), slug_field='name')
+	location = serializers.SerializerMethodField()
+
+	class Meta:
+		model = Game				
+		fields = ('id','name','start_date','game_status','league','location','cotations')
+
+	def get_location(self, game):
+		return game.league.location.name
+
+	def get_cotations(self, game):
+		cotations = game.my_cotations
+		serializer = MinimumCotationSerializer(cotations,many=True,context={'context':self.context})
+		return serializer.data
+
 
 class LeagueGameSerializer(serializers.HyperlinkedModelSerializer):
 	league = serializers.CharField(source='name')
