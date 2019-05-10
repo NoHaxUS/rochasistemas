@@ -83,17 +83,19 @@ class MinimumCotationSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','name','price')
 
 
+
 class CotationSerializer(serializers.HyperlinkedModelSerializer):
-	game = serializers.SerializerMethodField()
-	market = serializers.SlugRelatedField(queryset=Market.objects.all(), slug_field='name')
+	game = serializers.SlugRelatedField(read_only=True, slug_field='name')
+	market = serializers.SlugRelatedField(read_only=True, slug_field='name')
+	settlement = serializers.SerializerMethodField()
+
+	def get_settlement(self, cotation):
+		return cotation.get_settlement_display()
 
 	class Meta:
 		model = Cotation
-		list_serializer_class = MinimumListCotationSerializer
-		fields = ('id','name','price','market','game')
+		fields = ('id','name','start_price','price','market','game','settlement')
 
-	def get_game(self, cotation):
-		return {'id':cotation.game.pk,'name':cotation.game.name}
 
 
 
