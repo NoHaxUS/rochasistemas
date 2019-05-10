@@ -15,6 +15,21 @@ class GameSerializer(serializers.HyperlinkedModelSerializer):
 
 	def get_location(self, game):
 		return game.league.location.name
+
+
+
+class GameListSerializer(serializers.HyperlinkedModelSerializer):			
+
+	league = serializers.SlugRelatedField(slug_field='name', read_only=True)
+	location = serializers.SerializerMethodField()
+
+	class Meta:
+		model = Game				
+		fields = ('id','name','start_date','league','location', 'visible')	
+
+	def get_location(self, game):
+		return game.league.location.name
+		
 		
 
 class LeagueGameSerializer(serializers.HyperlinkedModelSerializer):
