@@ -11,7 +11,7 @@ class GameSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Game				
-		fields = ('id','name','start_date','game_status','league','location','standard_cotations')	
+		fields = ('id','name','start_date','game_status','league','location','standard_cotations')
 
 	def get_location(self, game):
 		return game.league.location.name
@@ -40,13 +40,6 @@ class LeagueGameSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = League
 		fields = ('id','league','location','games')
-	
-	# def to_representation(self, instance):
-	# 	if instance.games.__len__() == 0:
-	# 		return {} 
-			
-	# 	data = super(LeagueGameSerializer, self).to_representation(instance)
-	# 	return data
 
 	def get_games(self, league):	
 		from utils.models import ExcludedGame, ExcludedLeague					
@@ -54,7 +47,6 @@ class LeagueGameSerializer(serializers.HyperlinkedModelSerializer):
 		
 		serializer = GameSerializer(qs,many=True,context={'context':self.context})
 		return serializer.data
-
 
 
 class CountryGameTodaySerializers(serializers.HyperlinkedModelSerializer):

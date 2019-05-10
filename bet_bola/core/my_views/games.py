@@ -38,6 +38,33 @@ class GamesToday(ModelViewSet):
         
         return queryset
 
+class GamesTable(ModelViewSet):
+    serializer_class = GameTableSerializer
+    pagination_class = StandardResultsSetPagination
+    filter_backends = (drf_filters.SearchFilter,)
+    search_fields = ('name','league__name')
+
+    def get_queryset(self):
+        my_cotation_qs = Cotation.objects.filter(Q(market__name="1X2") | Q(market__name="Dupla Chance"))
+
+        store_id = self.request.GET['store']
+        store = Store.objects.get(pk=store_id)
+
+        id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
+        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store_id)]
+
+        queryset = Game.objects.filter(start_date__gt=tzlocal.now(),
+            start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),          
+            game_status__in=[0],
+            visible=True)\
+            .prefetch_related(Prefetch('cotations', queryset=my_cotation_qs, to_attr='my_cotations'))\
+            .exclude(Q(league__visible=False) | Q(league__location__visible=False) | Q(id__in=id_list_excluded_games) | Q(league__id__in=id_list_excluded_leagues) )\
+            .annotate(cotations_count=Count('cotations', filter=(Q(cotations__market__name='1X2') | Q(cotations__market__name="Dupla Chance"))))\
+            .filter(cotations_count__gte=6).order_by('-league__location__priority',
+            '-league__priority', 'league__location__name', 'league__name')
+        
+        return queryset
+
 
 class GamesTomorrow(ModelViewSet):
     serializer_class = GameListSerializer
