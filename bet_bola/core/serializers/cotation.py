@@ -76,11 +76,12 @@ class MinimumListCotationSerializer(serializers.ListSerializer):
 
 
 class MinimumCotationSerializer(serializers.HyperlinkedModelSerializer):
+	market = serializers.SlugRelatedField(read_only=True, slug_field='name')
 
 	class Meta:
 		model = Cotation
 		list_serializer_class = MinimumListCotationSerializer
-		fields = ('id','name','price')
+		fields = ('id','name','price','market')
 
 
 class CotationSerializer(serializers.HyperlinkedModelSerializer):
