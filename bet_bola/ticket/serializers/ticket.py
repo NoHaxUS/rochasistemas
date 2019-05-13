@@ -24,6 +24,8 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	cotation_sum = serializers.SerializerMethodField()
 	status = serializers.SerializerMethodField()
 	cotations = CotationTicketSerializer(many=True)
+	creation_date = serializers.DateTimeField(format='%d/%m/%Y')
+
 
 	class Meta:
 		model = Ticket
