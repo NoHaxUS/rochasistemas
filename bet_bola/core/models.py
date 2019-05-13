@@ -128,6 +128,7 @@ class Location(models.Model):
         return self.name
 
     class Meta:
+        ordering = ('-pk',)
         verbose_name = 'País'
         verbose_name_plural = 'Países'
 

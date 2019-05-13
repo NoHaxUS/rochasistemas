@@ -219,7 +219,7 @@ USE_TZ = False
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = '/home/mushzinho5/webapps/static_sitename'
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
+STATICFILES_IRSD = [
     os.path.join(BASE_DIR, "static")
 ]
 

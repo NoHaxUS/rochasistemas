@@ -34,16 +34,16 @@ router = DefaultRouter()
 router.register(r'stores', StoreView)
 router.register(r'leagues', LeagueView)
 router.register(r'locations', LocationView)
-router.register(r'cotations', CotationView)
+#router.register(r'cotations', CotationView)
 router.register(r'cotationshistory', CotationCopyView)
 router.register(r'cotationsmodified', CotationModifiedView)
 router.register(r'markets', MarketView)
 router.register(r'sports', SportView)
 
 
-
 urlpatterns = [
     path('', APIRootView.as_view(), name='api-root'),
+    path('cotations/', CotationView.as_view({'get': 'list'}), name='cotations'),
     path('able_games/',GameAbleView.as_view({'get': 'list'}), name='able_games'),
     path('able_games/<int:pk>/',GameAbleView.as_view({'get': 'retrieve'}), name='able_games_detail'),
     path('main_menu/', MainMenu.as_view()),
