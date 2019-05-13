@@ -39,7 +39,7 @@ class GamesToday(ModelViewSet):
         return queryset
 
 class GamesTable(ModelViewSet):
-    serializer_class = GameTableSerializer
+    serializer_class = GameListSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = (drf_filters.SearchFilter,)
     search_fields = ('name','league__name')
