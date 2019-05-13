@@ -9,7 +9,7 @@ from django_filters import rest_framework as filters
 from utils.models import ExcludedLeague, ExcludedGame
 from core.models import *
 from core.serializers.game import LeagueGameSerializer, GameSerializer, GameListSerializer
-from core.paginations import StandardResultsSetPagination, GamesListSetPagination
+from core.paginations import StandardSetPagination, GamesListSetPagination
 from core.permissions import StoreIsRequired
 
 
@@ -40,7 +40,7 @@ class GamesToday(ModelViewSet):
 
 class GamesTable(ModelViewSet):
     serializer_class = GameListSerializer
-    pagination_class = StandardResultsSetPagination
+    pagination_class = StandardSetPagination
     filter_backends = (drf_filters.SearchFilter,)
     search_fields = ('name','league__name')
 
@@ -119,7 +119,7 @@ class GamesAfterTomorrow(ModelViewSet):
 class GameAbleView(ModelViewSet):
 
     serializer_class = LeagueGameSerializer
-    pagination_class = StandardResultsSetPagination
+    pagination_class = StandardSetPagination
     filter_backends = (drf_filters.SearchFilter,)
     search_fields = ('name','league__name')
     
@@ -222,7 +222,7 @@ class TodayGamesView(ModelViewSet):
 
 
     serializer_class = LeagueGameSerializer
-    pagination_class = StandardResultsSetPagination
+    pagination_class = StandardSetPagination
     filter_backends = (drf_filters.SearchFilter,)
     search_fields = ('name','league__name')
             
@@ -277,7 +277,7 @@ class TomorrowGamesView(ModelViewSet):
 
 
     serializer_class = LeagueGameSerializer
-    pagination_class = StandardResultsSetPagination
+    pagination_class = StandardSetPagination
     filter_backends = (drf_filters.SearchFilter,)
     search_fields = ('name','league__name')
 
@@ -329,6 +329,6 @@ class AfterTomorrowGamesView(ModelViewSet):
 
 
     serializer_class = LeagueGameSerializer
-    pagination_class = StandardResultsSetPagination
+    pagination_class = StandardSetPagination
     filter_backends = (drf_filters.SearchFilter,)
     search_fields = ('name','league__name')
