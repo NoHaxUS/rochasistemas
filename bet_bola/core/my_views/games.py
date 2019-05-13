@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import filters as drf_filters
-from django.db.models import Q, FilteredRelation, Count, Prefetch
+from django.db.models import Q, F, FilteredRelation, Count, Prefetch
 import utils.timezone as tzlocal
 from django_filters import rest_framework as filters
 from utils.models import ExcludedLeague, ExcludedGame
@@ -203,10 +203,10 @@ class TodayGamesView(ModelViewSet):
             '-league__priority', 'league__location__name', 'league__name')
         
         queryset = League.objects.all().prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'))
-        
-        queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__start_date__gt=tzlocal.now(),my_games__start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),my_games__game_status=0)))\
+                        
+        queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__pk__in=[game.pk for game in my_games_qs])))\
         .filter(games_count__gt=0)
-
+        
         store_id = request.GET['store']
         store = Store.objects.get(pk=store_id)
 
@@ -214,7 +214,7 @@ class TodayGamesView(ModelViewSet):
         queryset = queryset.exclude(id__in=id_list_excluded_leagues)
 
         page = self.paginate_queryset(queryset)                
-
+        
         if request.GET.get('game'):            
             page = self.paginate_queryset(queryset.filter(my_games__name__icontains=request.GET.get('game')))            
 
@@ -256,7 +256,7 @@ class TomorrowGamesView(ModelViewSet):
         
         queryset = League.objects.all().prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'))
         
-        queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),my_games__game_status=0)))\
+        queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__pk__in=[game.pk for game in my_games_qs])))\
         .filter(games_count__gt=0)
 
         for game in queryset.all():
@@ -312,7 +312,7 @@ class AfterTomorrowGamesView(ModelViewSet):
         
         queryset = League.objects.all().prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'))
         
-        queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),my_games__game_status=0)))\
+        queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__pk__in=[game.pk for game in my_games_qs])))\
         .filter(games_count__gt=0)
         
         store_id = request.GET['store']
