@@ -8,7 +8,7 @@ import utils.timezone as tzlocal
 from django_filters import rest_framework as filters
 from utils.models import ExcludedLeague, ExcludedGame
 from core.models import *
-from core.serializers.game import LeagueGameSerializer, GameSerializer, GameListSerializer
+from core.serializers.game import LeagueGameSerializer, GameSerializer, GameListSerializer, GameTableSerializer
 from core.paginations import StandardSetPagination, GamesListSetPagination
 from core.permissions import StoreIsRequired
 
@@ -39,7 +39,7 @@ class GamesToday(ModelViewSet):
         return queryset
 
 class GamesTable(ModelViewSet):
-    serializer_class = GameListSerializer
+    serializer_class = GameTableSerializer
     pagination_class = StandardSetPagination
     filter_backends = (drf_filters.SearchFilter,)
     search_fields = ('name','league__name')
