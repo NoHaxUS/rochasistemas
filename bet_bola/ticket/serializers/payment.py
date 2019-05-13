@@ -21,6 +21,7 @@ class PaymentSerializerWithSeller(serializers.HyperlinkedModelSerializer):
 
 	who_set_payment = serializers.SlugRelatedField(slug_field="first_name", read_only=True)
 	status = serializers.SerializerMethodField()
+	date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
 	
 	class Meta:
 		model = Payment
