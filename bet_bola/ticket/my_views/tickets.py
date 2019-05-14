@@ -107,26 +107,26 @@ class TicketView(FiltersMixin, ModelViewSet):
 		if request.user.has_perm('user.be_seller'):		
 			pre_id_lista = []
 
-			try:
-				pre_id_lista = [int(data["id"]) for data in request.data]
+			try:				
+				pre_id_lista = request.data
 			except KeyError:
-				return Response({'Error': 'Entrada invalida. Dica:[{"id":"?"},{"id":"?"}]'})
+				return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
 
 			id_list = []
-			response = {}
+			response = []
 			for ticket in Ticket.objects.filter(pk__in=pre_id_lista):			
 				id_list.append(ticket.pk)
-				response["ticket " + str(ticket.pk)] = ticket.validate_ticket(request.user)["message"]			
+				response.append(ticket.validate_ticket(request.user))
 
 			print(pre_id_lista, id_list)
 			warnning_id = list(set(pre_id_lista)-set(id_list))
 			count=0
 			for id in warnning_id:
 				count += 1
-				response["warning " + str(count)] = "ticket " + str(id) + " não existe" 
+				response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
 			return Response(response)
 
-		return Response({"failed":"Usuário não é vendedor"})
+		return Response({"success":False,"message":"Usuário não é vendedor"})
 
 	@action(methods=['get'], detail=True, permission_classes=[ValidateTicketPermission,])
 	def validate_ticket(self, request, pk=None):	

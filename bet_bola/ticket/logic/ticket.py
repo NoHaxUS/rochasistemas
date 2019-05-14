@@ -136,7 +136,7 @@ def validate_ticket(self, user):
     store=self.store)
     
     return {'success':True,
-        'message':'Ticket '+ str(self.pk) +' Pago com Sucesso. Ver <a href="/ticket/'+ str(self.pk) + '/">' + "Imprimir"+ '</a>'}
+        'message':'Ticket '+ str(self.pk) +' Pago com Sucesso.'}
 
 def pay_winner_punter(self, user):
     from history.models import PunterPayedHistory
