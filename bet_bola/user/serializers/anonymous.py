@@ -3,7 +3,8 @@ from user.models import AnonymousUser
 from core.models import Store
 
 class AnonymousUserSerializer(serializers.HyperlinkedModelSerializer):		
-
+	cellphone = serializers.CharField(required=False)
+	
 	class Meta:
 		model=AnonymousUser
 		fields = ('id','first_name','cellphone')

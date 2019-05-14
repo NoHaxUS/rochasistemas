@@ -42,7 +42,7 @@ class Admin(CustomUser):
 
 class AnonymousUser(models.Model):
     first_name = models.CharField(max_length=150, verbose_name='Nome')
-    cellphone = models.CharField(max_length=14, verbose_name='Celular')   
+    cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)   
     my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)     
 
     def __str__(self):

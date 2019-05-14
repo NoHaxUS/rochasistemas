@@ -24,20 +24,20 @@ class CustomAuthToken(ObtainAuthToken):
 	        	"type":user_type
         	}        	
         elif user.has_perm('user.be_punter'):
-        	user = PunterSerializer(user.punter, many=False)
+        	user = PunterSerializer(user.punter, many=False).data
         	user_type = "punter"
         elif user.has_perm('user.be_manager'):
-        	user = ManagerSerializer(user.manager,many=False)
+        	user = ManagerSerializer(user.manager,many=False).data
         	user_type = "manager"
         elif user.has_perm('user.be_seller'):
-        	user = SellerSerializer(user.seller,many=False)        	
+        	user = SellerSerializer(user.seller,many=False).data
         	user_type = "seller"
         elif user.has_perm('user.be_admin'):
-        	user = SellerSerializer(user.admin,many=False)
+        	user = SellerSerializer(user.admin,many=False).data
         	user_type = "admin"        
         
         return Response({
             'token': token.key,
-            'user': user.data,
+            'user': user,
             'type': user_type            
         })
