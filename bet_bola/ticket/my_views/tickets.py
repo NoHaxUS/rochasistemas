@@ -108,9 +108,9 @@ class TicketView(FiltersMixin, ModelViewSet):
 			pre_id_lista = []
 
 			try:
-				pre_id_lista = [data["id"] for data in request.data]
+				pre_id_lista = [int(data["id"]) for data in request.data]
 			except KeyError:
-				return Response({"Error": "Entrada invalida. Dica:[{'id':'?'},{'id':'?'}]"})
+				return Response({'Error': 'Entrada invalida. Dica:[{"id":"?"},{"id":"?"}]'})
 
 			id_list = []
 			response = {}
@@ -118,6 +118,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 				id_list.append(ticket.pk)
 				response["ticket " + str(ticket.pk)] = ticket.validate_ticket(request.user)["message"]			
 
+			print(pre_id_lista, id_list)
 			warnning_id = list(set(pre_id_lista)-set(id_list))
 			count=0
 			for id in warnning_id:
