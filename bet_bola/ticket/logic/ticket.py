@@ -112,6 +112,7 @@ def validate_ticket(self, user):
 
     seller_before_balance = 0
     seller_after_balance= 0
+    
         
     if not user.seller.can_sell_unlimited:
         if self.value > user.seller.credit_limit:                
