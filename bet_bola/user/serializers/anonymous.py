@@ -2,8 +2,7 @@ from rest_framework import serializers
 from user.models import AnonymousUser
 from core.models import Store
 
-class AnonymousUserSerializer(serializers.HyperlinkedModelSerializer):		
-	cellphone = serializers.CharField(required=False)
+class AnonymousUserSerializer(serializers.HyperlinkedModelSerializer):			
 	
 	class Meta:
 		model=AnonymousUser
