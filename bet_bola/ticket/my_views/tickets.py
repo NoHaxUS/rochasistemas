@@ -105,21 +105,21 @@ class TicketView(FiltersMixin, ModelViewSet):
 
 	@action(methods=['post'], detail=False, permission_classes=[ValidateTicketPermission, StoreIsRequired, UserIsNotFromThisStore])
 	def validate_tickets(self, request, pk=None):		
-		pre_id_lista = []
+		pre_id_list = []
 
 		try:				
-			pre_id_lista = request.data
+			pre_id_list = request.data
 		except KeyError:
 			return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
 
 		id_list = []
 		response = []
-		for ticket in Ticket.objects.filter(pk__in=pre_id_lista):			
+		for ticket in Ticket.objects.filter(pk__in=pre_id_list):			
 			id_list.append(ticket.pk)
 			response.append(ticket.validate_ticket(request.user))
 
-		print(pre_id_lista, id_list)
-		warnning_id = list(set(pre_id_lista)-set(id_list))
+		print(pre_id_list, id_list)
+		warnning_id = list(set(pre_id_list)-set(id_list))
 		count=0
 		for id in warnning_id:
 			count += 1
@@ -127,51 +127,51 @@ class TicketView(FiltersMixin, ModelViewSet):
 		return Response(response)
 
 
-	@action(methods=['post'], detail=False)
-	def change_visibilities(self, request, pk=None):
-		if request.user.is_superuser or request.user.has_perm('be_admin'):		
-			pre_id_lista = []
+	@action(methods=['post'], detail=False, permission_classes=[])
+	def toggle_visibilities(self, request, pk=None):
+		
+		pre_id_list = []
+		try:
+			received_data = dict(request.data)
+			pre_id_list = [int(item) for item in received_data['data']]
+			
+		except KeyError:
+			return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
 
-			try:				
-				pre_id_lista = request.data
-			except KeyError:
-				return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
+		id_list = []
+		response = []
+		for ticket in Ticket.objects.filter(pk__in=pre_id_list):			
+			id_list.append(ticket.pk)
+			ticket.visible = not ticket.visible
+			ticket.save()
+			response.append({"success": True, "message": "Visibilidade do ticket " + str(ticket.pk) + " foi alterada para " + str(ticket.visible) + " com sucesso"})
 
-			id_list = []
-			response = []
-			for ticket in Ticket.objects.filter(pk__in=pre_id_lista):			
-				id_list.append(ticket.pk)
-				ticket.visible = not ticket.visible
-				ticket.save()
-				response.append({"success": True, "message": "Visibilidade do ticket " + str(ticket.pk) + " foi alterada para " + str(ticket.visible) + " com sucesso"})
-
-			print(pre_id_lista, id_list)
-			warnning_id = list(set(pre_id_lista)-set(id_list))
-			count=0
-			for id in warnning_id:
-				count += 1
-				response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
-			return Response(response)
+		warnning_id = list(set(pre_id_list)-set(id_list))
+		count=0
+		for id in warnning_id:
+			count += 1
+			response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
+		return Response(response)
 
 		return Response([{"success":False,"message":"Usuário não tem permissão pra executar essa operação"}])
 		
 
 	@action(methods=['post'], detail=False, permission_classes=[ValidateTicketPermission, StoreIsRequired, UserIsNotFromThisStore])
 	def cancel_tickets(self, request, pk=None):	
-		pre_id_lista = []
+		pre_id_list = []
 
 		try:				
-			pre_id_lista = request.data
+			pre_id_list = request.data
 		except KeyError:
 			return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
 
 		id_list = []
 		response = []
-		for ticket in Ticket.objects.filter(pk__in=pre_id_lista):			
+		for ticket in Ticket.objects.filter(pk__in=pre_id_list):			
 			id_list.append(ticket.pk)
 			response.append(ticket.cancel_ticket(request.user.seller))
 		
-		warnning_id = list(set(pre_id_lista)-set(id_list))
+		warnning_id = list(set(pre_id_list)-set(id_list))
 		count=0
 		for id in warnning_id:
 			count += 1
