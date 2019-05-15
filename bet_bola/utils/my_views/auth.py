@@ -7,14 +7,15 @@ from user.serializers.punter import PunterSerializer
 
 class CustomAuthToken(ObtainAuthToken):
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):        
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-        user_type = ""
 
+        serializer.is_valid(raise_exception=True)        
+        user = serializer.validated_data['user']
+        print(user)
+        token, created = Token.objects.get_or_create(user=user)
+        user_type = ""        
         if user.is_superuser:
         	user_type = "superuser"
         	user = {

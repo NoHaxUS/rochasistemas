@@ -7,6 +7,7 @@ from ticket.models import Ticket, Reward, Payment
 from ticket.serializers.ticket import TicketSerializer, CreateTicketAnonymousUserSerializer, CreateTicketLoggedUserSerializer
 from ticket.paginations import TicketPagination
 from ticket.permissions import CreateBet, PayWinnerPermission, ValidateTicketPermission, CancelarTicketPermission
+from core.permissions import StoreIsRequired, UserIsNotFromThisStore
 from user.models import AnonymousUser
 from core.models import CotationCopy, Cotation, Store
 from utils import timezone as tzlocal
@@ -15,7 +16,7 @@ from config import settings
 class TicketView(FiltersMixin, ModelViewSet):
 	queryset = Ticket.objects.all()
 	serializer_class = TicketSerializer
-	permission_classes = [CreateBet,]
+	permission_classes = [UserIsNotFromThisStore ,StoreIsRequired ,CreateBet]
 	pagination_class = TicketPagination
 
 	filter_mappings = {
@@ -102,31 +103,29 @@ class TicketView(FiltersMixin, ModelViewSet):
 		return Response(response)		
 
 
-	@action(methods=['post'], detail=False)
-	def validate_tickets(self, request, pk=None):
-		if request.user.has_perm('user.be_seller'):		
-			pre_id_lista = []
+	@action(methods=['post'], detail=False, permission_classes=[ValidateTicketPermission, StoreIsRequired, UserIsNotFromThisStore])
+	def validate_tickets(self, request, pk=None):		
+		pre_id_lista = []
 
-			try:				
-				pre_id_lista = request.data
-			except KeyError:
-				return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
+		try:				
+			pre_id_lista = request.data
+		except KeyError:
+			return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
 
-			id_list = []
-			response = []
-			for ticket in Ticket.objects.filter(pk__in=pre_id_lista):			
-				id_list.append(ticket.pk)
-				response.append(ticket.validate_ticket(request.user))
+		id_list = []
+		response = []
+		for ticket in Ticket.objects.filter(pk__in=pre_id_lista):			
+			id_list.append(ticket.pk)
+			response.append(ticket.validate_ticket(request.user))
 
-			print(pre_id_lista, id_list)
-			warnning_id = list(set(pre_id_lista)-set(id_list))
-			count=0
-			for id in warnning_id:
-				count += 1
-				response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
-			return Response(response)
+		print(pre_id_lista, id_list)
+		warnning_id = list(set(pre_id_lista)-set(id_list))
+		count=0
+		for id in warnning_id:
+			count += 1
+			response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
+		return Response(response)
 
-		return Response([{"success":False,"message":"Usuário não é vendedor"}])
 
 	@action(methods=['post'], detail=False)
 	def change_visibilities(self, request, pk=None):
@@ -155,19 +154,29 @@ class TicketView(FiltersMixin, ModelViewSet):
 			return Response(response)
 
 		return Response([{"success":False,"message":"Usuário não tem permissão pra executar essa operação"}])
-
-
-	@action(methods=['get'], detail=True, permission_classes=[ValidateTicketPermission,])
-	def validate_ticket(self, request, pk=None):	
-		ticket = self.get_object()			
-		return Response(ticket.validate_ticket(request.user))
 		
 
-	@action(methods=['get'], detail=True, permission_classes=[CancelarTicketPermission,])
-	def cancel_ticket(self, request, pk=None):	
-		ticket = self.get_object()		
-		return Response(ticket.cancel_ticket(request.user.seller))
+	@action(methods=['post'], detail=False, permission_classes=[ValidateTicketPermission, StoreIsRequired, UserIsNotFromThisStore])
+	def cancel_tickets(self, request, pk=None):	
+		pre_id_lista = []
 
+		try:				
+			pre_id_lista = request.data
+		except KeyError:
+			return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
+
+		id_list = []
+		response = []
+		for ticket in Ticket.objects.filter(pk__in=pre_id_lista):			
+			id_list.append(ticket.pk)
+			response.append(ticket.cancel_ticket(request.user.seller))
+		
+		warnning_id = list(set(pre_id_lista)-set(id_list))
+		count=0
+		for id in warnning_id:
+			count += 1
+			response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
+		return Response(response)				
 
 	@action(methods=['get'], detail=True)
 	def ticket_detail(self, request, pk=None):		        
