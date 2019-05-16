@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import filters as drf_filters
+from filters.mixins import FiltersMixin
 from django.db.models import Q, F, FilteredRelation, Count, Prefetch
 import utils.timezone as tzlocal
 from django_filters import rest_framework as filters
@@ -13,11 +14,17 @@ from core.paginations import StandardSetPagination, GamesListSetPagination
 from core.permissions import StoreIsRequired
 
 
-class GamesToday(ModelViewSet):
+class GamesToday(FiltersMixin, ModelViewSet):
     serializer_class = GameListSerializer
     pagination_class = GamesListSetPagination
-    filter_backends = (drf_filters.SearchFilter,)
-    search_fields = ('name','league__name')
+    
+
+    filter_mappings = {
+		'game_name':'name__icontains',
+		'league_name':'league__name__icontains',
+		'country_name':'league__location__name__icontains',
+        'start_time': 'start_date__gte'
+	}
 
     def get_queryset(self):
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")

@@ -5,6 +5,8 @@ from core.serializers.cotation import CotationCopySerializer, CotationModifiedSe
 from core.permissions import StoreIsRequired, CotationModifyPermission
 from core.models import CotationModified, Cotation
 from core.paginations import CotationsListSetPagination
+from filters.mixins import FiltersMixin
+
 
 class CotationCopyView(ModelViewSet):
     queryset = CotationCopy.objects.all()
@@ -18,9 +20,14 @@ class CotationModifiedView(ModelViewSet):
     permission_classes = [CotationModifyPermission,]
 
 
-class CotationView(ModelViewSet):
+class CotationView(FiltersMixin, ModelViewSet):
     queryset = Cotation.objects.all()
     serializer_class = CotationSerializer       
     permission_classes = [StoreIsRequired,]
     pagination_class = CotationsListSetPagination
+
+    filter_mappings = {
+        'game_name':'game__name__icontains',
+        'id': 'game__pk'
+    }
 

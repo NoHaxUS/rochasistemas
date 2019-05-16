@@ -15,7 +15,8 @@ class CustomAuthToken(ObtainAuthToken):
         user = serializer.validated_data['user']
         print(user)
         token, created = Token.objects.get_or_create(user=user)
-        user_type = ""        
+        user_type = ""
+
         if user.is_superuser:
         	user_type = "superuser"
         	user = {
@@ -23,7 +24,8 @@ class CustomAuthToken(ObtainAuthToken):
 	        	"name":user.first_name,
 	        	"username":user.username,        	
 	        	"type":user_type
-        	}        	
+        	}	
+
         elif user.has_perm('user.be_punter'):
         	user = PunterSerializer(user.punter, many=False).data
         	user_type = "punter"
@@ -36,7 +38,7 @@ class CustomAuthToken(ObtainAuthToken):
         elif user.has_perm('user.be_admin'):
         	user = SellerSerializer(user.admin,many=False).data
         	user_type = "admin"        
-        
+                
         return Response({
             'token': token.key,
             'user': user,
