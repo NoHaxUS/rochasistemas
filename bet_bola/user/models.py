@@ -8,18 +8,17 @@ from .logic import manager, seller, admin
 
 
 class CustomUser(AbstractUser):   
+    first_name = models.CharField(max_length=150, verbose_name='Primeiro Nome')
     email = models.EmailField(null=True, blank=True, verbose_name='E-mail')
-    first_name = models.CharField(max_length=150, verbose_name='Primeiro Nome')        
 
     def __str__(self):
-        return self.username
+        return self.first_name
 
     def full_name(self):
-        return self.first_name + ' ' + self.last_name    
+        return self.first_name + ' ' + self.last_name
 
 
 class Admin(CustomUser):    
-    # is_admin = models.BooleanField(default=False)
     my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
     class Meta:
@@ -40,7 +39,7 @@ class Admin(CustomUser):
         admin.define_default_permissions(self)
 
 
-class AnonymousUser(models.Model):
+class TicketOwner(models.Model):
     first_name = models.CharField(max_length=150, verbose_name='Nome')
     cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)   
     my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)     
@@ -151,7 +150,7 @@ class Manager(CustomUser):
     limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento", validators=[MinValueValidator(1), MaxValueValidator(45)])
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
     can_change_limit_time = models.BooleanField(default=False, verbose_name='Pode alterar tempo de Cancelamento do Cambista?')
-    based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no líquido ?') 
+    comission_based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no líquido ?') 
     my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)       
 
     def reset_revenue(self, who_reseted_revenue):        

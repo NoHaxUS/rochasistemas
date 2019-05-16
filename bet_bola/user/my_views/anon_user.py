@@ -1,11 +1,11 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
-from user.models import AnonymousUser
+from user.models import TicketOwner
 from user.permissions import IsSeller, StoreGiven
 from user.serializers.anonymous import AnonymousUserSerializer
 
 class AnonymousUserView(ModelViewSet):
-    queryset = AnonymousUser.objects.all()
+    queryset = TicketOwner.objects.all()
     serializer_class = AnonymousUserSerializer    
 
     def list(self, request, pk=None):

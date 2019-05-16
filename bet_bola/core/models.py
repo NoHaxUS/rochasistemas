@@ -4,7 +4,7 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import Q
-from user.models import AnonymousUser
+from user.models import TicketOwner
 from django.conf import settings
 from django.utils import timezone
 import utils.timezone as tzlocal
