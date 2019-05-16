@@ -2,23 +2,23 @@ from django.db import models
 from django.conf import settings
 
 
-class SellerSalesHistory(models.Model):
+class TicketValidationHistory(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
-    seller = models.ForeignKey('user.Seller', on_delete=models.CASCADE, verbose_name='Cambista')
-    bet_ticket = models.ForeignKey('ticket.Ticket', on_delete=models.CASCADE, verbose_name='Bilhete Pago')
-    sell_date = models.DateTimeField(verbose_name='Data da Venda', auto_now_add=True)
-    value = models.DecimalField(max_digits=30, decimal_places=2,verbose_name='Valor Apostado')
-    seller_before_balance = models.DecimalField(max_digits=30, decimal_places=2,null=True,blank=True, verbose_name='Saldo Anterior')
-    seller_after_balance = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Saldo Atual')
+    who_validated = models.CharField(max_length=200, verbose_name='Quem Validou')
+    ticket = models.ForeignKey('ticket.Ticket', on_delete=models.CASCADE, verbose_name='Bilhete Validado')
+    validation_date = models.DateTimeField(verbose_name='Data da Venda', auto_now_add=True)
+    bet_value = models.DecimalField(max_digits=30, decimal_places=2,verbose_name='Valor Apostado')
+    balance_before = models.DecimalField(max_digits=30, decimal_places=2,null=True,blank=True, verbose_name='Saldo Anterior')
+    balance_after = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Saldo Atual')
     store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
     def __str__(self):
-        return "Entrada - Cambistas"
-
+        return str(self.id)
 
     class Meta:
-        verbose_name = 'Entrada - Cambista'
-        verbose_name_plural = 'Entradas - Cambistas'
+        ordering = ['-pk', ]
+        verbose_name = 'Validação de Aposta'
+        verbose_name_plural = 'Validações de Apostas'
 
 
 

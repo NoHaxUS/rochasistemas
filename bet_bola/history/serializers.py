@@ -11,7 +11,7 @@ class SellerSalesHistorySerializer(serializers.HyperlinkedModelSerializer):
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
 
 	class Meta:
-		model = SellerSalesHistory
+		model = TicketValidationHistory
 		fields = ('seller','bet_ticket','sell_date','value','seller_before_balance','seller_after_balance','store')
 
 

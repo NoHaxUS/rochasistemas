@@ -7,7 +7,7 @@ from .permissions import General
 
 
 class SellerSalesHistoryView(ModelViewSet):
-    queryset = SellerSalesHistory.objects.all()
+    queryset = TicketValidationHistory.objects.all()
     serializer_class = SellerSalesHistorySerializer
     permission_classes = [General,]
 

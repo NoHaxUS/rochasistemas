@@ -1,4 +1,4 @@
-def real_value(self):
+def value(self):
     from utils.models import GeneralConfigurations, RewardRelated
     try:
         general_config = GeneralConfigurations.objects.get(pk=1)
