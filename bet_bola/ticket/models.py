@@ -38,11 +38,6 @@ class Ticket(models.Model):
     store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
     visible = models.BooleanField(default=True, verbose_name='Visível?')
 
-    def __str__(self):
-        return str(self.pk)
-
-    def get_punter_name(self):
-        return ticket.get_punter_name(self)
 
     def hide_ticket(self):
         return ticket.hide_ticket(self)
@@ -50,23 +45,20 @@ class Ticket(models.Model):
     def show_ticket(self):
         return ticket.show_ticket(self)
 
-    def get_ticket_link(self):
-        return ticket.get_ticket_link(self)
-
-    def seller_related(self):
-        ticket.seller_related(self)
-
     def cancel_ticket(self, user):
         return ticket.cancel_ticket(self, user)
 
     def validate_ticket(self, user):
         return ticket.validate_ticket(self, user)
 
-    def pay_winner_punter(self, user):
-        return ticket.pay_winner_punter(self, user)
+    def pay_winner(self, user):
+        return ticket.pay_winner(self, user)
 
     def cotation_sum(self):
         return ticket.cotation_sum(self)
+
+    def __str__(self):
+        return str(self.pk)
 
     class Meta:
         ordering = ('-pk',)

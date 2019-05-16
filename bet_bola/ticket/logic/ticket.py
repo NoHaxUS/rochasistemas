@@ -2,32 +2,18 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.mail import send_mail
 import utils.timezone as tzlocal
-
-
-def get_punter_name(self):
-    if self.user:
-        return self.user.first_name
-    elif self.normal_user:
-        return self.normal_user.first_name    
+  
 
 def hide_ticket(self):
     self.visible = False
     self.save()
-    return {"message" :"Jogo "+ str(self.pk) +" Ocultado."}
+    return True
 
 def show_ticket(self):
     self.visible = True
     self.save()
-    return {"message" :"Jogo "+ str(self.pk) +" Exibido."}
-
-def get_ticket_link(self):
-    from django.utils.safestring import mark_safe
-    link = '<a href="/ticket/'+str(self.pk) + '/" class="consult">Consultar<a/>'
-    return mark_safe(link)    
-
-def seller_related(self):
-    if self.payment:
-        return self.payment.who_paid    
+    return True
+  
 
 def cancel_ticket(self, user):
     from history.models import TicketCancelationHistory
@@ -139,7 +125,7 @@ def validate_ticket(self, user):
     return {'success':True,
         'message':'Ticket '+ str(self.pk) +' Pago com Sucesso.'}
 
-def pay_winner_punter(self, user):
+def pay_winner(self, user):
     from history.models import PunterPayedHistory
     from user.models import Seller
     from ticket.models import Ticket, Payment
