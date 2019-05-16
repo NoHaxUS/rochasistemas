@@ -37,9 +37,7 @@ class PayWinnerPermission(permissions.BasePermission):
 class ValidateTicketPermission(permissions.BasePermission):
 	message = "Você não tem permissão para essa operação."
 
-	def has_permission(self, request, view):		
-		user = request.user
-
+	def has_permission(self, request, view):
 		if request.user.has_perm('user.be_seller') or request.user.has_perm('user.be_admin') or request.user.is_superuser:							
 			return True		
 		

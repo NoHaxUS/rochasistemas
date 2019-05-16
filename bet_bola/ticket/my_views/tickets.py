@@ -103,15 +103,13 @@ class TicketView(FiltersMixin, ModelViewSet):
 		return Response(response)		
 
 
-	@action(methods=['post'], detail=False, permission_classes=[ValidateTicketPermission, StoreIsRequired, UserIsNotFromThisStore])
+	@action(methods=['post'], detail=False, permission_classes=[])
 	def validate_tickets(self, request, pk=None):
-		
-		print(request.user)
 
 		pre_id_list = []
-
-		try:				
-			pre_id_list = request.data
+		print(request.data)
+		try:
+			pre_id_list = dict(request.data)['data[]']
 		except KeyError:
 			return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
 

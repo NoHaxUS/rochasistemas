@@ -188,6 +188,7 @@ class GeneralConfigurations(models.Model):
 
 
     class Meta:
+        ordering = ['-pk',]
         verbose_name = "Configurações Gerais"
         verbose_name_plural = "Configurações Gerais"
 
