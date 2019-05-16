@@ -6,7 +6,7 @@ from filters.mixins import FiltersMixin
 from ticket.models import Ticket, Reward, Payment
 from ticket.serializers.ticket import TicketSerializer, CreateTicketAnonymousUserSerializer, CreateTicketLoggedUserSerializer
 from ticket.paginations import TicketPagination
-from ticket.permissions import CreateBet, PayWinnerPermission, ValidateTicketPermission, CancelarTicketPermission
+from ticket.permissions import CanCreateBet, CanPayWinner, CanValidateTicket, CanCancelTicket
 from core.permissions import StoreIsRequired, UserIsNotFromThisStore
 from user.models import AnonymousUser
 from core.models import CotationCopy, Cotation, Store
@@ -16,7 +16,7 @@ from config import settings
 class TicketView(FiltersMixin, ModelViewSet):
 	queryset = Ticket.objects.all()
 	serializer_class = TicketSerializer
-	permission_classes = [UserIsNotFromThisStore ,StoreIsRequired ,CreateBet]
+	permission_classes = [UserIsNotFromThisStore ,StoreIsRequired ,CanCreateBet]
 	pagination_class = TicketPagination
 
 	filter_mappings = {
@@ -96,7 +96,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 			if self.request.user.has_perm('user.be_seller'):			
 				return instance.validate_ticket(self.request.user.seller)
 
-	@action(methods=['get'], detail=True, permission_classes=[PayWinnerPermission,])
+	@action(methods=['get'], detail=True, permission_classes=[CanPayWinner,])
 	def pay_winner_punter(self, request, pk=None):		
 		ticket = self.get_object()				
 		response = ticket.pay_winner_punter(request.user)
@@ -157,7 +157,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 		return Response([{"success":False,"message":"Usuário não tem permissão pra executar essa operação"}])
 		
 
-	@action(methods=['post'], detail=False, permission_classes=[ValidateTicketPermission, StoreIsRequired, UserIsNotFromThisStore])
+	@action(methods=['post'], detail=False, permission_classes=[CanValidateTicket, StoreIsRequired, UserIsNotFromThisStore])
 	def cancel_tickets(self, request, pk=None):	
 		pre_id_list = []
 
