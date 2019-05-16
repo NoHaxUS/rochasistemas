@@ -42,6 +42,7 @@ class ValidateTicketPermission(permissions.BasePermission):
 
 		if request.user.has_perm('user.be_seller') or request.user.has_perm('user.be_admin') or request.user.is_superuser:							
 			return True		
+		
 		self.message = "Usuário não é vendedor"
 		return False
 

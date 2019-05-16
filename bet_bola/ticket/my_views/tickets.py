@@ -104,7 +104,10 @@ class TicketView(FiltersMixin, ModelViewSet):
 
 
 	@action(methods=['post'], detail=False, permission_classes=[ValidateTicketPermission, StoreIsRequired, UserIsNotFromThisStore])
-	def validate_tickets(self, request, pk=None):		
+	def validate_tickets(self, request, pk=None):
+		
+		print(request.user)
+
 		pre_id_list = []
 
 		try:				

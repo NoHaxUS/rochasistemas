@@ -10,6 +10,9 @@ class StoreIsRequired(permissions.BasePermission):
 
 class UserIsNotFromThisStore(permissions.BasePermission):
 	def has_permission(self, request, view):
+
+		if request.user.is_superuser:
+			return True
 		if request.user.has_perm('user.be_admin') and str(request.user.admin.my_store.id) != str(request.GET['store']):			
 			self.message = "Usuario não é pertencente a esta banca"
 			return False
