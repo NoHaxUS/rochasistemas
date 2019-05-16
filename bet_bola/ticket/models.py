@@ -40,7 +40,7 @@ class Ticket(models.Model):
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Criado por')
     reward = models.OneToOneField('Reward', related_name='ticket', on_delete=models.CASCADE, verbose_name='Prêmio')
     payment = models.OneToOneField('Payment', related_name='ticket', on_delete=models.CASCADE, verbose_name='Pagamento')
-    value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')
+    bet_value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')
     status = models.IntegerField(default=0, choices=TICKET_STATUS, verbose_name='Status do Ticket')
     store = models.ForeignKey('core.Store', related_name='my_tickets', verbose_name='Banca', on_delete=models.CASCADE)
     visible = models.BooleanField(default=True, verbose_name='Visível?')
@@ -83,11 +83,11 @@ class Reward(models.Model):
     date = models.DateTimeField(null=True, blank=True, verbose_name='Data de Pagamento do Prêmio')
 
     @property
-    def real_value(self):
-        return reward.real_value(self)
+    def value(self):
+        return reward.value(self)
 
     def __str__(self):
-        return str(self.real_value)
+        return str(self.value)
 
     class Meta:
         verbose_name = 'Recompensa'
@@ -105,9 +105,15 @@ class Payment(models.Model):
         (4, 'Pagamento Recusado pelo Cartão'),
         (5, 'Pagamento Reembolsado')
     )
+
+    WHO_PAID_TYPES = (
+        (0, 'Vendedor'),
+        (1, 'Dono da Banca')
+    )
     
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
-    who_paid = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
+    who_paid_type = models.IntegerField(choices=WHO_PAID_TYPES, default=0, verbose_name="Tipo de Usuário que Pagou")
+    who_paid = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
     status = models.IntegerField(choices=PAYMENT_STATUS, default=0, verbose_name='Status do Pagamento')
     date = models.DateTimeField(null=True, blank=True, verbose_name='Data do Pagamento')
 

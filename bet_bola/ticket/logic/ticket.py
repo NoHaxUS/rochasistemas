@@ -74,65 +74,87 @@ def cancel_ticket(self, who_canceled):
         'message':'O Ticket '+ str(self.pk) +' foi cancelado.'
     }
 
-def validate_ticket(self, user):
-    from history.models import SellerSalesHistory
-    from core.models import Store      
+def validate_ticket(self, who_validated):
+    from history.models import TicketValidationHistory   
     from user.models import Seller              
     
-    if self.cotation_sum() * self.value >= self.store.config.alert_bet_value:
-        bet_reward_value = str(round((self.cotation_sum() * self.value),2))
+    if not who_validated.is_superuser and not who_validated.has_perm('user.be_seller'):
+        return {
+            'success': False,
+            'message': 'Esse Usuário não tem permissão para validar Tickets.'
+        }
+
+    if self.reward.value >= self.store.config.alert_bet_value:
         if self.store.email:
             subject = 'Alerta de aposta'
-            message = 'Uma aposta com recompensa no valor de R$' + bet_reward_value + ' foi efetuada em sua plataforma'
+            message = 'Uma aposta com recompensa no valor de R$' + self.reward.value + ' foi efetuada em sua plataforma.'
             email_from = settings.EMAIL_HOST_USER
             recipient_list = [self.store.email,]
             send_mail( subject, message, email_from, recipient_list )
-        
-    if not self.payment or not self.reward:
-        return {'success':False,
-            'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
+    
     
     if not self.payment.status == 0:
-        return {'success':False,
-            'message':'O Ticket '+ str(self.pk) +' não está Aguardando Pagamento.'}
+        return {
+            'success':False,
+            'message':'O Ticket '+ str(self.pk) +' não está Aguardando Pagamento.'
+        }
 
     if not self.status == 0:
-        return {'success':False,
-            'message':'O Ticket '+ str(self.pk) +' não está Aguardando Resultados.'}
+        return {
+            'success': False,
+            'message': 'Não é possível validar esse Ticket ' + str(self.pk) + ' pois o mesmo não está em aberto.'
+        }
 
     for cotation in self.cotations.all():
         if cotation.game.start_date < tzlocal.now():
-            return {'success':False,
-            'message':'O Ticket '+ str(self.pk) +' não pode ser pago, pois tem jogo(s) que já começaram.'}
+            return {
+                'success': False,
+                'message':'O Ticket '+ str(self.pk) +' não pode ser pago, pois contém cotas de jogo(s) que já iniciaram.'
+            }
 
-    seller_before_balance = 0
-    seller_after_balance= 0
-    
-        
-    if not user.seller.can_sell_unlimited:
-        if self.value > user.seller.credit_limit:                
-            return {'success':False,
-            'message':'Você não tem saldo suficiente para pagar o Ticket: ' + str(self.pk)}
-        seller_before_balance = user.seller.credit_limit
-        user.seller.credit_limit -= self.value
-        seller_after_balance = user.seller.credit_limit
-        user.seller.save()
+
+
+    if not who_validated.is_superuser:
+        seller_before_balance = 0
+        seller_after_balance= 0
+
+        if not who_validated.seller.can_sell_unlimited:
+            if self.value > who_validated.seller.credit_limit:                
+                return {
+                'success':False,
+                'message':'Você não tem saldo suficiente para pagar o Ticket: ' + str(self.pk)
+            }
+
+            seller_before_balance = who_validated.seller.credit_limit
+            who_validated.seller.credit_limit -= self.value
+            seller_after_balance = who_validated.seller.credit_limit
+            who_validated.seller.save()
                 
     self.save()
     self.payment.status = 2
     self.payment.date = tzlocal.now()
-    self.payment.who_paid = Seller.objects.get(pk=user.pk)
+    self.payment.who_paid = who_validated
+
+    if who_validated.is_superuser:
+        self.payment.who_paid_type = 1
+    else:
+        self.payment.who_paid_type = 0
+    
     self.payment.save()
 
-    SellerSalesHistory.objects.create(seller=user.seller,
-    bet_ticket=self,
-    value=self.value,
-    seller_before_balance=seller_before_balance,
-    seller_after_balance=seller_after_balance,
-    store=self.store)
+    TicketValidationHistory.objects.create(
+        who_validated=str(who_validated.pk + ' - ' + who_validated.username),
+        ticket=self,
+        bet_value=self.bet_value,
+        balance_before=seller_before_balance,
+        balance_after=seller_after_balance,
+        store=self.store
+    )
     
-    return {'success':True,
-        'message':'Ticket '+ str(self.pk) +' Pago com Sucesso.'}
+    return {
+        'success':True,
+        'message':'Bilhete '+ str(self.pk) +' PAGO com Sucesso.'
+    }
 
 def pay_winner(self, user):
     from history.models import PunterPayedHistory
