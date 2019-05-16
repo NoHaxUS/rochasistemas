@@ -9,11 +9,18 @@ from django.conf import settings
 import utils.timezone as tzlocal
 from django.utils import timezone
 import utils.timezone as tzlocal
-from user.models import AnonymousUser, Seller, Punter
+from user.models import TicketOwner, Seller, Punter
 from .logic import ticket, reward
 
 
 class Ticket(models.Model):
+
+    USER_TYPE = (
+        (0, 'Anonímo'),
+        (1, 'Apostador'),
+        (2, 'Vendedor'),
+        (3, 'Dono da Banca')
+    )
 
     TICKET_STATUS = (
         (0, 'Aguardando Resultados'),
@@ -26,23 +33,18 @@ class Ticket(models.Model):
     )
     
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_tickets', null=True, blank=True, on_delete=models.CASCADE, verbose_name='Apostador')
-    seller = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cambista')
-    normal_user = models.ForeignKey(AnonymousUser, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Cliente')
+    owner = models.ForeignKey('user.TicketOwner', on_delete=models.CASCADE, verbose_name='Dono do Bilhete')
     cotations = models.ManyToManyField('core.Cotation', related_name='ticket', verbose_name='Cota')
     creation_date = models.DateTimeField(verbose_name='Data da Aposta')
-    reward = models.OneToOneField('Reward', related_name='ticket', null=True, blank=True, on_delete=models.CASCADE, verbose_name='Prêmio')
-    payment = models.OneToOneField('Payment', related_name='ticket', null=True, blank=True, on_delete=models.CASCADE, verbose_name='Pagamento')
+    creator_type = models.IntegerField(choices=USER_TYPE, default=0, verbose_name='Tipo do Usuário')
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Criado por')
+    reward = models.OneToOneField('Reward', related_name='ticket', on_delete=models.CASCADE, verbose_name='Prêmio')
+    payment = models.OneToOneField('Payment', related_name='ticket', on_delete=models.CASCADE, verbose_name='Pagamento')
     value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')
     status = models.IntegerField(default=0, choices=TICKET_STATUS, verbose_name='Status do Ticket')
-    store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
+    store = models.ForeignKey('core.Store', related_name='my_tickets', verbose_name='Banca', on_delete=models.CASCADE)
     visible = models.BooleanField(default=True, verbose_name='Visível?')
 
-    def __str__(self):
-        return str(self.pk)
-
-    def get_punter_name(self):
-        return ticket.get_punter_name(self)
 
     def hide_ticket(self):
         return ticket.hide_ticket(self)
@@ -50,23 +52,20 @@ class Ticket(models.Model):
     def show_ticket(self):
         return ticket.show_ticket(self)
 
-    def get_ticket_link(self):
-        return ticket.get_ticket_link(self)
-
-    def seller_related(self):
-        ticket.seller_related(self)
-
     def cancel_ticket(self, user):
         return ticket.cancel_ticket(self, user)
 
     def validate_ticket(self, user):
         return ticket.validate_ticket(self, user)
 
-    def pay_winner_punter(self, user):
-        return ticket.pay_winner_punter(self, user)
+    def pay_winner(self, user):
+        return ticket.pay_winner(self, user)
 
     def cotation_sum(self):
         return ticket.cotation_sum(self)
+
+    def __str__(self):
+        return str(self.pk)
 
     class Meta:
         ordering = ('-pk',)

@@ -15,6 +15,7 @@ django-cors-headers = "*"
 drf-url-filters = "*"
 
 [dev-packages]
+rope = "*"
 
 [requires]
 python_version = "3.6"

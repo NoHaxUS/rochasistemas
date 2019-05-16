@@ -2,82 +2,77 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.mail import send_mail
 import utils.timezone as tzlocal
-
-
-def get_punter_name(self):
-    if self.user:
-        return self.user.first_name
-    elif self.normal_user:
-        return self.normal_user.first_name    
+  
 
 def hide_ticket(self):
     self.visible = False
     self.save()
-    return {"message" :"Jogo "+ str(self.pk) +" Ocultado."}
+    return True
 
 def show_ticket(self):
     self.visible = True
     self.save()
-    return {"message" :"Jogo "+ str(self.pk) +" Exibido."}
+    return True
+  
 
-def get_ticket_link(self):
-    from django.utils.safestring import mark_safe
-    link = '<a href="/ticket/'+str(self.pk) + '/" class="consult">Consultar<a/>'
-    return mark_safe(link)    
+def cancel_ticket(self, who_canceled):
 
-def seller_related(self):
-    if self.payment:
-        return self.payment.who_paid    
-
-def cancel_ticket(self, user):
-    from history.models import TicketCancelationHistory
-    from core.models import Store
-
-    if not self.payment or not self.reward:
-        return {'success':False,
-            'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
+    if not who_canceled.is_superuser and not who_canceled.has_perm('user.be_seller'):
+        return {
+            'success': False,
+            'message': 'Esse Usuário não tem permissão para cancelar Tickets.'
+        }
     
-    who_cancelled  = str(user.pk) + ' - ' + user.username
     if not self.status == 0:
-        return {'success':False,
-            'message':' Ticket '+ str(self.pk)+ ' não cancelado, pois não está aguardando resultados.'}
+        return {
+            'success': False,
+            'message': 'Não é possível cancelar esse Ticket '+ str(self.pk) + ' pois o mesmo não está em aberto.'
+        }
     
     if not self.payment.status == 2:
-        return {'success':False,
-            'message':'O Ticket '+ str(self.pk) +' não está Pago para ser cancelado.'}
+        return {
+            'success': False,
+            'message': 'O Ticket '+ str(self.pk) +' não foi Pago para ser cancelado.'
+        }
 
-    if user.has_perm('user.be_seller') and not user.is_superuser:
-        if self.payment.date + timezone.timedelta(minutes=int(user.seller.limit_time_to_cancel)) < tzlocal.now():
-            return {'success':False,
-                'message':' Tempo limite para cancelar o Ticket '+ str(self.pk) +' excedido.'}
-
-    if user.has_perm('user.be_manager') and not user.is_superuser:
-        if self.payment.date + timezone.timedelta(minutes=int(user.manager.limit_time_to_cancel)) < tzlocal.now():
-            return {'success':False,
-                'message':' Tempo limite para cancelar o Ticket '+ str(self.pk) +' excedido.'}
-
-    if user != self.payment.who_paid:
-        return {'success':False,
-                'message':'Vendedor ' + user.first_name+ ' não tem permissão para cancelar este ticket.'}
+    if not who_canceled.is_superuser:
+        if self.payment.date + timezone.timedelta(minutes=int(who_canceled.seller.limit_time_to_cancel)) < tzlocal.now():
+            return {
+                'success':False,
+                'message':' Tempo limite para cancelar o Ticket '+ str(self.pk) +' foi excedido.'
+            }
+        
+        if not who_canceled == self.payment.who_paid:
+            return {
+                'success':False,
+                'message':'Você não pode cancelar um Ticket que você não Pagou.'
+            }
     
-    seller = self.payment.who_paid
-    if not seller.can_sell_unlimited:
-        seller.credit_limit += self.value
-        seller.save()
+    
+    who_paid = self.payment.who_paid
+    if not who_paid.can_sell_unlimited:
+        who_paid.credit_limit += self.value
+        who_paid.save()
 
     self.payment.status = 5
     self.payment.date = None
-    # self.payment.seller_was_rewarded = True
     self.payment.save()
     self.save()
 
-    TicketCancelationHistory.objects.create(who_cancelled=who_cancelled,
-    ticket_cancelled=self,
-    seller_of_payed=seller,
-    store=self.store)
+    from history.models import TicketCancelationHistory
 
-    return {'success':True,
-        'message':'O Ticket '+ str(self.pk) +' foi cancelado.'}
+    TicketCancelationHistory.objects.create(
+        who_canceled=str(who_canceled.pk) + ' - ' + who_canceled.username,
+        ticket_cancelled=self,
+        cancelation_date=tzlocal.now(),
+        who_paid=who_paid,
+        store=self.store
+    )
+
+    return {
+        'success':True,
+        'message':'O Ticket '+ str(self.pk) +' foi cancelado.'
+    }
 
 def validate_ticket(self, user):
     from history.models import SellerSalesHistory
@@ -112,6 +107,7 @@ def validate_ticket(self, user):
 
     seller_before_balance = 0
     seller_after_balance= 0
+    
         
     if not user.seller.can_sell_unlimited:
         if self.value > user.seller.credit_limit:                
@@ -138,7 +134,7 @@ def validate_ticket(self, user):
     return {'success':True,
         'message':'Ticket '+ str(self.pk) +' Pago com Sucesso.'}
 
-def pay_winner_punter(self, user):
+def pay_winner(self, user):
     from history.models import PunterPayedHistory
     from user.models import Seller
     from ticket.models import Ticket, Payment

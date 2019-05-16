@@ -6,9 +6,9 @@ from filters.mixins import FiltersMixin
 from ticket.models import Ticket, Reward, Payment
 from ticket.serializers.ticket import TicketSerializer, CreateTicketAnonymousUserSerializer, CreateTicketLoggedUserSerializer
 from ticket.paginations import TicketPagination
-from ticket.permissions import CreateBet, PayWinnerPermission, ValidateTicketPermission, CancelarTicketPermission
+from ticket.permissions import CanCreateBet, CanPayWinner, CanValidateTicket, CanCancelTicket
 from core.permissions import StoreIsRequired, UserIsNotFromThisStore
-from user.models import AnonymousUser
+from user.models import TicketOwner
 from core.models import CotationCopy, Cotation, Store
 from utils import timezone as tzlocal
 from config import settings
@@ -16,7 +16,7 @@ from config import settings
 class TicketView(FiltersMixin, ModelViewSet):
 	queryset = Ticket.objects.all()
 	serializer_class = TicketSerializer
-	permission_classes = [UserIsNotFromThisStore ,StoreIsRequired ,CreateBet]
+	permission_classes = [UserIsNotFromThisStore ,StoreIsRequired ,CanCreateBet]
 	pagination_class = TicketPagination
 
 	filter_mappings = {
@@ -74,11 +74,11 @@ class TicketView(FiltersMixin, ModelViewSet):
 
 			if self.request.user.is_authenticated:
 				if self.request.user.has_perm('user.be_seller'):
-					normal_user = AnonymousUser.objects.create(first_name=serializer.validated_data['normal_user']['first_name'], cellphone=serializer.validated_data['normal_user']['cellphone'], my_store=store)
+					normal_user = TicketOwner.objects.create(first_name=serializer.validated_data['normal_user']['first_name'], cellphone=serializer.validated_data['normal_user']['cellphone'], my_store=store)
 					instance = serializer.save(seller=self.request.user,normal_user=normal_user, reward=reward, payment=payment, creation_date=creation_date,store=store)						
 				instance = serializer.save(user=self.request.user, reward=reward, payment=payment, creation_date=creation_date, store=store)
 			else:					
-				normal_user = AnonymousUser.objects.create(first_name=serializer.validated_data['normal_user']['first_name'], cellphone=serializer.validated_data['normal_user']['cellphone'], my_store=store)
+				normal_user = TicketOwner.objects.create(first_name=serializer.validated_data['normal_user']['first_name'], cellphone=serializer.validated_data['normal_user']['cellphone'], my_store=store)
 				instance = serializer.save(normal_user=normal_user, reward=reward, payment=payment, creation_date=creation_date, store=store)
 
 
@@ -96,30 +96,31 @@ class TicketView(FiltersMixin, ModelViewSet):
 			if self.request.user.has_perm('user.be_seller'):			
 				return instance.validate_ticket(self.request.user.seller)
 
-	@action(methods=['get'], detail=True, permission_classes=[PayWinnerPermission,])
+	@action(methods=['get'], detail=True, permission_classes=[CanPayWinner,])
 	def pay_winner_punter(self, request, pk=None):		
 		ticket = self.get_object()				
 		response = ticket.pay_winner_punter(request.user)
 		return Response(response)		
 
 
-	@action(methods=['post'], detail=False, permission_classes=[ValidateTicketPermission, StoreIsRequired, UserIsNotFromThisStore])
-	def validate_tickets(self, request, pk=None):		
-		pre_id_lista = []
+	@action(methods=['post'], detail=False, permission_classes=[])
+	def validate_tickets(self, request, pk=None):
 
-		try:				
-			pre_id_lista = request.data
+		pre_id_list = []
+		print(request.data)
+		try:
+			pre_id_list = dict(request.data)['data[]']
 		except KeyError:
 			return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
 
 		id_list = []
 		response = []
-		for ticket in Ticket.objects.filter(pk__in=pre_id_lista):			
+		for ticket in Ticket.objects.filter(pk__in=pre_id_list):			
 			id_list.append(ticket.pk)
 			response.append(ticket.validate_ticket(request.user))
 
-		print(pre_id_lista, id_list)
-		warnning_id = list(set(pre_id_lista)-set(id_list))
+		print(pre_id_list, id_list)
+		warnning_id = list(set(pre_id_list)-set(id_list))
 		count=0
 		for id in warnning_id:
 			count += 1
@@ -127,51 +128,51 @@ class TicketView(FiltersMixin, ModelViewSet):
 		return Response(response)
 
 
-	@action(methods=['post'], detail=False)
-	def change_visibilities(self, request, pk=None):
-		if request.user.is_superuser or request.user.has_perm('be_admin'):		
-			pre_id_lista = []
-
-			try:				
-				pre_id_lista = request.data
-			except KeyError:
-				return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
-
-			id_list = []
-			response = []
-			for ticket in Ticket.objects.filter(pk__in=pre_id_lista):			
-				id_list.append(ticket.pk)
-				ticket.visible = not ticket.visible
-				ticket.save()
-				response.append({"success": True, "message": "Visibilidade do ticket " + str(ticket.pk) + " foi alterada para " + str(ticket.visible) + " com sucesso"})
-
-			print(pre_id_lista, id_list)
-			warnning_id = list(set(pre_id_lista)-set(id_list))
-			count=0
-			for id in warnning_id:
-				count += 1
-				response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
-			return Response(response)
-
-		return Response([{"success":False,"message":"Usuário não tem permissão pra executar essa operação"}])
+	@action(methods=['post'], detail=False, permission_classes=[])
+	def toggle_visibilities(self, request, pk=None):
 		
-
-	@action(methods=['post'], detail=False, permission_classes=[ValidateTicketPermission, StoreIsRequired, UserIsNotFromThisStore])
-	def cancel_tickets(self, request, pk=None):	
-		pre_id_lista = []
-
-		try:				
-			pre_id_lista = request.data
+		pre_id_list = []
+		try:
+			received_data = dict(request.data)
+			pre_id_list = [int(item) for item in received_data['data']]
+			
 		except KeyError:
 			return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
 
 		id_list = []
 		response = []
-		for ticket in Ticket.objects.filter(pk__in=pre_id_lista):			
+		for ticket in Ticket.objects.filter(pk__in=pre_id_list):			
+			id_list.append(ticket.pk)
+			ticket.visible = not ticket.visible
+			ticket.save()
+			response.append({"success": True, "message": "Visibilidade do ticket " + str(ticket.pk) + " foi alterada para " + str(ticket.visible) + " com sucesso"})
+
+		warnning_id = list(set(pre_id_list)-set(id_list))
+		count=0
+		for id in warnning_id:
+			count += 1
+			response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
+		return Response(response)
+
+		return Response([{"success":False,"message":"Usuário não tem permissão pra executar essa operação"}])
+		
+
+	@action(methods=['post'], detail=False, permission_classes=[CanValidateTicket, StoreIsRequired, UserIsNotFromThisStore])
+	def cancel_tickets(self, request, pk=None):	
+		pre_id_list = []
+
+		try:				
+			pre_id_list = request.data
+		except KeyError:
+			return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
+
+		id_list = []
+		response = []
+		for ticket in Ticket.objects.filter(pk__in=pre_id_list):			
 			id_list.append(ticket.pk)
 			response.append(ticket.cancel_ticket(request.user.seller))
 		
-		warnning_id = list(set(pre_id_lista)-set(id_list))
+		warnning_id = list(set(pre_id_list)-set(id_list))
 		count=0
 		for id in warnning_id:
 			count += 1

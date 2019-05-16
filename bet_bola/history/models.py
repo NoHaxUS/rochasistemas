@@ -116,14 +116,14 @@ class TicketCancelationHistory(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     who_cancelled = models.CharField(max_length=200, verbose_name='Quem Cancelou ?')
     ticket_cancelled = models.ForeignKey('ticket.Ticket', on_delete=models.CASCADE, verbose_name='Bilhete Cancelado')
-    cancelation_date = models.DateTimeField(verbose_name='Data do Cancelamento', auto_now_add=True)
-    seller_of_payed = models.ForeignKey('user.Seller', on_delete=models.CASCADE, verbose_name='Cambista')
+    cancelation_date = models.DateTimeField(verbose_name='Data do Cancelamento')
+    who_paid = models.ForeignKey('user.Seller', on_delete=models.CASCADE, verbose_name='Quem Pagou o Ticket')
     store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
     def __str__(self):
-        return "Can. - Bilhete"
+        return "Cancelamento de Bilhete"
 
     class Meta:
-        verbose_name = 'Can. - Bilhete'
-        verbose_name_plural = 'Can. - Tickets'
+        verbose_name = 'Cancelamento de Bilhete'
+        verbose_name_plural = 'Cancelamento de Bilhetes'
 

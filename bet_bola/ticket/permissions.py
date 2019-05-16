@@ -1,73 +1,57 @@
 from rest_framework import permissions
 
-class CreateBet(permissions.BasePermission):
-	message = "Desculpe, Contas administradoras ou Gerentes não são apropriados para criarem apostas. Use contas normais ou conta de vendedor."
+class CanCreateBet(permissions.BasePermission):
+	message = 'Você não tem permissão para criar Tickets.'
+	def has_permission(self, request, view):
+		if request.user.has_perm('user.be_seller'):
+			return True
+		if request.user.has_perm('user.be_punter'):
+			return True
+		if request.user.has_perm('user.be_admin'):
+			return True
+		if request.user.is_anonymous:
+			return True
+		if request.user.is_superuser:
+			return True
 
-	def has_permission(self, request, view):				
-		if request.user.is_superuser or request.user.has_perm("user.be_manager"):			
-			return False					
-		return True
+		return False
+
+
+class CanPayWinner(permissions.BasePermission):
+	message = 'Você não pode pagar vencedores. Apenas Vendedores.'
+	def has_permission(self, request, view):
+		if request.user.has_perm('user.be_seller'):
+			return True
+		return False
 
 	def has_object_permission(self, request, view, obj):
-		if request.method in permissions.SAFE_METHODS:
+		if request.user.seller == obj.payment.who_paid:
 			return True
-		else:
-			if request.user.has_perm('user.be_seller') and request.user.seller.my_store == obj.store:
-				return True
-			if request.user.has_perm('user.be_manager') and request.user.manager.my_store == obj.store:
-				return True
-			if request.user.is_superuser:
-				return True			
-			return False
+		self.message = 'Você não tem permissão para pagar o ganhador desse Ticket. (Apenas o ' + request.user.seller.first_name + ')'
+		return False
 
 
-class PayWinnerPermission(permissions.BasePermission):
+class CanValidateTicket(permissions.BasePermission):
+	message = "Você não pode Validar Ticket(s)."
+
 	def has_permission(self, request, view):
-		if request.user.has_perm('user.be_seller'):
-			if not str(request.GET['store']):
-				self.message = "Entrada da banca não inserida"				
-				return False
-			if str(request.user.seller.my_store.id) != str(request.GET['store']):
-				self.message = "Ticket não é pertencente a esta banca"
-				return False
-		self.message = "Usuário não é vendedor"
-		return True
-
-
-class ValidateTicketPermission(permissions.BasePermission):
-	message = "Você não tem permissão para essa operação."
-
-	def has_permission(self, request, view):		
-		user = request.user
-
 		if request.user.has_perm('user.be_seller') or request.user.has_perm('user.be_admin') or request.user.is_superuser:							
-			return True		
-		self.message = "Usuário não é vendedor"
+			return True
 		return False
 
 
-class CancelarTicketPermission(permissions.BasePermission):
-	message = "Você não tem permissão para essa operação."
+class CanCancelTicket(permissions.BasePermission):
+	message = "Você não pode Cancelar Ticket(s)."
 
 	def has_permission(self, request, view):
-		store = request.GET.get('store')
-		user = request.user		
-		if request.user.has_perm('user.be_seller'):
-			if not store:
-				self.message = "Forneça a id da loja"
-				return False
-			if str(user.seller.my_store.id) != str(store):
-				self.message = "Usuário não é vendedor desta banca"
-				return False					
-			return True		
-		self.message = "Usuário não é vendedor"
+		if request.user.has_perm('user.be_seller') or request.user.has_perm('user.be_admin') or request.user.is_superuser:							
+			return True
 		return False
 
-	def has_object_permission(self, request, view, obj):		
-		if request.user.has_perm('user.be_seller'):
-			if request.user.pk == obj.payment.who_paid.pk:
-				return True
-			self.message = "Vendedor não tem permissão sobre esse ticket" 
-			return False
-		self.message = "Usuário não é vendedor"
+	def has_object_permission(self, request, view, obj):
+		if request.user.seller == obj.payment.who_paid:
+			return True
+		
+		self.message = "Você não tem permissão para cancelar esse Ticket(s)" + request.user.seller.first_name + ')'
 		return False
+		
