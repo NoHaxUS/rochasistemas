@@ -46,6 +46,7 @@ class Admin(CustomUser):
             self.set_password(self.password)
         self.is_superuser = False
         self.is_staff = True
+        self.user_type = 4
         super().save()
         admin.define_default_permissions(self)
 
@@ -67,6 +68,7 @@ class Punter(CustomUser):
         if not self.password.startswith('pbkdf2'):
             self.set_password(self.password)
         self.is_superuser = False
+        self.user_type = 1
         self.is_staff = True
         
         super().save()
@@ -130,6 +132,7 @@ class Seller(CustomUser):
             self.set_password(self.password)
         self.is_superuser = False
         self.is_staff = True
+        self.user_type = 2
         super().save()
 
         from utils.models import Comission
@@ -191,6 +194,7 @@ class Manager(CustomUser):
             self.set_password(self.password)
         self.is_superuser = False
         self.is_staff = True
+        self.user_type = 3
         super().save()
 
         manager.define_default_permissions(self)   
