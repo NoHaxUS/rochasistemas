@@ -15,13 +15,6 @@ from .logic import ticket, reward
 
 class Ticket(models.Model):
 
-    USER_TYPE = (
-        (0, 'Anonímo'),
-        (1, 'Apostador'),
-        (2, 'Vendedor'),
-        (3, 'Dono da Banca')
-    )
-
     TICKET_STATUS = (
         (0, 'Aguardando Resultados'),
         (1, 'Não Venceu'),
@@ -35,8 +28,7 @@ class Ticket(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     owner = models.ForeignKey('user.TicketOwner', on_delete=models.CASCADE, verbose_name='Dono do Bilhete')
     cotations = models.ManyToManyField('core.Cotation', related_name='ticket', verbose_name='Cota')
-    creation_date = models.DateTimeField(verbose_name='Data da Aposta')
-    creator_type = models.IntegerField(choices=USER_TYPE, default=0, verbose_name='Tipo do Usuário')
+    creation_date = models.DateTimeField(verbose_name='Data da Aposta')    
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Criado por')
     reward = models.OneToOneField('Reward', related_name='ticket', on_delete=models.CASCADE, verbose_name='Prêmio')
     payment = models.OneToOneField('Payment', related_name='ticket', on_delete=models.CASCADE, verbose_name='Pagamento')
