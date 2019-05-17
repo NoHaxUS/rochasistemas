@@ -28,6 +28,8 @@ class CotationView(FiltersMixin, ModelViewSet):
 
     filter_mappings = {
         'game_name':'game__name__icontains',
-        'id': 'game__pk'
+        'market_name': 'market__name__icontains',
+        'game_name': 'game__name__icontains',
+        'cotation_id': 'id'
     }
 

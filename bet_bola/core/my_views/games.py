@@ -23,7 +23,7 @@ class GamesToday(FiltersMixin, ModelViewSet):
 		'game_name':'name__icontains',
 		'league_name':'league__name__icontains',
 		'country_name':'league__location__name__icontains',
-        'start_time': 'start_date__gte'
+        'start_time': 'start_date__time__gte'
 	}
 
     def get_queryset(self):
