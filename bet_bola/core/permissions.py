@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 class StoreIsRequired(permissions.BasePermission):
-    message = "Operação não permitida. (Banca"
+    message = "Operação não permitida. (Banca Requerida)"
     def has_permission(self, request, view):
         if request.GET.get('store'):
             return True

@@ -4,13 +4,14 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.contrib import messages
 from user.models import Seller
-from user.permissions import SellerViewPermission
+from user.permissions import IsAdmin
+from core.permissions import StoreIsRequired, UserIsFromThisStore
 from user.serializers.seller import SellerSerializer
 
 class SellerView(ModelViewSet):
     queryset = Seller.objects.all()
     serializer_class = SellerSerializer   
-    permission_classes = [SellerViewPermission,] 
+    permission_classes = [StoreIsRequired, UserIsFromThisStore, IsAdmin]
 
     def list(self, request, pk=None):
         store_id = request.GET.get('store')
