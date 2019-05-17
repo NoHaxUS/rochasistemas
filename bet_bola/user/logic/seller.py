@@ -10,9 +10,6 @@ def reset_revenue(self, who_reseted_revenue):
     profit = self.actual_revenue() - self.out_money(),
     store=self.my_store)
 
-    # payments = Payment.objects.filter(who_set_payment=self)
-    # payments.update(seller_was_rewarded=True)
-
     payeds_open = WinnerPaymentHistory.objects.filter(seller=self, is_closed_for_seller=False)
     payeds_open.update(is_closed_for_seller=True)
 
