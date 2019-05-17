@@ -29,7 +29,7 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Ticket
-		fields = ('id','creator','creator_type','owner','cotations','cotation_sum','creation_date','reward','payment','bet_value','visible','status','store')
+		fields = ('id','creator','creator_type','owner','cotations','cotation_sum','creation_date','reward','payment','bet_value','available','status','store')
 
 	def get_cotation_sum(self, obj):
 		return obj.cotation_sum()

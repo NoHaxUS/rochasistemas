@@ -5,12 +5,12 @@ import utils.timezone as tzlocal
   
 
 def hide_ticket(self):
-    self.visible = False
+    self.available = False
     self.save()
     return True
 
 def show_ticket(self):
-    self.visible = True
+    self.available = True
     self.save()
     return True
   
@@ -192,7 +192,7 @@ def reward_winner(self, who_rewarding_the_winner):
 def cotation_sum(self):
     from core.models import CotationCopy
 
-    valid_cotations = CotationCopy.objects.filter(ticket=self, game__game_status__in = (0,1,3))
+    valid_cotations = CotationCopy.objects.filter(ticket=self, game__status__in = (0,1,3))
     
     cotation_sum = 1
     for cotation in valid_cotations:

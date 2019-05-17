@@ -118,7 +118,7 @@ def process_upcoming_events(data):
                     'start_date': get_start_date_from_timestamp(game),
                     'league': get_league_and_create_location(game),
                     'sport': get_sport(game),
-                    'game_status': int(game['time_status'])
+                    'status': int(game['time_status'])
                 }
             )
             game_ids.append(game['id'])    

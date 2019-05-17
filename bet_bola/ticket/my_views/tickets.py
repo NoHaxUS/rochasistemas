@@ -144,9 +144,9 @@ class TicketView(FiltersMixin, ModelViewSet):
         response = []
         for ticket in Ticket.objects.filter(pk__in=pre_id_list):			
             id_list.append(ticket.pk)
-            ticket.visible = not ticket.visible
+            ticket.available = not ticket.available
             ticket.save()
-            response.append({"success": True, "message": "Visibilidade do ticket " + str(ticket.pk) + " foi alterada para " + str(ticket.visible) + " com sucesso"})
+            response.append({"success": True, "message": "Visibilidade do ticket " + str(ticket.pk) + " foi alterada para " + str(ticket.available) + " com sucesso"})
 
         warnning_id = list(set(pre_id_list)-set(id_list))
         count=0
@@ -188,7 +188,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 
         cotations_history = CotationCopy.objects.filter(ticket=ticket.pk)
 
-        if cotations_history.count() > 0 and ticket.visible == True:
+        if cotations_history.count() > 0 and ticket.available == True:
 
             cotations_values = {}
             for current_cotation in cotations_history:

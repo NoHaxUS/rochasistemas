@@ -35,7 +35,7 @@ class Ticket(models.Model):
     bet_value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')
     status = models.IntegerField(default=0, choices=TICKET_STATUS, verbose_name='Status do Ticket')
     store = models.ForeignKey('core.Store', related_name='my_tickets', verbose_name='Banca', on_delete=models.CASCADE)
-    visible = models.BooleanField(default=True, verbose_name='Visível?')
+    available = models.BooleanField(default=True, verbose_name='Disponível?')
 
 
     def hide_ticket(self):

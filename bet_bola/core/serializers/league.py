@@ -9,4 +9,4 @@ class LeagueSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = League
-		fields = ('id','name','location','priority','visible')
+		fields = ('id','name','location','priority','available')
