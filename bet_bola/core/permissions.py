@@ -9,7 +9,7 @@ class StoreIsRequired(permissions.BasePermission):
         return False
 
 
-class UserIsNotFromThisStore(permissions.BasePermission):
+class UserIsFromThisStore(permissions.BasePermission):
     message = 'Você não tem permissão para realizar essa operação.'
 
     def has_permission(self, request, view):

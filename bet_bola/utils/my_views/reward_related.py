@@ -1,13 +1,13 @@
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from utils.serializers.reward_related import RewardRelatedSerializer
-from utils.permissions import General
+from core.permissions import StoreIsRequired, UserIsFromThisStore
 from utils.models import RewardRestriction
 
 class RewardRelatedView(ModelViewSet):
-	queryset = RewardRestriction.objects.all().order_by('value_max','pk')
+	queryset = RewardRestriction.objects.all().order_by('bet_value')
 	serializer_class = RewardRelatedSerializer
-	permission_classes = [General,]
+	permission_classes = [StoreIsRequired, UserIsFromThisStore,]
 
 
 	def list(self, request, pk=None):

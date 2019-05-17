@@ -7,7 +7,7 @@ from ticket.models import Ticket, Reward, Payment
 from ticket.serializers.ticket import TicketSerializer, CreateTicketAnonymousUserSerializer, CreateTicketLoggedUserSerializer
 from ticket.paginations import TicketPagination
 from ticket.permissions import CanCreateBet, CanPayWinner, CanValidateTicket, CanCancelTicket
-from core.permissions import StoreIsRequired, UserIsNotFromThisStore
+from core.permissions import StoreIsRequired, UserIsFromThisStore
 from user.models import TicketOwner
 from core.models import CotationCopy, Cotation, Store
 from utils import timezone as tzlocal
@@ -16,7 +16,7 @@ from config import settings
 class TicketView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
-    permission_classes = [UserIsNotFromThisStore ,StoreIsRequired ,CanCreateBet]
+    permission_classes = [UserIsFromThisStore ,StoreIsRequired ,CanCreateBet]
     pagination_class = TicketPagination
 
     filter_mappings = {
@@ -156,7 +156,7 @@ class TicketView(FiltersMixin, ModelViewSet):
         return Response(response)
         
 
-    @action(methods=['post'], detail=False, permission_classes=[CanValidateTicket, StoreIsRequired, UserIsNotFromThisStore])
+    @action(methods=['post'], detail=False, permission_classes=[CanValidateTicket, StoreIsRequired, UserIsFromThisStore])
     def cancel_tickets(self, request, pk=None):	
         pre_id_list = []
 
