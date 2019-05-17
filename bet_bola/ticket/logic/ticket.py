@@ -92,7 +92,6 @@ def validate_ticket(self, who_validated):
             recipient_list = [self.store.email,]
             send_mail( subject, message, email_from, recipient_list )
     
-    
     if not self.payment.status == 0:
         return {
             'success':False,
@@ -111,8 +110,6 @@ def validate_ticket(self, who_validated):
                 'success': False,
                 'message':'O Ticket '+ str(self.pk) +' não pode ser pago, pois contém cotas de jogo(s) que já iniciaram.'
             }
-
-
 
     if not who_validated.is_superuser:
         seller_before_balance = 0
@@ -155,6 +152,7 @@ def validate_ticket(self, who_validated):
         'success':True,
         'message':'Bilhete '+ str(self.pk) +' PAGO com Sucesso.'
     }
+
 
 def pay_winner(self, user):
     from history.models import PunterPayedHistory
