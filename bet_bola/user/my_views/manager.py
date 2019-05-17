@@ -3,13 +3,14 @@ from rest_framework.decorators import action
 from django.contrib import messages
 from rest_framework.response import Response
 from user.models import Manager
-from user.permissions import ManagerViewPermission
+from core.permissions import StoreIsRequired, UserIsFromThisStore
+from user.permissions import IsAdmin
 from user.serializers.manager import ManagerSerializer
 
 class ManagerView(ModelViewSet):
     queryset = Manager.objects.all()
     serializer_class = ManagerSerializer
-    permission_classes = [ManagerViewPermission,]
+    permission_classes = [StoreIsRequired, UserIsFromThisStore, IsAdmin]
 
     def list(self, request, pk=None):
         store_id = request.GET['store']        

@@ -11,7 +11,7 @@ class GameSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Game				
-		fields = ('id','name','start_date','game_status','league','location','standard_cotations')
+		fields = ('id','name','start_date','status','league','location','standard_cotations')
 
 	def get_location(self, game):
 		return game.league.location.name
@@ -25,7 +25,7 @@ class GameListSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Game				
-		fields = ('id','name','start_date','league','location', 'visible')	
+		fields = ('id','name','start_date','league','location', 'available')	
 
 	def get_location(self, game):
 		return game.league.location.name
@@ -39,7 +39,7 @@ class GameTableSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Game				
-		fields = ('id','name','start_date','game_status','league','location','cotations')
+		fields = ('id','name','start_date','status','league','location','cotations')
 
 	def get_location(self, game):
 		return game.league.location.name

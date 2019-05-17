@@ -1,14 +1,14 @@
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from utils.serializers.rule import RulesMessageSerializer
-from utils.permissions import General
+from core.permissions import StoreIsRequired, UserIsFromThisStore
 from utils.models import RulesMessage
 
 
 class RulesMessageView(ModelViewSet):
 	queryset = RulesMessage.objects.all()
 	serializer_class = RulesMessageSerializer
-	permission_classes = [General,]
+	permission_classes = [StoreIsRequired, UserIsFromThisStore,]
 
 	def list(self, request, pk=None):
 		from core.models import Store

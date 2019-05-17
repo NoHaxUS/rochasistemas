@@ -22,19 +22,10 @@ class Comission(models.Model):
 
     def total_simple(self, date_from, date_to):
         total_revenue = 0
-        # tickets_not_rewarded = Ticket.objects.filter(
-        #     payment__who_paid=self.seller_related, 
-        #     payment__seller_was_rewarded=False,
-        #     ).annotate(cotations_count=Count('cotations')).filter(cotations_count=1)
         tickets_not_rewarded = Ticket.objects.filter(
             payment__who_paid=self.seller_related).annotate(cotations_count=Count('cotations')).filter(cotations_count=1)
 
-        if date_from and date_to:        
-            # tickets_not_rewarded = Ticket.objects.filter(
-            # payment__who_paid=self.seller_related, 
-            # payment__seller_was_rewarded=False,
-            # ).annotate(cotations_count=Count('cotations')).filter(cotations_count=1).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
-
+        if date_from and date_to:
             tickets_not_rewarded = Ticket.objects.filter(
             payment__who_paid=self.seller_related,             
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=1).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
@@ -161,7 +152,7 @@ class GeneralConfigurations(models.Model):
     alert_bet_value = models.DecimalField(max_digits=30, decimal_places=2,default=1000, verbose_name="Valor de alerta para apostas")
     min_cotation_sum = models.DecimalField(max_digits=30, decimal_places=2,default=1, verbose_name="Valor mínimo da cota total")
     max_cotation_sum = models.DecimalField(max_digits=30, decimal_places=2, default=100000, verbose_name="Valor máximo da cota total")
-    cotations_percentage = models.IntegerField(default=100, verbose_name="Redução Percentual")
+    cotations_percentage = models.IntegerField(default=100, verbose_name="Ajuste das Cotas")
     block_bets = models.BooleanField(default=False, verbose_name="Bloquear Apostas?")
     auto_pay_punter = models.BooleanField(default=True, verbose_name="Auto Pagar Apostadores")
 
@@ -172,8 +163,8 @@ class GeneralConfigurations(models.Model):
     def apply_reductions(self):
         from core.models import Game
         able_games = Game.objects.filter(start_date__gt=tzlocal.now(),
-        game_status__in=[1,2,8,9],
-        visible=True)
+        status__in=[1,2,8,9],
+        available=True)
 
         reduction = self.cotations_percentage / 100
         
@@ -182,10 +173,6 @@ class GeneralConfigurations(models.Model):
             game.cotations.update(price=Case(When(price__lt=1,then=1.01),default=F('price')))
             game.cotations.filter(price__gt=self.max_cotation_value).update(price=self.max_cotation_value)
 
-    
-    # def save(self, *args, **kwargs):        
-    #     super().save(args, kwargs)
-
 
     class Meta:
         ordering = ['-pk',]
@@ -193,18 +180,18 @@ class GeneralConfigurations(models.Model):
         verbose_name_plural = "Configurações Gerais"
 
 
-class RewardRelated(models.Model):
-    id = models.AutoField(primary_key=True, verbose_name="ID")
-    value_max = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name="Valor da Aposta")
-    reward_value_max = models.DecimalField(max_digits=30, decimal_places=2, default=100000, verbose_name="Valor Máximo da Recompensa")        
+class RewardRestriction(models.Model):
+    bet_value = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name="Valor da Aposta")
+    max_reward_value = models.DecimalField(max_digits=30, decimal_places=2, default=100000, verbose_name="Valor Máximo da Recompensa")        
     store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
 
     def __str__(self):
         return "Limitador de Prêmio"
 
     class Meta:
-        verbose_name = "Limitar Prêmios"
-        verbose_name_plural = "Limitação de Prêmios"
+        ordering = ['-pk',]
+        verbose_name = "Limitador de Prêmio"
+        verbose_name_plural = "Limitador de Prêmios"
 
 
 class TicketCustomMessage(models.Model):
@@ -437,35 +424,6 @@ class MarketReduction(models.Model):
     reduction_percentual = models.IntegerField(default=100, verbose_name='Percentual de Redução')
     store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
 
-    """
-    def reset_reducions(self):
-        from core.models import Game
-
-        if GeneralConfigurations.objects.filter(pk=1):
-            max_cotation_value = GeneralConfigurations.objects.get(pk=1).max_cotation_value
-        else:
-            max_cotation_value = 200
-
-        able_games = Game.objects.filter(start_date__gt=tzlocal.now(),
-        game_status__in=[1,2,8,9],
-        visible=True)
-
-        reduction = 1
-
-        for game in able_games:
-            
-            if self.market_to_reduct == 600:
-                cotations_to_reduct =  game.cotations.filter(market__id=1, name='Casa')
-            elif self.market_to_reduct == 601:
-                cotations_to_reduct =  game.cotations.filter(market__id=1, name='Empate')
-            elif self.market_to_reduct == 602:
-                cotations_to_reduct =  game.cotations.filter(market__id=1, name='Fora')
-            else:
-                cotations_to_reduct =  game.cotations.filter(market__id=self.market_to_reduct)
-            cotations_to_reduct.update(price=F('price') * reduction )
-            cotations_to_reduct.update(price=Case(When(price__lt=1,then=1.05),default=F('price')))
-            cotations_to_reduct.filter(price__gt=max_cotation_value).update(price=max_cotation_value)
-    """
 
     def apply_reductions(self):
         from core.models import Game
@@ -476,8 +434,8 @@ class MarketReduction(models.Model):
             max_cotation_value = 200
 
         able_games = Game.objects.filter(start_date__gt=tzlocal.now(),
-        game_status__in=[1,2,8,9],
-        visible=True)
+        status__in=[1,2,8,9],
+        available=True)
 
         reduction = self.reduction_percentual / 100
         

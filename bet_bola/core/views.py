@@ -40,11 +40,11 @@ class MainMenu(APIView):
 
         games = Game.objects.filter(start_date__gt=tzlocal.now(),
         league__isnull=False,
-        game_status__in=[0],
-        visible=True)\
+        status__in=[0],
+        available=True)\
         .annotate(cotations_count=Count('cotations'))\
         .filter(cotations_count__gte=3)\
-        .exclude(Q(league__visible=False) | Q(league__location__visible=False) | Q(league__id__in=id_list_excluded_leagues) | Q(id__in=id_list_excluded_games))\
+        .exclude(Q(league__available=False) | Q(league__location__available=False) | Q(league__id__in=id_list_excluded_leagues) | Q(id__in=id_list_excluded_games))\
         .order_by('-league__location__priority', '-league__priority')\
         .values('league__location','league__location__name', 'league')\
         .distinct()

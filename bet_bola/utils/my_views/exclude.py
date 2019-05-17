@@ -1,13 +1,13 @@
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from utils.serializers.exclude import ExcludedGameSerializer, ExcludedLeagueSerializer
-from utils.permissions import General
+from core.permissions import StoreIsRequired, UserIsFromThisStore
 from utils.models import ExcludedGame, ExcludedLeague
 
 class ExcludedGameView(ModelViewSet):
 	queryset = ExcludedGame.objects.all()
 	serializer_class = ExcludedGameSerializer
-	permission_classes = [General,]
+	permission_classes = [StoreIsRequired, UserIsFromThisStore,]
 
 	def list(self, request, pk=None):
 		from core.models import Store
@@ -23,7 +23,7 @@ class ExcludedGameView(ModelViewSet):
 class ExcludedLeagueView(ModelViewSet):
 	queryset = ExcludedLeague.objects.all()
 	serializer_class = ExcludedLeagueSerializer
-	permission_classes = [General,]
+	permission_classes = [StoreIsRequired, UserIsFromThisStore,]
 
 	def list(self, request, pk=None):
 		from core.models import Store

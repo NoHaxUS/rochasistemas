@@ -5,12 +5,12 @@ import utils.timezone as tzlocal
   
 
 def hide_ticket(self):
-    self.visible = False
+    self.available = False
     self.save()
     return True
 
 def show_ticket(self):
-    self.visible = True
+    self.available = True
     self.save()
     return True
   
@@ -54,17 +54,15 @@ def cancel_ticket(self, who_canceling):
         who_paid.credit_limit += self.value
         who_paid.save()
 
-    self.payment.status = 5
-    self.payment.date = None
-    self.payment.save()
+    self.status = 5
     self.save()
 
     from history.models import TicketCancelationHistory
 
     TicketCancelationHistory.objects.create(
-        who_canceling=str(who_canceling.pk) + ' - ' + who_canceling.username,
-        ticket_cancelled=self,
-        cancelation_date=tzlocal.now(),
+        who_canceling=who_canceling,
+        ticket=self,
+        date=tzlocal.now(),
         who_paid=who_paid,
         store=self.store
     )
@@ -129,20 +127,15 @@ def validate_ticket(self, who_validating):
     self.payment.status = 2
     self.payment.date = tzlocal.now()
     self.payment.who_paid = who_validating
-
-    if who_validating.is_superuser:
-        self.payment.who_paid_type = 1
-    else:
-        self.payment.who_paid_type = 0
-    
     self.payment.save()
 
     from history.models import TicketValidationHistory
 
     TicketValidationHistory.objects.create(
-        who_validating=str(who_validating.pk + ' - ' + who_validating.username),
+        who_validating=who_validating,
         ticket=self,
         bet_value=self.bet_value,
+        date=tzlocal.now(),
         balance_before=seller_before_balance,
         balance_after=seller_after_balance,
         store=self.store
@@ -154,12 +147,9 @@ def validate_ticket(self, who_validating):
     }
 
 
-def pay_winner(self, who_paying_winner):
-    from history.models import WinnerPaymentHistory
-    from user.models import Seller
-    from ticket.models import Ticket, Payment
+def reward_winner(self, who_rewarding_the_winner):
 
-    if not who_paying_winner.is_superuser and not who_paying_winner.has_perm('user.be_seller'):
+    if not who_rewarding_the_winner.is_superuser and not who_rewarding_the_winner.has_perm('user.be_seller'):
         return {
             'success': False,
             'message': 'Esse Usuário não tem permissão para Pagar Ganhadores.'
@@ -171,38 +161,38 @@ def pay_winner(self, who_paying_winner):
             'message':'Esse bilhete (' +str(self.pk) +') não está apto a prestação de contas.'    
         }
 
-    if not self.payment.who_paid == who_paying_winner:
+    if not self.payment.who_paid == who_rewarding_the_winner:
         return {
             'success':False,
             'message':'Você só pode recompensar ganhadores de apostas pagas por você.'
         }
 
+    self.status = 2
+    self.save()
     self.reward.date = tzlocal.now()
-    self.reward.who_rewarded_the_winner = who_paying_winner
-    if who_paying_winner.is_superuser:
-        self.reward.who_rewarded_type = 1
-    else:
-        self.reward.who_rewarded_type = 0
+    self.reward.who_rewarded_the_winner = who_rewarding_the_winner
     self.reward.save()
 
+    from history.models import WinnerPaymentHistory
     WinnerPaymentHistory.objects.create(
-        winner_payed=self.owner.first_name,
-        seller=who_paying_winner.seller,
-        ticket_winner=self,
-        payed_value=self.reward.real_value,
+        winner_name=self.owner.first_name,
+        who_rewarded_the_winner=who_rewarding_the_winner,
+        ticket=self,
+        date=tzlocal.now(),
+        bet_value=self.reward.real_value,
         store=self.store
     )
 
-    return {'success':True,
-            'message':'O Apostador ' + punter_payed  + ' foi marcado como Pago'}
+    return {
+        'success':True,
+        'message':'O Ganhador ' + self.owner.first_name  + ' foi Pago.'
+    }
 
 
 def cotation_sum(self):
     from core.models import CotationCopy
 
-    valid_cotations = CotationCopy.objects\
-    .filter(ticket=self, game__game_status__in = (0,1,3))\
-    .exclude(original_cotation__settlement=-1)
+    valid_cotations = CotationCopy.objects.filter(ticket=self, original_cotation__game__status__in = (0,1,3))
     
     cotation_sum = 1
     for cotation in valid_cotations:
@@ -215,10 +205,9 @@ def cotation_sum(self):
         general_config = GeneralConfigurations.objects.get(pk=1)
         max_cotation_sum = general_config.max_cotation_sum
     except GeneralConfigurations.DoesNotExist:
-        max_cotation_sum = 100000
+        max_cotation_sum = 1000000
     
     if cotation_sum > max_cotation_sum:
         cotation_sum = max_cotation_sum
 
-    return round(cotation_sum,2)
-
+    return round(cotation_sum, 2)

@@ -1,13 +1,14 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from user.models import Punter
-from user.permissions import PunterViewPermission
+from core.permissions import StoreIsRequired, UserIsFromThisStore
+from user.permissions import IsAdmin
 from user.serializers.punter import PunterSerializer
 
 class PunterView(ModelViewSet):
     queryset = Punter.objects.all()
     serializer_class = PunterSerializer
-    permission_classes = [PunterViewPermission,]
+    permission_classes = [StoreIsRequired, UserIsFromThisStore, IsAdmin]
 
     def list(self, request, pk=None):
         store_id = request.GET.get('store')   

@@ -29,7 +29,7 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Ticket
-		fields = ('id','creator','owner','cotations','cotation_sum','creation_date','reward','payment','bet_value','visible','status','store')
+		fields = ('id','creator','creator_type','owner','cotations','cotation_sum','creation_date','reward','payment','bet_value','available','status','store')
 
 	def get_cotation_sum(self, obj):
 		return obj.cotation_sum()
@@ -48,12 +48,12 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 
 	def update(self, instance, validated_data):
 		normal_user = validated_data.pop('owner')		
-		value = validated_data.pop('bet_value')				
+		bet_value = validated_data.pop('bet_value')				
 		cotations = validated_data.pop('cotations')		
 		cotation_ids = [cotation.id for cotation in cotations]
 
 		ticket = Ticket.objects.get(id=str(instance))
-		ticket.value = value		
+		ticket.bet_value = bet_value		
 		ticket.cotations.clear()
 
 		for cotation in  Cotation.objects.in_bulk(cotation_ids):
@@ -64,7 +64,7 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 		return ticket
 		
 
-	def validate_value(self, value):
+	def validate_bet_value(self, value):
 		store = self.context['request'].GET.get('store')
 		configurations = general_configurations(store)
 		
@@ -114,7 +114,7 @@ class CreateTicketLoggedUserSerializer(CreateTicketAnonymousUserSerializer):
 
 	class Meta:
 		model = Ticket
-		fields = ('id','owner','creation_date','reward','cotations','payment','value')
+		fields = ('id','owner','creation_date','reward','cotations','payment','bet_value')
 
 
 

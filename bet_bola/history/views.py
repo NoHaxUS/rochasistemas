@@ -1,15 +1,16 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from core.permissions import StoreIsRequired, UserIsFromThisStore
 from .models import *
 from .serializers import *
-from .permissions import General
+
 
 
 class SellerSalesHistoryView(ModelViewSet):
     queryset = TicketValidationHistory.objects.all()
     serializer_class = SellerSalesHistorySerializer
-    permission_classes = [General,]
+    permission_classes = [StoreIsRequired, UserIsFromThisStore,]
 
     def list(self, request, pk=None):
         store_id = request.GET['store']     
@@ -37,7 +38,7 @@ class SellerSalesHistoryView(ModelViewSet):
 class ManagerTransactionsHistoryView(ModelViewSet):
     queryset = ManagerTransactions.objects.all()
     serializer_class = ManagerTransactionsSerializer
-    permission_classes = [General,]
+    permission_classes = [StoreIsRequired, UserIsFromThisStore,]
 
     def list(self, request, pk=None):
         store_id = request.GET.get('store')
@@ -64,6 +65,7 @@ class ManagerTransactionsHistoryView(ModelViewSet):
 class RevenueHistorySellerView(ModelViewSet):
     queryset = RevenueHistorySeller.objects.all()
     serializer_class = RevenueHistorySellerSerializer
+    permission_classes = [StoreIsRequired, UserIsFromThisStore,]
 
     def list(self, request, pk=None):
         store_id = request.GET.get('store')
@@ -83,6 +85,7 @@ class RevenueHistorySellerView(ModelViewSet):
 class RevenueHistoryManagerView(ModelViewSet):
     queryset = RevenueHistoryManager.objects.all()
     serializer_class = RevenueHistoryManagerSerializer
+    permission_classes = [StoreIsRequired, UserIsFromThisStore,]
 
 
     def list(self, request, pk=None):
@@ -103,6 +106,7 @@ class RevenueHistoryManagerView(ModelViewSet):
 class PunterPayedHistoryView(ModelViewSet):
     queryset = WinnerPaymentHistory.objects.all()
     serializer_class = PunterPayedHistorySerializer
+    permission_classes = [StoreIsRequired, UserIsFromThisStore,]
 
     def list(self, request, pk=None):
         store_id = request.GET.get('store') 
@@ -122,7 +126,7 @@ class PunterPayedHistoryView(ModelViewSet):
 class TicketCancelationHistoryView(ModelViewSet):
     queryset = TicketCancelationHistory.objects.all()
     serializer_class = TicketCancelationHistorySerializer
-    permission_classes = [General,]
+    permission_classes = [StoreIsRequired, UserIsFromThisStore,]
 
     def list(self, request, pk=None):
         store_id = request.GET.get('store')
