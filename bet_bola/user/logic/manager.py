@@ -1,7 +1,7 @@
 def reset_revenue(self, who_reseted_revenue):
     from core.models import Payment
     from user.models import Seller
-    from history.models import RevenueHistoryManager, PunterPayedHistory
+    from history.models import RevenueHistoryManager, WinnerPaymentHistory
 
     RevenueHistoryManager.objects.create(who_reseted_revenue=who_reseted_revenue,
     manager=self,
@@ -14,19 +14,19 @@ def reset_revenue(self, who_reseted_revenue):
     sellers = Seller.objects.filter(my_manager=self)
     for seller in sellers:
         payments_not_rewarded = Payment.objects.filter(who_set_payment=seller)            
-        payeds_open = PunterPayedHistory.objects.filter(seller=seller, is_closed_for_manager=False)
+        payeds_open = WinnerPaymentHistory.objects.filter(seller=seller, is_closed_for_manager=False)
         payeds_open.update(is_closed_for_manager=True)
 
 
 def out_money(self):
-    from history.models import PunterPayedHistory
+    from history.models import WinnerPaymentHistory
     from user.models import Seller
 
     sellers = Seller.objects.filter(my_manager=self)
 
     payed_sum = 0
     for seller in sellers:
-        payeds_open = PunterPayedHistory.objects.filter(seller=seller, is_closed_for_manager=False)
+        payeds_open = WinnerPaymentHistory.objects.filter(seller=seller, is_closed_for_manager=False)
 
         for payed in payeds_open:
             payed_sum += payed.payed_value
