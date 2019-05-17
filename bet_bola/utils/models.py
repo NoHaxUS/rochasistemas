@@ -22,19 +22,10 @@ class Comission(models.Model):
 
     def total_simple(self, date_from, date_to):
         total_revenue = 0
-        # tickets_not_rewarded = Ticket.objects.filter(
-        #     payment__who_paid=self.seller_related, 
-        #     payment__seller_was_rewarded=False,
-        #     ).annotate(cotations_count=Count('cotations')).filter(cotations_count=1)
         tickets_not_rewarded = Ticket.objects.filter(
             payment__who_paid=self.seller_related).annotate(cotations_count=Count('cotations')).filter(cotations_count=1)
 
-        if date_from and date_to:        
-            # tickets_not_rewarded = Ticket.objects.filter(
-            # payment__who_paid=self.seller_related, 
-            # payment__seller_was_rewarded=False,
-            # ).annotate(cotations_count=Count('cotations')).filter(cotations_count=1).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
-
+        if date_from and date_to:
             tickets_not_rewarded = Ticket.objects.filter(
             payment__who_paid=self.seller_related,             
             ).annotate(cotations_count=Count('cotations')).filter(cotations_count=1).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
@@ -181,10 +172,6 @@ class GeneralConfigurations(models.Model):
             game.cotations.update(price=F('price') * reduction )
             game.cotations.update(price=Case(When(price__lt=1,then=1.01),default=F('price')))
             game.cotations.filter(price__gt=self.max_cotation_value).update(price=self.max_cotation_value)
-
-    
-    # def save(self, *args, **kwargs):        
-    #     super().save(args, kwargs)
 
 
     class Meta:
