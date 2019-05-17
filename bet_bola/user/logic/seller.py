@@ -1,6 +1,6 @@
 def reset_revenue(self, who_reseted_revenue):
     from ticket.models import Payment
-    from history.models import RevenueHistorySeller, PunterPayedHistory
+    from history.models import RevenueHistorySeller, WinnerPaymentHistory
 
     RevenueHistorySeller.objects.create(who_reseted_revenue=who_reseted_revenue,
     seller=self,
@@ -13,7 +13,7 @@ def reset_revenue(self, who_reseted_revenue):
     # payments = Payment.objects.filter(who_set_payment=self)
     # payments.update(seller_was_rewarded=True)
 
-    payeds_open = PunterPayedHistory.objects.filter(seller=self, is_closed_for_seller=False)
+    payeds_open = WinnerPaymentHistory.objects.filter(seller=self, is_closed_for_seller=False)
     payeds_open.update(is_closed_for_seller=True)
 
 
@@ -38,10 +38,10 @@ def get_commission(self):
     return str(round(self.commission,0)) + "%"
 
 def out_money(self):
-    from history.models import PunterPayedHistory
+    from history.models import WinnerPaymentHistory
 
     payed_sum = 0
-    payeds_open = PunterPayedHistory.objects.filter(seller=self, is_closed_for_seller=False)
+    payeds_open = WinnerPaymentHistory.objects.filter(seller=self, is_closed_for_seller=False)
 
     for payed in payeds_open:
         payed_sum += payed.payed_value

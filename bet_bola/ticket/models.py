@@ -70,8 +70,15 @@ class Ticket(models.Model):
 
 
 class Reward(models.Model):
+
+    WHO_REWARDED_TYPES = (
+        (0, 'Vendedor'),
+        (1, 'Dono da Banca')
+    )
+
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
-    who_rewarded_the_winner = models.ForeignKey('user.Seller', null=True, blank=True, on_delete=models.SET_NULL)
+    who_rewarded_type = models.IntegerField(choices=WHO_REWARDED_TYPES, default=0, verbose_name="Tipo de Usuário que Pagou o Prêmio")
+    who_rewarded_the_winner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     date = models.DateTimeField(null=True, blank=True, verbose_name='Data de Pagamento do Prêmio')
 
     @property

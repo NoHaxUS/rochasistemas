@@ -52,7 +52,7 @@ class PunterPayedHistorySerializer(serializers.HyperlinkedModelSerializer):
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')	
 
 	class Meta:
-		model = PunterPayedHistory
+		model = WinnerPaymentHistory
 		fields = ('punter_payed','seller','ticket_winner','payment_date','payed_value','is_closed_for_seller','is_closed_for_manager','store')
 
 

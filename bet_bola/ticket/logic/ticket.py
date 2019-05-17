@@ -15,9 +15,9 @@ def show_ticket(self):
     return True
   
 
-def cancel_ticket(self, who_canceled):
+def cancel_ticket(self, who_canceling):
 
-    if not who_canceled.is_superuser and not who_canceled.has_perm('user.be_seller'):
+    if not who_canceling.is_superuser and not who_canceling.has_perm('user.be_seller'):
         return {
             'success': False,
             'message': 'Esse Usuário não tem permissão para cancelar Tickets.'
@@ -35,14 +35,14 @@ def cancel_ticket(self, who_canceled):
             'message': 'O Ticket '+ str(self.pk) +' não foi Pago para ser cancelado.'
         }
 
-    if not who_canceled.is_superuser:
-        if self.payment.date + timezone.timedelta(minutes=int(who_canceled.seller.limit_time_to_cancel)) < tzlocal.now():
+    if not who_canceling.is_superuser:
+        if self.payment.date + timezone.timedelta(minutes=int(who_canceling.seller.limit_time_to_cancel)) < tzlocal.now():
             return {
                 'success':False,
                 'message':' Tempo limite para cancelar o Ticket '+ str(self.pk) +' foi excedido.'
             }
         
-        if not who_canceled == self.payment.who_paid:
+        if not who_canceling == self.payment.who_paid:
             return {
                 'success':False,
                 'message':'Você não pode cancelar um Ticket que você não Pagou.'
@@ -62,7 +62,7 @@ def cancel_ticket(self, who_canceled):
     from history.models import TicketCancelationHistory
 
     TicketCancelationHistory.objects.create(
-        who_canceled=str(who_canceled.pk) + ' - ' + who_canceled.username,
+        who_canceling=str(who_canceling.pk) + ' - ' + who_canceling.username,
         ticket_cancelled=self,
         cancelation_date=tzlocal.now(),
         who_paid=who_paid,
@@ -74,11 +74,9 @@ def cancel_ticket(self, who_canceled):
         'message':'O Ticket '+ str(self.pk) +' foi cancelado.'
     }
 
-def validate_ticket(self, who_validated):
-    from history.models import TicketValidationHistory   
-    from user.models import Seller              
+def validate_ticket(self, who_validating):         
     
-    if not who_validated.is_superuser and not who_validated.has_perm('user.be_seller'):
+    if not who_validating.is_superuser and not who_validating.has_perm('user.be_seller'):
         return {
             'success': False,
             'message': 'Esse Usuário não tem permissão para validar Tickets.'
@@ -111,36 +109,38 @@ def validate_ticket(self, who_validated):
                 'message':'O Ticket '+ str(self.pk) +' não pode ser pago, pois contém cotas de jogo(s) que já iniciaram.'
             }
 
-    if not who_validated.is_superuser:
+    if not who_validating.is_superuser:
         seller_before_balance = 0
         seller_after_balance= 0
 
-        if not who_validated.seller.can_sell_unlimited:
-            if self.value > who_validated.seller.credit_limit:                
+        if not who_validating.seller.can_sell_unlimited:
+            if self.value > who_validating.seller.credit_limit:                
                 return {
                 'success':False,
                 'message':'Você não tem saldo suficiente para pagar o Ticket: ' + str(self.pk)
             }
 
-            seller_before_balance = who_validated.seller.credit_limit
-            who_validated.seller.credit_limit -= self.value
-            seller_after_balance = who_validated.seller.credit_limit
-            who_validated.seller.save()
+            seller_before_balance = who_validating.seller.credit_limit
+            who_validating.seller.credit_limit -= self.value
+            seller_after_balance = who_validating.seller.credit_limit
+            who_validating.seller.save()
                 
     self.save()
     self.payment.status = 2
     self.payment.date = tzlocal.now()
-    self.payment.who_paid = who_validated
+    self.payment.who_paid = who_validating
 
-    if who_validated.is_superuser:
+    if who_validating.is_superuser:
         self.payment.who_paid_type = 1
     else:
         self.payment.who_paid_type = 0
     
     self.payment.save()
 
+    from history.models import TicketValidationHistory
+
     TicketValidationHistory.objects.create(
-        who_validated=str(who_validated.pk + ' - ' + who_validated.username),
+        who_validating=str(who_validating.pk + ' - ' + who_validating.username),
         ticket=self,
         bet_value=self.bet_value,
         balance_before=seller_before_balance,
@@ -154,44 +154,48 @@ def validate_ticket(self, who_validated):
     }
 
 
-def pay_winner(self, user):
-    from history.models import PunterPayedHistory
+def pay_winner(self, who_paying_winner):
+    from history.models import WinnerPaymentHistory
     from user.models import Seller
     from ticket.models import Ticket, Payment
 
-    if not self.payment or not self.reward:
-        return {'success':False,
-            'message':'O Ticket '+ str(self.pk)+ ' é inválido.'}
-            
-    if not self.status == Ticket.TICKET_STATUS['Venceu']:   
-        return {'success':False,
-            'message':'O Ticket '+ str(self.pk) +' não Venceu'}    
+    if not who_paying_winner.is_superuser and not who_paying_winner.has_perm('user.be_seller'):
+        return {
+            'success': False,
+            'message': 'Esse Usuário não tem permissão para Pagar Ganhadores.'
+        }
 
-    if not self.payment.status == Payment.PAYMENT_STATUS[1][1]:
-        return {'success':False,
-            'message':'O Ticket '+ str(self.pk) +' não foi Pago.'}
+    if not self.status == 4:   
+        return {
+            'success':False,
+            'message':'Esse bilhete (' +str(self.pk) +') não está apto a prestação de contas.'    
+        }
 
-    if not self.payment.who_paid.pk == user.pk:
-        return {'success':False,
-            'message':'Você só pode recompensar apostas pagas por você.'}
+    if not self.payment.who_paid == who_paying_winner:
+        return {
+            'success':False,
+            'message':'Você só pode recompensar ganhadores de apostas pagas por você.'
+        }
 
-    if self.normal_user:
-        punter_payed =  str(self.normal_user.pk) +' - '+ str(self.normal_user.first_name)
-    elif self.user:
-        punter_payed = str(self.user.pk) +' - '+ str(self.user.first_name)
-
-    self.reward.reward_date = tzlocal.now()
-    self.reward.who_rewarded = Seller.objects.get(pk=user.pk)
+    self.reward.date = tzlocal.now()
+    self.reward.who_rewarded_the_winner = who_paying_winner
+    if who_paying_winner.is_superuser:
+        self.reward.who_rewarded_type = 1
+    else:
+        self.reward.who_rewarded_type = 0
     self.reward.save()
 
-    PunterPayedHistory.objects.create(punter_payed=punter_payed,
-        seller=user.seller,
+    WinnerPaymentHistory.objects.create(
+        winner_payed=self.owner.first_name,
+        seller=who_paying_winner.seller,
         ticket_winner=self,
         payed_value=self.reward.real_value,
-        store=self.store)
+        store=self.store
+    )
 
     return {'success':True,
             'message':'O Apostador ' + punter_payed  + ' foi marcado como Pago'}
+
 
 def cotation_sum(self):
     from core.models import CotationCopy

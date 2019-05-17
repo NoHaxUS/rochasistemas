@@ -92,10 +92,10 @@ class RevenueHistoryManager(models.Model):
         verbose_name_plural = 'Pag. - Gerentes'
 
 
-class PunterPayedHistory(models.Model):
+class WinnerPaymentHistory(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
-    punter_payed = models.CharField(max_length=200, verbose_name='Apostador')
-    seller = models.ForeignKey('user.Seller', on_delete=models.CASCADE, verbose_name='Cambista')
+    winner_name = models.CharField(max_length=200, verbose_name='Apostador')
+    who_rewarded_the_winner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Cambista')
     ticket_winner = models.ForeignKey('ticket.Ticket', on_delete=models.CASCADE, verbose_name='Bilhete Vencedor')
     payment_date = models.DateTimeField(verbose_name='Data do Pagamento', auto_now_add=True)
     payed_value = models.DecimalField(max_digits=30, decimal_places=2,verbose_name='Valor Pago')

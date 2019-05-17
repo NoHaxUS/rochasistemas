@@ -101,7 +101,7 @@ class RevenueHistoryManagerView(ModelViewSet):
 
 
 class PunterPayedHistoryView(ModelViewSet):
-    queryset = PunterPayedHistory.objects.all()
+    queryset = WinnerPaymentHistory.objects.all()
     serializer_class = PunterPayedHistorySerializer
 
     def list(self, request, pk=None):
