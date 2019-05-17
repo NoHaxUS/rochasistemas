@@ -62,7 +62,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 			except Cotation.DoesNotExist:
 				pass			
 
-		ticket_reward_value = cotation_sum * serializer.validated_data['value']		
+		ticket_reward_value = cotation_sum * serializer.validated_data['bet_value']		
 
 		reward = Reward.objects.create()						
 		
@@ -73,13 +73,14 @@ class TicketView(FiltersMixin, ModelViewSet):
 			creation_date = tzlocal.now()
 
 			if self.request.user.is_authenticated:
-				if self.request.user.has_perm('user.be_seller'):
-					normal_user = TicketOwner.objects.create(first_name=serializer.validated_data['normal_user']['first_name'], cellphone=serializer.validated_data['normal_user']['cellphone'], my_store=store)
-					instance = serializer.save(seller=self.request.user,normal_user=normal_user, reward=reward, payment=payment, creation_date=creation_date,store=store)						
-				instance = serializer.save(user=self.request.user, reward=reward, payment=payment, creation_date=creation_date, store=store)
+				if self.request.user.has_perm('user.be_seller') or self.request.user.has_perm('user.be_admin'):
+					owner = TicketOwner.objects.create(first_name=serializer.validated_data['owner']['first_name'], cellphone=serializer.validated_data['owner']['cellphone'], my_store=store)
+					instance = serializer.save(creator=self.request.user, owner=owner, reward=reward, payment=payment, creation_date=creation_date,store=store)						
+				owner = TicketOwner.objects.create(first_name=self.request.user.first_name, cellphone=self.request.user.cellphone, my_store=store)
+				instance = serializer.save(creator=self.request.user, owner=owner, reward=reward, payment=payment, creation_date=creation_date, store=store)
 			else:					
-				normal_user = TicketOwner.objects.create(first_name=serializer.validated_data['normal_user']['first_name'], cellphone=serializer.validated_data['normal_user']['cellphone'], my_store=store)
-				instance = serializer.save(normal_user=normal_user, reward=reward, payment=payment, creation_date=creation_date, store=store)
+				owner = TicketOwner.objects.create(first_name=serializer.validated_data['owner']['first_name'], cellphone=serializer.validated_data['owner']['cellphone'], my_store=store)
+				instance = serializer.save(owner=owner, reward=reward, payment=payment, creation_date=creation_date, store=store)
 
 
 			for i_cotation in serializer.validated_data['cotations']:			
@@ -198,12 +199,12 @@ class TicketView(FiltersMixin, ModelViewSet):
 		    
 		    if ticket.seller:
 		        content += "<CENTER> CAMBISTA: " + ticket.seller.first_name + "<BR>"
-		    if ticket.normal_user:
-		        content += "<CENTER> CLIENTE: " + ticket.normal_user.first_name + "<BR>"
+		    if ticket.owner:
+		        content += "<CENTER> CLIENTE: " + ticket.owner.first_name + "<BR>"
 		    if ticket.user:
 		        content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
 
-		    content += "<CENTER> APOSTA: R$" + str("%.2f" % ticket.value) + "<BR>"
+		    content += "<CENTER> APOSTA: R$" + str("%.2f" % ticket.bet_value) + "<BR>"
 		    content += "<CENTER> COTA TOTAL: " + str("%.2f" % ticket.cotation_sum() ) + "<BR>"
 		    if ticket.reward:
 		        content += "<CENTER> GANHO POSSIVEL: R$" + str("%.2f" % ticket.reward.real_value) + "<BR>"
@@ -237,7 +238,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 
 		    content += "#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;"                
 		    cotation_sum = ticket.cotation_sum()
-		    possible_reward = cotation_sum * ticket.value
+		    possible_reward = cotation_sum * ticket.bet_value
 		    ticket = TicketSerializer(ticket)
 		    context = {'ticket': ticket.data,
 		    'cotation_sum':cotation_sum,

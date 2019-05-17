@@ -8,7 +8,18 @@ from .logic import manager, seller, admin
 
 
 class CustomUser(AbstractUser):   
+    
+    USER_TYPE = (
+        (0, 'Anonímo'),
+        (1, 'Apostador'),
+        (2, 'Vendedor'),
+        (3, 'Gerente'),
+        (4, 'Dono da Banca')
+    )
+
     first_name = models.CharField(max_length=150, verbose_name='Primeiro Nome')
+    cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)
+    user_type = models.IntegerField(choices=USER_TYPE, default=0, verbose_name='Tipo do Usuário')
     email = models.EmailField(null=True, blank=True, verbose_name='E-mail')
 
     def __str__(self):
@@ -48,8 +59,7 @@ class TicketOwner(models.Model):
         return self.first_name
 
 
-class Punter(CustomUser):
-    cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)    
+class Punter(CustomUser):        
     my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)    
 
     def save(self, *args, **kwargs):
@@ -81,8 +91,7 @@ class Punter(CustomUser):
 
 
 class Seller(CustomUser):
-    cpf = models.CharField(max_length=11, verbose_name='CPF', null=True, blank=True)
-    cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)
+    cpf = models.CharField(max_length=11, verbose_name='CPF', null=True, blank=True)    
     address = models.CharField(max_length=75, verbose_name='Endereço', null=True, blank=True)
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
     credit_limit = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Crédito')
@@ -141,8 +150,7 @@ class Seller(CustomUser):
 
 
 class Manager(CustomUser):
-    cpf = models.CharField(max_length=11, verbose_name='CPF', null=True, blank=True)
-    cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)
+    cpf = models.CharField(max_length=11, verbose_name='CPF', null=True, blank=True)    
     address = models.CharField(max_length=75, verbose_name='Endereço', null=True, blank=True)
     commission = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Comissão', validators=[MinValueValidator(Decimal('0.01'))])
     credit_limit_to_add = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name="Crédito")
