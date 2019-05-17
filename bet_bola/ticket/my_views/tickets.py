@@ -154,8 +154,6 @@ class TicketView(FiltersMixin, ModelViewSet):
             count += 1
             response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
         return Response(response)
-
-        return Response([{"success":False,"message":"Usuário não tem permissão pra executar essa operação"}])
         
 
     @action(methods=['post'], detail=False, permission_classes=[CanValidateTicket, StoreIsRequired, UserIsNotFromThisStore])
