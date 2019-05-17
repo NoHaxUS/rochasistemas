@@ -193,18 +193,18 @@ class GeneralConfigurations(models.Model):
         verbose_name_plural = "Configurações Gerais"
 
 
-class RewardRelated(models.Model):
-    id = models.AutoField(primary_key=True, verbose_name="ID")
-    value_max = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name="Valor da Aposta")
-    reward_value_max = models.DecimalField(max_digits=30, decimal_places=2, default=100000, verbose_name="Valor Máximo da Recompensa")        
+class RewardRestriction(models.Model):
+    bet_value = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name="Valor da Aposta")
+    max_reward_value = models.DecimalField(max_digits=30, decimal_places=2, default=100000, verbose_name="Valor Máximo da Recompensa")        
     store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
 
     def __str__(self):
         return "Limitador de Prêmio"
 
     class Meta:
-        verbose_name = "Limitar Prêmios"
-        verbose_name_plural = "Limitação de Prêmios"
+        ordering = ['-pk',]
+        verbose_name = "Limitador de Prêmio"
+        verbose_name_plural = "Limitador de Prêmios"
 
 
 class TicketCustomMessage(models.Model):
