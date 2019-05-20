@@ -1,13 +1,21 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from django.db.models import Prefetch, Count, Q
-from core.models import Market, Cotation
-from core.serializers.market import MarketSerializer
+from core.paginations import StandardSetPagination
+from core.models import Market, Cotation, Store
+from core.serializers.market import MarketCotationSerializer, MarketSerializer
 from core.permissions import StoreIsRequired
 
 class MarketView(ModelViewSet):
-    queryset = Market.objects.exclude(cotations__market__name='1X2').distinct()
+    queryset = Market.objects.all()
     serializer_class = MarketSerializer    
+    permission_classes = [StoreIsRequired]
+    pagination_class = StandardSetPagination
+
+
+class MarketCotationView(ModelViewSet):
+    queryset = Market.objects.exclude(cotations__market__name='1X2').distinct()
+    serializer_class = MarketCotationSerializer    
     permission_classes = [StoreIsRequired]
     
     def list(self, request, pk=None):

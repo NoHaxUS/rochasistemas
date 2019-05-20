@@ -328,99 +328,9 @@ class MarketRemotion(models.Model):
         verbose_name_plural = 'Remoção de Apostas'
 
 
-class MarketReduction(models.Model):
+class MarketReduction(models.Model):     
 
-    MARKET_LIST = (
-        ("Total de Gols" ,"Total de Gols"),
-        ("Resultado / Total de Gols" ,"Resultado / Total de Gols"),
-        ("Total de Gols / Ambos  Marcam" ,"Total de Gols / Ambos  Marcam"),
-        ("Total de Gols Exato" ,"Total de Gols Exato"),
-        ("Número de Gols na Partida" ,"Número de Gols na Partida"),
-        ("Ambos Marcam" ,"Ambos Marcam"),
-        ("Times que Marcam" ,"Times que Marcam"),
-        ("Time Casa - Total de Gols Exato" ,"Time Casa - Total de Gols Exato"),
-        ("Time Fora - Total de Gols Exato" ,"Time Fora - Total de Gols Exato"),
-        ("Resultado 1° Tempo / Ambos Marcam" ,"Resultado 1° Tempo / Ambos Marcam"),
-        ("Resultado 1° Tempo / Total de Gols" ,"Resultado 1° Tempo / Total de Gols"),
-        ("Ambos Marcam 1° Tempo" ,"Ambos Marcam 1° Tempo"),
-        ("Ambos Marcam 2° Tempo" ,"Ambos Marcam 2° Tempo"),
-        ("Ambos Marcam 1° e 2° Tempo" ,"Ambos Marcam 1° e 2° Tempo"),
-        ("Total de Gols 1° Tempo" ,"Total de Gols 1° Tempo"),
-        ("Total de Gols Exato 1° Tempo" ,"Total de Gols Exato 1° Tempo"),
-        ("Haverá Gol" ,"Haverá Gol"),
-        ("Etapa com mais Gols" ,"Etapa com mais Gols"),
-        ("Resultado 2° Tempo" ,"Resultado 2° Tempo"),
-        ("Total de Gols - 2° Tempo" ,"Total de Gols - 2° Tempo"),
-        ("Total de Gols Exato 2°  Tempo" ,"Total de Gols Exato 2°  Tempo"),
-        ("Resultado / Ambos Marcam" ,"Resultado / Ambos Marcam"),
-        ("Margem de Vitória" ,"Margem de Vitória"),
-        ("Especiais" ,"Especiais"),
-
-        # (600,"Casa"),
-        # (601,"Empate"),
-        # (602,"Fora"),
-        # (1,"1X2"),
-        # (2,"Abaixo/Acima"),
-        # (3,"Asian Handicap"),
-        # (4,"1° Tempo/2° Tempo"),
-        # (5,"Ímpar/Par"),
-        # (6,"Placar Correto"),
-        # (7,"Dupla Chance"),
-        # (9,"Placar Correto 1° Tempo"),
-        # #(11,"Total de Escanteios"),
-        # (13,"Handicap Europeu"),
-        # (16,"Primeiro Time a Marcar"),
-        # (17,"Ambos marcam?"),
-        # (21,"Abaixo/Acima 1° Tempo"),
-        # (25,"Dupla Chance 1° Tempo"),
-        # (41,"Vencedor 1° Tempo"),
-        # (42,"Vencedor 2° Tempo"),
-        # (45,"Abaixo/Acima 2° Tempo"),
-        # (52,"Casa/Fora"),
-        # (56,"Último time a marcar"),
-        # (61,"Handicap Europeu 1° Tempo"),
-        # (62,"Ímpar/Par 1° Tempo"),
-        # (64,"Asian Handicap 1° Tempo"),
-        # (71,"Metade com maior placar"),
-        # (73,"2° Tempo Ímpar/Par"),
-        # (79,"Haverá Pênalti?"),
-        # (84,"Vencer em ambas etapas"),
-        # (85,"Ganhar de Virada"),
-        # (86,"Vencer sem tomar Gol"),
-        # #(95,"Handicap - Escanteios"),
-        # (98,"Time de casa não toma gol?"),
-        # (99,"Time de fora não toma gol?"),
-        # (101,"Abaixo/Acima - Time de Casa"),
-        # (102,"Abaixo/Acima - Time de Fora"),
-        # (113,"Ambos marcam no 1° Tempo?"),
-        # (128,"Número de Gols"),
-        # #(129,"Abaixo/Acima Escanteios 1° Tempo"),
-        # (134,"Número de Gols 1° Tempo"),
-        # (143,"Em qual etapa o time de Casa vai fazer mais Gols?"),
-        # (144,"Em qual etapa o time de Fora vai fazer mais Gols?"),
-        # (149,"Número de gols Casa"),
-        # (150,"Número de Gols - Fora"),
-        # (161,"Resultado aos 10 minutos"),
-        # (163,"Número de Gols 2 ° Tempo"),
-        # (168,"Vai ter gol contra?"),
-        # (169,"Marcar em ambas etapas"),
-        # (171,"Ganhar uma ou ambas etapas"),
-        # (198,"Ímpar/Par - Time de Casa"),
-        # (199,"Ímpar/Par - Time de Fora"),
-        # (211,"Ambos marcam no 2° Tempo?"),
-        # (215,"Time de fora vai marcar no 1° Tempo?"),
-        # (216,"Time de fora vai marcar no 2° Tempo?"),
-        # (218,"Time de casa marca no 1° tempo?"),
-        # (219,"Time de casa marca 2° tempo?"),
-        # #(305,"Escanteios Abaixo/Exatamente/Acima"),
-        # (427,"Casa/Empate/Fora  Abaixo/Acima"),
-        # (429,"Vencedor do Encontro e Ambos Marcam"),
-        # (433,"European Handicap Corners"),
-        # (461,"Margem de Vitória"),
-        # (523,"Abaixo/Acima e Ambos marcam")
-    )
-
-    market_to_reduct = models.CharField(max_length=100,choices=MARKET_LIST, verbose_name='Tipo de Aposta', unique=True)
+    market = models.ForeignKey('core.Market', verbose_name='Tipo de Aposta', related_name="my_reduction", on_delete=models.CASCADE)
     reduction_percentual = models.IntegerField(default=100, verbose_name='Percentual de Redução')
     store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
 
@@ -453,14 +363,17 @@ class MarketReduction(models.Model):
             cotations_to_reduct.update(price=Case(When(price__lt=1,then=1.05),default=F('price')))
             cotations_to_reduct.filter(price__gt=max_cotation_value).update(price=max_cotation_value)
 
-    """
-    def save(self, *args, **kwargs):
-        self.apply_reductions()
-        super().save(args, kwargs)
-    """
+    # def save(self, *args, **kwargs):
+    #     print(self.store, self.market)                
+    #     if MarketReduction.objects.filter(store=self.store, market=self.market):    
+    #         market_reduction = MarketReduction.objects.get(store=self.store, market=self.market)
+    #         market_reduction.reduction_percentual=self.reduction_percentual
+    #         market_reduction.save()
 
+    #     super.save(*args, **kwargs)
+            
     def __str__(self):
-        return str(self.market_to_reduct)
+        return self.reduction_percentual
 
 
     class Meta:

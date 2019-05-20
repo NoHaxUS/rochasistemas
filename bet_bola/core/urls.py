@@ -24,7 +24,7 @@ from core.my_views.stores import StoreView
 from core.my_views.locations import LocationView
 from core.my_views.leagues import LeagueView
 from core.my_views.cotations import CotationView, CotationCopyView, CotationModifiedView
-from core.my_views.markets import MarketView
+from core.my_views.markets import MarketView, MarketCotationView
 from core.views import APIRootView, MainMenu
 
 
@@ -37,6 +37,7 @@ router.register(r'locations', LocationView)
 router.register(r'cotations', CotationView)
 router.register(r'cotationshistory', CotationCopyView)
 router.register(r'cotationsmodified', CotationModifiedView)
+router.register(r'markets_cotations', MarketCotationView)
 router.register(r'markets', MarketView)
 router.register(r'sports', SportView)
 
