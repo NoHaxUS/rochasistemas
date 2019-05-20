@@ -95,7 +95,7 @@ class CotationSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Cotation
-		fields = ('id','name','start_price','price','market','game','settlement')
+		fields = ('id','name','price','market','game','settlement')
 
 
 
@@ -119,6 +119,6 @@ class CotationCopySerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = CotationCopy
-		fields = ('original_cotation','ticket','name','start_price','price','game','market','line','base_line')
+		fields = ('original_cotation','ticket','price')
 
 
