@@ -1,5 +1,6 @@
 from rest_framework import permissions
 
+
 class StoreIsRequired(permissions.BasePermission):
     message = "Operação não permitida. (Banca Requerida)"
     def has_permission(self, request, view):
@@ -18,13 +19,13 @@ class UserIsFromThisStore(permissions.BasePermission):
         if request.user.has_perm('user.be_admin') \
             and request.user.admin.my_store.id == int(request.GET['store']):
             return True
-        elif request.user.has_perm('user.be_seller') \
+        if request.user.has_perm('user.be_seller') \
             and request.user.seller.my_store.id == int(request.GET['store']):
             return True
-        elif request.user.has_perm('user.be_punter') \
+        if request.user.has_perm('user.be_punter') \
             and request.user.punter.my_store.id == int(request.GET['store']):			
             return True
-        elif request.user.has_perm('user.be_manager') \
+        if request.user.has_perm('user.be_manager') \
             and request.user.manager.my_store.id == int(request.GET['store']):		
             return True
         

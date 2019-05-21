@@ -6,7 +6,8 @@ from filters.mixins import FiltersMixin
 from ticket.models import Ticket, Reward, Payment
 from ticket.serializers.ticket import TicketSerializer, CreateTicketAnonymousUserSerializer, CreateTicketLoggedUserSerializer
 from ticket.paginations import TicketPagination
-from ticket.permissions import CanCreateBet, CanPayWinner, CanValidateTicket, CanCancelTicket
+from ticket.permissions import CanCreateTicket, CanPayWinner, CanValidateTicket, CanCancelTicket, CanManipulateTicket
+from user.permissions import IsSuperUser
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from user.models import TicketOwner
 from core.models import CotationCopy, Cotation, Store
@@ -16,7 +17,11 @@ from config import settings
 class TicketView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
-    permission_classes = [UserIsFromThisStore ,StoreIsRequired ,CanCreateBet]
+    permission_classes = (
+        StoreIsRequired, 
+        IsSuperUser|CanManipulateTicket, 
+        IsSuperUser|CanCreateTicket
+    )
     pagination_class = TicketPagination
 
     filter_mappings = {

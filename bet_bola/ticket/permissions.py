@@ -1,8 +1,10 @@
 from rest_framework import permissions
 
-class CanCreateBet(permissions.BasePermission):
+class CanCreateTicket(permissions.BasePermission):
 	message = 'Você não tem permissão para criar Tickets.'
+
 	def has_permission(self, request, view):
+
 		if request.user.has_perm('user.be_seller'):
 			return True
 		if request.user.has_perm('user.be_punter'):
@@ -11,9 +13,16 @@ class CanCreateBet(permissions.BasePermission):
 			return True
 		if request.user.is_anonymous:
 			return True
-		if request.user.is_superuser:
-			return True
+		return False
+	
 
+class CanManipulateTicket(permissions.BasePermission):
+	message = 'Você não tem permissão para manipular Tickets.'
+
+	def has_permission(self, request, view):
+		print(request.method)
+		if request.method in ['POST', 'GET']:
+			return True
 		return False
 
 

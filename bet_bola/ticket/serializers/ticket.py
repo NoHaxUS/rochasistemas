@@ -15,9 +15,8 @@ from core.models import Store, Cotation
 
 class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	
-	user = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='first_name')
-	normal_user = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='first_name')
-	seller = serializers.SlugRelatedField(read_only=True, slug_field='first_name')
+	owner = serializers.SlugRelatedField(read_only=True,slug_field='first_name')
+	creator = serializers.SlugRelatedField(read_only=True, slug_field='first_name')
 	payment = PaymentSerializerWithSeller()
 	reward = RewardSerializer()
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(), slug_field='id')
@@ -29,7 +28,7 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Ticket
-		fields = ('id','creator','creator_type','owner','cotations','cotation_sum','creation_date','reward','payment','bet_value','available','status','store')
+		fields = ('id','owner','creator','cotations','cotation_sum','creation_date','reward','payment','bet_value','available','status','store')
 
 	def get_cotation_sum(self, obj):
 		return obj.cotation_sum()
@@ -46,8 +45,8 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 	reward = RewardSerializer(read_only=True)
 	cotations = serializers.PrimaryKeyRelatedField(many=True, queryset=Cotation.objects.all(), required=True)	
 
-	def update(self, instance, validated_data):
-		normal_user = validated_data.pop('owner')		
+
+	def update(self, instance, validated_data):	
 		bet_value = validated_data.pop('bet_value')				
 		cotations = validated_data.pop('cotations')		
 		cotation_ids = [cotation.id for cotation in cotations]
@@ -58,10 +57,11 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 
 		for cotation in  Cotation.objects.in_bulk(cotation_ids):
 			ticket.cotations.add(cotation)
-		
-
-		ticket.save()			
+	
+		ticket.save()
+				
 		return ticket
+
 		
 
 	def validate_bet_value(self, value):
