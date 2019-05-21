@@ -6,9 +6,8 @@ class StoreIsRequired(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.GET.get('store'):
             return True
-    
         return False
-
+    
 
 class UserIsFromThisStore(permissions.BasePermission):
     message = 'Você não tem permissão para realizar essa operação.'

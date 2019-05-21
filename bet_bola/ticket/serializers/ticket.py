@@ -43,26 +43,8 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 	creation_date = serializers.DateTimeField(read_only=True)	
 	payment = PaymentSerializer(read_only=True)	
 	reward = RewardSerializer(read_only=True)
-	cotations = serializers.PrimaryKeyRelatedField(many=True, queryset=Cotation.objects.all(), required=True)	
-
-
-	def update(self, instance, validated_data):	
-		bet_value = validated_data.pop('bet_value')				
-		cotations = validated_data.pop('cotations')		
-		cotation_ids = [cotation.id for cotation in cotations]
-
-		ticket = Ticket.objects.get(id=str(instance))
-		ticket.bet_value = bet_value		
-		ticket.cotations.clear()
-
-		for cotation in  Cotation.objects.in_bulk(cotation_ids):
-			ticket.cotations.add(cotation)
-	
-		ticket.save()
-				
-		return ticket
-
-		
+	cotations = serializers.PrimaryKeyRelatedField(many=True, queryset=Cotation.objects.all(), required=True)
+			
 
 	def validate_bet_value(self, value):
 		store = self.context['request'].GET.get('store')
@@ -75,6 +57,7 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 		elif value > configurations["max_bet_value"]:
 			raise serializers.ValidationError("A aposta ultrapassou o valor maximo de R$ " + str(configurations["max_bet_value"]))
 		return value	
+
 
 	def validate_cotations(self, cotations):
 		store = self.context['request'].GET.get('store')		

@@ -20,7 +20,6 @@ class CanManipulateTicket(permissions.BasePermission):
 	message = 'Você não tem permissão para manipular Tickets.'
 
 	def has_permission(self, request, view):
-		print(request.method)
 		if request.method in ['POST', 'GET']:
 			return True
 		return False
