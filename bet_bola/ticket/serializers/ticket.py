@@ -15,9 +15,8 @@ from core.models import Store, Cotation
 
 class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	
-	user = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='first_name')
-	normal_user = serializers.SlugRelatedField(queryset = CustomUser.objects.all(),slug_field='first_name')
-	seller = serializers.SlugRelatedField(read_only=True, slug_field='first_name')
+	owner = serializers.SlugRelatedField(read_only=True,slug_field='first_name')
+	creator = serializers.SlugRelatedField(read_only=True, slug_field='first_name')
 	payment = PaymentSerializerWithSeller()
 	reward = RewardSerializer()
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(), slug_field='id')
@@ -29,7 +28,7 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Ticket
-		fields = ('id','creator','creator_type','owner','cotations','cotation_sum','creation_date','reward','payment','bet_value','available','status','store')
+		fields = ('id','owner','creator','cotations','cotation_sum','creation_date','reward','payment','bet_value','available','status','store')
 
 	def get_cotation_sum(self, obj):
 		return obj.cotation_sum()
@@ -44,25 +43,8 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 	creation_date = serializers.DateTimeField(read_only=True)	
 	payment = PaymentSerializer(read_only=True)	
 	reward = RewardSerializer(read_only=True)
-	cotations = serializers.PrimaryKeyRelatedField(many=True, queryset=Cotation.objects.all(), required=True)	
-
-	def update(self, instance, validated_data):
-		normal_user = validated_data.pop('owner')		
-		bet_value = validated_data.pop('bet_value')				
-		cotations = validated_data.pop('cotations')		
-		cotation_ids = [cotation.id for cotation in cotations]
-
-		ticket = Ticket.objects.get(id=str(instance))
-		ticket.bet_value = bet_value		
-		ticket.cotations.clear()
-
-		for cotation in  Cotation.objects.in_bulk(cotation_ids):
-			ticket.cotations.add(cotation)
-		
-
-		ticket.save()			
-		return ticket
-		
+	cotations = serializers.PrimaryKeyRelatedField(many=True, queryset=Cotation.objects.all(), required=True)
+			
 
 	def validate_bet_value(self, value):
 		store = self.context['request'].GET.get('store')
@@ -75,6 +57,7 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 		elif value > configurations["max_bet_value"]:
 			raise serializers.ValidationError("A aposta ultrapassou o valor maximo de R$ " + str(configurations["max_bet_value"]))
 		return value	
+
 
 	def validate_cotations(self, cotations):
 		store = self.context['request'].GET.get('store')		
