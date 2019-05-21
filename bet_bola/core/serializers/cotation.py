@@ -70,7 +70,11 @@ class MinimumListCotationSerializer(serializers.ListSerializer):
 					if CotationModified.objects.filter(cotation=cotation, store=store):
 						cotation.price = CotationModified.objects.filter(cotation=cotation, store=store).first().price
 					else:
-						cotation.price = (cotation.price * config.cotations_percentage / 100)
+						if cotation.market.my_reduction.filter(store=store):
+							cotation.price = cotation.price - (cotation.price * cotation.market.my_reduction.get(store=store).reduction_percentual / 100)
+						else:
+							cotation.price = cotation.price - (cotation.price * config.cotations_percentage / 100)						
+					
 
 		return super(MinimumListCotationSerializer, self).to_representation(data)
 
@@ -89,6 +93,7 @@ class CotationSerializer(serializers.HyperlinkedModelSerializer):
 	game = serializers.SlugRelatedField(read_only=True, slug_field='name')
 	market = serializers.SlugRelatedField(read_only=True, slug_field='name')
 	settlement = serializers.SerializerMethodField()
+	price = serializers.SerializerMethodField()
 
 	def get_settlement(self, cotation):
 		return cotation.get_settlement_display()
@@ -97,12 +102,16 @@ class CotationSerializer(serializers.HyperlinkedModelSerializer):
 		model = Cotation
 		fields = ('id','name','price','market','game','settlement')
 
-
+	def get_price(self, cotation):
+		store_id = self.context['request'].GET.get('store')
+		if CotationModified.objects.filter(cotation=cotation, store__pk=store_id):
+			return str(CotationModified.objects.get(cotation=cotation, store__pk=store_id).price)
+		return str(cotation.price)
 
 
 class CotationModifiedSerializer(serializers.HyperlinkedModelSerializer):
 	cotation = serializers.SlugRelatedField(queryset=Cotation.objects.all(), slug_field='id')
-	store = serializers.SlugRelatedField(queryset=Store.objects.all(), slug_field='fantasy')
+	store = serializers.SlugRelatedField(queryset=Store.objects.all(), slug_field='id')
 
 	class Meta:
 		model = CotationModified	

@@ -361,16 +361,7 @@ class MarketReduction(models.Model):
                 cotations_to_reduct =  game.cotations.filter(market__id=self.market_to_reduct)
             cotations_to_reduct.update(price=F('price') * reduction )
             cotations_to_reduct.update(price=Case(When(price__lt=1,then=1.05),default=F('price')))
-            cotations_to_reduct.filter(price__gt=max_cotation_value).update(price=max_cotation_value)
-
-    # def save(self, *args, **kwargs):
-    #     print(self.store, self.market)                
-    #     if MarketReduction.objects.filter(store=self.store, market=self.market):    
-    #         market_reduction = MarketReduction.objects.get(store=self.store, market=self.market)
-    #         market_reduction.reduction_percentual=self.reduction_percentual
-    #         market_reduction.save()
-
-    #     super.save(*args, **kwargs)
+            cotations_to_reduct.filter(price__gt=max_cotation_value).update(price=max_cotation_value)    
             
     def __str__(self):
         return self.reduction_percentual

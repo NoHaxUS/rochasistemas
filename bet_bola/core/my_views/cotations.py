@@ -19,6 +19,17 @@ class CotationModifiedView(ModelViewSet):
     serializer_class = CotationModifiedSerializer
     permission_classes = [StoreIsRequired, UserIsFromThisStore, CanModifyCotation]
 
+    def perform_create(self, serializer):
+        store = serializer.validated_data['store']
+        cotation = serializer.validated_data['cotation']
+        price = serializer.validated_data['price']
+        if CotationModified.objects.filter(store=store, cotation=cotation).exists():
+            cotation_modified = CotationModified.objects.get(store=store, cotation=cotation)
+            cotation_modified.price = price
+            cotation_modified.save()
+            return cotation_modified
+        super(CotationModifiedView, self).perform_create(serializer)
+
 
 class CotationView(FiltersMixin, ModelViewSet):
     queryset = Cotation.objects.all()
