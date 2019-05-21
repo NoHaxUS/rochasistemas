@@ -1,16 +1,23 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from django.db.models import Prefetch, Count, Q
+from filters.mixins import FiltersMixin
 from core.paginations import StandardSetPagination
 from core.models import Market, Cotation, Store
 from core.serializers.market import MarketCotationSerializer, MarketSerializer
 from core.permissions import StoreIsRequired
 
-class MarketView(ModelViewSet):
+
+class MarketView(FiltersMixin, ModelViewSet):
     queryset = Market.objects.all()
     serializer_class = MarketSerializer    
     permission_classes = [StoreIsRequired]
     pagination_class = StandardSetPagination
+
+    filter_mappings = {
+        'market_name':'name__icontains',        
+    }
+    
 
 
 class MarketCotationView(ModelViewSet):
