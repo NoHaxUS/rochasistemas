@@ -70,7 +70,11 @@ class MinimumListCotationSerializer(serializers.ListSerializer):
 					if CotationModified.objects.filter(cotation=cotation, store=store):
 						cotation.price = CotationModified.objects.filter(cotation=cotation, store=store).first().price
 					else:
-						cotation.price = (cotation.price * config.cotations_percentage / 100)
+						if cotation.market.my_reduction:
+							cotation.price = cotation.price - (cotation.price * cotation.market.my_reduction.first().reduction_percentual / 100)
+						else:
+							cotation.price = cotation.price - (cotation.price * config.cotations_percentage / 100)						
+					
 
 		return super(MinimumListCotationSerializer, self).to_representation(data)
 
