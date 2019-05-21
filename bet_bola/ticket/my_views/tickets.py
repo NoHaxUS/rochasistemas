@@ -107,26 +107,10 @@ class TicketView(FiltersMixin, ModelViewSet):
 
     @action(methods=['post'], detail=False, permission_classes=[])
     def validate_tickets(self, request, pk=None):
-
-        pre_id_list = []
-        print(request.data)
-        try:
-            pre_id_list = dict(request.data)['data[]']
-        except KeyError:
-            return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
-
-        id_list = []
+        
         response = []
-        for ticket in Ticket.objects.filter(pk__in=pre_id_list):			
-            id_list.append(ticket.pk)
+        for ticket in Ticket.objects.filter(pk__in=dict(request.data)['data[]']):
             response.append(ticket.validate_ticket(request.user))
-
-        print(pre_id_list, id_list)
-        warnning_id = list(set(pre_id_list)-set(id_list))
-        count=0
-        for id in warnning_id:
-            count += 1
-            response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
         return Response(response)
 
 
