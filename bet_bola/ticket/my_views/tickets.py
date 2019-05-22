@@ -28,12 +28,14 @@ class TicketView(FiltersMixin, ModelViewSet):
         'ticket_id':'pk',
         'store':'store',
         'ticket_status':'status',
-        'paid_by': 'payment__who_paid',
+        'created_by': 'creator__username__icontains',
+        'paid_by': 'payment__who_paid__username__icontains',
         'start_creation_date':'creation_date__gte',
         'end_creation_date':'creation_date__lte',
         'payment_status':'payment__status',
-        'start_date': 'payment__date__gte',
-        'end_date': 'payment__date__lte'
+        'start_payment_date': 'payment__date__gte',
+        'end_payment_date': 'payment__date__lte',
+        'available': 'available',
     }
 
     def get_serializer_class(self):		
@@ -105,79 +107,31 @@ class TicketView(FiltersMixin, ModelViewSet):
         return Response(response)		
 
 
+
     @action(methods=['post'], detail=False, permission_classes=[])
     def validate_tickets(self, request, pk=None):
-
-        pre_id_list = []
-        print(request.data)
-        try:
-            pre_id_list = dict(request.data)['data[]']
-        except KeyError:
-            return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
-
-        id_list = []
+        
         response = []
-        for ticket in Ticket.objects.filter(pk__in=pre_id_list):			
-            id_list.append(ticket.pk)
+        for ticket in Ticket.objects.filter(pk__in=dict(request.data)['data[]']):
             response.append(ticket.validate_ticket(request.user))
-
-        print(pre_id_list, id_list)
-        warnning_id = list(set(pre_id_list)-set(id_list))
-        count=0
-        for id in warnning_id:
-            count += 1
-            response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
         return Response(response)
 
 
     @action(methods=['post'], detail=False, permission_classes=[])
-    def toggle_visibilities(self, request, pk=None):
-        
-        pre_id_list = []
-        try:
-            received_data = dict(request.data)
-            pre_id_list = [int(item) for item in received_data['data']]
-            
-        except KeyError:
-            return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
-
-        id_list = []
+    def cancel_tickets(self, request, pk=None):
         response = []
-        for ticket in Ticket.objects.filter(pk__in=pre_id_list):			
-            id_list.append(ticket.pk)
-            ticket.available = not ticket.available
-            ticket.save()
-            response.append({"success": True, "message": "Visibilidade do ticket " + str(ticket.pk) + " foi alterada para " + str(ticket.available) + " com sucesso"})
-
-        warnning_id = list(set(pre_id_list)-set(id_list))
-        count=0
-        for id in warnning_id:
-            count += 1
-            response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
+        for ticket in Ticket.objects.filter(pk__in=dict(request.data)['data[]']):
+            response.append(ticket.cancel_ticket(request.user))
         return Response(response)
-        
 
-    @action(methods=['post'], detail=False, permission_classes=[CanValidateTicket, StoreIsRequired, UserIsFromThisStore])
-    def cancel_tickets(self, request, pk=None):	
-        pre_id_list = []
 
-        try:				
-            pre_id_list = request.data
-        except KeyError:
-            return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
-
-        id_list = []
+    @action(methods=['post'], detail=False, permission_classes=[])
+    def toggle_availability(self, request, pk=None):
         response = []
-        for ticket in Ticket.objects.filter(pk__in=pre_id_list):			
-            id_list.append(ticket.pk)
-            response.append(ticket.cancel_ticket(request.user.seller))
-        
-        warnning_id = list(set(pre_id_list)-set(id_list))
-        count=0
-        for id in warnning_id:
-            count += 1
-            response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
-        return Response(response)				
+        for ticket in Ticket.objects.filter(pk__in=dict(request.data)['data']):
+            response.append(ticket.toggle_availability())
+        return Response(response)
+    
 
     @action(methods=['get'], detail=True)
     def ticket_detail(self, request, pk=None):		        

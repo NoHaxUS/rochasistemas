@@ -2,57 +2,57 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.mail import send_mail
 import utils.timezone as tzlocal
-  
 
-def hide_ticket(self):
-    self.available = False
-    self.save()
-    return True
 
-def show_ticket(self):
-    self.available = True
+def toggle_availability(self):
+    self.available = not self.available
     self.save()
-    return True
+    
+    return {
+        'success': True,
+        'message': 'Disponibilidade Alterada.'
+    }
   
 
 def cancel_ticket(self, who_canceling):
 
-    if not who_canceling.is_superuser and not who_canceling.has_perm('user.be_seller'):
+    if not (who_canceling.has_perm('user.be_admin') or who_canceling.has_perm('user.be_seller')):
         return {
             'success': False,
-            'message': 'Esse Usuário não tem permissão para cancelar Tickets.'
+            'message': 'Esse Usuário não tem permissão para validar Bilhetes.'
         }
     
     if not self.status == 0:
         return {
             'success': False,
-            'message': 'Não é possível cancelar esse Ticket '+ str(self.pk) + ' pois o mesmo não está em aberto.'
+            'message': 'Não é possível cancelar esse Bilhete '+ str(self.pk) + ' pois o mesmo não está em aberto.'
         }
     
     if not self.payment.status == 2:
         return {
             'success': False,
-            'message': 'O Ticket '+ str(self.pk) +' não foi Pago para ser cancelado.'
+            'message': 'O Bilhete '+ str(self.pk) +' não foi Pago para ser cancelado.'
         }
 
     if not who_canceling.is_superuser:
         if self.payment.date + timezone.timedelta(minutes=int(who_canceling.seller.limit_time_to_cancel)) < tzlocal.now():
             return {
                 'success':False,
-                'message':' Tempo limite para cancelar o Ticket '+ str(self.pk) +' foi excedido.'
+                'message':' Tempo limite para cancelar o Bilhete '+ str(self.pk) +' foi excedido.'
             }
         
         if not who_canceling == self.payment.who_paid:
             return {
                 'success':False,
-                'message':'Você não pode cancelar um Ticket que você não Pagou.'
+                'message':'Você não pode cancelar um Bilhete que você não Pagou.'
             }
     
     
     who_paid = self.payment.who_paid
-    if not who_paid.can_sell_unlimited:
-        who_paid.credit_limit += self.value
-        who_paid.save()
+    if who_canceling.has_perm('user.be_seller') and not who_canceling.is_superuser:
+        if not who_paid.can_sell_unlimited:
+            who_paid.credit_limit += self.value
+            who_paid.save()
 
     self.status = 5
     self.save()
@@ -60,7 +60,7 @@ def cancel_ticket(self, who_canceling):
     from history.models import TicketCancelationHistory
 
     TicketCancelationHistory.objects.create(
-        who_canceling=who_canceling,
+        who_cancelled=who_canceling,
         ticket=self,
         date=tzlocal.now(),
         who_paid=who_paid,
@@ -69,15 +69,15 @@ def cancel_ticket(self, who_canceling):
 
     return {
         'success':True,
-        'message':'O Ticket '+ str(self.pk) +' foi cancelado.'
+        'message':'O Bilhete '+ str(self.pk) +' foi cancelado.'
     }
 
 def validate_ticket(self, who_validating):         
     
-    if not who_validating.is_superuser and not who_validating.has_perm('user.be_seller'):
+    if not (who_validating.has_perm('user.be_admin') or who_validating.has_perm('user.be_seller')):
         return {
             'success': False,
-            'message': 'Esse Usuário não tem permissão para validar Tickets.'
+            'message': 'Esse Usuário não tem permissão para validar Bilhetes.'
         }
 
     if self.reward.value >= self.store.config.alert_bet_value:
@@ -91,31 +91,31 @@ def validate_ticket(self, who_validating):
     if not self.payment.status == 0:
         return {
             'success':False,
-            'message':'O Ticket '+ str(self.pk) +' não está Aguardando Pagamento.'
+            'message':'O Bilhete '+ str(self.pk) +' não está Aguardando Pagamento.'
         }
 
     if not self.status == 0:
         return {
             'success': False,
-            'message': 'Não é possível validar esse Ticket ' + str(self.pk) + ' pois o mesmo não está em aberto.'
+            'message': 'Não é possível validar esse Bilhete ' + str(self.pk) + ' pois o mesmo não está em aberto.'
         }
 
     for cotation in self.cotations.all():
         if cotation.game.start_date < tzlocal.now():
             return {
                 'success': False,
-                'message':'O Ticket '+ str(self.pk) +' não pode ser pago, pois contém cotas de jogo(s) que já iniciaram.'
+                'message':'O Bilhete '+ str(self.pk) +' não pode ser pago, pois contém cotas de jogo(s) que já iniciaram.'
             }
+    
+    seller_before_balance = 0
+    seller_after_balance= 0
 
-    if not who_validating.is_superuser:
-        seller_before_balance = 0
-        seller_after_balance= 0
-
+    if who_validating.has_perm('user.be_seller') and not who_validating.is_superuser:
         if not who_validating.seller.can_sell_unlimited:
             if self.value > who_validating.seller.credit_limit:                
                 return {
                 'success':False,
-                'message':'Você não tem saldo suficiente para pagar o Ticket: ' + str(self.pk)
+                'message':'Você não tem créditos para pagar esse Bilhete: ' + str(self.pk)
             }
 
             seller_before_balance = who_validating.seller.credit_limit
@@ -132,7 +132,7 @@ def validate_ticket(self, who_validating):
     from history.models import TicketValidationHistory
 
     TicketValidationHistory.objects.create(
-        who_validating=who_validating,
+        who_validated=who_validating,
         ticket=self,
         bet_value=self.bet_value,
         date=tzlocal.now(),
@@ -149,10 +149,10 @@ def validate_ticket(self, who_validating):
 
 def reward_winner(self, who_rewarding_the_winner):
 
-    if not who_rewarding_the_winner.is_superuser and not who_rewarding_the_winner.has_perm('user.be_seller'):
+    if not (who_rewarding_the_winner.has_perm('user.be_admin') or who_rewarding_the_winner.has_perm('user.be_seller')):
         return {
             'success': False,
-            'message': 'Esse Usuário não tem permissão para Pagar Ganhadores.'
+            'message': 'Esse Usuário não tem permissão para validar Bilhetes.'
         }
 
     if not self.status == 4:   

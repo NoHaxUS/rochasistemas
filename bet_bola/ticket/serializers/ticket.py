@@ -16,10 +16,9 @@ from core.models import Store, Cotation
 class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	
 	owner = serializers.SlugRelatedField(read_only=True,slug_field='first_name')
-	creator = serializers.SlugRelatedField(read_only=True, slug_field='first_name')
+	creator = serializers.SlugRelatedField(read_only=True, slug_field='username')
 	payment = PaymentSerializerWithSeller()
 	reward = RewardSerializer()
-	store = serializers.SlugRelatedField(queryset = Store.objects.all(), slug_field='id')
 	cotation_sum = serializers.SerializerMethodField()
 	status = serializers.SerializerMethodField()
 	cotations = CotationTicketSerializer(many=True)
@@ -28,7 +27,7 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Ticket
-		fields = ('id','owner','creator','cotations','cotation_sum','creation_date','reward','payment','bet_value','available','status','store')
+		fields = ('id','owner','creator','cotations','cotation_sum','creation_date','reward','payment','bet_value','available','status')
 
 	def get_cotation_sum(self, obj):
 		return obj.cotation_sum()

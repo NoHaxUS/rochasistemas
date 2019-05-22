@@ -38,11 +38,8 @@ class Ticket(models.Model):
     available = models.BooleanField(default=True, verbose_name='Disponível?')
 
 
-    def hide_ticket(self):
-        return ticket.hide_ticket(self)
-
-    def show_ticket(self):
-        return ticket.show_ticket(self)
+    def toggle_availability(self):
+        return ticket.toggle_availability(self)
 
     def cancel_ticket(self, user):
         return ticket.cancel_ticket(self, user)
