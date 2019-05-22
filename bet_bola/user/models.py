@@ -45,7 +45,7 @@ class Admin(CustomUser):
         if not self.password.startswith('pbkdf2'):          
             self.set_password(self.password)
         self.is_superuser = False
-        self.is_staff = True
+        self.is_staff = False
         self.user_type = 4
         super().save()
         admin.define_default_permissions(self)
@@ -131,7 +131,7 @@ class Seller(CustomUser):
         if not self.password.startswith('pbkdf2'):			
             self.set_password(self.password)
         self.is_superuser = False
-        self.is_staff = True
+        self.is_staff = False
         self.user_type = 2
         super().save()
 
@@ -193,7 +193,7 @@ class Manager(CustomUser):
         if not self.password.startswith('pbkdf2'):
             self.set_password(self.password)
         self.is_superuser = False
-        self.is_staff = True
+        self.is_staff = False
         self.user_type = 3
         super().save()
 
@@ -205,4 +205,4 @@ class Manager(CustomUser):
         verbose_name_plural = 'Gerentes'
         permissions = (								
                 ('be_manager', 'Be a manager, permission.'),
-            )
+        )

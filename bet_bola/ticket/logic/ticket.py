@@ -17,10 +17,10 @@ def show_ticket(self):
 
 def cancel_ticket(self, who_canceling):
 
-    if not who_canceling.is_superuser and not who_canceling.has_perm('user.be_seller'):
+    if not (who_canceling.has_perm('user.be_admin') or who_canceling.has_perm('user.be_seller')):
         return {
             'success': False,
-            'message': 'Esse Usuário não tem permissão para cancelar Bilhetes.'
+            'message': 'Esse Usuário não tem permissão para validar Bilhetes.'
         }
     
     if not self.status == 0:
@@ -50,9 +50,10 @@ def cancel_ticket(self, who_canceling):
     
     
     who_paid = self.payment.who_paid
-    if not who_paid.can_sell_unlimited:
-        who_paid.credit_limit += self.value
-        who_paid.save()
+    if who_canceling.has_perm('user.be_seller') and not who_canceling.is_superuser:
+        if not who_paid.can_sell_unlimited:
+            who_paid.credit_limit += self.value
+            who_paid.save()
 
     self.status = 5
     self.save()
@@ -60,7 +61,7 @@ def cancel_ticket(self, who_canceling):
     from history.models import TicketCancelationHistory
 
     TicketCancelationHistory.objects.create(
-        who_canceling=who_canceling,
+        who_cancelled=who_canceling,
         ticket=self,
         date=tzlocal.now(),
         who_paid=who_paid,
@@ -74,7 +75,7 @@ def cancel_ticket(self, who_canceling):
 
 def validate_ticket(self, who_validating):         
     
-    if not who_validating.is_superuser and not who_validating.has_perm('user.be_seller'):
+    if not (who_validating.has_perm('user.be_admin') or who_validating.has_perm('user.be_seller')):
         return {
             'success': False,
             'message': 'Esse Usuário não tem permissão para validar Bilhetes.'
@@ -110,7 +111,7 @@ def validate_ticket(self, who_validating):
     seller_before_balance = 0
     seller_after_balance= 0
 
-    if not who_validating.is_superuser:
+    if who_validating.has_perm('user.be_seller') and not who_validating.is_superuser:
         if not who_validating.seller.can_sell_unlimited:
             if self.value > who_validating.seller.credit_limit:                
                 return {
@@ -149,10 +150,10 @@ def validate_ticket(self, who_validating):
 
 def reward_winner(self, who_rewarding_the_winner):
 
-    if not who_rewarding_the_winner.is_superuser and not who_rewarding_the_winner.has_perm('user.be_seller'):
+    if not (who_rewarding_the_winner.has_perm('user.be_admin') or who_rewarding_the_winner.has_perm('user.be_seller')):
         return {
             'success': False,
-            'message': 'Esse Usuário não tem permissão para Pagar Ganhadores.'
+            'message': 'Esse Usuário não tem permissão para validar Bilhetes.'
         }
 
     if not self.status == 4:   

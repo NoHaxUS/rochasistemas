@@ -105,12 +105,21 @@ class TicketView(FiltersMixin, ModelViewSet):
         return Response(response)		
 
 
+
     @action(methods=['post'], detail=False, permission_classes=[])
     def validate_tickets(self, request, pk=None):
         
         response = []
         for ticket in Ticket.objects.filter(pk__in=dict(request.data)['data[]']):
             response.append(ticket.validate_ticket(request.user))
+        return Response(response)
+
+
+    @action(methods=['post'], detail=False, permission_classes=[])
+    def cancel_tickets(self, request, pk=None):
+        response = []
+        for ticket in Ticket.objects.filter(pk__in=dict(request.data)['data[]']):
+            response.append(ticket.cancel_ticket(request.user))
         return Response(response)
 
 
@@ -139,29 +148,7 @@ class TicketView(FiltersMixin, ModelViewSet):
             count += 1
             response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
         return Response(response)
-        
-
-    @action(methods=['post'], detail=False, permission_classes=[CanValidateTicket, StoreIsRequired, UserIsFromThisStore])
-    def cancel_tickets(self, request, pk=None):	
-        pre_id_list = []
-
-        try:				
-            pre_id_list = request.data
-        except KeyError:
-            return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
-
-        id_list = []
-        response = []
-        for ticket in Ticket.objects.filter(pk__in=pre_id_list):			
-            id_list.append(ticket.pk)
-            response.append(ticket.cancel_ticket(request.user.seller))
-        
-        warnning_id = list(set(pre_id_list)-set(id_list))
-        count=0
-        for id in warnning_id:
-            count += 1
-            response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
-        return Response(response)				
+        	
 
     @action(methods=['get'], detail=True)
     def ticket_detail(self, request, pk=None):		        
