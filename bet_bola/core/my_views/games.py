@@ -12,9 +12,11 @@ from core.models import *
 from core.serializers.game import LeagueGameSerializer, GameSerializer, GameListSerializer, GameTableSerializer
 from core.paginations import StandardSetPagination, GamesListSetPagination
 from core.permissions import StoreIsRequired
+from rest_framework.decorators import action
 
 
 class GamesToday(FiltersMixin, ModelViewSet):
+    queryset = Game.objects.none()
     serializer_class = GameListSerializer
     pagination_class = GamesListSetPagination
     
@@ -44,6 +46,14 @@ class GamesToday(FiltersMixin, ModelViewSet):
             '-league__priority', 'league__location__name', 'league__name')
         
         return queryset
+
+
+    @action(methods=['post'], detail=False, permission_classes=[])
+    def toggle_availability(self, request, pk=None):
+        response = []
+        for game in Game.objects.filter(pk__in=dict(request.data)['data']):
+            response.append(game.toggle_availability())
+        return Response(response)
 
 
 class GamesTable(ModelViewSet):
