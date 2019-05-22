@@ -28,12 +28,14 @@ class TicketView(FiltersMixin, ModelViewSet):
         'ticket_id':'pk',
         'store':'store',
         'ticket_status':'status',
-        'paid_by': 'payment__who_paid',
+        'created_by': 'creator__username__icontains',
+        'paid_by': 'payment__who_paid__username__icontains',
         'start_creation_date':'creation_date__gte',
         'end_creation_date':'creation_date__lte',
         'payment_status':'payment__status',
-        'start_date': 'payment__date__gte',
-        'end_date': 'payment__date__lte'
+        'start_payment_date': 'payment__date__gte',
+        'end_payment_date': 'payment__date__lte',
+        'available': 'available',
     }
 
     def get_serializer_class(self):		
