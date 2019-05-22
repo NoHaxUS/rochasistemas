@@ -1,6 +1,7 @@
 from rest_framework.response import Response
+from rest_framework.permissions import SAFE_METHODS
 from rest_framework.viewsets import ModelViewSet
-from utils.serializers.market import MarketReductionSerializer, MarketRemotionSerializer
+from utils.serializers.market import MarketReductionSerializer, MarketRemotionSerializer, GetMarketRemotionSerializer
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from utils.models import MarketReduction, MarketRemotion
 
@@ -28,13 +29,12 @@ class MarketReductionView(ModelViewSet):
 			markets_reduction.reduction_percentual = reduction_percentual
 			markets_reduction.save()
 			return markets_reduction
-		super(MarketReductionView, self).perform_create(serializer)
+		super(MarketReductionView,).perform_create(serializer)
 
 
 class MarketRemotionView(ModelViewSet):
 	queryset = MarketRemotion.objects.all()
-	serializer_class = MarketRemotionSerializer
-	permission_classes = [StoreIsRequired, UserIsFromThisStore,]
+	permission_classes = [StoreIsRequired]
 
 	def list(self, request, pk=None):
 		from core.models import Store
@@ -45,3 +45,8 @@ class MarketRemotionView(ModelViewSet):
 		serializer = self.get_serializer(markets_remotion, many=True)
 
 		return Response(serializer.data)
+
+	def get_serializer_class(self):
+		if self.request.method in SAFE_METHODS:
+			return GetMarketRemotionSerializer
+		return MarketRemotionSerializer
