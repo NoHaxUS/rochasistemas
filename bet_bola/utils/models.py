@@ -318,11 +318,6 @@ class MarketRemotion(models.Model):
     def __str__(self):
         return self.get_market_to_remove_display() + ' - ' + self.below_above + ' ' +self.base_line
 
-
-    def save(self, *args, **kwargs):
-        if not MarketRemotion.objects.filter(market_to_remove=self.market_to_remove, below_above=self.below_above, base_line=self.base_line).exists():
-            super().save(args,kwargs)
-
     class Meta:
         verbose_name = 'Remoção de Aposta'
         verbose_name_plural = 'Remoção de Apostas'

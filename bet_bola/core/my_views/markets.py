@@ -16,8 +16,7 @@ class MarketView(FiltersMixin, ModelViewSet):
 
     filter_mappings = {
         'market_name':'name__icontains',        
-    }
-    
+    }    
 
 
 class MarketCotationView(ModelViewSet):
