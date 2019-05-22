@@ -35,7 +35,7 @@ class CotationsListSetPagination(PageNumberPagination):
 
 
 class GamesListSetPagination(PageNumberPagination):
-    page_size = 30
+    page_size = 5
 
     def get_paginated_response(self, data):        
         return Response({

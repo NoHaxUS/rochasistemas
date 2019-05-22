@@ -2,17 +2,16 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.mail import send_mail
 import utils.timezone as tzlocal
-  
 
-def hide_ticket(self):
-    self.available = False
-    self.save()
-    return True
 
-def show_ticket(self):
-    self.available = True
+def toggle_availability(self):
+    self.available = not self.available
     self.save()
-    return True
+    
+    return {
+        'success': True,
+        'message': 'Disponibilidade Alterada.'
+    }
   
 
 def cancel_ticket(self, who_canceling):

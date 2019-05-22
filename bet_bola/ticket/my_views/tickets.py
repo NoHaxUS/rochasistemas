@@ -126,31 +126,12 @@ class TicketView(FiltersMixin, ModelViewSet):
 
 
     @action(methods=['post'], detail=False, permission_classes=[])
-    def toggle_visibilities(self, request, pk=None):
-        
-        pre_id_list = []
-        try:
-            received_data = dict(request.data)
-            pre_id_list = [int(item) for item in received_data['data']]
-            
-        except KeyError:
-            return Response({'Error': 'Entrada invalida. Dica:[id_1,id_2]'})
-
-        id_list = []
+    def toggle_availability(self, request, pk=None):
         response = []
-        for ticket in Ticket.objects.filter(pk__in=pre_id_list):			
-            id_list.append(ticket.pk)
-            ticket.available = not ticket.available
-            ticket.save()
-            response.append({"success": True, "message": "Visibilidade do ticket " + str(ticket.pk) + " foi alterada para " + str(ticket.available) + " com sucesso"})
-
-        warnning_id = list(set(pre_id_list)-set(id_list))
-        count=0
-        for id in warnning_id:
-            count += 1
-            response.append({"success":False,"message": "ticket " + str(id) + " não existe"})
+        for ticket in Ticket.objects.filter(pk__in=dict(request.data)['data']):
+            response.append(ticket.toggle_availability())
         return Response(response)
-        	
+    
 
     @action(methods=['get'], detail=True)
     def ticket_detail(self, request, pk=None):		        

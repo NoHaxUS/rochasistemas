@@ -45,6 +45,7 @@ class GamesToday(FiltersMixin, ModelViewSet):
         
         return queryset
 
+
 class GamesTable(ModelViewSet):
     serializer_class = GameTableSerializer
     pagination_class = StandardSetPagination
