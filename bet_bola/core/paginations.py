@@ -19,7 +19,7 @@ class StandardSetPagination(PageNumberPagination):
 
 
 class CotationsListSetPagination(PageNumberPagination):
-    page_size = 30
+    page_size = 25
 
     def get_paginated_response(self, data):        
         return Response({
