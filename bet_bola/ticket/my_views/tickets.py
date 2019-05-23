@@ -100,12 +100,12 @@ class TicketView(FiltersMixin, ModelViewSet):
             if self.request.user.has_perm('user.be_seller'):			
                 return instance.validate_ticket(self.request.user.seller)
 
-    @action(methods=['get'], detail=True, permission_classes=[CanPayWinner,])
+
+    @action(methods=['get'], detail=True, permission_classes=[])
     def pay_winner_punter(self, request, pk=None):		
         ticket = self.get_object()				
         response = ticket.pay_winner_punter(request.user)
         return Response(response)		
-
 
 
     @action(methods=['post'], detail=False, permission_classes=[])

@@ -59,7 +59,18 @@ class Game(models.Model):
     @property
     def standard_cotations(self):
         return self.cotations.filter(market__name='1X2')
-    
+
+
+    def toggle_availability(self):
+        self.available = not self.available
+        self.save()
+        
+        return {
+            'success': True,
+            'message': 'Disponibilidade Alterada.'
+        }
+
+
     class Meta:
         ordering = ('-pk',)
         verbose_name = 'Jogo'
