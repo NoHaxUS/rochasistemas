@@ -7,6 +7,18 @@ from core.models import CotationModified, Cotation
 from core.paginations import CotationsListSetPagination
 from filters.mixins import FiltersMixin
 
+class CotationView(FiltersMixin, ModelViewSet):
+    queryset = Cotation.objects.all()
+    serializer_class = CotationSerializer       
+    permission_classes = [StoreIsRequired,]
+    pagination_class = CotationsListSetPagination
+
+    filter_mappings = {
+        'game_id':'game__pk',
+        'market_name': 'market__name__icontains',
+        'game_name': 'game__name__icontains',
+        'cotation_id': 'pk'
+    }
 
 class CotationCopyView(ModelViewSet):
     queryset = CotationCopy.objects.all()
@@ -31,16 +43,4 @@ class CotationModifiedView(ModelViewSet):
         super(CotationModifiedView, self).perform_create(serializer)
 
 
-class CotationView(FiltersMixin, ModelViewSet):
-    queryset = Cotation.objects.all()
-    serializer_class = CotationSerializer       
-    permission_classes = [StoreIsRequired,]
-    pagination_class = CotationsListSetPagination
-
-    filter_mappings = {
-        'game_name':'game__name__icontains',
-        'market_name': 'market__name__icontains',
-        'game_name': 'game__name__icontains',
-        'cotation_id': 'id'
-    }
     
