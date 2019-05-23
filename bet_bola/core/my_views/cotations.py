@@ -1,5 +1,6 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
+from django.db.models import Q
 from core.models import CotationCopy
 from core.serializers.cotation import CotationCopySerializer, CotationModifiedSerializer, CotationSerializer
 from core.permissions import StoreIsRequired, UserIsFromThisStore, CanModifyCotation
