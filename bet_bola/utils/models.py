@@ -302,21 +302,24 @@ class MarketRemotion(models.Model):
     )
     
     MARKET_LIST = (
-        (2,"Abaixo/Acima"),
-        (21,"Abaixo/Acima 1° Tempo"),
-        (45,"Abaixo/Acima 2° Tempo"),
-        (101,"Abaixo/Acima - Time de Casa"),
-        (102,"Abaixo/Acima - Time de Fora")
+        (1,"Gols - Acima/Abaixo"),
+        (2,"Total de Gols"),
+        (3,"Resultado / Total de Gols"),
+        (4,"Total de Gols / Ambos  Marcam"),
+        (6,"Número de Gols na Partida"),
+        (17,"Resultado 1° Tempo / Total de Gols"),
+        (22,"Total de Gols 1° Tempo"),
+        (30,"Total de Gols 2° Tempo"),
+
     )
 
     market_to_remove = models.IntegerField(choices=MARKET_LIST, verbose_name='Tipo de Aposta')
-    below_above = models.CharField(max_length=8, choices=BELOW_ABOVE, verbose_name='Abaixo ou Acima')
+    under_above = models.CharField(max_length=8, choices=BELOW_ABOVE, verbose_name='Abaixo ou Acima')
     base_line = models.CharField(max_length=5, verbose_name='Valor')
     store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
 
-
     def __str__(self):
-        return self.get_market_to_remove_display() + ' - ' + self.below_above + ' ' +self.base_line
+        return self.get_market_to_remove_display() + ' - ' + self.under_above + ' ' +self.base_line
 
     class Meta:
         verbose_name = 'Remoção de Aposta'

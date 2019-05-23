@@ -111,7 +111,7 @@ class CotationSerializer(serializers.HyperlinkedModelSerializer):
 
 class CotationModifiedSerializer(serializers.HyperlinkedModelSerializer):
 	cotation = serializers.SlugRelatedField(queryset=Cotation.objects.all(), slug_field='id')
-	store = serializers.SlugRelatedField(queryset=Store.objects.all(), slug_field='id')
+	store = serializers.SlugRelatedField(read_only=True, slug_field='id')
 
 	class Meta:
 		model = CotationModified	

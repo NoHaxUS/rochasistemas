@@ -16,10 +16,10 @@ class MarketRemotionSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = MarketRemotion	
-		fields = ('market_to_remove','below_above','base_line','store')
+		fields = ('market_to_remove','under_above','base_line','store')
 
 	def validate(self, data):		
-		if not MarketRemotion.objects.filter(market_to_remove=data['market_to_remove'], below_above=data['below_above'], base_line=data['base_line']).exists():
+		if not MarketRemotion.objects.filter(market_to_remove=data['market_to_remove'], under_above=data['under_above'], base_line=data['base_line'],store=data['store']).exists():
 			return data
 		raise serializers.ValidationError("Essa remoção ja foi efetuada antes")
 
@@ -30,7 +30,7 @@ class GetMarketRemotionSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = MarketRemotion	
-		fields = ('id','market_to_remove','below_above','base_line','store')
+		fields = ('id','market_to_remove','under_above','base_line','store')
 	
 	def get_market_to_remove(self, obj):
 		return obj.get_market_to_remove_display()
