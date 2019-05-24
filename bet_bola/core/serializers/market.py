@@ -15,13 +15,13 @@ class MarketCotationSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MarketSerializer(serializers.HyperlinkedModelSerializer):	
-	reduction = serializers.SerializerMethodField()
+	my_reduction = serializers.SerializerMethodField()
 
 	class Meta:
 		model = Market
-		fields = ('id','name','reduction')	
+		fields = ('id','name','my_reduction')	
 	
-	def get_reduction(self, market):
+	def get_my_reduction(self, market):
 		if market.my_reduction.exists():			
-			return market.my_reduction.first().reduction_percentual
-		return 0
+			return {"reduction":market.my_reduction.first().reduction_percentual, "active": market.my_reduction.first().active}
+		return {"reduction":100, "active":False}

@@ -8,7 +8,7 @@ class MarketReductionSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = MarketReduction
-		fields = ('market', 'reduction_percentual', 'store')
+		fields = ('market', 'reduction_percentual', 'active', 'store')
 
 
 class MarketRemotionSerializer(serializers.HyperlinkedModelSerializer):	

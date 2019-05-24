@@ -20,16 +20,18 @@ class MarketReductionView(ModelViewSet):
 
 		return Response(serializer.data)
 	
-	def perform_create(self, serializer):
-		store = serializer.validated_data['store']
+	def perform_create(self, serializer):		
+		store = self.request.user.my_store
 		market = serializer.validated_data['market']
 		reduction_percentual = serializer.validated_data['reduction_percentual']
+		active = serializer.validated_data['active']
 		if MarketReduction.objects.filter(store=store, market=market).exists():
 			markets_reduction = MarketReduction.objects.get(store=store, market=market)
 			markets_reduction.reduction_percentual = reduction_percentual
+			markets_reduction.active = active
 			markets_reduction.save()
-			return markets_reduction
-		super(MarketReductionView,).perform_create(serializer)
+			return markets_reduction		
+		return MarketReduction.objects.create(store=store, market=market, reduction_percentual=reduction_percentual, active=active)
 
 
 class MarketRemotionView(ModelViewSet):

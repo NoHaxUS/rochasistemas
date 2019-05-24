@@ -330,36 +330,37 @@ class MarketReduction(models.Model):
 
     market = models.ForeignKey('core.Market', verbose_name='Tipo de Aposta', related_name="my_reduction", on_delete=models.CASCADE)
     reduction_percentual = models.IntegerField(default=100, verbose_name='Percentual de Redução')
+    active = models.BooleanField(default=True)
     store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
 
 
-    def apply_reductions(self):
-        from core.models import Game
+    # def apply_reductions(self):
+    #     from core.models import Game
         
-        if GeneralConfigurations.objects.filter(pk=1):
-            max_cotation_value = GeneralConfigurations.objects.get(pk=1).max_cotation_value
-        else:
-            max_cotation_value = 200
+    #     if GeneralConfigurations.objects.filter(pk=1):
+    #         max_cotation_value = GeneralConfigurations.objects.get(pk=1).max_cotation_value
+    #     else:
+    #         max_cotation_value = 200
 
-        able_games = Game.objects.filter(start_date__gt=tzlocal.now(),
-        status__in=[1,2,8,9],
-        available=True)
+    #     able_games = Game.objects.filter(start_date__gt=tzlocal.now(),
+    #     status__in=[1,2,8,9],
+    #     available=True)
 
-        reduction = self.reduction_percentual / 100
+    #     reduction = self.reduction_percentual / 100
         
-        for game in able_games:
+    #     for game in able_games:
 
-            if self.market_to_reduct == 600:
-                cotations_to_reduct =  game.cotations.filter(market__id=1, name='Casa')
-            elif self.market_to_reduct == 601:
-                cotations_to_reduct =  game.cotations.filter(market__id=1, name='Empate')
-            elif self.market_to_reduct == 602:
-                cotations_to_reduct =  game.cotations.filter(market__id=1, name='Fora')
-            else:
-                cotations_to_reduct =  game.cotations.filter(market__id=self.market_to_reduct)
-            cotations_to_reduct.update(price=F('price') * reduction )
-            cotations_to_reduct.update(price=Case(When(price__lt=1,then=1.05),default=F('price')))
-            cotations_to_reduct.filter(price__gt=max_cotation_value).update(price=max_cotation_value)    
+    #         if self.market_to_reduct == 600:
+    #             cotations_to_reduct =  game.cotations.filter(market__id=1, name='Casa')
+    #         elif self.market_to_reduct == 601:
+    #             cotations_to_reduct =  game.cotations.filter(market__id=1, name='Empate')
+    #         elif self.market_to_reduct == 602:
+    #             cotations_to_reduct =  game.cotations.filter(market__id=1, name='Fora')
+    #         else:
+    #             cotations_to_reduct =  game.cotations.filter(market__id=self.market_to_reduct)
+    #         cotations_to_reduct.update(price=F('price') * reduction )
+    #         cotations_to_reduct.update(price=Case(When(price__lt=1,then=1.05),default=F('price')))
+    #         cotations_to_reduct.filter(price__gt=max_cotation_value).update(price=max_cotation_value)    
             
     def __str__(self):
         return self.reduction_percentual
