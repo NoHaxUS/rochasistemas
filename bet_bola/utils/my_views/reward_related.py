@@ -19,5 +19,16 @@ class RewardRelatedView(ModelViewSet):
 		serializer = self.get_serializer(rewards_related, many=True)
 
 		return Response(serializer.data)
+	
+	def perform_create(self, serializer):		
+		store = self.request.user.my_store
+		max_reward_value = serializer.validated_data['max_reward_value']
+		bet_value = serializer.validated_data['bet_value']		
+		if RewardRestriction.objects.filter(store=store, bet_value=bet_value).exists():
+			reward_restriction = RewardRestriction.objects.get(store=store, bet_value=bet_value)
+			reward_restriction.max_reward_value = max_reward_value			
+			reward_restriction.save()
+			return reward_restriction		
+		return RewardRestriction.objects.create(store=store, max_reward_value=max_reward_value, bet_value=bet_value)
 
 

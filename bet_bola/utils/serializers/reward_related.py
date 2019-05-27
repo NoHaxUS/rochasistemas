@@ -4,16 +4,16 @@ from utils.models import RewardRestriction
 
 class RewardRelatedSerializer(serializers.HyperlinkedModelSerializer):
 
-	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
+	store = serializers.SlugRelatedField(read_only=True, slug_field='id')
 
 	class Meta:
 		model = RewardRestriction
-		fields = ('value_max','reward_value_max','store')
+		fields = ('id','bet_value','max_reward_value','store')
 
 	def validate(self, data):        
-		if data['value_max'] < 0:
+		if data['bet_value'] < 0:
 			raise serializers.ValidationError("Valor não pode ser negativo")
-		if data['reward_value_max'] < 0:
+		if data['max_reward_value'] < 0:
 			raise serializers.ValidationError("Valor não pode ser negativo")
 
 		return data
