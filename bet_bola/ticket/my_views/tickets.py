@@ -11,6 +11,7 @@ from user.permissions import IsSuperUser
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from user.models import TicketOwner
 from core.models import CotationCopy, Cotation, Store
+from utils.models import RewardRestriction
 from utils import timezone as tzlocal
 from config import settings
 
@@ -50,12 +51,14 @@ class TicketView(FiltersMixin, ModelViewSet):
         serializer.is_valid(raise_exception=True)
         message = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        if message:		
-            data = [serializer.data,{'Validation':message}]		
-            return Response(data, status=status.HTTP_201_CREATED, headers=headers)		
-            
-        data = [serializer.data]
-        return Response(data, status=status.HTTP_201_CREATED, headers=headers)		
+        reward_message = None
+
+        if RewardRestriction.objects.filter(bet_value__lte = serializer.data['bet_value'], store=request.user.my_store):
+            reward_restrict = RewardRestriction.objects.filter(bet_value__lte = serializer.data['bet_value'], store=request.user.my_store).order_by('bet_value').last()
+            reward_message = "Valor maximo do premio para apostas de "+ str(serializer.data['bet_value']) +" é " + str(reward_restrict.max_reward_value) + ", se deseja confirmar a aposta, clique em ok."
+        	
+        data = [serializer.data, {'Validation':message}, {'RewardValidation':reward_message}]		
+        return Response(data, status=status.HTTP_201_CREATED, headers=headers)		            
 
     def perform_create(self, serializer):
         data = {
