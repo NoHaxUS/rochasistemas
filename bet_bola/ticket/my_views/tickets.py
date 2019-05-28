@@ -51,14 +51,13 @@ class TicketView(FiltersMixin, ModelViewSet):
         serializer.is_valid(raise_exception=True)
         message = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        reward_message = None
+        if message:		
+            data = [serializer.data,{'Validation':message}]		
+            return Response(data, status=status.HTTP_201_CREATED, headers=headers)		
 
-        if RewardRestriction.objects.filter(bet_value__lte = serializer.data['bet_value'], store=request.user.my_store):
-            reward_restrict = RewardRestriction.objects.filter(bet_value__lte = serializer.data['bet_value'], store=request.user.my_store).order_by('bet_value').last()
-            reward_message = "Valor maximo do premio para apostas de "+ str(serializer.data['bet_value']) +" é " + str(reward_restrict.max_reward_value) + ", se deseja confirmar a aposta, clique em ok."
-        	
-        data = [serializer.data, {'Validation':message}, {'RewardValidation':reward_message}]		
-        return Response(data, status=status.HTTP_201_CREATED, headers=headers)		            
+        data = [serializer.data]
+        return Response(data, status=status.HTTP_201_CREATED, headers=headers)		
+
 
     def perform_create(self, serializer):
         data = {
