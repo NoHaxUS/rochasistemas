@@ -19,4 +19,14 @@ class RulesMessageView(ModelViewSet):
 		serializer = self.get_serializer(rules, many=True)
 
 		return Response(serializer.data)
+	
+	def perform_create(self, serializer):		
+		store = self.request.user.my_store
+		text = serializer.validated_data['text']		
+		if RulesMessage.objects.filter(store=store).exists():
+			rule = RulesMessage.objects.get(store=store)
+			rule.text = text
+			rule.save()
+			return rule
+		return RulesMessage.objects.create(store=store, text=text)
         

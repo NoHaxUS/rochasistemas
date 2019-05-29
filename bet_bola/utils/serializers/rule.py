@@ -4,7 +4,7 @@ from utils.models import RulesMessage
 
 class RulesMessageSerializer(serializers.HyperlinkedModelSerializer):
 
-	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
+	store = serializers.SlugRelatedField(read_only=True,slug_field='id')
 
 	class Meta:
 		model =  RulesMessage
