@@ -6,33 +6,19 @@ from django.contrib import messages
 from user.models import Seller
 from user.permissions import IsAdmin
 from core.permissions import StoreIsRequired, UserIsFromThisStore
+from core.paginations import StandardSetPagination
 from user.serializers.seller import SellerSerializer
+from filters.mixins import FiltersMixin
 
-class SellerView(ModelViewSet):
+class SellerView(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.all()
-    serializer_class = SellerSerializer   
-    permission_classes = [StoreIsRequired, UserIsFromThisStore, IsAdmin]
+    serializer_class = SellerSerializer
+    pagination_class = StandardSetPagination
 
-    def list(self, request, pk=None):
-        store_id = request.GET.get('store')
+    filter_mappings = {
+		'store':'my_store',
+	}
 
-        queryset = self.queryset.filter(my_store__id=store_id)
-
-        page = self.paginate_queryset(queryset)        
-
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-            
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)    
-
-    def destroy(self, request, *args, **kwargs):
-        seller = self.get_object()
-        
-        self.perform_destroy(seller)        
-        return Response(status=status.HTTP_204_NO_CONTENT)
-                
 
     @action(methods=['get'], detail=True)
     def pay_seller(self, request, pk=None):
