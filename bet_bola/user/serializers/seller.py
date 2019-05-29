@@ -9,7 +9,7 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model=Seller
-		fields = ('id','username','first_name','password','cellphone','address','cpf','can_sell_unlimited','credit_limit','limit_time_to_cancel','my_manager','email')
+		fields = ('id','username','first_name','password','cellphone','address','cpf','can_sell_unlimited','credit_limit','limit_time_to_cancel','my_manager','email','can_cancel_ticket')
 
 	def create(self, validated_data):				
 		obj = Seller(**validated_data)

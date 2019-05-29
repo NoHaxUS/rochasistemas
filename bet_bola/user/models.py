@@ -1,11 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User, Permission, AbstractUser, BaseUserManager
+from django.contrib.auth.models import User, Permission, AbstractUser
 from django.db.models import F, Q, When, Case
 from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
 from .logic import manager, seller, admin
-
-
 
 class CustomUser(AbstractUser):   
     
@@ -30,6 +28,15 @@ class CustomUser(AbstractUser):
         return self.first_name + ' ' + self.last_name
 
 
+class TicketOwner(models.Model):
+    first_name = models.CharField(max_length=150, verbose_name='Nome')
+    cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)   
+    my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)     
+
+    def __str__(self):
+        return self.first_name
+
+
 class Admin(CustomUser):        
 
     class Meta:
@@ -44,20 +51,9 @@ class Admin(CustomUser):
         self.clean()
         if not self.password.startswith('pbkdf2'):          
             self.set_password(self.password)
-        self.is_superuser = False
-        self.is_staff = False
         self.user_type = 4
         super().save()
         admin.define_default_permissions(self)
-
-
-class TicketOwner(models.Model):
-    first_name = models.CharField(max_length=150, verbose_name='Nome')
-    cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)   
-    my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)     
-
-    def __str__(self):
-        return self.first_name
 
 
 class Punter(CustomUser):            
@@ -67,20 +63,10 @@ class Punter(CustomUser):
         if not self.password.startswith('pbkdf2'):
             self.set_password(self.password)
         self.is_superuser = False
-        self.user_type = 1
         self.is_staff = True
-        
+        self.user_type = 1
         super().save()
-        
-        self.define_default_permissions()
 
-    def define_default_permissions(self):
-
-        view_ticket_perm = Permission.objects.get(codename='view_ticket')
-        be_punter = Permission.objects.get(codename='be_punter')
-        change_punter = Permission.objects.get(codename='change_punter')
-
-        self.user_permissions.add(view_ticket_perm, be_punter, change_punter)
 
     class Meta:
         verbose_name = 'Apostador'
@@ -98,31 +84,20 @@ class Seller(CustomUser):
     credit_limit = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Crédito')
     my_manager = models.ForeignKey('Manager', on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente', null=True, blank=True)
     can_cancel_ticket = models.BooleanField(default=False, verbose_name='Cancela Bilhete ?')
-    limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento", validators=[MinValueValidator(1), MaxValueValidator(45)])        
+    limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento", validators=[MinValueValidator(1), MaxValueValidator(45)])
 
-    def reset_revenue(self, who_reseted_revenue):
-        seller.reset_revenue(self, who_reseted_revenue)
 
-    def full_name(self):
-        return seller.full_name(self)
-    
-    def net_value(self):                
-        return seller.net_value(self)
+    def alter_credit(self, credit):
+        self.credit_limit += credit
+        self.save()
 
-    def real_net_value(self):
-        return seller.real_net_value(self)
+    def toggle_can_sell_unlimited(self):
+        self.can_sell_unlimited = not self.can_sell_unlimited
+        self.save()
 
-    def see_comissions(self):
-        return seller.see_comissions(self)
-    
-    def get_commission(self):
-        return seller.get_commission(self)
-
-    def out_money(self):        
-        return seller.out_money(self)
-
-    def actual_revenue(self):
-        return seller.actual_revenue(self)
+    def toggle_can_cancel_ticket(self):
+        self.can_cancel_ticket = not self.can_cancel_ticket
+        self.save()
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -132,11 +107,6 @@ class Seller(CustomUser):
         self.is_staff = False
         self.user_type = 2
         super().save()
-
-        from utils.models import Comission
-        comission = Comission.objects.filter(seller_related=self)
-        if not comission:
-            Comission(seller_related=self,store=self.my_store).save()
         seller.define_default_permissions(self)        
 
 
@@ -159,28 +129,7 @@ class Manager(CustomUser):
     limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento", validators=[MinValueValidator(1), MaxValueValidator(45)])
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
     can_change_limit_time = models.BooleanField(default=False, verbose_name='Pode alterar tempo de Cancelamento do Cambista?')
-    comission_based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no líquido ?')     
-
-    def reset_revenue(self, who_reseted_revenue):        
-        manager.reset_revenue(self, who_reseted_revenue)
-
-    def out_money(self):
-        return manager.out_money(self)
-
-    def get_commission(self):
-        return manager.get_commission(self)    
-
-    def net_value(self):
-        return manager.net_value(self)
-
-    def real_net_value(self):
-        return manager.real_net_value(self)    
-
-    def net_value_before_comission(self):
-        return manager.net_value_before_comission(self)
-
-    def actual_revenue(self):
-        return manager.actual_revenue(self)
+    comission_based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no líquido ?')
 
     def manage_credit(self, obj, is_new=False):
         return manager.manage_credit(self, obj, is_new)
@@ -193,7 +142,6 @@ class Manager(CustomUser):
         self.is_staff = False
         self.user_type = 3
         super().save()
-
         manager.define_default_permissions(self)   
 
     class Meta:
