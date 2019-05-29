@@ -2,14 +2,12 @@ from rest_framework import serializers
 from core.models import Store
 from user.models import Manager
 
-class ManagerSerializer(serializers.HyperlinkedModelSerializer):	
-	
-	my_store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
+class ManagerSerializer(serializers.HyperlinkedModelSerializer):
 	password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
 
 	class Meta:
 		model = Manager
-		fields = ('id','username','first_name','password','cpf','cellphone','address', 'email','commission','credit_limit_to_add','can_cancel_ticket','limit_time_to_cancel','can_sell_unlimited','can_change_limit_time','based_on_profit','my_store')
+		fields = ('id','username','first_name','password','cpf','cellphone','address', 'email','commission','credit_limit_to_add','can_cancel_ticket','limit_time_to_cancel','can_sell_unlimited','can_change_limit_time','comission_based_on_profit')
 
 	def create(self, validated_data):				
 		obj = Manager(**validated_data)		
@@ -19,6 +17,6 @@ class ManagerSerializer(serializers.HyperlinkedModelSerializer):
 		return obj
 
 	def validate_email(self, value):
-		if Punter.objects.filter(email=value):
+		if Manager.objects.filter(email=value):
 			raise serializers.ValidationError("Email ja cadastrado.")
 		return value
