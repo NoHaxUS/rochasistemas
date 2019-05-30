@@ -8,7 +8,7 @@ from utils.models import RulesMessage
 class RulesMessageView(ModelViewSet):
 	queryset = RulesMessage.objects.all()
 	serializer_class = RulesMessageSerializer
-	permission_classes = [StoreIsRequired, UserIsFromThisStore,]
+	permission_classes = [StoreIsRequired,]
 
 	def list(self, request, pk=None):
 		from core.models import Store
