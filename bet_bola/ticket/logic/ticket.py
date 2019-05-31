@@ -14,7 +14,7 @@ def toggle_availability(self):
     }
   
 
-def cancel_ticket(self, who_canceling):
+def cancel_ticket(self, who_canceling):    
 
     if not (who_canceling.has_perm('user.be_admin') or who_canceling.has_perm('user.be_seller')):
         return {
@@ -46,12 +46,11 @@ def cancel_ticket(self, who_canceling):
                 'success':False,
                 'message':'Você não pode cancelar um Bilhete que você não Pagou.'
             }
-    
-    
-    who_paid = self.payment.who_paid
+        
+    who_paid = self.payment.who_paid.seller
     if who_canceling.has_perm('user.be_seller') and not who_canceling.is_superuser:
         if not who_paid.can_sell_unlimited:
-            who_paid.credit_limit += self.value
+            who_paid.credit_limit += self.bet_value
             who_paid.save()
 
     self.status = 5
@@ -112,14 +111,14 @@ def validate_ticket(self, who_validating):
 
     if who_validating.has_perm('user.be_seller') and not who_validating.is_superuser:
         if not who_validating.seller.can_sell_unlimited:
-            if self.value > who_validating.seller.credit_limit:                
+            if self.bet_value > who_validating.seller.credit_limit:                
                 return {
                 'success':False,
                 'message':'Você não tem créditos para pagar esse Bilhete: ' + str(self.pk)
             }
 
             seller_before_balance = who_validating.seller.credit_limit
-            who_validating.seller.credit_limit -= self.value
+            who_validating.seller.credit_limit -= self.bet_value
             seller_after_balance = who_validating.seller.credit_limit
             who_validating.seller.save()
                 
