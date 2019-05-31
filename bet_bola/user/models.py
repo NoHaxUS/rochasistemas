@@ -5,6 +5,10 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
 from .logic import manager, seller, admin
 
+def define_password(self):
+    if not self.password.startswith('pbkdf2'):			
+        self.set_password(self.password)
+
 class CustomUser(AbstractUser):   
     
     USER_TYPE = (
@@ -49,9 +53,8 @@ class Admin(CustomUser):
 
     def save(self, *args, **kwargs):
         self.clean()
-        if not self.password.startswith('pbkdf2'):          
-            self.set_password(self.password)
         self.user_type = 4
+        define_password(self)
         super().save()
         admin.define_default_permissions(self)
 
@@ -60,11 +63,8 @@ class Punter(CustomUser):
 
     def save(self, *args, **kwargs):
         self.clean()
-        if not self.password.startswith('pbkdf2'):
-            self.set_password(self.password)
-        self.is_superuser = False
-        self.is_staff = True
         self.user_type = 1
+        define_password(self)
         super().save()
 
 
@@ -101,11 +101,8 @@ class Seller(CustomUser):
 
     def save(self, *args, **kwargs):
         self.clean()
-        if not self.password.startswith('pbkdf2'):			
-            self.set_password(self.password)
-        self.is_superuser = False
-        self.is_staff = False
         self.user_type = 2
+        define_password(self)
         super().save()
         seller.define_default_permissions(self)        
 
@@ -136,11 +133,8 @@ class Manager(CustomUser):
         
     def save(self, *args, **kwargs):
         self.clean()
-        if not self.password.startswith('pbkdf2'):
-            self.set_password(self.password)
-        self.is_superuser = False
-        self.is_staff = False
         self.user_type = 3
+        define_password(self)
         super().save()
         manager.define_default_permissions(self)   
 
