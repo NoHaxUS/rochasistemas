@@ -87,6 +87,10 @@ class Seller(CustomUser):
     limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento", validators=[MinValueValidator(1), MaxValueValidator(45)])
 
 
+    def toggle_is_active(self):
+        self.is_active = not self.is_active
+        self.save()
+
     def alter_credit(self, credit):
         self.credit_limit += credit
         self.save()

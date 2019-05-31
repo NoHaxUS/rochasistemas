@@ -11,16 +11,24 @@ from user.serializers.seller import SellerSerializer
 from filters.mixins import FiltersMixin
 
 class SellerView(FiltersMixin, ModelViewSet):
-    queryset = Seller.objects.all()
+    queryset = Seller.objects.filter(is_active=True)
     serializer_class = SellerSerializer
     pagination_class = StandardSetPagination
 
     filter_mappings = {
         'login': 'username__icontains',
+        'manager': 'my_manager__username',
         'email': 'email__icontains',
 		'store':'my_store',
 	}
 
+
+    @action(methods=['get'], detail=True, permission_classes=[])
+    def toggle_is_active(self, request, pk=None):
+        seller = self.get_object()
+        seller.toggle_is_active()
+        return Response({'success': True})
+    
 
     @action(methods=['post'], detail=True, permission_classes=[])
     def alter_credit(self, request, pk=None):
