@@ -35,10 +35,9 @@ router.register(r'excluded_leagues', ExcludedLeagueView)
 router.register(r'rewards_related', RewardRelatedView)
 router.register(r'markets_reduction', MarketReductionView)
 router.register(r'markets_remotion', MarketRemotionView)
-# router.register(r'overviews', OverviewView)
+
 
 urlpatterns = [
-	# path('balance/', Balance.as_view(), name='balance'),
 	path('token/', CustomAuthToken.as_view(), name='info')
 ]
 
