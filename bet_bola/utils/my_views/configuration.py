@@ -17,6 +17,6 @@ class GeneralConfigurationsView(FiltersMixin, ModelViewSet):
         
         if GeneralConfigurations.objects.filter(store=store).exists():
             configuration = GeneralConfigurations.objects.filter(store=store).update(**data)                        
-            return GeneralConfigurations.objects.filter(store=store).first()
+            return GeneralConfigurations.objects.get(store=store)
         return GeneralConfigurations.objects.create(store=store, **data)
 

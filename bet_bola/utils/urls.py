@@ -22,6 +22,7 @@ from .my_views.reward_related import RewardRelatedView
 from .my_views.market import MarketReductionView, MarketRemotionView
 from .my_views.comission import ComissionView
 from .my_views.auth import CustomAuthToken
+from .my_views.ticket_custom_message import TicketCustomMessageView
 #  OverviewView, Balance, 
 
 app_name = 'utils'
@@ -35,7 +36,7 @@ router.register(r'excluded_leagues', ExcludedLeagueView)
 router.register(r'rewards_related', RewardRelatedView)
 router.register(r'markets_reduction', MarketReductionView)
 router.register(r'markets_remotion', MarketRemotionView)
-
+router.register(r'ticket_custom_messages', TicketCustomMessageView)
 
 urlpatterns = [
 	path('token/', CustomAuthToken.as_view(), name='info')
