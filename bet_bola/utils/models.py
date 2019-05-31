@@ -10,132 +10,18 @@ import utils.timezone as tzlocal
 
 class Comission(models.Model):
     
-    seller_related = models.OneToOneField('user.Seller',related_name="comissions", on_delete=models.CASCADE, verbose_name="Cambista Relacionado")
+    seller_related = models.OneToOneField('user.Seller', related_name="comissions", on_delete=models.CASCADE, verbose_name="Cambista Relacionado")
     simple = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Simples")
     double = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Dupla")
     triple = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Tripla")
     fourth = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Quádrupla")
     fifth = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Quíntupla")
     sixth = models. DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Sêxtupla")
-    sixth_more = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Mais de  6")
+    sixth_more = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Mais de 6")
     store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
 
-    def total_simple(self, date_from, date_to):
-        total_revenue = 0
-        tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_paid=self.seller_related).annotate(cotations_count=Count('cotations')).filter(cotations_count=1)
-
-        if date_from and date_to:
-            tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_paid=self.seller_related,             
-            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=1).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
-        for ticket in tickets_not_rewarded:
-            total_revenue += ticket.value
-        return round(total_revenue * (self.simple / Decimal(100)),2)
-
-    total_simple.short_description = "Simples"
-    
-    def total_double(self, date_from, date_to):
-        total_revenue = 0
-        tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_paid=self.seller_related,             
-            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=2)
-        if date_from and date_to:
-            tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_paid=self.seller_related,         
-            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=2).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
-        for ticket in tickets_not_rewarded:
-            total_revenue += ticket.value
-        return round(total_revenue * (self.double / Decimal(100)),2)
-    total_double.short_description = "Dupla"
-    
-    def total_triple(self, date_from, date_to):
-        total_revenue = 0
-        tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_paid=self.seller_related         
-            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=3)
-        if date_from and date_to:
-            tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_paid=self.seller_related             
-            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=3).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
-
-        for ticket in tickets_not_rewarded:
-            total_revenue += ticket.value
-        return round(total_revenue * (self.triple / Decimal(100)),2)
-    total_triple.short_description = "Tripla"
-
-    def total_fourth(self, date_from, date_to):
-        total_revenue = 0
-        tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_paid=self.seller_related             
-            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=4)
-        if date_from and date_to:
-            tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_paid=self.seller_related             
-            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=4).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
-        for ticket in tickets_not_rewarded:
-            total_revenue += ticket.value
-        return round(total_revenue * (self.fourth / Decimal(100)),2)
-    total_fourth.short_description = "Quádrupla"
-
-
-    def total_fifth(self, date_from, date_to):
-        total_revenue = 0
-        tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_paid=self.seller_related,             
-            ).annotate(cotations_count=Count('cotations'))
-        if date_from and date_to:
-            tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_paid=self.seller_related            
-            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=5).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
-        for ticket in tickets_not_rewarded:
-            total_revenue += ticket.value
-        return round(total_revenue * (self.fifth / Decimal(100)),2)
-    total_fifth.short_description = "Quíntupla"
-
-
-    def total_sixth(self, date_from, date_to):
-        total_revenue = 0
-        tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_paid=self.seller_related            
-            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=6)
-        if date_from and date_to:
-            tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_paid=self.seller_related            
-            ).annotate(cotations_count=Count('cotations')).filter(cotations_count=6).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
-        for ticket in tickets_not_rewarded:
-            total_revenue += ticket.value
-        return round(total_revenue * (self.sixth / Decimal(100)),2)
-    total_sixth.short_description = "Sêxtupla"
-
-    
-    def total_sixth_more(self, date_from, date_to):
-        total_revenue = 0
-        tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_paid=self.seller_related        
-            ).annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=6)
-        if date_from and date_to:
-            tickets_not_rewarded = Ticket.objects.filter(
-            payment__who_paid=self.seller_related            
-            ).annotate(cotations_count=Count('cotations')).filter(cotations_count__gt=6).filter(Q(creation_date__date__gte=date_from) & Q(creation_date__date__lte=date_to))
-        for ticket in tickets_not_rewarded:
-            total_revenue += ticket.value
-        return round(total_revenue * (self.sixth_more / Decimal(100)),2)
-    total_sixth_more.short_description = "Mais de 6"
-    
-
-    def total_comission(self, date_from, date_to):
-        return round(self.total_simple(date_from, date_from) + 
-        self.total_double(date_from, date_from) + 
-        self.total_triple(date_from, date_from) + 
-        self.total_fourth(date_from, date_from) +
-        self.total_fifth(date_from, date_from) +
-        self.total_sixth(date_from, date_from) +
-        self.total_sixth_more(date_from, date_from),2)
-    total_comission.short_description = "Comissão Total"
-
     def __str__(self):
-        return "Comissões dos Cambistas"
+        return "Comissão do Cambista"
 
     class Meta:
         verbose_name = 'Comissão do Cambista'
