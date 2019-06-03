@@ -13,6 +13,26 @@ from ticket.models import Ticket
 from user.models import CustomUser
 from core.models import Store, Cotation
 
+
+class RevenueSerializer(serializers.HyperlinkedModelSerializer):
+			
+	payment = PaymentSerializerWithSeller()
+	reward = RewardSerializer()	
+	creator = serializers.SlugRelatedField(read_only=True, slug_field='username')
+	status = serializers.SerializerMethodField()	
+	creation_date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
+
+
+	class Meta:
+		model = Ticket
+		fields = ('id','creation_date','creator','reward','payment','bet_value','status')
+
+	
+	def get_status(self, obj):
+		return obj.get_status_display()
+
+
+
 class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	
 	owner = serializers.SlugRelatedField(read_only=True,slug_field='first_name')
