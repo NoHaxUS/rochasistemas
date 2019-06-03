@@ -17,7 +17,7 @@ class SellerView(FiltersMixin, ModelViewSet):
 
     filter_mappings = {
         'login': 'username__icontains',
-        'manager': 'my_manager__username',
+        'manager': 'my_manager__username__icontains',
         'email': 'email__icontains',
 		'store':'my_store',
 	}

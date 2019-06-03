@@ -124,7 +124,6 @@ class Seller(CustomUser):
 class Manager(CustomUser):
     cpf = models.CharField(max_length=11, verbose_name='CPF', null=True, blank=True)    
     address = models.CharField(max_length=75, verbose_name='Endereço', null=True, blank=True)
-    commission = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Comissão', validators=[MinValueValidator(Decimal('0.01'))])
     credit_limit_to_add = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name="Crédito")
     can_cancel_ticket = models.BooleanField(default=True, verbose_name='Cancela Bilhete ?')
     limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento", validators=[MinValueValidator(1), MaxValueValidator(45)])
@@ -132,8 +131,29 @@ class Manager(CustomUser):
     can_change_limit_time = models.BooleanField(default=False, verbose_name='Pode alterar tempo de Cancelamento do Cambista?')
     comission_based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no líquido ?')
 
-    def manage_credit(self, obj, is_new=False):
-        return manager.manage_credit(self, obj, is_new)
+    def toggle_is_active(self):
+        self.is_active = not self.is_active
+        self.save()
+
+    def toggle_can_cancel_ticket(self):
+        self.can_cancel_ticket = not self.can_cancel_ticket
+        self.save()
+
+    def toggle_can_sell_unlimited(self):
+        self.can_sell_unlimited = not self.can_sell_unlimited
+        self.save()
+
+    def toggle_can_change_limit_time(self):
+        self.can_change_limit_time = not self.can_change_limit_time
+        self.save()
+
+    def toggle_comission_based_on_profit(self):
+        self.comission_based_on_profit = not self.comission_based_on_profit
+        self.save()
+
+    def alter_credit(self, credit):
+        self.credit_limit_to_add += credit
+        self.save()
         
     def save(self, *args, **kwargs):
         self.clean()

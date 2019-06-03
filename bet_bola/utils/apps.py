@@ -3,15 +3,15 @@ from django.db.models.signals import post_migrate
 
 def create_comission_to_existing_sellers(sender, **kwargs):
     from user.models import Seller
-    from utils.models import  Comission
+    from utils.models import  SellerComission
 
     updateBool = input("Create Comissions for Users? Say: y or n: ")
     if updateBool == "y":
         print("Creating Comission for Users")
         for seller in Seller.objects.all():
-            comission = Comission.objects.filter(seller_related=seller)
+            comission = SellerComission.objects.filter(seller_related=seller)
             if not comission:
-                Comission(seller_related=seller).save()
+                SellerComission(seller_related=seller).save()
 
 def create_default_priority(sender, **kwargs):
     from core.models import Country

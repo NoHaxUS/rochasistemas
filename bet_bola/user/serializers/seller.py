@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from user.models import Manager, Seller, Punter
 from core.models import Store
-from django.utils.translation import gettext as _
+from utils.models import SellerComission
 
 class SellerSerializer(serializers.HyperlinkedModelSerializer):	
 	
@@ -16,6 +16,12 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
 		obj = Seller(**validated_data)
 		obj.my_store=store
 		obj.save()
+
+		SellerComission.objects.create(
+			seller_related=obj,
+			store=store
+		)
+
 		return obj
 
 	def update(self, instance, validated_data):

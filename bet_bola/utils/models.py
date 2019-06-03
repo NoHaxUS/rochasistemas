@@ -8,9 +8,31 @@ from ticket.models import Ticket
 from decimal import Decimal
 import utils.timezone as tzlocal
 
-class Comission(models.Model):
+
+class SellerComission(models.Model):
+
+    seller_related = models.OneToOneField('user.Seller', null=True, blank=True, related_name="comissions", on_delete=models.CASCADE, verbose_name="Gerente Relacionado")    
+    simple = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Simples")
+    double = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Dupla")
+    triple = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Tripla")
+    fourth = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Quádrupla")
+    fifth = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Quíntupla")
+    sixth = models. DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Sêxtupla")
+    sixth_more = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Mais de 6")
+    store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "Comissão do Gerentes"
+
+    class Meta:
+        ordering = ('-pk',)
+        verbose_name = 'Comissão do Gerentes'
+        verbose_name_plural = 'Comissões dos Gerentes'
+
+
+class ManagerComission(models.Model):
     
-    seller_related = models.OneToOneField('user.Seller', related_name="comissions", on_delete=models.CASCADE, verbose_name="Cambista Relacionado")
+    manager_related = models.OneToOneField('user.Manager', null=True, blank=True, related_name="comissions", on_delete=models.CASCADE, verbose_name="Cambista Relacionado")
     simple = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Simples")
     double = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Dupla")
     triple = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Tripla")
@@ -24,8 +46,10 @@ class Comission(models.Model):
         return "Comissão do Cambista"
 
     class Meta:
+        ordering = ('-pk',)
         verbose_name = 'Comissão do Cambista'
         verbose_name_plural = 'Comissões dos Cambistas'
+
 
 class GeneralConfigurations(models.Model):
 

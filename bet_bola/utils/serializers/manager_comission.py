@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from utils.models import Comission
-from user.models import Seller
+from utils.models import ManagerComission
+from user.models import Manager
 
-class ComissionSerializer(serializers.HyperlinkedModelSerializer):
+class ManagerComissionSerializer(serializers.HyperlinkedModelSerializer):
 	
-	seller_related = serializers.SlugRelatedField(queryset = Seller.objects.all(), slug_field='first_name')
+	manager_related = serializers.SlugRelatedField(queryset = Manager.objects.all(), slug_field='first_name')
 
 
 	def update(self, instance, validated_data):
@@ -51,5 +51,5 @@ class ComissionSerializer(serializers.HyperlinkedModelSerializer):
 
 
 	class Meta:
-		model = Comission
-		fields = ('pk','seller_related','simple','double','triple','fourth','fifth','sixth','sixth_more')
+		model = ManagerComission
+		fields = ('pk','manager_related','simple','double','triple','fourth','fifth','sixth','sixth_more')

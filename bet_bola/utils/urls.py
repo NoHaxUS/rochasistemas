@@ -20,7 +20,7 @@ from .my_views.exclude import  ExcludedGameView, ExcludedLeagueView
 from .my_views.rule import RulesMessageView
 from .my_views.reward_related import RewardRelatedView
 from .my_views.market import MarketReductionView, MarketRemotionView
-from .my_views.comission import ComissionView
+from .my_views.comission import SellerComissionView, ManagerComissionView
 from .my_views.auth import CustomAuthToken
 from .my_views.ticket_custom_message import TicketCustomMessageView
 #  OverviewView, Balance, 
@@ -29,7 +29,8 @@ app_name = 'utils'
 
 router = DefaultRouter()
 router.register(r'configurations', GeneralConfigurationsView)
-router.register(r'comissions', ComissionView)
+router.register(r'seller_comissions', SellerComissionView)
+router.register(r'manager_comissions', ManagerComissionView)
 router.register(r'rules_message', RulesMessageView)
 router.register(r'excluded_games', ExcludedGameView)
 router.register(r'excluded_leagues', ExcludedLeagueView)

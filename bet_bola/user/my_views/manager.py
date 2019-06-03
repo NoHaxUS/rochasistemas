@@ -10,20 +10,54 @@ from core.paginations import StandardSetPagination
 from filters.mixins import FiltersMixin
 
 class ManagerView(FiltersMixin, ModelViewSet):
-    queryset = Manager.objects.all()
+    queryset = Manager.objects.filter(is_active=True)
     serializer_class = ManagerSerializer
     pagination_class = StandardSetPagination
     permission_classes = []
 
-
     filter_mappings = {
 		'store':'my_store',
-	}
+        'login': 'username__icontains',
+        'email': 'email__icontains'
+    }
 
-    @action(methods=['get'], detail=True)
-    def pay_manager(self, request, pk=None):
-        manager = self.get_object()
-        who_reseted_revenue = str(request.user.pk) + ' - ' + request.user.username        
-        manager.reset_revenue(who_reseted_revenue)
-        
-        messages.success(request, 'Gerentes Pagos')
+    @action(methods=['get'], detail=True, permission_classes=[])
+    def toggle_is_active(self, request, pk=None):
+        seller = self.get_object()
+        seller.toggle_is_active()
+        return Response({'success': True})
+
+    @action(methods=['post'], detail=True, permission_classes=[])
+    def alter_credit(self, request, pk=None):
+        credit =  int(request.data['credit'])
+        seller = self.get_object()
+        seller.alter_credit(credit)
+        return Response({'success': True})
+
+
+    @action(methods=['get'], detail=True, permission_classes=[])
+    def toggle_can_cancel_ticket(self, request, pk=None):
+        seller = self.get_object()
+        seller.toggle_can_cancel_ticket()
+        return Response({'success': True})
+
+
+    @action(methods=['get'], detail=True, permission_classes=[])
+    def toggle_can_sell_unlimited(self, request, pk=None):
+        seller = self.get_object()
+        seller.toggle_can_sell_unlimited()
+        return Response({'success': True})
+
+
+    @action(methods=['get'], detail=True, permission_classes=[])
+    def toggle_can_change_limit_time(self, request, pk=None):
+        seller = self.get_object()
+        seller.toggle_can_change_limit_time()
+        return Response({'success': True})
+
+
+    @action(methods=['get'], detail=True, permission_classes=[])
+    def toggle_comission_based_on_profit(self, request, pk=None):
+        seller = self.get_object()
+        seller.toggle_comission_based_on_profit()
+        return Response({'success': True})
