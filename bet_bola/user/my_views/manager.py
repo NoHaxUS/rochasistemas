@@ -37,6 +37,7 @@ class ManagerView(FiltersMixin, ModelViewSet):
 
     @action(methods=['get'], detail=True, permission_classes=[])
     def toggle_can_cancel_ticket(self, request, pk=None):
+        print(request.headers['store'])
         seller = self.get_object()
         seller.toggle_can_cancel_ticket()
         return Response({'success': True})
