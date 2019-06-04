@@ -21,10 +21,10 @@ from .my_views.rule import RulesMessageView
 from .my_views.reward_related import RewardRelatedView
 from .my_views.market import MarketReductionView, MarketRemotionView
 from .my_views.comission import SellerComissionView, ManagerComissionView
-from .my_views.auth import CustomAuthToken
+#from .my_views.auth import CustomAuthToken
 from .my_views.ticket_custom_message import TicketCustomMessageView
 from .my_views.revenue import RevenueView
-#  OverviewView, Balance, 
+from rest_framework_jwt.views import obtain_jwt_token
 
 app_name = 'utils'
 
@@ -43,7 +43,7 @@ router.register(r'ticket_custom_messages', TicketCustomMessageView)
 # router.register(r'overviews', OverviewView)
 
 urlpatterns = [	
-	path('token/', CustomAuthToken.as_view(), name='info'),
+	path('token/', obtain_jwt_token, name='obtain_token'),
     path('revenue/', RevenueView.as_view({'get': 'list'}), name='info')
 ]
 
