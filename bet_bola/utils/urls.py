@@ -23,7 +23,7 @@ from .my_views.market import MarketReductionView, MarketRemotionView
 from .my_views.comission import SellerComissionView, ManagerComissionView
 from .my_views.auth import CustomAuthToken
 from .my_views.ticket_custom_message import TicketCustomMessageView
-from .my_views.revenue import RevenueView
+from .my_views.revenue import RevenueSellerView, RevenueManagerView
 #  OverviewView, Balance, 
 
 app_name = 'utils'
@@ -44,7 +44,8 @@ router.register(r'ticket_custom_messages', TicketCustomMessageView)
 
 urlpatterns = [	
 	path('token/', CustomAuthToken.as_view(), name='info'),
-    path('revenue/', RevenueView.as_view({'get': 'list'}), name='info')
+    path('revenue_seller/', RevenueSellerView.as_view({'get': 'list'}), name='info'),
+    path('revenue_manager/', RevenueManagerView.as_view({'get': 'list'}), name='info')
 ]
 
 urlpatterns += router.urls
