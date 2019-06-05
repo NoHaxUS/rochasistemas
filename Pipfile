@@ -13,6 +13,7 @@ pip = "*"
 django-filter = "*"
 django-cors-headers = "*"
 drf-url-filters = "*"
+djangorestframework-jwt = "*"
 
 [dev-packages]
 rope = "*"

@@ -5,11 +5,12 @@ from user.serializers.manager import ManagerSerializer
 from user.serializers.seller import SellerSerializer
 from user.serializers.punter import PunterSerializer
 
+
+"""
 class CustomAuthToken(ObtainAuthToken):
 
     def post(self, request, *args, **kwargs):        
-        serializer = self.serializer_class(data=request.data,
-                                           context={'request': request})
+        serializer = self.serializer_class(data=request.data, context={'request': request})
 
         serializer.is_valid(raise_exception=True)        
         user = serializer.validated_data['user']
@@ -38,9 +39,10 @@ class CustomAuthToken(ObtainAuthToken):
         elif user.has_perm('user.be_admin'):
         	user = SellerSerializer(user.admin,many=False).data
         	user_type = "admin"        
-                
+    
         return Response({
             'token': token.key,
             'user': user,
             'type': user_type            
         })
+"""

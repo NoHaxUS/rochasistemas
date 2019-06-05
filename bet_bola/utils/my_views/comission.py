@@ -20,7 +20,7 @@ class ManagerComissionView(FiltersMixin, ModelViewSet):
 	serializer_class = ManagerComissionSerializer
 	
 	filter_mappings = {
-		'seller': 'manager_related',
+		'manager': 'manager_related',
 		'store':'store'
 	}
 

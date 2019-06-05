@@ -229,12 +229,30 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),    
-    'DEFAULT_AUTHENTICATION_CLASSES': (        
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication'
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication'
     )
 }
 
+def jwt_response_payload_handler(token, user=None, request=None):
+    return {
+        'token': token,
+        'user': {
+            'pk': user.pk,
+            'user': user.username,
+            'user_type': user.user_type,
+            'name' : user.first_name
+        }
+    }
+
+import datetime
+
+JWT_AUTH = {
+    'JWT_RESPONSE_PAYLOAD_HANDLER': jwt_response_payload_handler,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1)
+}
 
 CORS_ORIGIN_ALLOW_ALL = True
 
