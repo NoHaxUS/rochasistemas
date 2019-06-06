@@ -39,7 +39,8 @@ class Ticket(models.Model):
 
 
     def toggle_availability(self):
-        return ticket.toggle_availability(self)
+        self.available = not self.available
+        self.save()
 
     def cancel_ticket(self, user):
         return ticket.cancel_ticket(self, user)

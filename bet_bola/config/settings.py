@@ -16,7 +16,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
@@ -25,12 +24,12 @@ SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = ['*']
 DB_SWAP_LOCAL = True
 
-
+ALLOWED_HOSTS = ['*']
 
 APP_VERBOSE_NAME = 'sitename'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -63,9 +62,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
 ]
-
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_COOKIE_AGE = 9999999
 
 AUTH_USER_MODEL = 'user.CustomUser'
 
@@ -251,13 +247,11 @@ import datetime
 
 JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': jwt_response_payload_handler,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1)
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=259200)
 }
 
+JWT_AUTH_COOKIE ='token'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = 259200
+
 CORS_ORIGIN_ALLOW_ALL = True
-
-from corsheaders.defaults import default_headers
-
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    'store',
-]

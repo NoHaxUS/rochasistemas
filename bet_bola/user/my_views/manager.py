@@ -8,6 +8,7 @@ from user.permissions import IsAdmin
 from user.serializers.manager import ManagerSerializer
 from core.paginations import StandardSetPagination
 from filters.mixins import FiltersMixin
+from rest_framework.permissions import IsAuthenticated
 
 class ManagerView(FiltersMixin, ModelViewSet):
     queryset = Manager.objects.filter(is_active=True)
@@ -25,7 +26,10 @@ class ManagerView(FiltersMixin, ModelViewSet):
     def toggle_is_active(self, request, pk=None):
         seller = self.get_object()
         seller.toggle_is_active()
-        return Response({'success': True})
+        return Response({
+            'success': True,
+            'message':  'Alterado.'
+        })
 
     @action(methods=['post'], detail=True, permission_classes=[])
     def alter_credit(self, request, pk=None):
@@ -37,7 +41,6 @@ class ManagerView(FiltersMixin, ModelViewSet):
 
     @action(methods=['get'], detail=True, permission_classes=[])
     def toggle_can_cancel_ticket(self, request, pk=None):
-        print(request.headers['store'])
         seller = self.get_object()
         seller.toggle_can_cancel_ticket()
         return Response({'success': True})
