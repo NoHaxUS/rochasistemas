@@ -54,53 +54,56 @@ class TicketView(FiltersMixin, ModelViewSet):
         message = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         if message:		
-            data = [serializer.data,{'Validation': message}]		
+            data = [serializer.data, {'Validation': message}]		
             return Response(data, status=status.HTTP_201_CREATED, headers=headers)		
 
         data = [serializer.data]
-        return Response(data, status=status.HTTP_201_CREATED, headers=headers)		
+        return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
 
+    def get_ticket_id(self):
+        alpha_num = 4
+        numbers_num = 4
+        alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        numbers = '1234567890'
+        alpha_part = ''.join((random.choice(alpha) for i in range(alpha_num)))
+        num_part = ''.join((random.choice(numbers) for i in range(numbers_num)))
+        ticket_id = alpha_part + '-' + num_part
+        return ticket_id
+    
     def perform_create(self, serializer):
-        data = {
-            'success': True
-        }				
 
-        cotation_sum = 1						
-        for cotation in serializer.validated_data['cotations']:								
-            try:																						
-                cotation_sum *= cotation.price												
-            except Cotation.DoesNotExist:
-                pass			
+        cotation_sum = 1
+        for cotation in serializer.validated_data['cotations']:
+            cotation_sum *= cotation.price		
 
         ticket_reward_value = cotation_sum * serializer.validated_data['bet_value']
         reward = Reward.objects.create()
         store = Store.objects.get(id=self.request.GET['store'])
-        instance = None
-        if data['success']:						
-            payment = Payment.objects.create(date=None)
-            creation_date = tzlocal.now()
+        instance = None   
+        payment = Payment.objects.create(date=None)
+        creation_date = tzlocal.now()
 
-            if self.request.user.is_authenticated:
-                if self.request.user.has_perm('user.be_seller') or self.request.user.has_perm('user.be_admin'):
-                    owner = TicketOwner.objects.create(first_name=serializer.validated_data['owner']['first_name'], cellphone=serializer.validated_data['owner']['cellphone'], my_store=store)
-                    instance = serializer.save(creator=self.request.user, owner=owner, reward=reward, payment=payment, creation_date=creation_date,store=store)						
-                owner = TicketOwner.objects.create(first_name=self.request.user.first_name, cellphone=self.request.user.cellphone, my_store=store)
-                instance = serializer.save(creator=self.request.user, owner=owner, reward=reward, payment=payment, creation_date=creation_date, store=store)
-            else:					
+        if self.request.user.is_authenticated:
+            if self.request.user.has_perm('user.be_seller') or self.request.user.has_perm('user.be_admin'):
                 owner = TicketOwner.objects.create(first_name=serializer.validated_data['owner']['first_name'], cellphone=serializer.validated_data['owner']['cellphone'], my_store=store)
-                instance = serializer.save(owner=owner, reward=reward, payment=payment, creation_date=creation_date, store=store)
+                instance = serializer.save(creator=self.request.user, owner=owner, reward=reward, payment=payment, creation_date=creation_date,store=store)						
+            owner = TicketOwner.objects.create(first_name=self.request.user.first_name, cellphone=self.request.user.cellphone, my_store=store)
+            instance = serializer.save(creator=self.request.user, owner=owner, reward=reward, payment=payment, creation_date=creation_date, store=store)
+        else:					
+            owner = TicketOwner.objects.create(first_name=serializer.validated_data['owner']['first_name'], cellphone=serializer.validated_data['owner']['cellphone'], my_store=store)
+            instance = serializer.save(owner=owner, reward=reward, payment=payment, creation_date=creation_date, store=store)
 
 
-            for i_cotation in serializer.validated_data['cotations']:			
-                CotationCopy(
-                    original_cotation=i_cotation,
-                    ticket=instance,                                        
-                    price=i_cotation.price                    
-                ).save()
+        for i_cotation in serializer.validated_data['cotations']:			
+            CotationCopy(
+                original_cotation=i_cotation,
+                ticket=instance,                                        
+                price=i_cotation.price                    
+            ).save()
 
-            if self.request.user.has_perm('user.be_seller'):			
-                return instance.validate_ticket(self.request.user.seller)
+        if self.request.user.has_perm('user.be_seller'):			
+            return instance.validate_ticket(self.request.user.seller)
 
 
     @action(methods=['get'], detail=True, permission_classes=[])
