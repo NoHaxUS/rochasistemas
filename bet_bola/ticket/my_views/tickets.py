@@ -15,7 +15,7 @@ from utils.models import RewardRestriction
 from utils import timezone as tzlocal
 from config import settings
 from rest_framework.permissions import IsAuthenticated
-from ticket.permissions import CanToggleAvailability
+from ticket.permissions import CanToggleTicketAvailability
 
 class TicketView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
@@ -54,7 +54,7 @@ class TicketView(FiltersMixin, ModelViewSet):
         message = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         if message:		
-            data = [serializer.data,{'Validation':message}]		
+            data = [serializer.data,{'Validation': message}]		
             return Response(data, status=status.HTTP_201_CREATED, headers=headers)		
 
         data = [serializer.data]
@@ -73,12 +73,10 @@ class TicketView(FiltersMixin, ModelViewSet):
             except Cotation.DoesNotExist:
                 pass			
 
-        ticket_reward_value = cotation_sum * serializer.validated_data['bet_value']		
-
-        reward = Reward.objects.create()						
-        
+        ticket_reward_value = cotation_sum * serializer.validated_data['bet_value']
+        reward = Reward.objects.create()
         store = Store.objects.get(id=self.request.GET['store'])
-        instance = ""
+        instance = None
         if data['success']:						
             payment = Payment.objects.create(date=None)
             creation_date = tzlocal.now()
@@ -109,7 +107,7 @@ class TicketView(FiltersMixin, ModelViewSet):
     def pay_winner_punter(self, request, pk=None):		
         ticket = self.get_object()				
         response = ticket.pay_winner_punter(request.user)
-        return Response(response)		
+        return Response(response)
 
 
     @action(methods=['post'], detail=False, permission_classes=[])
@@ -128,7 +126,7 @@ class TicketView(FiltersMixin, ModelViewSet):
         return Response(response)
 
 
-    @action(methods=['get'], detail=True, permission_classes=[CanToggleAvailability])
+    @action(methods=['get'], detail=True, permission_classes=[CanToggleTicketAvailability])
     def toggle_availability(self, request, pk=None):
         ticket = self.get_object()
         ticket.toggle_availability()

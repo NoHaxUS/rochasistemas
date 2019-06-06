@@ -1,14 +1,13 @@
 from rest_framework import permissions
+from core.exceptions import NotAllowedException
 
-
-class CanToggleAvailability(permissions.BasePermission):
-	message = 'Usuário sem permissão para isso.'
-
+class CanToggleTicketAvailability(permissions.BasePermission):
 	def has_object_permission(self, request, view, obj):
-		self.message = "ERROR"
-		if not request.user.is_anonymous:
-			return request.user.my_store == obj.store and request.user.has_perm('be_admin')
-		return False
+		if not request.user.is_anonymous and \
+			request.user.my_store == obj.store and \
+			request.user.has_perm('be_admin'):
+			return 	True
+		raise NotAllowedException(detail="Você não pode alterar a visiblidade.")
 		
 
 class CanCreateTicket(permissions.BasePermission):
