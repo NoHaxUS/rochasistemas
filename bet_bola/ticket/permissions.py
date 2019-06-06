@@ -1,5 +1,16 @@
 from rest_framework import permissions
 
+
+class CanToggleAvailability(permissions.BasePermission):
+	message = 'Usuário sem permissão para isso.'
+
+	def has_object_permission(self, request, view, obj):
+		self.message = "ERROR"
+		if not request.user.is_anonymous:
+			return request.user.my_store == obj.store and request.user.has_perm('be_admin')
+		return False
+		
+
 class CanCreateTicket(permissions.BasePermission):
 	message = 'Você não tem permissão para criar Tickets.'
 

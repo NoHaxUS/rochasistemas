@@ -14,6 +14,8 @@ from core.models import CotationCopy, Cotation, Store
 from utils.models import RewardRestriction
 from utils import timezone as tzlocal
 from config import settings
+from rest_framework.permissions import IsAuthenticated
+from ticket.permissions import CanToggleAvailability
 
 class TicketView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
@@ -112,9 +114,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 
     @action(methods=['post'], detail=False, permission_classes=[])
     def validate_tickets(self, request, pk=None):
-        
         response = []
-        
         for ticket in Ticket.objects.filter(pk__in=dict(request.data)['data[]']):
             response.append(ticket.validate_ticket(request.user))
         return Response(response)
@@ -128,12 +128,14 @@ class TicketView(FiltersMixin, ModelViewSet):
         return Response(response)
 
 
-    @action(methods=['post'], detail=False, permission_classes=[])
+    @action(methods=['get'], detail=True, permission_classes=[CanToggleAvailability])
     def toggle_availability(self, request, pk=None):
-        response = []
-        for ticket in Ticket.objects.filter(pk__in=dict(request.data)['data']):
-            response.append(ticket.toggle_availability())
-        return Response(response)
+        ticket = self.get_object()
+        ticket.toggle_availability()
+        return Response({
+            'success': True,
+            'message': 'Alterado com Sucesso :)'
+        })
     
 
     @action(methods=['get'], detail=True)
