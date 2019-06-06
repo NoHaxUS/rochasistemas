@@ -111,8 +111,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 
 
     @action(methods=['post'], detail=False, permission_classes=[])
-    def validate_tickets(self, request, pk=None):
-        
+    def validate_tickets(self, request, pk=None):        
         response = []
         
         for ticket in Ticket.objects.filter(pk__in=dict(request.data)['data[]']):

@@ -40,6 +40,7 @@ class ManagerComission(models.Model):
     fifth = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Quíntupla")
     sixth = models. DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Sêxtupla")
     sixth_more = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Mais de 6")
+    profit_comission = models.DecimalField(max_digits=30, decimal_places=2,default=10, verbose_name="Comissão do lucro")
     store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
 
     def __str__(self):
