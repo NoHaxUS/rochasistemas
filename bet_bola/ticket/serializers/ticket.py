@@ -20,16 +20,43 @@ class RevenueSerializer(serializers.HyperlinkedModelSerializer):
 	reward = RewardSerializer()	
 	creator = serializers.SlugRelatedField(read_only=True, slug_field='username')
 	status = serializers.SerializerMethodField()	
+	comission = serializers.SerializerMethodField()	
+	bet_type = serializers.SerializerMethodField()	
+	manager = serializers.SerializerMethodField()
 	creation_date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
 
 
 	class Meta:
 		model = Ticket
-		fields = ('id','creation_date','creator','reward','payment','bet_value','status')
+		fields = ('id','creation_date','creator','reward','bet_type','manager','comission','payment','bet_value','status')
 
 	
 	def get_status(self, obj):
 		return obj.get_status_display()
+	
+	def get_comission(self, obj):		
+		user_type = obj.payment.who_paid.user_type
+		comission = None
+		
+		if user_type == 2:
+			comission = obj.payment.who_paid.seller.comissions
+			key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}				
+
+			return str(float(key_value.get(obj.cotations.count(), comission.sixth_more) * obj.bet_value / 100))
+		
+		return "0.0"
+
+	def get_bet_type(self, obj):
+		key_value = {1:"simple",2:"double",3:"triple",4:"fourth",5:"fifth",6:"sixth"}
+		return str(key_value.get(obj.cotations.count(), "sixth_more")) 				
+	
+	def get_manager(self, obj):		
+		user_type = obj.payment.who_paid.user_type		
+		if user_type == 2:
+			manager = obj.payment.who_paid.seller.my_manager
+			if manager:
+				return {"username":manager.username,"comission_based_on_profit":manager.comission_based_on_profit}
+		return None
 
 
 
