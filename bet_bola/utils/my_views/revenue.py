@@ -73,6 +73,20 @@ class RevenueManagerView(FiltersMixin, ModelViewSet):
         'available': 'available',
     }
 
+    def list(self, request, pk=None): 
+        queryset = self.get_queryset()        
+        page = self.paginate_queryset(queryset)                
+        serializer = self.get_serializer(page, many=True)
+
+        # for ticket in serializer.data:
+        #     if ticket["manager"]:
+                
+
+        if page is not None:                                                
+            return self.get_paginated_response(serializer.data)
+                
+        return Response(serializer.data)
+
     def get_queryset(self):
         date = datetime.date.today()
         start_week = date - datetime.timedelta(date.weekday())

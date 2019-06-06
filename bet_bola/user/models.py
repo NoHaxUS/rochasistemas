@@ -129,7 +129,7 @@ class Manager(CustomUser):
     limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento", validators=[MinValueValidator(1), MaxValueValidator(45)])
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
     can_change_limit_time = models.BooleanField(default=False, verbose_name='Pode alterar tempo de Cancelamento do Cambista?')
-    comission_based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no líquido ?')
+    comission_based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no líquido ?')    
 
     def toggle_is_active(self):
         self.is_active = not self.is_active

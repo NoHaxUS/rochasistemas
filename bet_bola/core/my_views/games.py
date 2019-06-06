@@ -143,17 +143,17 @@ class GameAbleView(ModelViewSet):
     
     permission_classes = [StoreIsRequired,]
         
-    def list(self, request, pk=None):            
+    # def list(self, request, pk=None):            
         
-        queryset = self.get_queryset()        
-        page = self.paginate_queryset(queryset)                
+    #     queryset = self.get_queryset()        
+    #     page = self.paginate_queryset(queryset)                
             
-        if page is not None:            
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+    #     if page is not None:            
+    #         serializer = self.get_serializer(page, many=True)
+    #         return self.get_paginated_response(serializer.data)
         
-        serializer = self.get_serializer(page, many=True)
-        return Response(serializer.data)
+    #     serializer = self.get_serializer(page, many=True)
+    #     return Response(serializer.data)
 
 
     def get_queryset(self):
