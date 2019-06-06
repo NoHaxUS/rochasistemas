@@ -26,6 +26,7 @@ class Ticket(models.Model):
     )
     
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
+    ticket_id = models.CharField(max_length=10, verbose_name="Ticket ID")
     owner = models.ForeignKey('user.TicketOwner', on_delete=models.CASCADE, verbose_name='Dono do Bilhete')
     cotations = models.ManyToManyField('core.Cotation', related_name='ticket', verbose_name='Cota')
     creation_date = models.DateTimeField(verbose_name='Data da Aposta')    
