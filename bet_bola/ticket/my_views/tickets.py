@@ -118,17 +118,19 @@ class TicketView(FiltersMixin, ModelViewSet):
 
 
     @action(methods=['post'], detail=False, permission_classes=[])
-    def validate_tickets(self, request, pk=None):        
+    def validate_tickets(self, request, pk=None):
+        ticket_ids = request.data.getlist('data[]')
         response = []
-        for ticket in Ticket.objects.filter(pk__in=dict(request.data)['data[]']):
+        for ticket in Ticket.objects.filter(ticket_id__in=ticket_ids):
             response.append(ticket.validate_ticket(request.user))
         return Response(response)
 
 
     @action(methods=['post'], detail=False, permission_classes=[])
     def cancel_tickets(self, request, pk=None):
-        response = []                
-        for ticket in Ticket.objects.filter(pk__in=dict(request.data)['data[]']):                        
+        ticket_ids = request.data.getlist('data[]')
+        response = []
+        for ticket in Ticket.objects.filter(ticket_id__in=ticket_ids):
             response.append(ticket.cancel_ticket(request.user))
         return Response(response)
 
