@@ -151,7 +151,7 @@ def reward_winner(self, who_rewarding_the_winner):
     if not (who_rewarding_the_winner.has_perm('user.be_admin') or who_rewarding_the_winner.has_perm('user.be_seller')):
         return {
             'success': False,
-            'message': 'Esse Usuário não tem permissão para validar Bilhetes.'
+            'message': 'Esse Usuário não tem permissão para Recompensar Bilhetes.'
         }
 
     if not self.status == 4:   
