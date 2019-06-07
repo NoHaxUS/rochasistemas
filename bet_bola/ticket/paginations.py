@@ -27,7 +27,7 @@ class RevenueSellerPagination(PageNumberPagination):
         out = 0
         comissions_sum = 0
         won_bonus_sum = 0
-        sellers = [seller.username for seller in Seller.objects.filter(payment__status=2).distinct()]                   
+        sellers = [{'id':seller.pk,'username':seller.username} for seller in Seller.objects.filter(payment__status=2).distinct()]                   
         for ticket in data:
             entry += float(ticket["bet_value"])
             if ticket["status"] == 'Venceu':
@@ -57,7 +57,7 @@ class RevenueManagerPagination(PageNumberPagination):
         entry = 0
         out = 0
         seller_comission_sum = 0
-        managers = [manager.username for manager in Manager.objects.filter(manager_assoc__payment__status=2).distinct()]                                   
+        managers = [{"id":manager.pk,"username":manager.username} for manager in Manager.objects.filter(manager_assoc__payment__status=2).distinct()]                                   
         incomes = {}
         outs = {}
         for ticket in data:
