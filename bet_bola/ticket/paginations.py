@@ -26,11 +26,13 @@ class RevenueSellerPagination(PageNumberPagination):
         entry = 0
         out = 0
         comissions_sum = 0
+        won_bonus_sum = 0
         sellers = [seller.username for seller in Seller.objects.filter(payment__status=2).distinct()]                   
         for ticket in data:
             entry += float(ticket["bet_value"])
             if ticket["status"] == 'Venceu':
-                out += float(ticket["reward"]["value"])                        
+                out += float(ticket["reward"]["value"]) - float(ticket["won_bonus"])
+                won_bonus_sum += float(ticket["won_bonus"])
             comissions_sum += float(ticket["comission"])
         return Response({
             'links': {
@@ -41,6 +43,7 @@ class RevenueSellerPagination(PageNumberPagination):
             'total_pages': self.page.paginator.num_pages,            
             'entry': entry,
             'out': out,
+            'won_bonus_sum': won_bonus_sum,
             'comissions_sum': comissions_sum,
             'sellers': sellers,
             'results': data

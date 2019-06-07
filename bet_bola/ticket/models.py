@@ -36,7 +36,11 @@ class Ticket(models.Model):
     status = models.IntegerField(default=0, choices=TICKET_STATUS, verbose_name='Status do Ticket')
     store = models.ForeignKey('core.Store', related_name='my_tickets', verbose_name='Banca', on_delete=models.CASCADE)
     available = models.BooleanField(default=True, verbose_name='Disponível?')
-
+    
+    def won_bonus(self):
+        if self.status == 2:
+            return self.reward.value * self.store.config.bonus_by_won_ticket / 100
+        return 0
 
     def toggle_availability(self):
         self.available = not self.available

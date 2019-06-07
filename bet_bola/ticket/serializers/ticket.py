@@ -23,14 +23,18 @@ class RevenueSerializer(serializers.HyperlinkedModelSerializer):
 	comission = serializers.SerializerMethodField()	
 	bet_type = serializers.SerializerMethodField()	
 	manager = serializers.SerializerMethodField()
+	won_bonus = serializers.SerializerMethodField()
 	creation_date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
 
 
 	class Meta:
 		model = Ticket
-		fields = ('id','creation_date','creator','reward','bet_type','manager','comission','payment','bet_value','status')
+		fields = ('id','creation_date','creator','reward','won_bonus','bet_type','manager','comission','payment','bet_value','status')
 
 	
+	def get_won_bonus(self, obj):
+		return obj.won_bonus()
+
 	def get_status(self, obj):
 		return obj.get_status_display()
 	
