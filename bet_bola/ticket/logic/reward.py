@@ -1,13 +1,12 @@
-def value(self):
-    from utils.models import GeneralConfigurations, RewardRestriction
+def get_reward_value(raw_reward_total):
 
+    from utils.models import GeneralConfigurations, RewardRestriction
     try:
         general_config = GeneralConfigurations.objects.get(pk=1)
         max_reward_to_pay = general_config.max_reward_to_pay
     except GeneralConfigurations.DoesNotExist:
         max_reward_to_pay = 1000000
 
-    raw_reward_total = round(self.ticket.cotation_sum() * self.ticket.bet_value, 2)
     restrictions = RewardRestriction.objects.all().order_by('max_reward_value','pk')
 
     for restriction in restrictions:

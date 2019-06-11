@@ -25,20 +25,20 @@ def cancel_ticket(self, who_canceling):
     if not self.status == 0:
         return {
             'success': False,
-            'message': 'Não é possível cancelar esse Bilhete '+ str(self.pk) + ' pois o mesmo não está em aberto.'
+            'message': 'Não é possível cancelar esse Bilhete '+ self.ticket_id+ ' pois o mesmo não está em aberto.'
         }
     
     if not self.payment.status == 2:
         return {
             'success': False,
-            'message': 'O Bilhete '+ str(self.pk) +' não foi Pago para ser cancelado.'
+            'message': 'O Bilhete '+ self.ticket_id +' não foi Pago para ser cancelado.'
         }
 
     if not who_canceling.is_superuser:
         if self.payment.date + timezone.timedelta(minutes=int(who_canceling.seller.limit_time_to_cancel)) < tzlocal.now():
             return {
                 'success':False,
-                'message':' Tempo limite para cancelar o Bilhete '+ str(self.pk) +' foi excedido.'
+                'message':' Tempo limite para cancelar o Bilhete '+ self.ticket_id +' foi excedido.'
             }
         
         if not who_canceling == self.payment.who_paid:
@@ -47,11 +47,10 @@ def cancel_ticket(self, who_canceling):
                 'message':'Você não pode cancelar um Bilhete que você não Pagou.'
             }
         
-    who_paid = self.payment.who_paid.seller
-    if who_canceling.has_perm('user.be_seller') and not who_canceling.is_superuser:
-        if not who_paid.can_sell_unlimited:
-            who_paid.credit_limit += self.bet_value
-            who_paid.save()
+    who_paid = self.payment.who_paid
+    if who_paid.user_type == 2 and not who_paid.seller.can_sell_unlimited:
+        who_paid.credit_limit += self.bet_value
+        who_paid.save()
 
     self.status = 5
     self.save()
@@ -68,7 +67,7 @@ def cancel_ticket(self, who_canceling):
 
     return {
         'success':True,
-        'message':'O Bilhete '+ str(self.pk) +' foi cancelado.'
+        'message':'O Bilhete '+ self.ticket_id +' foi cancelado.'
     }
 
 def validate_ticket(self, who_validating):         
@@ -90,20 +89,20 @@ def validate_ticket(self, who_validating):
     if not self.payment.status == 0:
         return {
             'success':False,
-            'message':'O Bilhete '+ str(self.pk) +' não está Aguardando Pagamento.'
+            'message':'O Bilhete '+ self.ticket_id +' não está Aguardando Pagamento.'
         }
 
     if not self.status == 0:
         return {
             'success': False,
-            'message': 'Não é possível validar esse Bilhete ' + str(self.pk) + ' pois o mesmo não está em aberto.'
+            'message': 'Não é possível validar esse Bilhete ' + self.ticket_id + ' pois o mesmo não está em aberto.'
         }
 
     for cotation in self.cotations.all():
         if cotation.game.start_date < tzlocal.now():
             return {
                 'success': False,
-                'message':'O Bilhete '+ str(self.pk) +' não pode ser pago, pois contém cotas de jogo(s) que já iniciaram.'
+                'message':'O Bilhete '+ self.ticket_id +' não pode ser pago, pois contém cotas de jogo(s) que já iniciaram.'
             }
     
     seller_before_balance = 0
@@ -114,7 +113,7 @@ def validate_ticket(self, who_validating):
             if self.bet_value > who_validating.seller.credit_limit:                
                 return {
                 'success':False,
-                'message':'Você não tem créditos para pagar esse Bilhete: ' + str(self.pk)
+                'message':'Você não tem créditos para pagar esse Bilhete: ' + self.ticket_id
             }
 
             seller_before_balance = who_validating.seller.credit_limit
@@ -142,7 +141,7 @@ def validate_ticket(self, who_validating):
     
     return {
         'success':True,
-        'message':'Bilhete '+ str(self.pk) +' PAGO com Sucesso.'
+        'message':'Bilhete '+ self.ticket_id +' PAGO com Sucesso.'
     }
 
 
@@ -151,13 +150,13 @@ def reward_winner(self, who_rewarding_the_winner):
     if not (who_rewarding_the_winner.has_perm('user.be_admin') or who_rewarding_the_winner.has_perm('user.be_seller')):
         return {
             'success': False,
-            'message': 'Esse Usuário não tem permissão para validar Bilhetes.'
+            'message': 'Esse Usuário não tem permissão para Recompensar Bilhetes.'
         }
 
     if not self.status == 4:   
         return {
             'success':False,
-            'message':'Esse bilhete (' +str(self.pk) +') não está apto a prestação de contas.'    
+            'message':'O bilhete (' + self.ticket_id +') não está apto a prestação de contas.'    
         }
 
     if not self.payment.who_paid == who_rewarding_the_winner:

@@ -18,7 +18,7 @@ class Ticket(models.Model):
     TICKET_STATUS = (
         (0, 'Aguardando Resultados'),
         (1, 'Não Venceu'),
-        (2, 'Venceu'),
+        (2, 'Venceu, Ganhador Pago'),
         (3, 'Venceu, Bilhete não Pago'),
         (4, 'Venceu, Prestar Contas'),
         (5, 'Cancelado'),
@@ -26,9 +26,10 @@ class Ticket(models.Model):
     )
     
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
+    ticket_id = models.CharField(max_length=10, verbose_name="Ticket ID")
     owner = models.ForeignKey('user.TicketOwner', on_delete=models.CASCADE, verbose_name='Dono do Bilhete')
     cotations = models.ManyToManyField('core.Cotation', related_name='ticket', verbose_name='Cota')
-    creation_date = models.DateTimeField(verbose_name='Data da Aposta')    
+    creation_date = models.DateTimeField(verbose_name='Data da Aposta')
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Criado por')
     reward = models.OneToOneField('Reward', related_name='ticket', on_delete=models.CASCADE, verbose_name='Prêmio')
     payment = models.OneToOneField('Payment', related_name='ticket', on_delete=models.CASCADE, verbose_name='Pagamento')
@@ -42,6 +43,16 @@ class Ticket(models.Model):
             return self.reward.value * self.store.config.bonus_by_won_ticket / 100
         return 0
 
+    def update_ticket_reward(self):
+        cotation_mul = 0
+        for cotation in self.cotations:
+            cotation_mul *= cotation.price
+        
+        raw_reward_total = cotation_mul * self.bet_value
+        self.reward.value = reward.get_reward_value(raw_reward_total)
+        self.reward.save()
+
+
     def toggle_availability(self):
         self.available = not self.available
         self.save()
@@ -52,7 +63,7 @@ class Ticket(models.Model):
     def validate_ticket(self, user):
         return ticket.validate_ticket(self, user)
 
-    def pay_winner(self, user):
+    def reward_winner(self, user):
         return ticket.reward_winner(self, user)
 
     def cotation_sum(self):
@@ -75,11 +86,8 @@ class Reward(models.Model):
 
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     who_rewarded_the_winner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+    value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor da Recompensa')
     date = models.DateTimeField(null=True, blank=True, verbose_name='Data de Pagamento do Prêmio')
-
-    @property
-    def value(self):
-        return reward.value(self)
 
     def __str__(self):
         return str(self.value)
