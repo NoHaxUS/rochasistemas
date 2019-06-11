@@ -27,14 +27,14 @@ class RevenueGeneralSellerPagination(PageNumberPagination):
         comissions_sum = 0
         won_bonus_sum = 0
         total_out = 0
-        sellers = []                   
-        for seller in data:
-            sellers.append({"id":seller["id"],"username":seller["username"]})            
-            entry += float(seller["entry"])                
-            out += float(seller["out"])
-            won_bonus_sum += float(seller["won_bonus"])
-            comissions_sum += float(seller["comission"])
-            total_out += float(seller["total_out"])
+        users = []                   
+        for user in data:
+            users.append({"id":user["id"],"username":user["username"]})            
+            entry += float(user["entry"])                
+            out += float(user["out"])
+            won_bonus_sum += float(user["won_bonus"])
+            comissions_sum += float(user["comission"])
+            total_out += float(user["total_out"])
         return Response({
             'links': {
                 'next': self.get_next_link(),
@@ -47,7 +47,44 @@ class RevenueGeneralSellerPagination(PageNumberPagination):
             'won_bonus_sum': won_bonus_sum,
             'comissions_sum': comissions_sum,
             'total_out': total_out,
-            'sellers': sellers,
+            'users': users,
+            'results': data
+        })
+
+
+class RevenueGeneralManagerPagination(PageNumberPagination):
+    page_size = 30
+
+    def get_paginated_response(self, data):        
+        entry = 0
+        out = 0
+        comissions_sum = 0
+        seller_comissions_sum = 0
+        won_bonus_sum = 0
+        total_out = 0
+        users = []                   
+        for user in data:
+            users.append({"id":user["id"],"username":user["username"]})            
+            entry += float(user["entry"])                
+            out += float(user["out"])            
+            comissions_sum += float(user["comission"])
+            won_bonus_sum += float(user["won_bonus"])
+            seller_comissions_sum += float(user["comission_seller"])
+            total_out += float(user["total_out"])
+        return Response({
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,            
+            'entry': entry,
+            'out': out,            
+            'won_bonus_sum': won_bonus_sum,
+            'comissions_sum': comissions_sum,
+            'seller_comissions_sum': seller_comissions_sum,
+            'total_out': total_out,
+            'users': users,
             'results': data
         })
 
@@ -143,9 +180,9 @@ class RevenueManagerPagination(PageNumberPagination):
             'count': self.page.paginator.count,
             'total_pages': self.page.paginator.num_pages,            
             'entry': entry,
-            'out': out,            
-            'managers': managers,
+            'out': out,          
             'manager_comission': manager_comission_sum,
-            'seller_comission': seller_comission_sum,
+            'seller_comission': seller_comission_sum,  
+            'managers': managers,            
             'results': data
         })

@@ -10,7 +10,7 @@ from utils.models import TicketCustomMessage
 from utils.utils import general_configurations
 from utils import timezone as tzlocal
 from ticket.models import Ticket
-from user.models import CustomUser, Seller
+from user.models import CustomUser, Seller, Manager
 from core.models import Store, Cotation
 from decimal import Decimal
 import datetime
@@ -104,9 +104,9 @@ class RevenueGeneralSellerSerializer(serializers.HyperlinkedModelSerializer):
 		return value
 
 	def get_out(self, obj):		
-		tickets = self.get_ticket(obj).filter(status=2)
+		tickets = self.get_ticket(obj).filter(status=2)		
 		value = 0
-		for ticket in tickets:					
+		for ticket in tickets:							
 			value += ticket.reward.value - ticket.won_bonus()
 		return value
 	
@@ -120,6 +120,50 @@ class RevenueGeneralSellerSerializer(serializers.HyperlinkedModelSerializer):
 	def get_total_out(self, obj):
 		return self.get_won_bonus(obj) + self.get_out(obj) + self.get_comission(obj)
 
+
+class RevenueGeneralManagerSerializer(RevenueGeneralSellerSerializer):
+	comission_seller = serializers.SerializerMethodField()
+
+	class Meta:
+		model = Manager
+		fields = ('id','username','comission','comission_seller','entry','won_bonus','out','total_out')
+
+	def get_ticket(self, obj):				  	
+		tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__seller__my_manager__pk=obj.pk).exclude(status__in=[5,6])				
+		start_creation_date = self.context['request'].GET.get('start_creation_date', None)
+		end_creation_date = self.context['request'].GET.get('end_creation_date', None)
+
+		if start_creation_date:		
+			tickets = tickets.filter(creation_date__gte=start_creation_date)
+		if end_creation_date:
+			tickets = tickets.filter(creation_date__lte=end_creation_date)
+		return tickets
+
+	def get_comission(self, obj):				
+		tickets = self.get_ticket(obj)
+		comission = None
+		value = 0
+		for ticket in tickets:		
+			comission = obj.comissions
+			key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}				
+			if obj.comission_based_on_profit:
+				value += Decimal(key_value.get(ticket.cotations.count(), comission.profit_comission) * ticket.bet_value / 100)
+			else:				
+				value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)		
+		return value
+	
+	def get_comission_seller(self, obj):				
+		tickets = self.get_ticket(obj)
+		comission = None
+		value = 0
+		for ticket in tickets:
+			user_type = ticket.payment.who_paid.user_type
+			if user_type == 2:	
+				comission = ticket.payment.who_paid.seller.comissions
+				key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}
+				value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)		
+
+		return value
 
 class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	

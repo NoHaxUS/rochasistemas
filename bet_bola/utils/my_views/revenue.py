@@ -4,12 +4,12 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
 from filters.mixins import FiltersMixin
 from ticket.models import Ticket, Reward, Payment
-from ticket.serializers.ticket import RevenueSerializer, RevenueGeneralSellerSerializer, TicketSerializer, CreateTicketAnonymousUserSerializer, CreateTicketLoggedUserSerializer
-from ticket.paginations import TicketPagination, RevenueSellerPagination, RevenueManagerPagination, RevenueGeneralSellerPagination
+from ticket.serializers.ticket import RevenueSerializer, RevenueGeneralSellerSerializer, RevenueGeneralManagerSerializer, TicketSerializer, CreateTicketAnonymousUserSerializer, CreateTicketLoggedUserSerializer
+from ticket.paginations import TicketPagination, RevenueSellerPagination, RevenueManagerPagination, RevenueGeneralSellerPagination, RevenueGeneralManagerPagination
 from ticket.permissions import CanCreateTicket, CanPayWinner, CanValidateTicket, CanCancelTicket, CanManipulateTicket
 from user.permissions import IsSuperUser
 from core.permissions import StoreIsRequired, UserIsFromThisStore
-from user.models import TicketOwner, Seller
+from user.models import TicketOwner, Seller, Manager
 from core.models import CotationCopy, Cotation, Store
 from utils.models import RewardRestriction
 from utils import timezone as tzlocal
@@ -30,6 +30,21 @@ class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
     filter_mappings = {        
         'store':'my_store__pk',        
     }    
+
+
+class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
+    queryset = Manager.objects.filter(manager_assoc__payment__status=2).distinct()
+    serializer_class = RevenueGeneralManagerSerializer
+    permission_classes = (
+        StoreIsRequired, 
+        IsSuperUser|CanManipulateTicket, 
+        IsSuperUser|CanCreateTicket
+    )
+    pagination_class = RevenueGeneralManagerPagination
+
+    filter_mappings = {        
+        'store':'my_store__pk',        
+    }   
 
 
 class RevenueSellerView(FiltersMixin, ModelViewSet):
