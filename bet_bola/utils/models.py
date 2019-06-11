@@ -65,6 +65,7 @@ class GeneralConfigurations(models.Model):
     max_cotation_sum = models.DecimalField(max_digits=30, decimal_places=2, default=100000, verbose_name="Valor máximo da cota total")
     cotations_percentage = models.IntegerField(default=100, verbose_name="Ajuste das Cotas")
     block_bets = models.BooleanField(default=False, verbose_name="Bloquear Apostas?")
+    bonus_by_won_ticket = models.IntegerField(default=10, verbose_name="Bônus por bilhetes premiados")    
     auto_pay_winners = models.BooleanField(default=True, verbose_name="Auto Pagar Ganhadores")
 
 

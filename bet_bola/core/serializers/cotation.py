@@ -21,8 +21,7 @@ class FilteredCotationSerializer(serializers.ListSerializer):
 		store_id =  self.context['request'].GET.get('store')
 		store = Store.objects.get(pk=store_id)
 		config = store.config
-		lista = list()
-		print(data)
+		lista = list()		
 		if config:
 			if config.cotations_percentage:			
 				for cotation in data.all():

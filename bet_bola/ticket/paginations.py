@@ -18,6 +18,76 @@ class TicketPagination(PageNumberPagination):
             'results': data
         })
 
+class RevenueGeneralSellerPagination(PageNumberPagination):
+    page_size = 30
+
+    def get_paginated_response(self, data):        
+        entry = 0
+        out = 0
+        comissions_sum = 0
+        won_bonus_sum = 0
+        total_out = 0
+        users = []                   
+        for user in data:
+            users.append({"id":user["id"],"username":user["username"]})            
+            entry += float(user["entry"])                
+            out += float(user["out"])
+            won_bonus_sum += float(user["won_bonus"])
+            comissions_sum += float(user["comission"])
+            total_out += float(user["total_out"])
+        return Response({
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,            
+            'entry': entry,
+            'out': out,
+            'won_bonus_sum': won_bonus_sum,
+            'comissions_sum': comissions_sum,
+            'total_out': total_out,
+            'users': users,
+            'results': data
+        })
+
+
+class RevenueGeneralManagerPagination(PageNumberPagination):
+    page_size = 30
+
+    def get_paginated_response(self, data):        
+        entry = 0
+        out = 0
+        comissions_sum = 0
+        seller_comissions_sum = 0
+        won_bonus_sum = 0
+        total_out = 0
+        users = []                   
+        for user in data:
+            users.append({"id":user["id"],"username":user["username"]})            
+            entry += float(user["entry"])                
+            out += float(user["out"])            
+            comissions_sum += float(user["comission"])
+            won_bonus_sum += float(user["won_bonus"])
+            seller_comissions_sum += float(user["comission_seller"])
+            total_out += float(user["total_out"])
+        return Response({
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,            
+            'entry': entry,
+            'out': out,            
+            'won_bonus_sum': won_bonus_sum,
+            'comissions_sum': comissions_sum,
+            'seller_comissions_sum': seller_comissions_sum,
+            'total_out': total_out,
+            'users': users,
+            'results': data
+        })
+
 
 class RevenueSellerPagination(PageNumberPagination):
     page_size = 30
@@ -26,11 +96,13 @@ class RevenueSellerPagination(PageNumberPagination):
         entry = 0
         out = 0
         comissions_sum = 0
-        sellers = [seller.username for seller in Seller.objects.filter(payment__status=2).distinct()]                   
+        won_bonus_sum = 0
+        sellers = [{'id':seller.pk,'username':seller.username} for seller in Seller.objects.filter(payment__status=2).distinct()]                   
         for ticket in data:
             entry += float(ticket["bet_value"])
             if ticket["status"] == 'Venceu':
-                out += float(ticket["reward"]["value"])                        
+                out += float(ticket["reward"]["value"]) - float(ticket["won_bonus"])
+                won_bonus_sum += float(ticket["won_bonus"])
             comissions_sum += float(ticket["comission"])
         return Response({
             'links': {
@@ -41,6 +113,7 @@ class RevenueSellerPagination(PageNumberPagination):
             'total_pages': self.page.paginator.num_pages,            
             'entry': entry,
             'out': out,
+            'won_bonus_sum': won_bonus_sum,
             'comissions_sum': comissions_sum,
             'sellers': sellers,
             'results': data
@@ -54,7 +127,7 @@ class RevenueManagerPagination(PageNumberPagination):
         entry = 0
         out = 0
         seller_comission_sum = 0
-        managers = [manager.username for manager in Manager.objects.filter(manager_assoc__payment__status=2).distinct()]                                   
+        managers = [{"id":manager.pk,"username":manager.username} for manager in Manager.objects.filter(manager_assoc__payment__status=2).distinct()]                                   
         incomes = {}
         outs = {}
         for ticket in data:
@@ -107,9 +180,9 @@ class RevenueManagerPagination(PageNumberPagination):
             'count': self.page.paginator.count,
             'total_pages': self.page.paginator.num_pages,            
             'entry': entry,
-            'out': out,            
-            'managers': managers,
+            'out': out,          
             'manager_comission': manager_comission_sum,
-            'seller_comission': seller_comission_sum,
+            'seller_comission': seller_comission_sum,  
+            'managers': managers,            
             'results': data
         })
