@@ -50,7 +50,6 @@ urlpatterns = [
     path('main_menu/', MainMenu.as_view()),
     path('today_games/', TodayGamesView.as_view({'get': 'list'}), name='today_games'),
     path('games_table/', GamesTable.as_view({'get': 'list'}), name='games_table'),
-    #path('games_today/', GamesToday.as_view({'get': 'list'}), name='games_today'),
     path('games_tomorrow/', GamesTomorrow.as_view({'get': 'list'}), name='games_tomorrow'),
     path('games_after_tomorrow/', GamesAfterTomorrow.as_view({'get': 'list'}), name='games_after_tomorrow'),
     path('tomorrow_games/', TomorrowGamesView.as_view({'get': 'list'}), name='tomorrow_games'),
