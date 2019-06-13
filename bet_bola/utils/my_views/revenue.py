@@ -48,7 +48,7 @@ class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
 
 
 class RevenueSellerView(FiltersMixin, ModelViewSet):
-    queryset = Ticket.objects.all()
+    queryset = Ticket.objects.filter(closed_for_seller=False)
     serializer_class = RevenueSerializer
     permission_classes = (
         StoreIsRequired, 
@@ -82,7 +82,7 @@ class RevenueSellerView(FiltersMixin, ModelViewSet):
 
 
 class RevenueManagerView(FiltersMixin, ModelViewSet):
-    queryset = Ticket.objects.all()
+    queryset = Ticket.objects.filter(closed_for_manager=False)
     serializer_class = RevenueSerializer
     permission_classes = (
         StoreIsRequired, 
