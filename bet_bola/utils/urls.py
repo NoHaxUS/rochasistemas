@@ -40,14 +40,14 @@ router.register(r'rewards_related', RewardRelatedView)
 router.register(r'markets_reduction', MarketReductionView)
 router.register(r'markets_remotion', MarketRemotionView)
 router.register(r'ticket_custom_messages', TicketCustomMessageView)
+router.register(r'revenue_general_seller', RevenueGeneralSellerView)
+router.register(r'revenue_general_manager', RevenueGeneralManagerView)
 
 # router.register(r'overviews', OverviewView)
 
 urlpatterns = [		
-    path('revenue_seller/', RevenueSellerView.as_view({'get': 'list'}), name='seller_general_info'),
-    path('revenue_general_seller/', RevenueGeneralSellerView.as_view({'get': 'list'}), name='seller_info'),
-    path('revenue_manager/', RevenueManagerView.as_view({'get': 'list'}), name='manager_info'),
-    path('revenue_general_manager/', RevenueGeneralManagerView.as_view({'get': 'list'}), name='manager_info'),
+    path('revenue_seller/', RevenueSellerView.as_view({'get': 'list'}), name='seller_general_info'),    
+    path('revenue_manager/', RevenueManagerView.as_view({'get': 'list'}), name='manager_info'),    
 	path('token/', obtain_jwt_token, name='obtain_token'),    
 ]
 
