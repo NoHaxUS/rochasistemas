@@ -6,7 +6,7 @@ class OwnerSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model=TicketOwner
-		fields = ('id','first_name','cellphone')
+		fields = ('first_name','cellphone')
 
 	def create(self, validated_data):				
 		obj = TicketOwner(**validated_data)		
