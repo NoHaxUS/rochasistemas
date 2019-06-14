@@ -18,6 +18,7 @@ from rest_framework.permissions import IsAuthenticated
 from ticket.permissions import CanToggleTicketAvailability
 from ticket.logic import reward
 import random
+import json
 
 class TicketView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
@@ -60,11 +61,14 @@ class TicketView(FiltersMixin, ModelViewSet):
 
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        print(request.data['data[]'])
+        
+        data = request.data.get('data')
+        data = json.loads(data)
+        serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         create_response = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)        
+        
         create_response['data'] = serializer.data		
         return Response(create_response, status=status.HTTP_201_CREATED, headers=headers)
 
@@ -74,12 +78,6 @@ class TicketView(FiltersMixin, ModelViewSet):
     
     def perform_create(self, serializer):
         store = Store.objects.filter(id=self.request.GET['store']).first()
-        
-        owner = TicketOwner.objects.create(
-            first_name=serializer.validated_data['owner']['first_name'], 
-            cellphone=serializer.validated_data['owner']['cellphone'], 
-            my_store=store
-        )
 
         raw_reward_value = 1
         for cotation in serializer.validated_data['cotations']:
@@ -90,26 +88,19 @@ class TicketView(FiltersMixin, ModelViewSet):
         reward = Reward.objects.create(value=self.get_reward_value(raw_reward_value))
         
         if self.request.user.is_authenticated:
-            if self.request.user.has_perm('be_punter'):
-                owner.first_name=self.request.user.first_name
-                owner.cellphone=self.request.user.cellphone
-                owner.save()
-            
+
             instance = serializer.save(
                 ticket_id=self.get_ticket_id(), 
                 creator=self.request.user,
                 payment=payment,
                 reward=reward,
-                owner=owner, 
                 store=store
-            )						
-
+            )
         else:
             instance = serializer.save(
                 ticket_id=self.get_ticket_id(), 
                 payment=payment,
                 reward=reward,
-                owner=owner,
                 store=store
             )
 
@@ -120,6 +111,7 @@ class TicketView(FiltersMixin, ModelViewSet):
                 price=cotation.price
             ).save()
 
+        validation_message = ''
         if self.request.user.has_perm('user.be_seller'):
             validation_message = instance.validate_ticket(self.request.user.seller)
 

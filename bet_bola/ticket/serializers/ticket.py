@@ -10,6 +10,7 @@ from utils.models import TicketCustomMessage
 from utils.utils import general_configurations
 from utils import timezone as tzlocal
 from ticket.models import Ticket
+from user.models import TicketOwner
 from user.models import CustomUser, Seller, Manager
 from core.models import Store, Cotation
 from decimal import Decimal
@@ -197,7 +198,15 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
 	reward = RewardSerializer(read_only=True)
 	cotations = serializers.PrimaryKeyRelatedField(many=True, queryset=Cotation.objects.all(), required=True)
 
-
+	def create(self, validated_data):
+		store = self.context['request'].GET.get('store')
+		my_store = Store.objects.get(pk=store)
+		owner = TicketOwner.objects.create(my_store=my_store, **validated_data.pop('owner'))
+		cotations = validated_data.pop('cotations')
+		ticket = Ticket.objects.create(owner=owner, **validated_data)
+		ticket.cotations.set(cotations)
+		return ticket
+		
 	def validate_bet_value(self, value):
 		store = self.context['request'].GET.get('store')
 		configurations = general_configurations(store)
