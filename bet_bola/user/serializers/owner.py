@@ -2,7 +2,7 @@ from rest_framework import serializers
 from user.models import TicketOwner
 from core.models import Store
 
-class AnonymousUserSerializer(serializers.HyperlinkedModelSerializer):			
+class OwnerSerializer(serializers.HyperlinkedModelSerializer):			
 	
 	class Meta:
 		model=TicketOwner

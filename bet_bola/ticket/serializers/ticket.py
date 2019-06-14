@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from ticket.serializers.reward import RewardSerializer, RewardSerializer
 from ticket.serializers.payment import PaymentSerializerWithSeller, PaymentSerializer
 from core.serializers.cotation import CotationTicketSerializer
-from user.serializers.anonymous import AnonymousUserSerializer
+from user.serializers.owner import OwnerSerializer
 from ticket.paginations import TicketPagination
 from utils.models import TicketCustomMessage
 from utils.utils import general_configurations
@@ -165,6 +165,7 @@ class RevenueGeneralManagerSerializer(RevenueGeneralSellerSerializer):
 
 		return value
 
+
 class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	
 	owner = serializers.SlugRelatedField(read_only=True,slug_field='first_name')
@@ -189,13 +190,13 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 
 
 
-class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer):	
-	owner = AnonymousUserSerializer()
-	creation_date = serializers.DateTimeField(read_only=True)	
+class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):	
+	owner = OwnerSerializer()
+	creation_date = serializers.DateTimeField(read_only=True)
 	payment = PaymentSerializer(read_only=True)	
 	reward = RewardSerializer(read_only=True)
 	cotations = serializers.PrimaryKeyRelatedField(many=True, queryset=Cotation.objects.all(), required=True)
-			
+
 
 	def validate_bet_value(self, value):
 		store = self.context['request'].GET.get('store')
@@ -236,21 +237,6 @@ class CreateTicketAnonymousUserSerializer(serializers.HyperlinkedModelSerializer
 	class Meta:
 		model = Ticket
 		fields = ('id','owner','creation_date','reward','cotations','payment','bet_value')
-
-
-class CreateTicketLoggedUserSerializer(CreateTicketAnonymousUserSerializer):	
-
-	def __init__(self, *args, **kwargs):
-		super(CreateTicketLoggedUserSerializer, self).__init__(*args, **kwargs)
-		request = kwargs['context']['request']		
-		if request.user.has_perm('user.be_punter'):			
-			self.fields['normal_user'] = AnonymousUserSerializer(read_only=True)
-
-	class Meta:
-		model = Ticket
-		fields = ('id','owner','creation_date','reward','cotations','payment','bet_value')
-
-
 
 
 class TicketCustomMessageSerializer(serializers.HyperlinkedModelSerializer):

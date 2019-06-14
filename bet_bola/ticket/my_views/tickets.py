@@ -4,7 +4,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
 from filters.mixins import FiltersMixin
 from ticket.models import Ticket, Reward, Payment
-from ticket.serializers.ticket import TicketSerializer, CreateTicketAnonymousUserSerializer, CreateTicketLoggedUserSerializer
+from ticket.serializers.ticket import TicketSerializer, CreateTicketSerializer
 from ticket.paginations import TicketPagination
 from ticket.permissions import CanCreateTicket, CanPayWinner, CanValidateTicket, CanCancelTicket, CanManipulateTicket
 from user.permissions import IsSuperUser
@@ -39,26 +39,6 @@ class TicketView(FiltersMixin, ModelViewSet):
         'available': 'available',
     }
 
-    def get_serializer_class(self):		
-            if self.action == 'list' or self.action == 'retrieve':           
-                return TicketSerializer			
-            if self.request.user.is_authenticated:				
-                return CreateTicketLoggedUserSerializer			
-            return CreateTicketAnonymousUserSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        message = self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        if message:		
-            data = [serializer.data, {'Validation': message}]		
-            return Response(data, status=status.HTTP_201_CREATED, headers=headers)		
-
-        data = [serializer.data]
-        return Response(data, status=status.HTTP_201_CREATED, headers=headers)
-
-
     def get_ticket_id(self):
         alpha_num = 4
         numbers_num = 4
@@ -72,42 +52,83 @@ class TicketView(FiltersMixin, ModelViewSet):
         else:
             return ticket_id
 
+
+    def get_serializer_class(self):		
+            if self.action == 'list' or self.action == 'retrieve':           
+                return TicketSerializer		
+            return CreateTicketSerializer
+
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        print(request.data['data[]'])
+        serializer.is_valid(raise_exception=True)
+        create_response = self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)        
+        create_response['data'] = serializer.data		
+        return Response(create_response, status=status.HTTP_201_CREATED, headers=headers)
+
+
     def get_reward_value(self, raw_reward_total):
         return reward.get_reward_value(raw_reward_total)
     
     def perform_create(self, serializer):
+        store = Store.objects.filter(id=self.request.GET['store']).first()
+        
+        owner = TicketOwner.objects.create(
+            first_name=serializer.validated_data['owner']['first_name'], 
+            cellphone=serializer.validated_data['owner']['cellphone'], 
+            my_store=store
+        )
 
-        cotation_sum = 1
+        raw_reward_value = 1
         for cotation in serializer.validated_data['cotations']:
-            cotation_sum *= cotation.price		
+            raw_reward_value *= cotation.price
+        raw_reward_value = serializer.validated_data['bet_value'] * raw_reward_value
 
-        raw_reward_total = cotation_sum * serializer.validated_data['bet_value']
-        reward = Reward.objects.create(value=self.get_reward_value(raw_reward_total))
-        store = Store.objects.get(id=self.request.GET['store']) 
-        payment = Payment.objects.create(date=None)
-        creation_date = tzlocal.now()
-        owner = TicketOwner.objects.create(first_name=serializer.validated_data['owner']['first_name'], cellphone=serializer.validated_data['owner']['cellphone'], my_store=store)
-        instance = None
+        payment = Payment.objects.create()
+        reward = Reward.objects.create(value=self.get_reward_value(raw_reward_value))
+        
         if self.request.user.is_authenticated:
-            if self.request.user.has_perm('user.be_seller') or self.request.user.has_perm('user.be_admin'):
-                instance = serializer.save(ticket_id=self.get_ticket_id(), creator=self.request.user, owner=owner, reward=reward, payment=payment, creation_date=creation_date,store=store)						
-            owner.first_name=self.request.user.first_name
-            owner.cellphone=self.request.user.cellphone
-            owner.save()
-            instance = serializer.save(ticket_id=self.get_ticket_id(), creator=self.request.user, owner=owner, reward=reward, payment=payment, creation_date=creation_date, store=store)
+            if self.request.user.has_perm('be_punter'):
+                owner.first_name=self.request.user.first_name
+                owner.cellphone=self.request.user.cellphone
+                owner.save()
+            
+            instance = serializer.save(
+                ticket_id=self.get_ticket_id(), 
+                creator=self.request.user,
+                payment=payment,
+                reward=reward,
+                owner=owner, 
+                store=store
+            )						
+
         else:
-            instance = serializer.save(ticket_id=self.get_ticket_id(), owner=owner, reward=reward, payment=payment, creation_date=creation_date, store=store)
+            instance = serializer.save(
+                ticket_id=self.get_ticket_id(), 
+                payment=payment,
+                reward=reward,
+                owner=owner,
+                store=store
+            )
 
-
-        for i_cotation in serializer.validated_data['cotations']:			
+        for cotation in serializer.validated_data['cotations']:			
             CotationCopy(
-                original_cotation=i_cotation,
+                original_cotation=cotation,
                 ticket=instance,                                        
-                price=i_cotation.price                    
+                price=cotation.price
             ).save()
 
-        if self.request.user.has_perm('user.be_seller'):			
-            return instance.validate_ticket(self.request.user.seller)
+        if self.request.user.has_perm('user.be_seller'):
+            validation_message = instance.validate_ticket(self.request.user.seller)
+
+        return {
+            'success': True,
+            'message': 'Ticket Criado com Sucesso',
+            'validation_message': validation_message
+        }
+        
 
 
     @action(methods=['get'], detail=True, permission_classes=[])
