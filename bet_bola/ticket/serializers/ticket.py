@@ -206,42 +206,7 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
 		ticket = Ticket.objects.create(owner=owner, **validated_data)
 		ticket.cotations.set(cotations)
 		return ticket
-		
-	def validate_bet_value(self, value):
-		store = self.context['request'].GET.get('store')
-		configurations = general_configurations(store)
-		
-		if value < configurations["min_bet_value"]:
-			if value <= 0:	                       
-				raise serializers.ValidationError("Valor da aposta inválido.")	        	       
-			raise serializers.ValidationError("A aposta mínima é: R$ " + str(configurations["min_bet_value"]))	
-		elif value > configurations["max_bet_value"]:
-			raise serializers.ValidationError("A aposta ultrapassou o valor maximo de R$ " + str(configurations["max_bet_value"]))
-		return value	
 
-
-	def validate_cotations(self, cotations):
-		store = self.context['request'].GET.get('store')		
-		game_list = [cotation.game for cotation in cotations]
-		configurations = general_configurations(store)		
-		
-		if len(cotations) < configurations["min_number_of_choices_per_bet"]:			
-			raise serializers.ValidationError("Desculpe, Aposte em pelo menos " + str(configurations["min_number_of_choices_per_bet"]) + " jogo.")
-		
-		if len(cotations) > configurations["max_number_of_choices_per_bet"]:			
-			raise serializers.ValidationError("Desculpe, O número máximo de " + str(configurations["max_number_of_choices_per_bet"]) + " apostas por bilhete foi excedido.")
-
-		if game_list.__len__() != list(set(game_list)).__len__():
-			raise serializers.ValidationError("Desculpe, não é permitido mais de uma aposta no mesmo jogo.")
-
-		for cotation in cotations:								
-			try:													
-				if cotation.game.start_date < tzlocal.now():														
-					raise serializers.ValidationError("Desculpe, o jogo " + cotation.game.name + " já começou, remova-o")
-			except Cotation.DoesNotExist:				
-				raise serializers.ValidationError("Erro, uma das cotas enviadas não existe.")	
-
-		return cotations
 
 	class Meta:
 		model = Ticket

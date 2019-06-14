@@ -51,7 +51,7 @@ class Ticket(models.Model):
             cotation_mul *= cotation.price
         
         raw_reward_total = cotation_mul * self.bet_value
-        self.reward.value = reward.get_reward_value(raw_reward_total)
+        self.reward.value = reward.get_reward_value(raw_reward_total, self.store)[1]
         self.reward.save()
 
 
