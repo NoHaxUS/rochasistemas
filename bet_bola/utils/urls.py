@@ -22,6 +22,7 @@ from .my_views.reward_related import RewardRelatedView
 from .my_views.market import MarketReductionView, MarketRemotionView
 from .my_views.comission import SellerComissionView, ManagerComissionView
 #from .my_views.auth import CustomAuthToken
+from .my_views.release import ReleaseView
 from .my_views.ticket_custom_message import TicketCustomMessageView
 from .my_views.revenue import RevenueSellerView, RevenueManagerView, RevenueGeneralSellerView, RevenueGeneralManagerView
 #  OverviewView, Balance, 
@@ -42,6 +43,7 @@ router.register(r'markets_remotion', MarketRemotionView)
 router.register(r'ticket_custom_messages', TicketCustomMessageView)
 router.register(r'revenue_general_seller', RevenueGeneralSellerView)
 router.register(r'revenue_general_manager', RevenueGeneralManagerView)
+router.register(r'release', ReleaseView)
 
 # router.register(r'overviews', OverviewView)
 

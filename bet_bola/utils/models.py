@@ -6,7 +6,15 @@ from user.models import Seller, Manager
 # from core.models import Cotation
 from ticket.models import Ticket
 from decimal import Decimal
+from django.conf import settings
 import utils.timezone as tzlocal
+
+
+class Release(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Cambista')
+    value = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Valor")
+    creation_date = models.DateTimeField(verbose_name='Data da Aposta', default=tzlocal.now())
+    description = models.CharField(max_length=100, null=True, blank=True, verbose_name='Descrição')
 
 
 class SellerComission(models.Model):

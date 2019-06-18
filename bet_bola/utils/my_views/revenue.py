@@ -146,11 +146,8 @@ class RevenueSellerView(FiltersMixin, ModelViewSet):
 
     def get_queryset(self):
         if self.request.GET.get("start_creation_date") or self.request.GET.get("end_creation_date"):            
-            return Ticket.objects.filter(store=1, payment__status=2).exclude(status__in=[5,6])    #change to request.store    
-        date = datetime.date.today()
-        start_week = date - datetime.timedelta(date.weekday())
-        end_week = start_week + datetime.timedelta(7)        
-        tickets = Ticket.objects.filter(payment__status=2, creation_date__range=[start_week, end_week]).exclude(status__in=[5,6])
+            return Ticket.objects.filter(store=1, payment__status=2).exclude(status__in=[5,6])    #change to request.store              
+        tickets = Ticket.objects.filter(payment__status=2, closed_for_seller=False).exclude(status__in=[5,6])
         return tickets
 
 
@@ -192,10 +189,7 @@ class RevenueManagerView(FiltersMixin, ModelViewSet):
 
     def get_queryset(self):
         if self.request.GET.get("start_creation_date") or self.request.GET.get("end_creation_date"):            
-            return Ticket.objects.filter(store=1,payment__status=2).exclude(status__in=[5,6])        
-        date = datetime.date.today()
-        start_week = date - datetime.timedelta(date.weekday())
-        end_week = start_week + datetime.timedelta(7)
-        tickets = Ticket.objects.filter(payment__status=2, creation_date__range=[start_week, end_week]).exclude(status__in=[5,6])
+            return Ticket.objects.filter(store=1,payment__status=2).exclude(status__in=[5,6])                
+        tickets = Ticket.objects.filter(payment__status=2, closed_for_manager=False).exclude(status__in=[5,6])
         return tickets
         
