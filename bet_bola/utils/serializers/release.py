@@ -4,9 +4,18 @@ from utils.models import Release
 
 
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
-    user = serializers.SlugRelatedField(queryset = User.objects.filter(user_type__in=[2,3]), slug_field='username')    
+    user = serializers.SlugRelatedField(queryset = User.objects.filter(user_type__in=[2,3]), slug_field='pk')    
     creation_date = serializers.DateTimeField(format='%d/%m/%Y', read_only=True)
+
+    def to_representation(self, obj):           
+        return {
+                "id": obj.pk,
+                "user": obj.user.username,
+                "value": obj.value,
+                "creation_date": obj.creation_date.strftime('%d/%m/%y'),
+                "description": obj.description 
+            }        
 
     class Meta:
         model = Release
-        fields = ('user', 'value', 'creation_date', 'description')
+        fields = ("id",'user', 'value', 'creation_date', 'description')
