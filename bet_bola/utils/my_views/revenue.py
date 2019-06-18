@@ -4,7 +4,8 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
 from filters.mixins import FiltersMixin
 from ticket.models import Ticket, Reward, Payment
-from ticket.serializers.ticket import RevenueSerializer, RevenueGeneralSellerSerializer, RevenueGeneralManagerSerializer, TicketSerializer, CreateTicketSerializer
+from ticket.serializers.cashier import RevenueSerializer, RevenueGeneralSellerSerializer, RevenueGeneralManagerSerializer
+from ticket.serializers.ticket import TicketSerializer, CreateTicketSerializer
 from ticket.paginations import TicketPagination, RevenueSellerPagination, RevenueManagerPagination, RevenueGeneralSellerPagination, RevenueGeneralManagerPagination
 from ticket.permissions import CanCreateTicket, CanPayWinner, CanValidateTicket, CanCancelTicket, CanManipulateTicket
 from user.permissions import IsSuperUser

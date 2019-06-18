@@ -118,7 +118,6 @@ class TicketView(FiltersMixin, ModelViewSet):
         return {
             'success': True,
             'ticket_id': ticket_id,
-            'message': 'Ticket Criado com Sucesso',
             'display_reward_info': rewad_was_changed,
             'reward_value': rewad_value,
             'validation_message': validation_message
