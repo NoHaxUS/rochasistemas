@@ -80,7 +80,7 @@ class MinimumListCotationSerializer(serializers.ListSerializer):
 		return super(MinimumListCotationSerializer, self).to_representation(data)
 
 
-class MinimumCotationSerializer(serializers.HyperlinkedModelSerializer):
+class StandardCotationSerializer(serializers.HyperlinkedModelSerializer):
 	market = serializers.SlugRelatedField(read_only=True, slug_field='name')
 
 	class Meta:

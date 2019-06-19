@@ -1,9 +1,22 @@
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
+class GameListPagination(PageNumberPagination):
+    page_size = 10
+
+    def get_paginated_response(self, data):        
+        return Response({
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,            
+            'results': data
+        })
 
 class StandardSetPagination(PageNumberPagination):
-    page_size = 2
+    page_size = 25
 
     def get_paginated_response(self, data):        
         return Response({
@@ -33,17 +46,3 @@ class CotationsListSetPagination(PageNumberPagination):
         })
 
 
-
-class GamesListSetPagination(PageNumberPagination):
-    page_size = 5
-
-    def get_paginated_response(self, data):        
-        return Response({
-            'links': {
-                'next': self.get_next_link(),
-                'previous': self.get_previous_link()
-            },
-            'count': self.page.paginator.count,
-            'total_pages': self.page.paginator.num_pages,            
-            'results': data
-        })
