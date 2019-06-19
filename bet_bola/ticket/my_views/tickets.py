@@ -40,7 +40,7 @@ class TicketView(FiltersMixin, ModelViewSet):
         'available': 'available',
     }
 
-    def get_ticket_id(self):
+    def get_ticket_id(self, store):
         alpha_num = 4
         numbers_num = 4
         alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -48,7 +48,7 @@ class TicketView(FiltersMixin, ModelViewSet):
         alpha_part = ''.join((random.choice(alpha) for i in range(alpha_num)))
         num_part = ''.join((random.choice(numbers) for i in range(numbers_num)))
         ticket_id = alpha_part + '-' + num_part
-        if Ticket.objects.filter(ticket_id=ticket_id, store=1).exists():
+        if Ticket.objects.filter(ticket_id=ticket_id, store=store).exists():
             self.get_ticket_id()
         else:
             return ticket_id
@@ -67,14 +67,13 @@ class TicketView(FiltersMixin, ModelViewSet):
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         create_response = self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)        
-        
-        create_response['data'] = serializer.data		
+        headers = self.get_success_headers(serializer.data)
+
         return Response(create_response, status=status.HTTP_201_CREATED, headers=headers)
 
 
-    def get_reward_value(self, raw_reward_total):
-        return reward.get_reward_value(raw_reward_total)
+    def get_reward_value(self, raw_reward_total, store):
+        return reward.get_reward_value(raw_reward_total, store=store)
     
     def perform_create(self, serializer):
         store = Store.objects.filter(id=self.request.GET['store']).first()
@@ -85,12 +84,13 @@ class TicketView(FiltersMixin, ModelViewSet):
         raw_reward_value = serializer.validated_data['bet_value'] * raw_reward_value
 
         payment = Payment.objects.create()
-        reward = Reward.objects.create(value=self.get_reward_value(raw_reward_value))
+        rewad_was_changed, rewad_value = self.get_reward_value(raw_reward_value, store)
+        reward = Reward.objects.create(value=rewad_value)
+        ticket_id = self.get_ticket_id(store)
         
         if self.request.user.is_authenticated:
-
             instance = serializer.save(
-                ticket_id=self.get_ticket_id(), 
+                ticket_id=ticket_id, 
                 creator=self.request.user,
                 payment=payment,
                 reward=reward,
@@ -98,7 +98,7 @@ class TicketView(FiltersMixin, ModelViewSet):
             )
         else:
             instance = serializer.save(
-                ticket_id=self.get_ticket_id(), 
+                ticket_id=ticket_id, 
                 payment=payment,
                 reward=reward,
                 store=store
@@ -117,7 +117,9 @@ class TicketView(FiltersMixin, ModelViewSet):
 
         return {
             'success': True,
-            'message': 'Ticket Criado com Sucesso',
+            'ticket_id': ticket_id,
+            'display_reward_info': rewad_was_changed,
+            'reward_value': rewad_value,
             'validation_message': validation_message
         }
         

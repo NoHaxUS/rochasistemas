@@ -8,9 +8,19 @@ class OwnerSerializer(serializers.HyperlinkedModelSerializer):
 		model=TicketOwner
 		fields = ('first_name','cellphone')
 
-	def create(self, validated_data):				
-		obj = TicketOwner(**validated_data)		
-		store = Store.objects.get(id=self.context['request'].GET.get('store'))
+	def create(self, validated_data):
+		request = self.context['request']
+		store = Store.objects.get(pk=request.GET.get('store'))
+		
+		if request.user.has_perm('be_punter'):
+			data = {
+				'first_name': request.user.first_name,
+				'cellphone': request.user.cellphone
+			}
+			obj = TicketOwner(**data)
+		else:
+			obj = TicketOwner(**validated_data)
+		
 		obj.my_store=store
 		obj.save()
 		return obj
