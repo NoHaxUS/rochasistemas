@@ -21,8 +21,7 @@ import json
 class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(payment__status=2).distinct()
     serializer_class = RevenueGeneralSellerSerializer
-    permission_classes = (     
-    )
+    permission_classes = ()
     pagination_class = RevenueGeneralSellerPagination
 
     def get_queryset(self):
@@ -61,8 +60,7 @@ class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
 class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
     queryset = Manager.objects.filter(manager_assoc__payment__status=2).distinct()
     serializer_class = RevenueGeneralManagerSerializer
-    permission_classes = (     
-    )
+    permission_classes = ()
     pagination_class = RevenueGeneralManagerPagination
 
     def get_queryset(self):
@@ -122,11 +120,7 @@ class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
 class RevenueSellerView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.filter(closed_for_seller=False)
     serializer_class = RevenueSerializer
-    permission_classes = (
-        StoreIsRequired, 
-        IsSuperUser|CanManipulateTicket, 
-        IsSuperUser|CanCreateTicket
-    )
+    permission_classes = ()
     pagination_class = RevenueSellerPagination
 
     filter_mappings = {
@@ -153,11 +147,7 @@ class RevenueSellerView(FiltersMixin, ModelViewSet):
 class RevenueManagerView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.filter(closed_for_manager=False)
     serializer_class = RevenueSerializer
-    permission_classes = (
-        StoreIsRequired, 
-        IsSuperUser|CanManipulateTicket, 
-        IsSuperUser|CanCreateTicket
-    )
+    permission_classes = ()
     pagination_class = RevenueManagerPagination
 
     filter_mappings = {
