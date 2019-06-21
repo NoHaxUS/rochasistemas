@@ -8,13 +8,14 @@ from ticket.serializers.cashier import RevenueSerializer, RevenueGeneralSellerSe
 from ticket.serializers.ticket import TicketSerializer, CreateTicketSerializer
 from ticket.paginations import TicketPagination, RevenueSellerPagination, RevenueManagerPagination, RevenueGeneralSellerPagination, RevenueGeneralManagerPagination
 from ticket.permissions import CanCreateTicket, CanPayWinner, CanValidateTicket, CanCancelTicket, CanManipulateTicket
-from user.permissions import IsSuperUser
 from core.permissions import StoreIsRequired, UserIsFromThisStore
+from user.permissions import IsSuperUser
 from user.models import TicketOwner, Seller, Manager
 from core.models import CotationCopy, Cotation, Store
 from utils.models import RewardRestriction
 from utils import timezone as tzlocal
 import datetime
+from utils.permissions import RevenueCloseManagerPermission, RevenueManagerPermission, RevenueCloseSellerPermission, RevenueSellerPermission
 from config import settings
 import json
 
@@ -22,7 +23,7 @@ import json
 class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(payment__status=2).distinct()
     serializer_class = RevenueGeneralSellerSerializer
-    permission_classes = ()
+    permission_classes = [RevenueSellerPermission]
     pagination_class = RevenueGeneralSellerPagination
 
     def get_queryset(self):
@@ -32,25 +33,19 @@ class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
         queryset = self.queryset        
         return queryset.filter(my_store=user.my_store)
         
-
-    @action(methods=['post'], detail=False)
-    def close_seller(self, request, pk=None):      
+    @action(methods=['post'], detail=True, permission_classes = [RevenueCloseSellerPermission])
+    def close_seller(self, request, pk=None):  
+        seller = self.get_object()
         data = json.loads(request.POST.get('data'))                
         start_creation_date = data.get('start_creation_date')
-        end_creation_date = data.get('end_creation_date')
-
-        if data.get('sellers_ids') == "all":
-            sellers = self.queryset
-        else:
-            sellers = self.queryset.filter(pk=int(data.get('sellers_ids')))
-                
-        for seller in sellers:
-            tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__pk=seller.pk, closed_for_seller=False).exclude(status__in=[5,6])		
-            if start_creation_date:
-                tickets = tickets.filter(creation_date__gte=start_creation_date)
-            if end_creation_date:
-                tickets = tickets.filter(creation_date__lte=end_creation_date)
-            tickets.update(closed_for_seller=True)
+        end_creation_date = data.get('end_creation_date')            
+        
+        tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__pk=seller.pk, closed_for_seller=False).exclude(status__in=[5,6])		
+        if start_creation_date:
+            tickets = tickets.filter(creation_date__gte=start_creation_date)
+        if end_creation_date:
+            tickets = tickets.filter(creation_date__lte=end_creation_date)
+        tickets.update(closed_for_seller=True)
         
         return Response({
             'success': True,
@@ -61,7 +56,7 @@ class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
 class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
     queryset = Manager.objects.filter(manager_assoc__payment__status=2).distinct()
     serializer_class = RevenueGeneralManagerSerializer
-    permission_classes = ()
+    permission_classes = [RevenueManagerPermission]
     pagination_class = RevenueGeneralManagerPagination
 
     def get_queryset(self):
@@ -71,57 +66,30 @@ class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
         queryset = self.queryset        
         return queryset.filter(my_store=user.my_store)
 
-    @action(methods=['post'], detail=False)
+    @action(methods=['post'], detail=True, permission_classes = [RevenueCloseManagerPermission])
     def close_manager(self, request, pk=None):
+        manager = self.get_object()
         data = json.loads(request.POST.get('data'))    
         start_creation_date = data.get('start_creation_date')
-        end_creation_date = data.get('end_creation_date')
-
-        if data.get('managers_ids') == "all":
-            managers = self.queryset
-        else:
-            managers = self.queryset.filter(pk=int(data.get('managers_ids')))
-                
-        for manager in managers:            
-            tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__seller__my_manager__pk=manager.pk, closed_for_manager=False).exclude(status__in=[5,6])		
-            if start_creation_date:
-                tickets = tickets.filter(creation_date__gte=start_creation_date)
-            if end_creation_date:
-                tickets = tickets.filter(creation_date__lte=end_creation_date)
-            tickets.update(closed_for_manager=True)
+        end_creation_date = data.get('end_creation_date')                        
+                   
+        tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__seller__my_manager__pk=manager.pk, closed_for_manager=False).exclude(status__in=[5,6])		
+        if start_creation_date:
+            tickets = tickets.filter(creation_date__gte=start_creation_date)
+        if end_creation_date:
+            tickets = tickets.filter(creation_date__lte=end_creation_date)
+        tickets.update(closed_for_manager=True)
         
         return Response({
             'success': True,
             'message': 'Alterado com Sucesso :)'
-        })
-    
-    @action(methods=['post'], detail=False)
-    def close_all_manager(self, request, pk=None):
-        data = json.loads(request.POST.get('data'))
-        managers_ids = [manager.pk for manager in self.queryset]
-        start_creation_date = data.get('start_creation_date')
-        end_creation_date = data.get('end_creation_date')
-                
-        for id in managers_ids:            
-            tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__seller__my_manager__pk=int(id), closed_for_manager=False).exclude(status__in=[5,6])		
-            if start_creation_date:
-                tickets = tickets.filter(creation_date__gte=start_creation_date)
-            if end_creation_date:
-                tickets = tickets.filter(creation_date__lte=end_creation_date)
-            tickets.update(closed_for_manager=True)
-        
-        return Response({
-            'success': True,
-            'message': 'Alterado com Sucesso :)'
-        })
-        
-
+        })        
 
 
 class RevenueSellerView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.filter(closed_for_seller=False)
-    serializer_class = RevenueSerializer
-    permission_classes = ()
+    serializer_class = RevenueSerializer  
+    permission_classes = [RevenueSellerPermission]  
     pagination_class = RevenueSellerPagination
 
     filter_mappings = {
@@ -148,7 +116,7 @@ class RevenueSellerView(FiltersMixin, ModelViewSet):
 class RevenueManagerView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.filter(closed_for_manager=False)
     serializer_class = RevenueSerializer
-    permission_classes = ()
+    permission_classes = [RevenueManagerPermission]
     pagination_class = RevenueManagerPagination
 
     filter_mappings = {
