@@ -14,6 +14,7 @@ class ReleasePermission(permissions.BasePermission):
             return 	True
         raise NotAllowedException(detail="Você não tem permissão para excluir ou editar esse lançamento.")
     
+    
 class RevenueSellerPermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
