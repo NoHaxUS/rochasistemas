@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.response import Response
 from ticket.serializers.reward import RewardSerializer, RewardSerializer
 from ticket.serializers.payment import PaymentSerializerWithSeller, PaymentSerializer
-from core.serializers.cotation import CotationTicketSerializer
+from core.serializers.cotation import CotationTicketSerializer, CotationTicketWithCopiedPriceSerializer
 from user.serializers.owner import OwnerSerializer
 from ticket.paginations import TicketPagination
 from utils.models import TicketCustomMessage
@@ -15,6 +15,27 @@ from core.models import Store, Cotation
 from decimal import Decimal
 import datetime
 
+class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
+	
+	owner = serializers.SlugRelatedField(read_only=True,slug_field='first_name')
+	creator = serializers.SlugRelatedField(read_only=True, slug_field='username')
+	payment = PaymentSerializerWithSeller()
+	reward = RewardSerializer()
+	cotation_sum = serializers.SerializerMethodField()
+	status = serializers.SerializerMethodField()
+	cotations = CotationTicketWithCopiedPriceSerializer(many=True)
+	creation_date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
+
+
+	class Meta:
+		model = Ticket
+		fields = ('id','ticket_id','owner','creator','cotations','cotation_sum','creation_date','reward','payment','bet_value','available','status')
+
+	def get_cotation_sum(self, obj):
+		return obj.cotation_sum()
+	
+	def get_status(self, obj):
+		return obj.get_status_display()
 
 class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	

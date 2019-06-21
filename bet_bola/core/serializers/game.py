@@ -72,7 +72,7 @@ class TodayGamesSerializer(serializers.HyperlinkedModelSerializer):
 
 	def get_games(self, league):			
 		qs = league.games
-		
+
 		serializer = GameSerializerForHome(qs ,many=True, context={'context':self.context})
 		return serializer.data
 

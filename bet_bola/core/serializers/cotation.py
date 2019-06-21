@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import serializers
-from core.models import Store,CotationCopy, CotationModified, Game, Market, Cotation
+from core.models import Store, CotationCopy, CotationModified, Game, Market, Cotation
 from ticket.models import Ticket
 import utils.timezone as tzlocal
 from django.utils import timezone
@@ -35,6 +35,25 @@ class CotationGameSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Game
 		fields = ('id','name','start_date')	
+
+
+class CotationTicketWithCopiedPriceSerializer(serializers.HyperlinkedModelSerializer):	
+
+	game = CotationGameSerializer()
+	market = serializers.SlugRelatedField(read_only=True, slug_field='name')	
+	price = serializers.SerializerMethodField()
+	settlement = serializers.SerializerMethodField()
+
+	class Meta:
+		model = Cotation		
+		fields = ('id','name','market','price','settlement','game')	
+
+	def get_settlement(self, obj):
+		return obj.get_settlement_display()
+
+	def get_price(self, obj):
+		cotation = CotationCopy.objects.get(original_cotation=obj, ticket=obj.ticket.first(), store=obj.ticket.first().store)
+		return cotation.price
 
 
 class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):	

@@ -124,7 +124,7 @@ class Seller(CustomUser):
 class Manager(CustomUser):
     cpf = models.CharField(max_length=11, verbose_name='CPF', null=True, blank=True)    
     address = models.CharField(max_length=75, verbose_name='Endereço', null=True, blank=True)
-    credit_limit_to_add = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name="Crédito")
+    credit_limit = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name="Crédito")
     can_cancel_ticket = models.BooleanField(default=True, verbose_name='Cancela Bilhete ?')
     limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento", validators=[MinValueValidator(1), MaxValueValidator(45)])
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')

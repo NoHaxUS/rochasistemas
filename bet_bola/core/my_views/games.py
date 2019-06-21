@@ -152,7 +152,7 @@ class AfterTomorrowGamesView(ModelViewSet):
 
 class SearchGamesView(ModelViewSet):
     """
-    This views is used to in search requests from HomePage
+    This views is used to in search requests and filtering games from league ID
     """
     serializer_class = TodayGamesSerializer
     pagination_class = GameListPagination
@@ -167,24 +167,31 @@ class SearchGamesView(ModelViewSet):
         id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
         id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store_id)]
 
-        my_games_qs = Game.objects.filter(start_date__gt=tzlocal.now(),
-            status__in=[0],
-            available=True)\
+        my_games_qs = Game.objects.filter(start_date__gt=tzlocal.now(), status__in=[0], available=True)\
             .prefetch_related(Prefetch('cotations', queryset=my_cotation_qs, to_attr='my_cotations'))\
             .exclude(Q(league__available=False) | Q(league__location__available=False) | Q(id__in=id_list_excluded_games) )\
             .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
             .filter(cotations_count__gte=3).order_by('-league__location__priority',
             '-league__priority', 'league__location__name', 'league__name')
         
-        if self.request.GET.get('game'):
-            game_name = self.request.GET.get('game')
+        if self.request.GET.get('game_name'):
+            game_name = self.request.GET.get('game_name')
             my_games_qs = my_games_qs.filter(name__icontains=game_name)
             queryset = League.objects.prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'))
             
             queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__pk__in=[game.pk for game in my_games_qs])))\
             .filter(games_count__gt=0)
             queryset = queryset.exclude(id__in=id_list_excluded_leagues)
-            return queryset        
+            return queryset
+
+        if self.request.GET.get('league_id'):
+            league_id = self.request.GET.get('league_id')
+            queryset = League.objects.filter(pk=league_id).prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'))
+            
+            queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__pk__in=[game.pk for game in my_games_qs])))\
+            .filter(games_count__gt=0)
+            queryset = queryset.exclude(id__in=id_list_excluded_leagues)
+            return queryset      
 
         queryset = League.objects.prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'))
     
@@ -194,7 +201,7 @@ class SearchGamesView(ModelViewSet):
         return queryset
 
 
-
+#######
 
 class TodayGames(FiltersMixin, ModelViewSet):
     queryset = Game.objects.none()
@@ -242,9 +249,7 @@ class TodayGames(FiltersMixin, ModelViewSet):
 
 class GamesTable(ModelViewSet):
     serializer_class = GameTableSerializer
-    pagination_class = StandardSetPagination
-    filter_backends = (drf_filters.SearchFilter,)
-    search_fields = ('name','league__name')
+    pagination_class = GameListPagination
 
     def get_queryset(self):
         my_cotation_qs = Cotation.objects.filter(Q(market__name="1X2") | Q(market__name="Dupla Chance"))
@@ -262,7 +267,7 @@ class GamesTable(ModelViewSet):
             .prefetch_related(Prefetch('cotations', queryset=my_cotation_qs, to_attr='my_cotations'))\
             .exclude(Q(league__available=False) | Q(league__location__available=False) | Q(id__in=id_list_excluded_games) | Q(league__id__in=id_list_excluded_leagues) )\
             .annotate(cotations_count=Count('cotations', filter=(Q(cotations__market__name='1X2') | Q(cotations__market__name="Dupla Chance"))))\
-            .filter(cotations_count__gte=6).order_by('-league__location__priority',
+            .filter(cotations_count__gte=3).order_by('-league__location__priority',
             '-league__priority', 'league__location__name', 'league__name')
         
         return queryset

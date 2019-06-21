@@ -49,11 +49,11 @@ urlpatterns = [
     path('tomorrow_games/', TomorrowGamesView.as_view({'get': 'list'}), name='tomorrow_games'),
     path('after_tomorrow_games/', AfterTomorrowGamesView.as_view({'get': 'list'}), name='after_tomorrow_games'),
     path('search_games/', SearchGamesView.as_view({'get': 'list'}), name='search_games'),
-
-
-    #path('able_games/<int:pk>/',GameAbleView.as_view({'get': 'retrieve'}), name='able_games_detail'),
-    path('main_menu/', MainMenu.as_view()),
     path('games_table/', GamesTable.as_view({'get': 'list'}), name='games_table'),
+    
+
+    path('main_menu/', MainMenu.as_view()),
+    
     path('games_tomorrow/', GamesTomorrow.as_view({'get': 'list'}), name='games_tomorrow'),
     path('games_after_tomorrow/', GamesAfterTomorrow.as_view({'get': 'list'}), name='games_after_tomorrow'),
     

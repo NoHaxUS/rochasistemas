@@ -3,30 +3,34 @@ from rest_framework.viewsets import ModelViewSet
 from utils.serializers.rule import RulesMessageSerializer
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from utils.models import RulesMessage
+from filters.mixins import FiltersMixin
 
 
-class RulesMessageView(ModelViewSet):
+class RulesMessageView(FiltersMixin, ModelViewSet):
 	queryset = RulesMessage.objects.all()
 	serializer_class = RulesMessageSerializer
-	permission_classes = [StoreIsRequired,]
+	permission_classes = []
 
-	def list(self, request, pk=None):
-		from core.models import Store
-		store_id = request.GET.get('store')
-		store = Store.objects.get(pk=store_id)
-
-		rules= RulesMessage.objects.filter(store=store)
-		serializer = self.get_serializer(rules, many=True)
-
-		return Response(serializer.data)
+	filter_mappings = {
+		'store': 'store'
+	}
 	
 	def perform_create(self, serializer):		
 		store = self.request.user.my_store
-		text = serializer.validated_data['text']		
-		if RulesMessage.objects.filter(store=store).exists():
-			rule = RulesMessage.objects.get(store=store)
-			rule.text = text
-			rule.save()
-			return rule
-		return RulesMessage.objects.create(store=store, text=text)
+		text = serializer.validated_data['text']
+		rules = RulesMessage.objects.filter(store=store).first()	
+		if	rules:
+			rules.text = text
+			rules.save()
+			return {
+				'success': True,
+				'message': 'Regra criada com sucesso'
+			}
+		
+		RulesMessage.objects.create(store=store, text=text)
+
+		return {
+			'success': True,
+			'message': 'Regra criada com sucesso'
+		}
         
