@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from filters.mixins import FiltersMixin
 from core.permissions import StoreIsRequired, UserIsFromThisStore
-from history.permissions import CancelationHistoryPermission
+from history.permissions import BaseHistoryPermission
 from history.paginations import CancelationHistoryPagination, SellerSalesHistoryPagination
 from .models import *
 from .serializers import *
@@ -14,7 +14,7 @@ class SellerSalesHistoryView(FiltersMixin, ModelViewSet):
     queryset = TicketValidationHistory.objects.all()
     serializer_class = SellerSalesHistorySerializer
     pagination_class = SellerSalesHistoryPagination
-    # permission_classes = [StoreIsRequired, UserIsFromThisStore,]
+    permission_classes = [BaseHistoryPermission,]
     
     filter_mappings = {
         'start_creation_date':'date__gte',		
@@ -118,7 +118,7 @@ class TicketCancelationHistoryView(FiltersMixin, ModelViewSet):
     queryset = TicketCancelationHistory.objects.all()
     serializer_class = TicketCancelationHistorySerializer
     pagination_class = CancelationHistoryPagination
-    permission_classes = [CancelationHistoryPermission]
+    permission_classes = [BaseHistoryPermission]
     
     filter_mappings = {
         'start_creation_date':'date__gte',		
