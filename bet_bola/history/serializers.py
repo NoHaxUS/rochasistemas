@@ -6,13 +6,14 @@ from .models import *
 
 class SellerSalesHistorySerializer(serializers.HyperlinkedModelSerializer):
 
-	seller = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')
-	bet_ticket = serializers.SlugRelatedField(queryset = Ticket.objects.all(),slug_field='id')
+	who_validated = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')
+	ticket = serializers.SlugRelatedField(queryset = Ticket.objects.all(),slug_field='ticket_id')
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
+	date = serializers.DateTimeField(format='%d %B %Y', read_only=True)	
 
 	class Meta:
 		model = TicketValidationHistory
-		fields = ('seller','bet_ticket','sell_date','value','seller_before_balance','seller_after_balance','store')
+		fields = ('who_validated','ticket','bet_value','date','who_validated','balance_before','balance_after','store')
 
 
 class ManagerTransactionsSerializer(serializers.HyperlinkedModelSerializer):
@@ -58,10 +59,12 @@ class PunterPayedHistorySerializer(serializers.HyperlinkedModelSerializer):
 
 class TicketCancelationHistorySerializer(serializers.HyperlinkedModelSerializer):
 
-	ticket_cancelled = serializers.SlugRelatedField(queryset = Ticket.objects.all(),slug_field='id')
-	seller_of_payed = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')	
-	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')	
+	ticket = serializers.SlugRelatedField(queryset = Ticket.objects.all(),slug_field='ticket_id')
+	who_cancelled = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')	
+	who_paid = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')	
+	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
+	date = serializers.DateTimeField(format='%d %B %Y', read_only=True)	
 
 	class Meta:
 		model = TicketCancelationHistory
-		fields = ('who_cancelled','ticket_cancelled','cancelation_date','seller_of_payed','store')
+		fields = ('who_cancelled','ticket','date','who_paid','store')

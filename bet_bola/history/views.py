@@ -1,38 +1,29 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from filters.mixins import FiltersMixin
 from core.permissions import StoreIsRequired, UserIsFromThisStore
+from history.permissions import BaseHistoryPermission
+from history.paginations import CancelationHistoryPagination, SellerSalesHistoryPagination
 from .models import *
 from .serializers import *
 
 
 
-class SellerSalesHistoryView(ModelViewSet):
+class SellerSalesHistoryView(FiltersMixin, ModelViewSet):
     queryset = TicketValidationHistory.objects.all()
     serializer_class = SellerSalesHistorySerializer
-    permission_classes = [StoreIsRequired, UserIsFromThisStore,]
+    pagination_class = SellerSalesHistoryPagination
+    permission_classes = [BaseHistoryPermission,]
+    
+    filter_mappings = {
+        'start_creation_date':'date__gte',		
+        'end_creation_date':'date__lte',
+        'paid_by': 'who_validated__pk',        
+	}    
 
-    def list(self, request, pk=None):
-        store_id = request.GET['store']     
-
-        queryset = self.queryset.filter(store__id=store_id)
-        if request.GET.get('seller'):
-            queryset = queryset.filter(seller__pk=request.GET.get('seller'))
-        if request.GET.get('ticket'):
-            queryset = queryset.filter(bet_ticket__pk=request.GET.get('ticket'))        
-        if request.GET.get('date'):
-            queryset = queryset.filter(sell_date__date=request.GET.get('date'))        
-        if request.user.has_perm('user.be_seller') and not request.user.is_superuser:
-            queryset = queryset.filter(seller=request.user.seller)
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)   
-
-        serializer = self.get_serializer(queryset, many=True)
-
-        return Response(serializer.data)    
+    def get_queryset(self):
+        return TicketValidationHistory.objects.filter(store=self.request.user.my_store)
 
 
 class ManagerTransactionsHistoryView(ModelViewSet):
@@ -123,21 +114,18 @@ class PunterPayedHistoryView(ModelViewSet):
         return Response(serializer.data)    
 
 
-class TicketCancelationHistoryView(ModelViewSet):
+class TicketCancelationHistoryView(FiltersMixin, ModelViewSet):
     queryset = TicketCancelationHistory.objects.all()
     serializer_class = TicketCancelationHistorySerializer
-    permission_classes = [StoreIsRequired, UserIsFromThisStore,]
+    pagination_class = CancelationHistoryPagination
+    permission_classes = [BaseHistoryPermission]
+    
+    filter_mappings = {
+        'start_creation_date':'date__gte',		
+        'end_creation_date':'date__lte',
+        'paid_by': 'who_paid__pk',
+        'cancelled_by': 'who_cancelled__pk',
+	}    
 
-    def list(self, request, pk=None):
-        store_id = request.GET.get('store')
-
-        queryset = self.queryset.filter(store__id=store_id)
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)   
-
-        serializer = self.get_serializer(queryset, many=True)
-
-        return Response(serializer.data)
+    def get_queryset(self):
+        return TicketCancelationHistory.objects.filter(store=self.request.user.my_store)

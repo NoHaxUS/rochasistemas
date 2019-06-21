@@ -9,7 +9,7 @@ class TicketValidationHistory(models.Model):
     date = models.DateTimeField(verbose_name='Data da Validação')
     bet_value = models.DecimalField(max_digits=30, decimal_places=2,verbose_name='Valor Apostado')
     balance_before = models.DecimalField(max_digits=30, decimal_places=2,null=True,blank=True, verbose_name='Saldo Anterior')
-    balance_after = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Saldo Atual')
+    balance_after = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Saldo Posterior')
     store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
     def __str__(self):
