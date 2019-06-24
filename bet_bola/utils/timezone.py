@@ -9,5 +9,5 @@ def get_timezone():
 
 def now():
     local_timezone = get_timezone()
-    return datetime.now(local_timezone).replace(microsecond=0,tzinfo=None)
+    return datetime.now(local_timezone).replace(microsecond=0, tzinfo=None)
     
