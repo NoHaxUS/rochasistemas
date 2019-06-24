@@ -18,6 +18,7 @@ TOKEN="20445-s1B9Vv6E9VSLU1"
 def get_upcoming_events():
     today = datetime.datetime.today().strftime('%Y%m%d')
     tomorrow = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y%m%d')
+    after_tomorrow = (datetime.datetime.today() + datetime.timedelta(days=2)).strftime('%Y%m%d')
     yesterday = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime('%Y%m%d')
     page = 1
     
