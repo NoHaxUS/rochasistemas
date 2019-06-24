@@ -123,6 +123,7 @@ class CotationCopy(models.Model):
     original_cotation = models.ForeignKey('Cotation', on_delete=models.CASCADE, verbose_name="Cotação Original", related_name='history_cotation')
     ticket = models.ForeignKey('ticket.Ticket', on_delete=models.CASCADE, verbose_name='Ticket', related_name='cotations_history')    
     price = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
+    store = models.ForeignKey('core.Store', related_name='my_cotation_copies', verbose_name='Banca', on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.id)

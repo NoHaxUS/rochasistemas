@@ -21,11 +21,10 @@ from .my_views.rule import RulesMessageView
 from .my_views.reward_related import RewardRelatedView
 from .my_views.market import MarketReductionView, MarketRemotionView
 from .my_views.comission import SellerComissionView, ManagerComissionView
-#from .my_views.auth import CustomAuthToken
 from .my_views.release import ReleaseView
 from .my_views.ticket_custom_message import TicketCustomMessageView
-from .my_views.revenue import RevenueSellerView, RevenueManagerView, RevenueGeneralSellerView, RevenueGeneralManagerView, RevenueView
 #  OverviewView, Balance, 
+from .my_views.revenue import RevenueSellerView, RevenueManagerView, RevenueGeneralSellerView, RevenueGeneralManagerView,RevenueView
 from rest_framework_jwt.views import obtain_jwt_token
 
 app_name = 'utils'
@@ -34,7 +33,7 @@ router = DefaultRouter()
 router.register(r'configurations', GeneralConfigurationsView)
 router.register(r'seller_comissions', SellerComissionView)
 router.register(r'manager_comissions', ManagerComissionView)
-router.register(r'rules_message', RulesMessageView)
+router.register(r'rules', RulesMessageView)
 router.register(r'excluded_games', ExcludedGameView)
 router.register(r'excluded_leagues', ExcludedLeagueView)
 router.register(r'rewards_related', RewardRelatedView)
@@ -44,8 +43,6 @@ router.register(r'ticket_custom_messages', TicketCustomMessageView)
 router.register(r'revenue_general_seller', RevenueGeneralSellerView)
 router.register(r'revenue_general_manager', RevenueGeneralManagerView)
 router.register(r'release', ReleaseView)
-
-# router.register(r'overviews', OverviewView)
 
 urlpatterns = [		
     path('revenue_seller/', RevenueSellerView.as_view({'get': 'list'}), name='seller_general_info'),    

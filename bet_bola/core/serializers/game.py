@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.serializers.cotation import StandardCotationSerializer
+from core.serializers.cotation import StandardCotationSerializer, CotationSerializerForTable
 from core.models import League, Game, Location
 
 
@@ -12,6 +12,20 @@ class GameSerializerForHome(serializers.HyperlinkedModelSerializer):
 
 	def get_location(self, game):
 		return game.league.location.name
+
+
+class GameSerializerForTable(serializers.HyperlinkedModelSerializer):
+	cotations = serializers.SerializerMethodField()
+
+	def get_cotations(self, game):
+		cotations = game.my_cotations
+		serializer = CotationSerializerForTable(cotations, many=True)
+		return serializer.data
+
+	class Meta:
+		model = Game				
+		fields = ('id','name','cotations')
+
 
 	
 class GameSerializer(serializers.HyperlinkedModelSerializer):			
@@ -42,22 +56,19 @@ class GameListSerializer(serializers.HyperlinkedModelSerializer):
 		return game.league.location.name
 
 
-class GameTableSerializer(serializers.HyperlinkedModelSerializer):			
-
-	cotations = serializers.SerializerMethodField()
-	league = serializers.SlugRelatedField(queryset=League.objects.all(), slug_field='name')
-	location = serializers.SerializerMethodField()
+class GameTableSerializer(serializers.HyperlinkedModelSerializer):
+	league = serializers.CharField(source='name')
+	location = serializers.SlugRelatedField(queryset=Location.objects.all(), slug_field='name')
+	games = serializers.SerializerMethodField()
 
 	class Meta:
-		model = Game				
-		fields = ('id','name','start_date','status','league','location','cotations')
+		model = League
+		fields = ('id','league','location','games')
 
-	def get_location(self, game):
-		return game.league.location.name
-	
-	def get_cotations(self, game):
-		cotations = game.my_cotations
-		serializer = StandardCotationSerializer(cotations,many=True,context={'context':self.context})
+	def get_games(self, league):			
+		qs = league.games
+
+		serializer = GameSerializerForTable(qs, many=True, context={'context':self.context})
 		return serializer.data
 
 
@@ -72,9 +83,10 @@ class TodayGamesSerializer(serializers.HyperlinkedModelSerializer):
 
 	def get_games(self, league):			
 		qs = league.games
-		
-		serializer = GameSerializerForHome(qs ,many=True, context={'context':self.context})
+
+		serializer = GameSerializerForHome(qs, many=True, context={'context':self.context})
 		return serializer.data
+		
 
 
 class CountryGameTodaySerializers(serializers.HyperlinkedModelSerializer):

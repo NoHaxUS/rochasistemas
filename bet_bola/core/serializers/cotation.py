@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import serializers
-from core.models import Store,CotationCopy, CotationModified, Game, Market, Cotation
+from core.models import Store, CotationCopy, CotationModified, Game, Market, Cotation
 from ticket.models import Ticket
 import utils.timezone as tzlocal
 from django.utils import timezone
@@ -37,6 +37,25 @@ class CotationGameSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','name','start_date')	
 
 
+class CotationTicketWithCopiedPriceSerializer(serializers.HyperlinkedModelSerializer):	
+
+	game = CotationGameSerializer()
+	market = serializers.SlugRelatedField(read_only=True, slug_field='name')	
+	price = serializers.SerializerMethodField()
+	settlement = serializers.SerializerMethodField()
+
+	class Meta:
+		model = Cotation		
+		fields = ('id','name','market','price','settlement','game')	
+
+	def get_settlement(self, obj):
+		return obj.get_settlement_display()
+
+	def get_price(self, obj):
+		cotation = CotationCopy.objects.get(original_cotation=obj, ticket=obj.ticket.first(), store=obj.ticket.first().store)
+		return cotation.price
+
+
 class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):	
 
 	game = CotationGameSerializer()
@@ -50,9 +69,8 @@ class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):
 	def get_settlement(self, obj):
 		return obj.get_settlement_display()
 
-
+#TODO Need to be revised.
 class MinimumListCotationSerializer(serializers.ListSerializer):
-
 	def to_representation(self, data):			
 		store_id = ''
 		
@@ -67,11 +85,10 @@ class MinimumListCotationSerializer(serializers.ListSerializer):
 			for cotation in data:						
 				if CotationModified.objects.filter(cotation=cotation, store=store):												
 					cotation.price = CotationModified.objects.filter(cotation=cotation, store=store).first().price
-				else:						
-					if cotation.market.my_reduction.filter(store=store, active=True):							
-						cotation.price = cotation.price * cotation.market.my_reduction.get(store=store).reduction_percentual / 100
-					else:							
-						cotation.price = cotation.price * config.cotations_percentage / 100													
+				elif cotation.market.my_reduction.filter(store=store, active=True):							
+					cotation.price = cotation.price * cotation.market.my_reduction.get(store=store).reduction_percentual / 100
+				else:							
+					cotation.price = cotation.price * config.cotations_percentage / 100													
 				
 				if cotation.price < 1:
 					cotation.price = 1.01
@@ -86,6 +103,14 @@ class StandardCotationSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Cotation
 		list_serializer_class = MinimumListCotationSerializer
+		fields = ('id','name','price','market')
+
+
+class CotationSerializerForTable(serializers.HyperlinkedModelSerializer):
+	market = serializers.SlugRelatedField(read_only=True, slug_field='name')
+
+	class Meta:
+		model = Cotation
 		fields = ('id','name','price','market')
 
 

@@ -4,7 +4,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
 from filters.mixins import FiltersMixin
 from ticket.models import Ticket, Reward, Payment
-from ticket.serializers.ticket import TicketSerializer, CreateTicketSerializer
+from ticket.serializers.ticket import ShowTicketSerializer, TicketSerializer, CreateTicketSerializer
 from ticket.paginations import TicketPagination
 from ticket.permissions import CanCreateTicket, CanPayWinner, CanValidateTicket, CanCancelTicket, CanManipulateTicket
 from user.permissions import IsSuperUser
@@ -20,14 +20,27 @@ from ticket.logic import reward
 import random
 import json
 
+
+class ShowTicketView(FiltersMixin, ModelViewSet):
+    queryset = Ticket.objects.all()
+    serializer_class = ShowTicketSerializer
+    pagination_class = TicketPagination
+    permission_classes = []
+
+    filter_mappings = {
+        'ticket_id':'ticket_id',
+        'store':'store'
+    }
+
+
 class TicketView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
-    permission_classes = []
     pagination_class = TicketPagination
+    permission_classes = []
 
     filter_mappings = {
-        'ticket_id':'pk',
+        'ticket_id':'ticket_id',
         'store':'store',
         'ticket_status':'status',
         'created_by': 'creator__username__icontains',
@@ -68,7 +81,6 @@ class TicketView(FiltersMixin, ModelViewSet):
         serializer.is_valid(raise_exception=True)
         create_response = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-
         return Response(create_response, status=status.HTTP_201_CREATED, headers=headers)
 
 
@@ -108,10 +120,11 @@ class TicketView(FiltersMixin, ModelViewSet):
             CotationCopy(
                 original_cotation=cotation,
                 ticket=instance,                                        
-                price=cotation.price
+                price=cotation.price,
+                store=store
             ).save()
 
-        validation_message = ''
+        validation_message = None
         if self.request.user.has_perm('user.be_seller'):
             validation_message = instance.validate_ticket(self.request.user.seller)
 
@@ -123,7 +136,6 @@ class TicketView(FiltersMixin, ModelViewSet):
             'validation_message': validation_message
         }
         
-
 
     @action(methods=['get'], detail=True, permission_classes=[])
     def reward_winner(self, request, pk=None):		
@@ -158,74 +170,3 @@ class TicketView(FiltersMixin, ModelViewSet):
             'success': True,
             'message': 'Alterado com Sucesso :)'
         })
-    
-
-    @action(methods=['get'], detail=True)
-    def ticket_detail(self, request, pk=None):		        
-        ticket = self.get_object()
-
-        from utils.models import TicketCustomMessage
-
-        cotations_history = CotationCopy.objects.filter(ticket=ticket.pk)
-
-        if cotations_history.count() > 0 and ticket.available == True:
-
-            cotations_values = {}
-            for current_cotation in cotations_history:
-                cotations_values[current_cotation.original_cotation.pk] = current_cotation.price
-
-            content = "<CENTER> -> " + settings.APP_VERBOSE_NAME.upper() + " <- <BR>"
-            content += "<CENTER> TICKET: <BIG>" + str(ticket.pk) + "<BR>"
-            
-            if ticket.seller:
-                content += "<CENTER> CAMBISTA: " + ticket.seller.first_name + "<BR>"
-            if ticket.owner:
-                content += "<CENTER> CLIENTE: " + ticket.owner.first_name + "<BR>"
-            if ticket.user:
-                content += "<CENTER> CLIENTE: " + ticket.user.first_name + "<BR>"
-
-            content += "<CENTER> APOSTA: R$" + str("%.2f" % ticket.bet_value) + "<BR>"
-            content += "<CENTER> COTA TOTAL: " + str("%.2f" % ticket.cotation_sum() ) + "<BR>"
-            if ticket.reward:
-                content += "<CENTER> GANHO POSSIVEL: R$" + str("%.2f" % ticket.reward.real_value) + "<BR>"
-            if ticket.payment:
-                content +=  "<CENTER> STATUS: " + ticket.payment.status + "<BR>"
-            content += "<CENTER> DATA: " + ticket.creation_date.strftime('%d/%m/%Y %H:%M')
-            content += "<BR><BR>"
-            
-            content += "<LEFT> APOSTAS <BR>"
-            content += "<LEFT>-------------------------------> <BR>"
-
-            for cotation in ticket.cotations.all():
-                content += "<LEFT>" + cotation.game.name + "<BR>"
-                content += "<LEFT>" + cotation.game.start_date.strftime('%d/%m/%Y %H:%M') + "<BR>"
-                if cotation.market:
-                    content += "<LEFT>"+ cotation.market.name + "<BR>"
-
-                base_line = cotation.base_line if cotation.base_line else ''
-                content += "<LEFT>" + cotation.name + ' ' + base_line + " --> " + str("%.2f" % cotations_values[cotation.pk]) + "<BR>"
-
-                content += "<RIGHT> Status: " +  cotation.get_settlement_display_modified() + "<BR>"
-                
-                content += "<CENTER>-------------------------------> <BR>"
-            content += "<CENTER> "+ settings.APP_VERBOSE_NAME + "<BR>"
-
-            if TicketCustomMessage.objects.first():            
-                phrases = TicketCustomMessage.objects.first().text.replace("\r","").split("\n")
-
-                for phrase in phrases:                
-                    content += "<CENTER> " + phrase + "<BR>"
-
-            content += "#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;"                
-            cotation_sum = ticket.cotation_sum()
-            possible_reward = cotation_sum * ticket.bet_value
-            ticket = TicketSerializer(ticket)
-            context = {'ticket': ticket.data,
-            'cotation_sum':cotation_sum,
-            'possible_reward':possible_reward,
-            'print': content,'cotations_values':cotations_values, 
-            'show_ticket': True, 'base_url': request.get_host()}
-        else:
-            context = {'show_ticket': False}
-
-        return Response(context)		
