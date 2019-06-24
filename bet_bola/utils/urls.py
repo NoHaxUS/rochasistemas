@@ -23,7 +23,8 @@ from .my_views.market import MarketReductionView, MarketRemotionView
 from .my_views.comission import SellerComissionView, ManagerComissionView
 from .my_views.release import ReleaseView
 from .my_views.ticket_custom_message import TicketCustomMessageView
-from .my_views.revenue import RevenueSellerView, RevenueManagerView, RevenueGeneralSellerView, RevenueGeneralManagerView
+#  OverviewView, Balance, 
+from .my_views.revenue import RevenueSellerView, RevenueManagerView, RevenueGeneralSellerView, RevenueGeneralManagerView,RevenueView
 from rest_framework_jwt.views import obtain_jwt_token
 
 app_name = 'utils'
@@ -46,6 +47,7 @@ router.register(r'release', ReleaseView)
 urlpatterns = [		
     path('revenue_seller/', RevenueSellerView.as_view({'get': 'list'}), name='seller_general_info'),    
     path('revenue_manager/', RevenueManagerView.as_view({'get': 'list'}), name='manager_info'),    
+    path('revenue/', RevenueView.as_view(), name='manager_info'),    
 	path('token/', obtain_jwt_token, name='obtain_token'),    
 ]
 

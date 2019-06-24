@@ -100,7 +100,7 @@ class RevenueSellerPagination(PageNumberPagination):
         sellers = [{'id':seller.pk,'username':seller.username} for seller in Seller.objects.filter(payment__status=2).distinct()]                   
         for ticket in data:
             entry += float(ticket["bet_value"])
-            if ticket["status"] == 'Venceu':
+            if ticket["status"] == 'Venceu, Ganhador Pago' or ticket["status"] == 'Venceu, Prestar Contas':
                 out += float(ticket["reward"]["value"]) - float(ticket["won_bonus"])
                 won_bonus_sum += float(ticket["won_bonus"])
             comissions_sum += float(ticket["comission"])
@@ -143,10 +143,10 @@ class RevenueManagerPagination(PageNumberPagination):
                     outs[ticket["manager"]["username"]][ticket["bet_type"]] = 0
                 
                 incomes[ticket["manager"]["username"]][ticket["bet_type"]] += Decimal(ticket["bet_value"])
-                if ticket["status"] == "Venceu":
+                if ticket["status"] == 'Venceu, Ganhador Pago' or ticket["status"] == 'Venceu, Prestar Contas':
                     outs[ticket["manager"]["username"]][ticket["bet_type"]] += Decimal(ticket["reward"]["value"])
             
-            if ticket["status"] == 'Venceu':
+            if ticket["status"] == 'Venceu, Ganhador Pago' or ticket["status"] == 'Venceu, Prestar Contas':
                 out += float(ticket["reward"]["value"])            
             seller_comission_sum += float(ticket["comission"])
 

@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.views import APIView
 from rest_framework import status
 from filters.mixins import FiltersMixin
 from ticket.models import Ticket, Reward, Payment
@@ -12,7 +13,7 @@ from core.permissions import StoreIsRequired, UserIsFromThisStore
 from user.permissions import IsSuperUser
 from user.models import TicketOwner, Seller, Manager
 from core.models import CotationCopy, Cotation, Store
-from utils.models import RewardRestriction
+from utils.models import RewardRestriction, Release
 from utils import timezone as tzlocal
 import datetime
 from utils.permissions import RevenueCloseManagerPermission, RevenueManagerPermission, RevenueCloseSellerPermission, RevenueSellerPermission
@@ -151,3 +152,41 @@ class RevenueManagerView(FiltersMixin, ModelViewSet):
         tickets = Ticket.objects.filter(payment__status=2, closed_for_manager=False).exclude(status__in=[5,6])
         return tickets
         
+
+class RevenueView(APIView):
+    def get(self, request):
+        managers = Manager.objects.filter(manager_assoc__payment__status=2, my_store=request.user.my_store).distinct()
+        sellers = Seller.objects.filter(payment__status=2, my_manager__isnull=True, my_store=request.user.my_store).distinct()                
+        entries = 0
+        out = 0
+        total_release = 0
+        comissions = 0
+        total_out = 0
+
+        for manager in RevenueGeneralManagerSerializer(managers, many=True, context={'request':self.request}).data:
+            entries += manager['entry']
+            out += manager['out'] + manager['won_bonus']
+            comissions += manager['comission'] + manager['comission_seller']
+            total_out += manager['total_out'] + manager['comission_seller']
+        
+        for seller in RevenueGeneralSellerSerializer(sellers, many=True, context={'request':self.request}).data:
+            entries += seller['entry']
+            out += seller['out'] + seller['won_bonus']
+            comissions += seller['comission']
+            total_out += seller['total_out']                
+
+        profit = entries - total_out           
+        
+        for release in Release.objects.all():
+            total_release += release.value
+            
+        data = {
+            'entries': entries,
+            'out': out,
+            'total_release': total_release,
+            'comissions': comissions,
+            'total_out': total_out,
+            'profit': profit
+        }    
+
+        return Response(data)
