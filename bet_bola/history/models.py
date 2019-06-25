@@ -101,19 +101,20 @@ class RevenueHistorySeller(models.Model):
 
 class RevenueHistoryManager(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
-    who_reseted_revenue = models.CharField(max_length=200, verbose_name='Reponsável pelo Fechamento')
-    manager = models.ForeignKey('user.Manager', on_delete=models.CASCADE, verbose_name='Gerente')
-    revenue_reseted_date = models.DateTimeField(verbose_name='Data da Transação', auto_now_add=True)
-    final_revenue = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Entrada Total')
-    actual_comission = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='% Comissão')
-    earned_value = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Comissão')
-    final_out_value = models.DecimalField(max_digits=40, decimal_places=2,null=True, blank=True, verbose_name='Saída Total')
+    register_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='quem prestou conta')
+    tickets_registered = models.ManyToManyField('ticket.Ticket')
+    manager = models.ForeignKey('user.Manager', on_delete=models.CASCADE, related_name="revenues",verbose_name='Gerente')
+    date = models.DateTimeField(verbose_name='Data da Transação', auto_now_add=True)
+    entry = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Entrada Total')
+    comission = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='% Comissão')
+    out = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='% Comissão')
+    total_out = models.DecimalField(max_digits=40, decimal_places=2,null=True, blank=True, verbose_name='Saída Total')
     profit = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Lucro')
     store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
-    def get_commission(self):
-        return str(round(self.actual_comission,0)) + "%"
-    get_commission.short_description = '% de Comissão'
+    # def get_commission(self):
+    #     return str(round(self.comission,0)) + "%"
+    # get_commission.short_description = '% de Comissão'
 
 
     def __str__(self):
