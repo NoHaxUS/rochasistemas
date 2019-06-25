@@ -17,16 +17,18 @@ from django.urls import path, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from .views import *
+from .my_views.revenue_history_manager import RevenueHistoryManagerView
 
 app_name = 'core'
 
 router = DefaultRouter()
-router.register(r'seller_sales_history', SellerSalesHistoryView)
-router.register(r'manager_transactions_history', ManagerTransactionsHistoryView)
-router.register(r'revenue_history_seller', RevenueHistorySellerView)
+# router.register(r'seller_sales_history', SellerSalesHistoryView)
+# router.register(r'manager_transactions_history', ManagerTransactionsHistoryView)
+# router.register(r'revenue_history_seller', RevenueHistorySellerView)
+# router.register(r'revenue_history_manager', RevenueHistoryManagerView)
+# router.register(r'punter_payed_history', PunterPayedHistoryView)
+# router.register(r'ticket_cancelation_history', TicketCancelationHistoryView)
 router.register(r'revenue_history_manager', RevenueHistoryManagerView)
-router.register(r'punter_payed_history', PunterPayedHistoryView)
-router.register(r'ticket_cancelation_history', TicketCancelationHistoryView)
 
 
 urlpatterns = router.urls

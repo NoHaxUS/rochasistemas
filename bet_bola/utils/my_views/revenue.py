@@ -13,12 +13,14 @@ from core.permissions import StoreIsRequired, UserIsFromThisStore
 from user.permissions import IsSuperUser
 from user.models import TicketOwner, Seller, Manager
 from core.models import CotationCopy, Cotation, Store
+from history.models import RevenueHistoryManager
 from utils.models import RewardRestriction, Release
 from utils import timezone as tzlocal
-import datetime
 from utils.permissions import RevenueCloseManagerPermission, RevenueManagerPermission, RevenueCloseSellerPermission, RevenueSellerPermission
 from config import settings
 import json
+import datetime
+import decimal
 
 
 class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
@@ -48,6 +50,8 @@ class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
             tickets = tickets.filter(creation_date__lte=end_creation_date)
         tickets.update(closed_for_seller=True)
         
+
+
         return Response({
             'success': True,
             'message': 'Alterado com Sucesso :)'
@@ -67,13 +71,23 @@ class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
         queryset = self.queryset        
         return queryset.filter(my_store=user.my_store)
 
+    
     @action(methods=['post'], detail=True, permission_classes = [RevenueCloseManagerPermission])
     def close_manager(self, request, pk=None):
         manager = self.get_object()
         data = json.loads(request.POST.get('data'))    
         start_creation_date = data.get('start_creation_date')
         end_creation_date = data.get('end_creation_date')                        
-                   
+        revenue = data.get('revenue')                                                
+
+        revenue_history_manager = RevenueHistoryManager(register_by=request.user, 
+        manager=manager, 
+        entry=decimal.Decimal(revenue.get('entry',None)),
+        comission=decimal.Decimal(revenue.get('comission',None)),
+        total_out=decimal.Decimal(revenue.get('total_out',None)),
+        profit= decimal.Decimal(revenue.get('entry',None)) - decimal.Decimal(revenue.get('total_out',None)),
+        store=request.user.my_store)
+        
         tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__seller__my_manager__pk=manager.pk, closed_for_manager=False).exclude(status__in=[5,6])		
         if start_creation_date:
             tickets = tickets.filter(creation_date__gte=start_creation_date)
@@ -81,6 +95,9 @@ class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
             tickets = tickets.filter(creation_date__lte=end_creation_date)
         tickets.update(closed_for_manager=True)
         
+        revenue_history_manager.save()
+        revenue_history_manager.tickets_registered.set(tickets)
+
         return Response({
             'success': True,
             'message': 'Alterado com Sucesso :)'
