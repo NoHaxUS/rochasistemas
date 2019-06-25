@@ -29,7 +29,7 @@ class Ticket(models.Model):
     ticket_id = models.CharField(max_length=10, verbose_name="Ticket ID")
     owner = models.ForeignKey('user.TicketOwner', on_delete=models.CASCADE, verbose_name='Dono do Bilhete')
     cotations = models.ManyToManyField('core.Cotation', related_name='ticket', verbose_name='Cotas')
-    creation_date = models.DateTimeField(verbose_name='Data da Aposta', default=tzlocal.now())
+    creation_date = models.DateTimeField(verbose_name='Data da Aposta', default=tzlocal.now)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_created_tickets', null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Criado por')
     reward = models.OneToOneField('Reward', related_name='ticket', on_delete=models.CASCADE, verbose_name='Prêmio')
     payment = models.OneToOneField('Payment', related_name='ticket', on_delete=models.CASCADE, verbose_name='Pagamento')
