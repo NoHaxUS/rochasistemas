@@ -18,6 +18,7 @@ from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from .views import *
 from .my_views.revenue_history_manager import RevenueHistoryManagerView
+from .my_views.revenue_history_seller import RevenueHistorySellerView
 
 app_name = 'core'
 
@@ -29,6 +30,8 @@ router = DefaultRouter()
 # router.register(r'punter_payed_history', PunterPayedHistoryView)
 # router.register(r'ticket_cancelation_history', TicketCancelationHistoryView)
 router.register(r'revenue_history_manager', RevenueHistoryManagerView)
+router.register(r'revenue_history_seller', RevenueHistorySellerView)
 
 
 urlpatterns = router.urls
+
