@@ -106,6 +106,15 @@ class StandardCotationSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','name','price','market')
 
 
+class CotationsFromMarketSerializer(serializers.HyperlinkedModelSerializer):
+	market = serializers.SlugRelatedField(read_only=True, slug_field='name')
+
+	class Meta:
+		model = Cotation
+		list_serializer_class = MinimumListCotationSerializer
+		fields = ('id','name','price', 'market')
+
+
 class CotationSerializerForTable(serializers.HyperlinkedModelSerializer):
 	market = serializers.SlugRelatedField(read_only=True, slug_field='name')
 
