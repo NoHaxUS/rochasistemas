@@ -14,6 +14,8 @@ from user.models import CustomUser, Seller, Manager
 from core.models import Store, Cotation
 from decimal import Decimal
 import datetime
+from utils.models import TicketCustomMessage
+
 
 class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
 	
@@ -25,6 +27,7 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
 	status = serializers.SerializerMethodField()
 	cotations = CotationTicketWithCopiedPriceSerializer(many=True)
 	creation_date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
+	ticket_message = serializers.SerializerMethodField()
 
 	def get_creator(self, data):
 		if data.creator:
@@ -33,10 +36,20 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
 				'user_type': data.creator.user_type
 			}
 
+	def get_ticket_message(self, data):
+		request = self.context['request']
+		store = Store.objects.get(pk=request.GET.get('store'))
+
+		ticket_message = TicketCustomMessage.objects.filter(store=store).first()
+		if ticket_message:
+			return {
+				'message': ticket_message.text
+			}
 
 	class Meta:
 		model = Ticket
-		fields = ('id','ticket_id','owner','creator','cotations','cotation_sum','creation_date','reward','payment','bet_value','available','status')
+		fields = ('id','ticket_id','owner','creator','cotations',
+		'cotation_sum','creation_date','reward','payment','bet_value','available','status','ticket_message')
 
 	def get_cotation_sum(self, obj):
 		return obj.cotation_sum()

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from core.models import Market
-from core.serializers.cotation import StandardCotationSerializer
+from core.serializers.cotation import StandardCotationSerializer, CotationsFromMarketSerializer
 
 class MarketCotationSerializer(serializers.HyperlinkedModelSerializer):
 	cotations = serializers.SerializerMethodField()
@@ -10,7 +10,7 @@ class MarketCotationSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','name','cotations')
 
 	def get_cotations(self, market):
-		serializer = StandardCotationSerializer(market.my_cotations,many=True,context={'context':self.context})
+		serializer = CotationsFromMarketSerializer(market.my_cotations, many=True, context={'context':self.context})
 		return serializer.data
 
 
