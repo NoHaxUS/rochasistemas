@@ -45,6 +45,8 @@ class TicketView(FiltersMixin, ModelViewSet):
         'ticket_status':'status',
         'created_by': 'creator__username__icontains',
         'paid_by': 'payment__who_paid__username__icontains',
+        'revenue_history_seller': 'revenuehistoryseller__pk',
+        'revenue_history_manager': 'revenuehistorymanager__pk',
         'start_creation_date':'creation_date__gte',
         'end_creation_date':'creation_date__lte',
         'payment_status':'payment__status',

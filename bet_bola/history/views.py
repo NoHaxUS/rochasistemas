@@ -53,45 +53,7 @@
 #         return Response(serializer.data)
 
 
-# class RevenueHistorySellerView(ModelViewSet):
-#     queryset = RevenueHistorySeller.objects.all()
-#     serializer_class = RevenueHistorySellerSerializer
-#     permission_classes = [StoreIsRequired, UserIsFromThisStore,]
 
-#     def list(self, request, pk=None):
-#         store_id = request.GET.get('store')
-        
-#         queryset = self.queryset.filter(store__id=store_id)
-
-#         page = self.paginate_queryset(queryset)
-#         if page is not None:
-#             serializer = self.get_serializer(page, many=True)
-#             return self.get_paginated_response(serializer.data)   
-
-#         serializer = self.get_serializer(queryset, many=True)
-
-#         return Response(serializer.data)    
-
-
-# class RevenueHistoryManagerView(ModelViewSet):
-#     queryset = RevenueHistoryManager.objects.all()
-#     serializer_class = RevenueHistoryManagerSerializer
-#     permission_classes = [StoreIsRequired, UserIsFromThisStore,]
-
-
-#     def list(self, request, pk=None):
-#         store_id = request.GET.get('store')
-
-#         queryset = self.queryset.filter(store__id=store_id)
-
-#         page = self.paginate_queryset(queryset)
-#         if page is not None:
-#             serializer = self.get_serializer(page, many=True)
-#             return self.get_paginated_response(serializer.data)   
-
-#         serializer = self.get_serializer(queryset, many=True)
-
-#         return Response(serializer.data)    
 
 
 # class PunterPayedHistoryView(ModelViewSet):

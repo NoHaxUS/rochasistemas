@@ -13,7 +13,7 @@ from core.permissions import StoreIsRequired, UserIsFromThisStore
 from user.permissions import IsSuperUser
 from user.models import TicketOwner, Seller, Manager
 from core.models import CotationCopy, Cotation, Store
-from history.models import RevenueHistoryManager
+from history.models import RevenueHistoryManager, RevenueHistorySeller
 from utils.models import RewardRestriction, Release
 from utils import timezone as tzlocal
 from utils.permissions import RevenueCloseManagerPermission, RevenueManagerPermission, RevenueCloseSellerPermission, RevenueSellerPermission
@@ -41,22 +41,38 @@ class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
         seller = self.get_object()
         data = json.loads(request.POST.get('data'))                
         start_creation_date = data.get('start_creation_date')
-        end_creation_date = data.get('end_creation_date')            
-        
-        tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__pk=seller.pk, closed_for_seller=False).exclude(status__in=[5,6])		
-        if start_creation_date:
-            tickets = tickets.filter(creation_date__gte=start_creation_date)
-        if end_creation_date:
-            tickets = tickets.filter(creation_date__lte=end_creation_date)
-        tickets.update(closed_for_seller=True)
-        
+        end_creation_date = data.get('end_creation_date') 
+        revenue = data.get('revenue')                                                
 
+        revenue_history_seller = RevenueHistorySeller(register_by=request.user, 
+        seller=seller, 
+        entry=decimal.Decimal(revenue.get('entry',None)),
+        comission=decimal.Decimal(revenue.get('comission',None)),
+        total_out=decimal.Decimal(revenue.get('total_out',None)),
+        profit= decimal.Decimal(revenue.get('entry',None)) - decimal.Decimal(revenue.get('total_out',None)),
+        store=request.user.my_store)           
+        
+        tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__pk=seller.pk, closed_for_seller=False).exclude(status__in=[5,6])
+        if tickets.exists():
+            if start_creation_date:
+                tickets = tickets.filter(creation_date__gte=start_creation_date)
+            if end_creation_date:
+                tickets = tickets.filter(creation_date__lte=end_creation_date)        
+
+            revenue_history_seller.save()        
+            revenue_history_seller.tickets_registered.set(tickets)            
+
+            tickets.update(closed_for_seller=True)            
+
+            return Response({
+                'success': True,
+                'message': 'Alterado com Sucesso :)'
+            })
 
         return Response({
-            'success': True,
-            'message': 'Alterado com Sucesso :)'
+            'success': False,
+            'message': 'Colaborador está em dia com as contas :)'
         })
-        
 
 class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
     queryset = Manager.objects.filter(manager_assoc__payment__status=2).distinct()
@@ -89,20 +105,27 @@ class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
         store=request.user.my_store)
         
         tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__seller__my_manager__pk=manager.pk, closed_for_manager=False).exclude(status__in=[5,6])		
-        if start_creation_date:
-            tickets = tickets.filter(creation_date__gte=start_creation_date)
-        if end_creation_date:
-            tickets = tickets.filter(creation_date__lte=end_creation_date)
-        tickets.update(closed_for_manager=True)
+        if tickets.exists():
+            print(tickets.all(), "@@@@@@@@@")
+            if start_creation_date:
+                tickets = tickets.filter(creation_date__gte=start_creation_date)
+            if end_creation_date:
+                tickets = tickets.filter(creation_date__lte=end_creation_date)        
+            
+            revenue_history_manager.save()
+            revenue_history_manager.tickets_registered.set(tickets)
+
+            tickets.update(closed_for_manager=True)
+
+            return Response({
+                'success': True,
+                'message': 'Alterado com Sucesso :)'
+            })        
         
-        revenue_history_manager.save()
-        revenue_history_manager.tickets_registered.set(tickets)
-
         return Response({
-            'success': True,
-            'message': 'Alterado com Sucesso :)'
+            'success': False,
+            'message': 'Gerente está em dia com as contas :)'
         })        
-
 
 class RevenueSellerView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.filter(closed_for_seller=False)
