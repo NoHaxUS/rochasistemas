@@ -52,7 +52,7 @@ class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
         profit= decimal.Decimal(revenue.get('entry',None)) - decimal.Decimal(revenue.get('total_out',None)),
         store=request.user.my_store)           
         
-        tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__pk=seller.pk, closed_for_seller=False).exclude(status__in=[5,6])
+        tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__pk=seller.pk, closed_for_seller=False, status__in=[1,2,4])
         if tickets.exists():
             if start_creation_date:
                 tickets = tickets.filter(creation_date__gte=start_creation_date)
@@ -104,9 +104,8 @@ class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
         profit= decimal.Decimal(revenue.get('entry',None)) - decimal.Decimal(revenue.get('total_out',None)),
         store=request.user.my_store)
         
-        tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__seller__my_manager__pk=manager.pk, closed_for_manager=False).exclude(status__in=[5,6])		
+        tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__seller__my_manager__pk=manager.pk, closed_for_manager=False, status__in=[1,2,4])
         if tickets.exists():
-            print(tickets.all(), "@@@@@@@@@")
             if start_creation_date:
                 tickets = tickets.filter(creation_date__gte=start_creation_date)
             if end_creation_date:
@@ -121,11 +120,12 @@ class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
                 'success': True,
                 'message': 'Alterado com Sucesso :)'
             })        
-        
+
         return Response({
             'success': False,
             'message': 'Gerente está em dia com as contas :)'
         })        
+
 
 class RevenueSellerView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.filter(closed_for_seller=False)
@@ -145,14 +145,11 @@ class RevenueSellerView(FiltersMixin, ModelViewSet):
         'start_payment_date': 'payment__date__gte',
         'end_payment_date': 'payment__date__lte',
         'available': 'available',
-    }
+    }    
 
-    def get_queryset(self):
-        if self.request.GET.get("start_creation_date") or self.request.GET.get("end_creation_date"):            
-            return Ticket.objects.filter(store=1, payment__status=2).exclude(status__in=[5,6])    #change to request.store              
-        tickets = Ticket.objects.filter(payment__status=2, closed_for_seller=False).exclude(status__in=[5,6])
-        return tickets
-
+    def get_queryset(self):        
+        return Ticket.objects.filter(store=self.request.user.my_store, payment__status=2, status__in=[1,2,4], closed_for_seller=False) 
+        
 
 class RevenueManagerView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.filter(closed_for_manager=False)
@@ -186,11 +183,8 @@ class RevenueManagerView(FiltersMixin, ModelViewSet):
                 
         return Response(serializer.data)
 
-    def get_queryset(self):
-        if self.request.GET.get("start_creation_date") or self.request.GET.get("end_creation_date"):            
-            return Ticket.objects.filter(store=1,payment__status=2).exclude(status__in=[5,6])                
-        tickets = Ticket.objects.filter(payment__status=2, closed_for_manager=False).exclude(status__in=[5,6])
-        return tickets
+    def get_queryset(self):        
+        return Ticket.objects.filter(store=self.request.user.my_store, payment__status=2, status__in=[1,2,4], closed_for_manager=False) 
         
 
 class RevenueView(APIView):

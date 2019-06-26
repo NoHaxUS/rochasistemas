@@ -76,7 +76,7 @@ class RevenueGeneralSellerSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','username','comission','entry','won_bonus','out','total_out')
 
 	def get_ticket(self, obj):
-		tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__pk=obj.pk, closed_for_seller=False).exclude(status__in=[5,6])		
+		tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__pk=obj.pk, closed_for_seller=False, status__in=[1,2,4])
 		start_creation_date = self.context['request'].GET.get('start_creation_date', None)
 		end_creation_date = self.context['request'].GET.get('end_creation_date', None)
 
@@ -129,7 +129,7 @@ class RevenueGeneralManagerSerializer(RevenueGeneralSellerSerializer):
 		fields = ('id','username','comission','comission_seller','entry','won_bonus','out','total_out')
 
 	def get_ticket(self, obj):				  	
-		tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__seller__my_manager__pk=obj.pk, closed_for_manager=False).exclude(status__in=[5,6])				
+		tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__seller__my_manager__pk=obj.pk, closed_for_manager=False, status__in=[1,2,4])
 		start_creation_date = self.context['request'].GET.get('start_creation_date', None)
 		end_creation_date = self.context['request'].GET.get('end_creation_date', None)
 
