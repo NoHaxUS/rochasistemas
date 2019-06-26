@@ -18,13 +18,20 @@ import datetime
 class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
 	
 	owner = serializers.SlugRelatedField(read_only=True,slug_field='first_name')
-	creator = serializers.SlugRelatedField(read_only=True, slug_field='username')
+	creator = serializers.SerializerMethodField()
 	payment = PaymentSerializerWithSeller()
 	reward = RewardSerializer()
 	cotation_sum = serializers.SerializerMethodField()
 	status = serializers.SerializerMethodField()
 	cotations = CotationTicketWithCopiedPriceSerializer(many=True)
 	creation_date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
+
+	def get_creator(self, data):
+		if data.creator:
+			return {
+				'name': data.creator.first_name,
+				'user_type': data.creator.user_type
+			}
 
 
 	class Meta:
@@ -40,13 +47,21 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
 class TicketSerializer(serializers.HyperlinkedModelSerializer):
 	
 	owner = serializers.SlugRelatedField(read_only=True,slug_field='first_name')
-	creator = serializers.SlugRelatedField(read_only=True, slug_field='username')
+	creator = serializers.SerializerMethodField()
 	payment = PaymentSerializerWithSeller()
 	reward = RewardSerializer()
 	cotation_sum = serializers.SerializerMethodField()
 	status = serializers.SerializerMethodField()
 	cotations = CotationTicketSerializer(many=True)
 	creation_date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
+
+
+	def get_creator(self, data):
+		if data.creator:
+			return {
+				'name': data.creator.first_name,
+				'user_type': data.creator.user_type
+			}
 
 
 	class Meta:
@@ -69,10 +84,10 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
 	cotations = serializers.PrimaryKeyRelatedField(many=True, queryset=Cotation.objects.all(), required=True)
 
 	def create(self, validated_data):
-		store = self.context['request'].GET.get('store')
+		owner_serializer = OwnerSerializer(data=validated_data.pop('owner'), context=self.context)
+		owner_serializer.is_valid()
+		owner = owner_serializer.save()
 
-		my_store = Store.objects.get(pk=store)
-		owner = TicketOwner.objects.create(my_store=my_store, **validated_data.pop('owner'))
 		cotations = validated_data.pop('cotations')
 		ticket = Ticket.objects.create(owner=owner, **validated_data)
 		ticket.cotations.set(cotations)
@@ -81,6 +96,12 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
 
 	def validate(self, data):
 		store = self.context['request'].GET.get('store')
+		user = self.context['request'].user
+		if not user.is_anonymous and user.has_perm('user.be_admin'):
+			raise serializers.ValidationError("Conta administradora não pode fazer aposta :)")
+
+		if not user.is_anonymous and user.has_perm('user.be_manager'):
+			raise serializers.ValidationError("Conta gerente não pode fazer aposta :)")
 
 		try:
 			config = GeneralConfigurations.objects.get(store=store)
