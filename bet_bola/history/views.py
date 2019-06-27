@@ -9,23 +9,6 @@
 # from .serializers import *
 
 
-
-# class SellerSalesHistoryView(FiltersMixin, ModelViewSet):
-#     queryset = TicketValidationHistory.objects.all()
-#     serializer_class = SellerSalesHistorySerializer
-#     pagination_class = SellerSalesHistoryPagination
-#     permission_classes = [BaseHistoryPermission,]
-    
-#     filter_mappings = {
-#         'start_creation_date':'date__gte',		
-#         'end_creation_date':'date__lte',
-#         'paid_by': 'who_validated__pk',        
-# 	}    
-
-#     def get_queryset(self):
-#         return TicketValidationHistory.objects.filter(store=self.request.user.my_store)
-
-
 # class ManagerTransactionsHistoryView(ModelViewSet):
 #     queryset = ManagerTransactions.objects.all()
 #     serializer_class = ManagerTransactionsSerializer
@@ -74,20 +57,3 @@
 #         serializer = self.get_serializer(queryset, many=True)
 
 #         return Response(serializer.data)    
-
-
-# class TicketCancelationHistoryView(FiltersMixin, ModelViewSet):
-#     queryset = TicketCancelationHistory.objects.all()
-#     serializer_class = TicketCancelationHistorySerializer
-#     pagination_class = CancelationHistoryPagination
-#     permission_classes = [BaseHistoryPermission]
-    
-#     filter_mappings = {
-#         'start_creation_date':'date__gte',		
-#         'end_creation_date':'date__lte',
-#         'paid_by': 'who_paid__pk',
-#         'cancelled_by': 'who_cancelled__pk',
-# 	}    
-
-#     def get_queryset(self):
-#         return TicketCancelationHistory.objects.filter(store=self.request.user.my_store)

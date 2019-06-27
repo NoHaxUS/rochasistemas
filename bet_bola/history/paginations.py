@@ -22,7 +22,7 @@ class CancelationHistoryPagination(PageNumberPagination):
         })
 
 
-class SellerSalesHistoryPagination(PageNumberPagination):
+class TicketValidationHistoryPagination(PageNumberPagination):
     page_size = 10
     paid_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(my_ticket_validations__isnull=False).distinct()]    
 
