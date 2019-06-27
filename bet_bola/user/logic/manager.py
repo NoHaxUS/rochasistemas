@@ -4,7 +4,7 @@ def manage_credit(self, obj, is_new=False):
     from core.models import Seller
 
     seller = Seller.objects.get(pk=obj.pk)
-    manager_before_balance = self.credit_limit_to_add
+    manager_before_balance = self.credit_limit
 
     if not self.can_sell_unlimited:
         if is_new:
@@ -16,7 +16,7 @@ def manage_credit(self, obj, is_new=False):
             diff = obj.credit_limit - seller.credit_limit
             seller_after_balance = seller.credit_limit + diff
 
-        manager_balance_after = self.credit_limit_to_add - diff
+        manager_balance_after = self.credit_limit - diff
 
 
         if manager_balance_after < 0:
@@ -30,13 +30,15 @@ def manage_credit(self, obj, is_new=False):
         elif obj.credit_limit < 0:
             return {'success': False,
             'message': 'O cambista não pode ter saldo negativo.'}
-        else:
-            self.credit_limit_to_add -= diff
+        else:            
+            self.credit_limit -= diff
             self.save()
 
             if is_new:
+                print(seller.credit_limit)
                 seller.credit_limit = obj.credit_limit
                 seller.save()
+                print(seller.credit_limit)
     else:
         if obj.credit_limit < 0:
             return {'success': False,

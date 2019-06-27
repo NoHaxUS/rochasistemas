@@ -152,7 +152,7 @@ class Manager(CustomUser):
         self.save()
 
     def alter_credit(self, credit):
-        self.credit_limit_to_add += credit
+        self.credit_limit += credit
         self.save()
         
     def save(self, *args, **kwargs):

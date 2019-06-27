@@ -33,7 +33,7 @@ class ManagerView(FiltersMixin, ModelViewSet):
 
     @action(methods=['post'], detail=True, permission_classes=[])
     def alter_credit(self, request, pk=None):
-        credit =  int(request.data['credit'])
+        credit = int(request.data['credit'])
         seller = self.get_object()
         seller.alter_credit(credit)
         return Response({'success': True})
