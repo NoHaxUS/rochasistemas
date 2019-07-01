@@ -21,5 +21,5 @@ class ManagerTransactionsHistoryView(FiltersMixin, ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.has_perm('user.be_manager'):
-            return ManagerTransactions.objects.filter(manager__pk=self.request.user.pk)
+            return ManagerTransactions.objects.filter(creditor__pk=self.request.user.pk)
         return ManagerTransactions.objects.filter(store=self.request.user.my_store)

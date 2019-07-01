@@ -9,6 +9,8 @@ from core.permissions import StoreIsRequired, UserIsFromThisStore
 from core.paginations import StandardSetPagination
 from user.serializers.seller import SellerSerializer
 from filters.mixins import FiltersMixin
+import decimal
+import json
 
 class SellerView(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(is_active=True)
@@ -32,10 +34,20 @@ class SellerView(FiltersMixin, ModelViewSet):
 
     @action(methods=['post'], detail=True, permission_classes=[])
     def alter_credit(self, request, pk=None):
-        credit =  int(request.data['credit'])
+        data = request.data.get('data')
+        data = json.loads(data)
+        user = request.user
+        credit =  decimal.Decimal(data['credit'])
         seller = self.get_object()
-        seller.alter_credit(credit)
-        return Response({'success': True})
+        
+        if user.user_type == 3 and user.manager == seller.my_manager:            
+            response = user.manager.manage_seller_credit(seller, credit)
+        elif user.user_type == 4:            
+            response = user.admin.manage_seller_credit(seller, credit)
+        else:
+            return Response({'success': False, 'message':'Você não tem permissão para executar essa operação nesse usuário.'})
+        
+        return Response(response)
 
     @action(methods=['get'], detail=True, permission_classes=[])
     def toggle_can_sell_unlimited(self, request, pk=None):
