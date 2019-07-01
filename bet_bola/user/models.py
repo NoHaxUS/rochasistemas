@@ -51,6 +51,9 @@ class Admin(CustomUser):
             ('be_admin', 'Be a admin, permission.'),
         )
 
+    def manage_seller_credit(self, seller, value):
+        return admin.manage_seller_credit(self, seller, value)
+
     def save(self, *args, **kwargs):
         self.clean()
         self.user_type = 4
@@ -151,6 +154,9 @@ class Manager(CustomUser):
         self.comission_based_on_profit = not self.comission_based_on_profit
         self.save()
 
+    def manage_seller_credit(self, seller, value):
+        return manager.manage_seller_credit(self, seller, value)
+        
     def alter_credit(self, credit):
         self.credit_limit += credit
         self.save()

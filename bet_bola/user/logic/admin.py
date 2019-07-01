@@ -1,3 +1,30 @@
+
+def manage_seller_credit(self, seller, value):
+    from history.models import ManagerTransactions
+    from core.models import Seller        
+    
+    seller_before_balance = seller.credit_limit        
+    seller.credit_limit += value
+    seller_after_balance =  seller.credit_limit        
+    
+    if seller.credit_limit < 0:
+        return {'success': False,
+        'message': 'O cambista não pode ter saldo negativo.'}
+    else:                        
+        self.save()                        
+        seller.save()            
+        ManagerTransactions.objects.create(creditor=self,
+        seller=seller,
+        transferred_amount=value,
+        creditor_before_balance=0,
+        creditor_after_balance=0,
+        seller_before_balance=seller_before_balance,
+        seller_after_balance=seller_after_balance,
+        store=self.my_store)
+
+        return {'success': True,
+            'message': 'Transação realizada com sucesso.'}
+    
 def define_default_permissions(self):
     from django.contrib.auth.models import Permission
     
