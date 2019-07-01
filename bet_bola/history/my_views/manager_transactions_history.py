@@ -1,6 +1,7 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from core.paginations import StandardSetPagination
 from filters.mixins import FiltersMixin
 from history.permissions import BaseHistoryPermission
 from history.models import ManagerTransactions
@@ -10,6 +11,7 @@ from history.serializers.manager_transactions_history import ManagerTransactions
 class ManagerTransactionsHistoryView(FiltersMixin, ModelViewSet):
     queryset = ManagerTransactions.objects.all()
     serializer_class = ManagerTransactionsSerializer
+    pagination_class = StandardSetPagination
     permission_classes = [BaseHistoryPermission]
 
     filter_mappings = {

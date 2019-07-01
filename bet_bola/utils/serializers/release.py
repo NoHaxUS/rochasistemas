@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from core.exceptions import NotAllowedException
 from user.models import CustomUser as User
 from utils.models import Release
 
@@ -15,6 +16,11 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
                 "creation_date": obj.creation_date.strftime('%d %B %Y'),
                 "description": obj.description 
             }        
+    
+    def validate_user(self, user):
+        if not self.context['request'].user.pk == user.pk or not self.context['request'].user.user_type == 4:
+            raise NotAllowedException('Você não tem permissão para fazer laçamento nesse usuário.')
+        return user
 
     class Meta:
         model = Release
