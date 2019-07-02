@@ -13,7 +13,7 @@ class TicketCancelationHistoryView(FiltersMixin, ModelViewSet):
     permission_classes = [BaseHistoryPermission]
     
     filter_mappings = {
-        'ticket_id': 'ticket__ticket_id',
+        'ticket_id': 'ticket__ticket_id__contains',
         'start_creation_date':'date__gte',		
         'end_creation_date':'date__lte',
         'paid_by': 'who_paid__pk',
