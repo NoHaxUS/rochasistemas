@@ -4,6 +4,9 @@ from django.db.models import F, Q, When, Case
 from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
 from .logic import manager, seller, admin
+from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import UserManager
 
 def define_password(self):
     if not self.password.startswith('pbkdf2'):			
@@ -19,17 +22,17 @@ class CustomUser(AbstractUser):
         (4, 'Dono da Banca')
     )
 
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = []
+
     first_name = models.CharField(max_length=150, verbose_name='Primeiro Nome')
     cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)
     user_type = models.IntegerField(choices=USER_TYPE, default=0, verbose_name='Tipo do Usuário')
-    email = models.EmailField(null=True, blank=True, verbose_name='E-mail')
+    email = models.EmailField(null=True, blank=True, verbose_name='E-mail', unique=True)
     my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.first_name
-
-    def full_name(self):
-        return self.first_name + ' ' + self.last_name
 
 
 class TicketOwner(models.Model):

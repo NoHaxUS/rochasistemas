@@ -60,7 +60,7 @@ class ManagerComission(models.Model):
 
 
 class GeneralConfigurations(models.Model):
-
+    store = models.OneToOneField('core.Store', on_delete=models.CASCADE, related_name='my_configuration')
     max_cotation_value = models.DecimalField(max_digits=30, decimal_places=2,default=200, verbose_name="Valor Máximo das Cotas")
     min_number_of_choices_per_bet = models.IntegerField(default=1, verbose_name="Número mínimo de escolhas por Aposta")
     max_number_of_choices_per_bet = models.IntegerField(default=50, verbose_name="Número máximo de escolhas por Aposta")
@@ -77,7 +77,7 @@ class GeneralConfigurations(models.Model):
 
 
     def __str__(self):
-        return "Configuração Atual"
+        return "Configuração da Banca" + self.store.fantasy
 
     def apply_reductions(self):
         from core.models import Game

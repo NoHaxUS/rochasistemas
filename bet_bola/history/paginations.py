@@ -5,10 +5,11 @@ from user.models import CustomUser
 
 class CancelationHistoryPagination(PageNumberPagination):
     page_size = 10
-    paid_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(my_canceled_tickets_who_i_paid__isnull=False).distinct()]
-    cancelled_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(my_canceled_tickets__isnull=False).distinct()]
 
-    def get_paginated_response(self, data):        
+    def get_paginated_response(self, data):    
+        paid_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(my_canceled_tickets_who_i_paid__isnull=False).distinct()]
+        cancelled_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(my_canceled_tickets__isnull=False).distinct()]
+   
         return Response({
             'links': {
                 'next': self.get_next_link(),
@@ -16,17 +17,18 @@ class CancelationHistoryPagination(PageNumberPagination):
             },
             'count': self.page.paginator.count,
             'total_pages': self.page.paginator.num_pages,            
-            'paid_by_list': self.paid_by_list,
-            'cancelled_by_list': self.cancelled_by_list,
+            'paid_by_list': paid_by_list,
+            'cancelled_by_list': cancelled_by_list,
             'results': data
         })
 
 
 class TicketValidationHistoryPagination(PageNumberPagination):
-    page_size = 10
-    paid_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(my_ticket_validations__isnull=False).distinct()]    
+    page_size = 10   
 
-    def get_paginated_response(self, data):        
+    def get_paginated_response(self, data):
+        paid_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(my_ticket_validations__isnull=False).distinct()]
+        
         return Response({
             'links': {
                 'next': self.get_next_link(),
@@ -34,6 +36,6 @@ class TicketValidationHistoryPagination(PageNumberPagination):
             },
             'count': self.page.paginator.count,
             'total_pages': self.page.paginator.num_pages,            
-            'paid_by_list': self.paid_by_list,            
+            'paid_by_list': paid_by_list,            
             'results': data
         })
