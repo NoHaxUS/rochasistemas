@@ -6,7 +6,7 @@ from history.models import RevenueHistorySeller
 
 class RevenueHistorySellerSerializer(serializers.HyperlinkedModelSerializer):
 	
-    register_by = serializers.SlugRelatedField(read_only=True, slug_field='first_name')    
+    register_by = serializers.SlugRelatedField(read_only=True, slug_field='username')    
     seller = serializers.SlugRelatedField(read_only=True, slug_field='first_name')	
 
     class Meta:
