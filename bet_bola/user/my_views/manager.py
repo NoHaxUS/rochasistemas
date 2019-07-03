@@ -44,13 +44,18 @@ class ManagerView(FiltersMixin, ModelViewSet):
         })
 
     @action(methods=['post'], detail=True, permission_classes=[])
-    def alter_credit(self, request, pk=None):        
+    def alter_credit(self, request, pk=None):
         data = json.loads(request.data.get('data'))
         credit = decimal.Decimal(data.get('credit'))
-        seller = self.get_object()
-        seller.alter_credit(credit)
-        return Response({'success': True})
-
+        user = request.user
+        manager = self.get_object()        
+        
+        if user.user_type == 4:            
+            response = user.admin.manage_user_credit(manager, credit)
+        else:
+            return Response({'success': False, 'message':'Você não tem permissão para executar essa operação nesse usuário.'})
+        
+        return Response(response)                
 
     @action(methods=['get'], detail=True, permission_classes=[])
     def toggle_can_cancel_ticket(self, request, pk=None):

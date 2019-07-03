@@ -16,7 +16,7 @@ class ManagerTransactionsHistoryView(FiltersMixin, ModelViewSet):
 
     filter_mappings = {
         'creditor':'creditor__pk',		
-        'seller':'seller__pk',
+        'seller':'user__pk',
         'transferred_amount_above': 'transferred_amount__gt',
         'transferred_amount_under': 'transferred_amount__lt',
         'start_creation_date':'transaction_date__gte',

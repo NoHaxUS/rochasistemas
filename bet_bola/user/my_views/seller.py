@@ -52,7 +52,7 @@ class SellerView(FiltersMixin, ModelViewSet):
         if user.user_type == 3 and user.manager == seller.my_manager:            
             response = user.manager.manage_seller_credit(seller, credit)
         elif user.user_type == 4:            
-            response = user.admin.manage_seller_credit(seller, credit)
+            response = user.admin.manage_user_credit(seller, credit)
         else:
             return Response({'success': False, 'message':'Você não tem permissão para executar essa operação nesse usuário.'})
         

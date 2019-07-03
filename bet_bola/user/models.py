@@ -54,8 +54,8 @@ class Admin(CustomUser):
             ('be_admin', 'Be a admin, permission.'),
         )
 
-    def manage_seller_credit(self, seller, value):
-        return admin.manage_seller_credit(self, seller, value)
+    def manage_user_credit(self, user, value):
+        return admin.manage_user_credit(self, user, value)
 
     def save(self, *args, **kwargs):
         self.clean()

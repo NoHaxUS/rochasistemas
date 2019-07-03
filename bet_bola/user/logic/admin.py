@@ -1,25 +1,28 @@
 
-def manage_seller_credit(self, seller, value):
-    from history.models import ManagerTransactions
-    from core.models import Seller        
+def manage_user_credit(self, user, value):
+    from history.models import ManagerTransactions      
+    if user.user_type == 3:
+        user = user.manager
+    elif user.user_type == 2:
+        user = user.seller
+
+    user_before_balance = user.credit_limit        
+    user.credit_limit += value
+    user_after_balance =  user.credit_limit        
     
-    seller_before_balance = seller.credit_limit        
-    seller.credit_limit += value
-    seller_after_balance =  seller.credit_limit        
-    
-    if seller.credit_limit < 0:
+    if user.credit_limit < 0:
         return {'success': False,
         'message': 'O cambista não pode ter saldo negativo.'}
     else:                        
         self.save()                        
-        seller.save()            
+        user.save()            
         ManagerTransactions.objects.create(creditor=self,
-        seller=seller,
+        user=user,
         transferred_amount=value,
         creditor_before_balance=0,
         creditor_after_balance=0,
-        seller_before_balance=seller_before_balance,
-        seller_after_balance=seller_after_balance,
+        user_before_balance=user_before_balance,
+        user_after_balance=user_after_balance,
         store=self.my_store)
 
         return {'success': True,
@@ -30,12 +33,12 @@ def define_default_permissions(self):
     
     be_admin_perm = Permission.objects.get(codename='be_admin')
     # view_managertransactions_perm = Permission.objects.get(codename='view_managertransactions')
-    # view_revenuehistoryseller_perm = Permission.objects.get(codename='view_revenuehistoryseller')
-    # view_sellersaleshistory_perm = Permission.objects.get(codename='view_sellersaleshistory')
+    # view_revenuehistoryuser_perm = Permission.objects.get(codename='view_revenuehistoryuser')
+    # view_usersaleshistory_perm = Permission.objects.get(codename='view_usersaleshistory')
     # view_punterpayedhistory_perm = Permission.objects.get(codename='view_punterpayedhistory')
     # view_revenuehistorymanager = Permission.objects.get(codename='view_revenuehistorymanager')
-    # change_seller = Permission.objects.get(codename='change_seller')
-    # add_seller = Permission.objects.get(codename='add_seller')
+    # change_user = Permission.objects.get(codename='change_user')
+    # add_user = Permission.objects.get(codename='add_user')
     # view_manager = Permission.objects.get(codename='view_manager')
     # add_manager = Permission.objects.get(codename='add_manager')
     # change_manager = Permission.objects.get(codename='change_manager')
@@ -47,7 +50,7 @@ def define_default_permissions(self):
     
     self.user_permissions.add(be_admin_perm)
     #view_managertransactions_perm,
-    # view_revenuehistoryseller_perm,view_sellersaleshistory_perm,
-    # view_punterpayedhistory_perm, view_revenuehistorymanager, change_seller, add_seller,
+    # view_revenuehistoryuser_perm,view_usersaleshistory_perm,
+    # view_punterpayedhistory_perm, view_revenuehistorymanager, change_user, add_user,
     # view_manager, add_manager, change_manager, view_ticket_perm, view_punter_perm, change_ticket_perm, 
     # view_ticketcancelationhistory, view_comission)

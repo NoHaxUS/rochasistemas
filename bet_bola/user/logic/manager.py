@@ -21,12 +21,12 @@ def manage_seller_credit(self, seller, value):
             self.save()                        
             seller.save()            
             ManagerTransactions.objects.create(creditor=self,
-            seller=seller,
+            user=seller,
             transferred_amount=value,
             creditor_before_balance=manager_before_balance,
             creditor_after_balance=manager_balance_after,
-            seller_before_balance=seller_before_balance,
-            seller_after_balance=seller_after_balance,
+            user_before_balance=seller_before_balance,
+            user_after_balance=seller_after_balance,
             store=self.my_store)
 
             return {'success': True,
@@ -34,6 +34,7 @@ def manage_seller_credit(self, seller, value):
     else:        
         return {'success': False,
             'message': 'Você não tem saldo suficiente para executar essa operação.'}
+
 
 def define_default_permissions(self):
     from django.contrib.auth.models import Permission
