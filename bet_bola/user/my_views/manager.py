@@ -11,6 +11,7 @@ from core.paginations import StandardSetPagination
 from filters.mixins import FiltersMixin
 from rest_framework.permissions import IsAuthenticated
 import json
+import decimal
 
 class ManagerView(FiltersMixin, ModelViewSet):
     queryset = Manager.objects.filter(is_active=True)
@@ -43,8 +44,9 @@ class ManagerView(FiltersMixin, ModelViewSet):
         })
 
     @action(methods=['post'], detail=True, permission_classes=[])
-    def alter_credit(self, request, pk=None):
-        credit = int(request.data['credit'])
+    def alter_credit(self, request, pk=None):        
+        data = json.loads(request.data.get('data'))
+        credit = decimal.Decimal(data.get('credit'))
         seller = self.get_object()
         seller.alter_credit(credit)
         return Response({'success': True})
