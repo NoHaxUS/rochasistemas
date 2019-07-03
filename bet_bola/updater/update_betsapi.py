@@ -13,34 +13,40 @@ from .get_markets import (cotation_with_header_goals, cotation_without_header, c
 cotation_with_header_opp, cotation_with_header_name, cotation_without_header_standard)
 
 
-TOKEN="20445-s1B9Vv6E9VSLU1"
-
 def get_upcoming_events():
-    today = datetime.datetime.today().strftime('%Y%m%d')
-    tomorrow = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y%m%d')
-    after_tomorrow = (datetime.datetime.today() + datetime.timedelta(days=2)).strftime('%Y%m%d')
-    yesterday = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime('%Y%m%d')
-    page = 1
+    base_day = datetime.datetime.today()
+    #yesterday = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime('%Y%m%d')
     
-    url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + today + "&page="
-    url_page = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=" + TOKEN + "&day=" + today + "&page=" + str(page)
 
-    request = requests.get(url_page)
-    data = request.json()
-    process_upcoming_events(data)
+    url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=20445-s1B9Vv6E9VSLU1&day={0}&page={1}"
 
-    if request.status_code == 200 and data['success'] == 1:
-        games_total = data['pager']['total']
-        per_page = data['pager']['per_page']
-        num_pages = math.ceil(int(games_total) / int(per_page))
-    
-    while page <= num_pages:
-        request = requests.get(url_base + str(page))
-        process_upcoming_events(request.json())
-        page += 1
+
+    for index in range(0,4):
+        page = 1
+        current_date = (base_day + datetime.timedelta(days=index)).strftime('%Y%m%d')
+        current_url = url_base.format(current_date, page)
+        request = requests.get(current_url)
+        data = request.json()
+        if request.status_code == 200 and data['success'] == 1:
+            games_total = data['pager']['total']
+            per_page = data['pager']['per_page']
+            num_pages = math.ceil(int(games_total) / int(per_page))
+            process_upcoming_events(data)
+            page +=1
+        else:
+            print("Erro:" + str(request.status_code))
+
+        while page <= num_pages:
+            current_url = url_base.format(current_date, page)
+            request = requests.get(current_url)
+            if request.status_code == 200 and data['success'] == 1:
+                process_upcoming_events(request.json())
+                page += 1
+            else:
+                print("Erro:" + str(request.status_code))
 
 def get_cc_from_result(game_id, error_count=0):
-    print("cc_from_result " + game_id)
+    print("getting cc from result " + game_id)
     url = "https://api.betsapi.com/v1/bet365/result?token=20445-s1B9Vv6E9VSLU1&event_id=" + game_id
     request = requests.get(url)
     try:
@@ -109,11 +115,12 @@ def process_upcoming_events(data):
 
         game_ids = []
         for game in data['results']:
-            print(game['id'])
+            game_name = get_game_name(game)
+            print(game['id'] + ' - ' + game_name)
             Game.objects.get_or_create(
                 pk=game['id'],
                 defaults={
-                    'name': get_game_name(game),
+                    'name': game_name,
                     'home_team': game['home']['name'],
                     'away_team': game['away']['name'],
                     'start_date': get_start_date_from_timestamp(game),
