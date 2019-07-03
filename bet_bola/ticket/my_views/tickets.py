@@ -76,7 +76,6 @@ class TicketView(FiltersMixin, ModelViewSet):
 
 
     def create(self, request, *args, **kwargs):
-        
         data = request.data.get('data')
         data = json.loads(data)
         serializer = self.get_serializer(data=data)
@@ -104,7 +103,7 @@ class TicketView(FiltersMixin, ModelViewSet):
         
         if self.request.user.is_authenticated:
             instance = serializer.save(
-                ticket_id=ticket_id, 
+                ticket_id=ticket_id,
                 creator=self.request.user,
                 payment=payment,
                 reward=reward,
@@ -117,7 +116,7 @@ class TicketView(FiltersMixin, ModelViewSet):
                 reward=reward,
                 store=store
             )
-
+        
         for cotation in serializer.validated_data['cotations']:			
             CotationCopy(
                 original_cotation=cotation,

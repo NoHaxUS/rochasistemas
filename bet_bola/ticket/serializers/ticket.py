@@ -101,7 +101,7 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
 		owner_serializer.is_valid()
 		owner = owner_serializer.save()
 
-		cotations = validated_data.pop('cotations')
+		cotations = validated_data.pop('cotations')		
 		ticket = Ticket.objects.create(owner=owner, **validated_data)
 		ticket.cotations.set(cotations)
 		return ticket

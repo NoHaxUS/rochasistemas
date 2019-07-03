@@ -12,6 +12,7 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
 	def create(self, validated_data):
 		#REVISE
 		#STORE IS STATIC
+		
 		store = Store.objects.get(pk=1)
 		obj = Seller(**validated_data)
 		obj.my_store=store

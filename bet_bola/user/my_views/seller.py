@@ -24,6 +24,15 @@ class SellerView(FiltersMixin, ModelViewSet):
 		'store':'my_store',
 	}
 
+    def create(self, request, *args, **kwargs):
+        data = request.data.get('data')        
+        data = json.loads(data)        
+        serializer = self.get_serializer(data=data)               
+        serializer.is_valid(raise_exception=True)        
+        self.perform_create(serializer)                
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
     @action(methods=['get'], detail=True, permission_classes=[])
     def toggle_is_active(self, request, pk=None):
