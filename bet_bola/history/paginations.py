@@ -43,10 +43,10 @@ class TicketValidationHistoryPagination(PageNumberPagination):
 
 
 class RevenueHistorySellerPagination(PageNumberPagination):
-    page_size = 10
-    register_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(revenuehistoryseller__isnull=False).distinct()]        
+    page_size = 10    
 
     def get_paginated_response(self, data):        
+        register_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(revenuehistoryseller__isnull=False).distinct()]        
         return Response({
             'links': {
                 'next': self.get_next_link(),
@@ -54,16 +54,17 @@ class RevenueHistorySellerPagination(PageNumberPagination):
             },
             'count': self.page.paginator.count,
             'total_pages': self.page.paginator.num_pages,            
-            'register_by_list': self.register_by_list,              
+            'register_by_list': register_by_list,              
             'results': data
         })
 
 
 class RevenueHistoryManagerPagination(PageNumberPagination):
-    page_size = 10
-    register_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(revenuehistorymanager__isnull=False).distinct()]        
+    page_size = 10    
 
     def get_paginated_response(self, data):        
+        register_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(revenuehistorymanager__isnull=False).distinct()]        
+
         return Response({
             'links': {
                 'next': self.get_next_link(),
@@ -71,7 +72,7 @@ class RevenueHistoryManagerPagination(PageNumberPagination):
             },
             'count': self.page.paginator.count,
             'total_pages': self.page.paginator.num_pages,            
-            'register_by_list': self.register_by_list,              
+            'register_by_list': register_by_list,              
             'results': data
         })
 

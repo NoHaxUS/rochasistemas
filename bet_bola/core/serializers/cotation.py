@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework import serializers
-from core.models import Store, CotationCopy, CotationModified, Game, Market, Cotation
+from core.models import CotationCopy, CotationModified, Game, Market, Cotation
+from utils.models import GeneralConfigurations
 from ticket.models import Ticket
 import utils.timezone as tzlocal
 from django.utils import timezone
@@ -19,8 +20,7 @@ class FilteredCotationSerializer(serializers.ListSerializer):
 		data = data.filter(game__id=game_id)		
 
 		store_id =  self.context['request'].GET.get('store')
-		store = Store.objects.get(pk=store_id)
-		config = store.config
+		config = GeneralConfigurations.objects.get(store__pk=store_id)		
 		lista = list()		
 		if config:
 			if config.cotations_percentage:			
@@ -79,8 +79,8 @@ class MinimumListCotationSerializer(serializers.ListSerializer):
 		if self.root.context.get('context'):
 			store_id =  self.root.context['context']['request'].GET.get('store')			
 
-		store = Store.objects.get(pk=store_id)
-		config = store.config		
+		config = GeneralConfigurations.objects.get(store__pk=store_id)		
+		store = config.store
 		if config:						
 			for cotation in data:						
 				if CotationModified.objects.filter(cotation=cotation, store=store):												
