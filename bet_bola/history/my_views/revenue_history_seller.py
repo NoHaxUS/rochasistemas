@@ -13,8 +13,8 @@ class RevenueHistorySellerView(FiltersMixin, ModelViewSet):
 
     filter_mappings = {
 		'register_by':'register_by__pk',
-        'entries_above':'entry__gte',
-        'entries_under':'entry__lte',
+        'entries_above':'entry__gt',
+        'entries_under':'entry__lt',
         'start_creation_date':'date__gte',
         'end_creation_date':'date__lte',
     }

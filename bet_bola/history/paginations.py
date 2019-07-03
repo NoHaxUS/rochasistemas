@@ -1,7 +1,7 @@
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from django.db.models import Count
-from user.models import CustomUser
+from user.models import CustomUser, Seller
 from ticket.models import Ticket
 
 class CancelationHistoryPagination(PageNumberPagination):
@@ -71,4 +71,27 @@ class RevenueHistoryManagerPagination(PageNumberPagination):
             'total_pages': self.page.paginator.num_pages,            
             'register_by_list': self.register_by_list,              
             'results': data
+        })
+
+
+class ManagerTransactionsHistoryPagination(PageNumberPagination):
+    page_size = 10    
+
+    def get_paginated_response(self, data):  
+        creditor_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(pk=self.request.user.pk).distinct()]
+        if self.request.user.user_type == 3:
+            seller_list = [{'id':user.pk,'username':user.username} for user in Seller.objects.filter(managertransactions__isnull=False, my_manager__pk=self.request.user.pk).distinct()]
+        else:
+            seller_list = [{'id':user.pk,'username':user.username} for user in Seller.objects.filter(managertransactions__isnull=False).distinct()]
+            
+        return Response({
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,                                    
+            'results': data,
+            'creditor_list':creditor_list,
+            'seller_list':seller_list
         })
