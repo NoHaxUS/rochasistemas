@@ -6,7 +6,7 @@ import re
 from django.db.models import Max
 
 def process_results():
-
+    print("Processing Games")
     games = Game.objects.filter(results_calculated=False, 
         start_date__lt=(tzlocal.now() + timezone.timedelta(hours=3))
     )
@@ -18,6 +18,7 @@ def process_results():
     while games_to_process:
         get_games(games_to_process[:10])
         del games_to_process[:10]
+    print("End Processing Games")
 
 
 def get_games(games):
@@ -39,16 +40,6 @@ def process_games(game_json, game_id):
     if game_scores and game:
         print("Processing game: " + str(game.id))
         
-        """
-        try:
-            game_scores['2']['home'] = 7
-            game_scores['2']['away'] = 5
-            game_scores['1']['home'] = 5
-            game_scores['1']['away'] = 1
-        except KeyError:
-            pass
-        """
-
         process_1X2(game_scores, game.cotations.filter(market__name='1X2'))
         goals_over_under(game_scores, game.cotations.filter(market__name='Gols - Acima/Abaixo'))
         goals_odd_even(game_scores, game.cotations.filter(market__name='Total de Gols Ímpar/Par'))
@@ -93,6 +84,9 @@ def process_games(game_json, game_id):
         win_whatever_half(game_scores, game.cotations.filter(market__name='Especiais'))
         win_both_halves(game_scores, game.cotations.filter(market__name='Especiais'))
         mark_both_halves(game_scores, game.cotations.filter(market__name='Especiais'))
+
+        game.results_calculated = True
+        game.save()
 
 
 def process_1X2(scores, cotations):
@@ -484,7 +478,7 @@ def home_team_exact_goals(scores, cotations):
             cotations.update(settlement=1)
 
             cotations.filter(name__contains=str(int(home))).update(settlement=2)
-            latest_total_goals  = cotations.latest('total_goals').total_goals
+            latest_total_goals = cotations.aggregate(max_value=Max('total_goals'))['max_value']
             if home > latest_total_goals:
                 cotations.filter(name__contains=int(latest_total_goals)).update(settlement=2)
 
@@ -497,7 +491,7 @@ def away_team_exact_goals(scores, cotations):
             cotations.update(settlement=1)
 
             cotations.filter(name__contains=str(int(away))).update(settlement=2)
-            latest_total_goals  = cotations.latest('total_goals').total_goals
+            latest_total_goals = cotations.aggregate(max_value=Max('total_goals'))['max_value']
             if away > latest_total_goals:
                 cotations.filter(name__contains=int(latest_total_goals)).update(settlement=2)
 

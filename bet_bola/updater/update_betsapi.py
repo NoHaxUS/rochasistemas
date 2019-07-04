@@ -21,7 +21,7 @@ def get_upcoming_events():
     url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=20445-s1B9Vv6E9VSLU1&day={0}&page={1}"
 
 
-    for index in range(-30,4):
+    for index in range(-7, 1):
         page = 1
         current_date = (base_day + datetime.timedelta(days=index)).strftime('%Y%m%d')
         current_url = url_base.format(current_date, page)
@@ -141,7 +141,7 @@ def get_cotations(games_ids, err_count=0):
     while games_ids:
         games_ids_str = ','.join(games_ids[:10])
         print("getting cotations for " + games_ids_str)
-        url = "https://api.betsapi.com/v1/bet365/start_sp?token=20445-s1B9Vv6E9VSLU1&FI=" + games_ids_str
+        url = "https://api.betsapi.com/v1/bet365/prematch?token=20445-s1B9Vv6E9VSLU1&FI=" + games_ids_str
         response = requests.get(url)
         try:
             data = response.json()
