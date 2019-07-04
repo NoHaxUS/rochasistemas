@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import serializers
 from rest_framework.response import Response
 from ticket.serializers.reward import RewardSerializer, RewardSerializer
@@ -75,15 +76,16 @@ class RevenueGeneralSellerSerializer(serializers.HyperlinkedModelSerializer):
 		model = Seller
 		fields = ('id','username','comission','entry','won_bonus','out','total_out')
 
-	def get_ticket(self, obj):
-		tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__pk=obj.pk, closed_for_seller=False, status__in=[1,2,4])
-		start_creation_date = self.context['request'].GET.get('start_creation_date', None)
-		end_creation_date = self.context['request'].GET.get('end_creation_date', None)
+	def get_ticket(self, obj):		
+		tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=obj.pk, 
+        	closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6])
 
+		start_creation_date = self.context['request'].GET.get('start_creation_date', None)
+		end_creation_date = self.context['request'].GET.get('end_creation_date', None)		
 		if start_creation_date:		
 			tickets = tickets.filter(creation_date__gte=start_creation_date)
 		if end_creation_date:
-			tickets = tickets.filter(creation_date__lte=end_creation_date)
+			tickets = tickets.filter(creation_date__lte=end_creation_date)		
 		return tickets
 
 	def get_comission(self, obj):				
@@ -91,27 +93,29 @@ class RevenueGeneralSellerSerializer(serializers.HyperlinkedModelSerializer):
 		comission = None
 		value = 0
 		for ticket in tickets:		
-			comission = obj.comissions
-			key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}				
-			value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)		
+			if not ticket.closed_for_seller:
+				comission = obj.comissions
+				key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}				
+				value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)		
 		return value
 
 	def get_entry(self, obj):		
 		tickets = self.get_ticket(obj)
 		value = 0
-		for ticket in tickets:					
-			value += ticket.bet_value
+		for ticket in tickets:
+			if not ticket.closed_for_seller:
+				value += ticket.bet_value
 		return value
 
-	def get_out(self, obj):		
-		tickets = self.get_ticket(obj).filter(status=2)		
-		value = 0
-		for ticket in tickets:							
-			value += ticket.reward.value - ticket.won_bonus()
+	def get_out(self, obj):			
+		tickets = self.get_ticket(obj)
+		value = 0		
+		for ticket in tickets:										
+			value += ticket.reward.value - ticket.won_bonus()		
 		return value
 	
 	def get_won_bonus(self, obj):		
-		tickets = self.get_ticket(obj).filter(status=2)
+		tickets = self.get_ticket(obj)
 		value = 0
 		for ticket in tickets:					
 			value += ticket.won_bonus()
@@ -128,8 +132,10 @@ class RevenueGeneralManagerSerializer(RevenueGeneralSellerSerializer):
 		model = Manager
 		fields = ('id','username','comission','comission_seller','entry','won_bonus','out','total_out')
 
-	def get_ticket(self, obj):				  	
-		tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__seller__my_manager__pk=obj.pk, closed_for_manager=False, status__in=[1,2,4])
+	def get_ticket(self, obj):				  			
+		tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=obj.pk, 
+        	closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6])
+
 		start_creation_date = self.context['request'].GET.get('start_creation_date', None)
 		end_creation_date = self.context['request'].GET.get('end_creation_date', None)
 

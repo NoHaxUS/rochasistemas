@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
@@ -5,18 +6,19 @@ from rest_framework.views import APIView
 from rest_framework import status
 from filters.mixins import FiltersMixin
 from ticket.models import Ticket, Reward, Payment
-from ticket.serializers.cashier import RevenueSerializer, RevenueGeneralSellerSerializer, RevenueGeneralManagerSerializer
+from history.serializers.cashier import RevenueSerializer, RevenueGeneralSellerSerializer, RevenueGeneralManagerSerializer
+from history.paginations import RevenueSellerPagination, RevenueManagerPagination, RevenueGeneralSellerPagination, RevenueGeneralManagerPagination
+from ticket.paginations import TicketPagination
 from ticket.serializers.ticket import TicketSerializer, CreateTicketSerializer
-from ticket.paginations import TicketPagination, RevenueSellerPagination, RevenueManagerPagination, RevenueGeneralSellerPagination, RevenueGeneralManagerPagination
 from ticket.permissions import CanCreateTicket, CanPayWinner, CanValidateTicket, CanCancelTicket, CanManipulateTicket
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from user.permissions import IsSuperUser
 from user.models import TicketOwner, Seller, Manager
 from core.models import CotationCopy, Cotation, Store
 from history.models import RevenueHistoryManager, RevenueHistorySeller
+from history.permissions import RevenueCloseManagerPermission, RevenueManagerPermission, RevenueCloseSellerPermission, RevenueSellerPermission
 from utils.models import RewardRestriction, Release
 from utils import timezone as tzlocal
-from utils.permissions import RevenueCloseManagerPermission, RevenueManagerPermission, RevenueCloseSellerPermission, RevenueSellerPermission
 from config import settings
 import json
 import datetime
@@ -30,11 +32,7 @@ class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
     pagination_class = RevenueGeneralSellerPagination
 
     def get_queryset(self):
-        user = self.request.user
-        if user.is_anonymous:                       
-            return Seller.objects.none()
-        queryset = self.queryset        
-        return queryset.filter(my_store=user.my_store)
+        return self.queryset.filter(my_store=self.request.user.my_store)
         
     @action(methods=['post'], detail=True, permission_classes = [RevenueCloseSellerPermission])
     def close_seller(self, request, pk=None):  
@@ -52,7 +50,8 @@ class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
         profit= decimal.Decimal(revenue.get('entry',None)) - decimal.Decimal(revenue.get('total_out',None)),
         store=request.user.my_store)           
         
-        tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__pk=seller.pk, closed_for_seller=False, status__in=[1,2,4])
+        tickets = Ticket.objects.filter(Q(payment__status=2, store=self.request.user.my_store, 
+            closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6])        
         if tickets.exists():
             if start_creation_date:
                 tickets = tickets.filter(creation_date__gte=start_creation_date)
@@ -103,8 +102,10 @@ class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
         total_out=decimal.Decimal(revenue.get('total_out',None)),
         profit= decimal.Decimal(revenue.get('entry',None)) - decimal.Decimal(revenue.get('total_out',None)),
         store=request.user.my_store)
+
+        tickets = Ticket.objects.filter(Q(payment__status=2, store=self.request.user.my_store, 
+    closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6])        
         
-        tickets = Ticket.objects.filter(payment__status=2, payment__who_paid__seller__my_manager__pk=manager.pk, closed_for_manager=False, status__in=[1,2,4])
         if tickets.exists():
             if start_creation_date:
                 tickets = tickets.filter(creation_date__gte=start_creation_date)
@@ -128,7 +129,7 @@ class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
 
 
 class RevenueSellerView(FiltersMixin, ModelViewSet):
-    queryset = Ticket.objects.filter(closed_for_seller=False)
+    queryset = Ticket.objects.all()
     serializer_class = RevenueSerializer  
     permission_classes = [RevenueSellerPermission]  
     pagination_class = RevenueSellerPagination
@@ -147,12 +148,14 @@ class RevenueSellerView(FiltersMixin, ModelViewSet):
         'available': 'available',
     }    
 
-    def get_queryset(self):        
-        return Ticket.objects.filter(store=self.request.user.my_store, payment__status=2, status__in=[1,2,4], closed_for_seller=False) 
-        
+    def get_queryset(self):
+        #Ticket.objects.filter(payment__status=2, store=self.request.user.my_store).exclude((Q(closed_for_seller=True) | Q(status=2)) | Q(status__in=[5,6]) )
+
+        return Ticket.objects.filter(Q(payment__status=2, store=self.request.user.my_store, 
+            closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6])
 
 class RevenueManagerView(FiltersMixin, ModelViewSet):
-    queryset = Ticket.objects.filter(closed_for_manager=False)
+    queryset = Ticket.objects.all()
     serializer_class = RevenueSerializer
     permission_classes = [RevenueManagerPermission]
     pagination_class = RevenueManagerPagination
@@ -172,19 +175,9 @@ class RevenueManagerView(FiltersMixin, ModelViewSet):
         'available': 'available',
     }
 
-    def list(self, request, pk=None): 
-        queryset = self.get_queryset()        
-        page = self.paginate_queryset(queryset)                
-        serializer = self.get_serializer(page, many=True)        
-                
-
-        if page is not None:                                                
-            return self.get_paginated_response(serializer.data)
-                
-        return Response(serializer.data)
-
-    def get_queryset(self):        
-        return Ticket.objects.filter(store=self.request.user.my_store, payment__status=2, status__in=[1,2,4], closed_for_manager=False) 
+    def get_queryset(self):  
+        return Ticket.objects.filter(Q(payment__status=2, store=self.request.user.my_store, 
+            closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6])        
         
 
 class RevenueView(APIView):
