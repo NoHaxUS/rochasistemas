@@ -83,9 +83,9 @@ class ManagerTransactionsHistoryPagination(PageNumberPagination):
     def get_paginated_response(self, data):  
         creditor_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(pk=self.request.user.pk).distinct()]
         if self.request.user.user_type == 3:
-            seller_list = [{'id':user.pk,'username':user.username} for user in Seller.objects.filter(managertransactions__isnull=False, my_manager__pk=self.request.user.pk).distinct()]
+            seller_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(managertransactions__isnull=False, my_manager__pk=self.request.user.pk).distinct()]
         else:
-            seller_list = [{'id':user.pk,'username':user.username} for user in Seller.objects.filter(managertransactions__isnull=False).distinct()]
+            seller_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(managertransactions__isnull=False).distinct()]
             
         return Response({
             'links': {
