@@ -17,7 +17,10 @@ from django.urls import path, include
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from rest_framework.authtoken import views
-import rest_framework 
+import rest_framework
+
+def trigger_error(request):
+    division_by_zero = 1 / 0
 
 urlpatterns = [ 
     path('api-auth/', include('rest_framework.urls')),        
@@ -27,4 +30,5 @@ urlpatterns = [
     path('', include('utils.urls', namespace='utils')),
     path('', include('user.urls', namespace='user')),
     path('', include('history.urls', namespace='history')),
+    path('sentry-debug/', trigger_error),
 ]

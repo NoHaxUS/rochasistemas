@@ -108,18 +108,19 @@ def cotation_with_header_goals(cotations, market_name, game_id):
         except decimal.InvalidOperation:
             price = 0
 
-        Cotation.objects.update_or_create(
-            name=get_translated_cotation_with_header_goals(cotation['header'] + ' ' + cotation['goals']),
-            game=Game.objects.get(pk=game_id),
-            total_goals=extract_goals_from_string(cotation['goals'].strip()),
-            market=Market.objects.get_or_create(
-                name=MARKET_TRANSLATIONS.get(market_name, market_name),
-            )[0],
-            defaults={
-                'price': price
-            }
-        )
-
+        total_goals = extract_goals_from_string(cotation['goals'].strip())
+        if total_goals:
+            obj, created = Cotation.objects.update_or_create(
+                name=get_translated_cotation_with_header_goals(cotation['header'] + ' ' + cotation['goals']),
+                game=Game.objects.get(pk=game_id),
+                total_goals=total_goals,
+                market=Market.objects.get_or_create(
+                    name=MARKET_TRANSLATIONS.get(market_name, market_name),
+                )[0],
+                defaults={
+                    'price': price
+                }
+            )
 
 def cotation_with_header_opp(cotations, market_name, game_id):
     for cotation in cotations:
@@ -192,21 +193,32 @@ def cotation_without_header(cotations, market_name, game_id, need_extract=False)
             price = decimal.Decimal(cotation['odds'])
         except decimal.InvalidOperation:
             price = 0
-
-        obj, created = Cotation.objects.update_or_create(
-            name=get_translated_cotation_with_opp(cotation['opp']),
-            game=Game.objects.get(pk=game_id),
-            market=Market.objects.get_or_create(
-                name=MARKET_TRANSLATIONS.get(market_name, market_name)
-            )[0],
-            defaults={
-                'price': price
-            }
-        )
-
+        
         if need_extract:
-            obj.total_goals = extract_goals_from_string(cotation['opp'])
-            obj.save()
+            total_goals = extract_goals_from_string(cotation['opp'])
+            if total_goals:
+                Cotation.objects.update_or_create(
+                    name=get_translated_cotation_with_opp(cotation['opp']),
+                    game=Game.objects.get(pk=game_id),
+                    total_goals=total_goals,
+                    market=Market.objects.get_or_create(
+                        name=MARKET_TRANSLATIONS.get(market_name, market_name)
+                    )[0],
+                    defaults={
+                        'price': price
+                    }
+                )
+        else:
+            Cotation.objects.update_or_create(
+                name=get_translated_cotation_with_opp(cotation['opp']),
+                game=Game.objects.get(pk=game_id),
+                market=Market.objects.get_or_create(
+                    name=MARKET_TRANSLATIONS.get(market_name, market_name)
+                )[0],
+                defaults={
+                    'price': price
+                }
+            )
 
 def cotation_without_header_standard(cotations, market_name, game_id):
 
