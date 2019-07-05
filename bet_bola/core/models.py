@@ -47,15 +47,14 @@ class Game(models.Model):
     name = models.CharField(max_length=100, verbose_name='Nome do Jogo')
     home_team = models.CharField(max_length=100, verbose_name='Time Casa')
     away_team = models.CharField(max_length=100, verbose_name='Time Fora')
+    score_half = models.CharField(max_length=10, blank=True, default='', verbose_name='Placar Primeiro Tempo')
+    score_full = models.CharField(max_length=10, blank=True, default='', verbose_name='Placar Final')
     start_date = models.DateTimeField(verbose_name='Início da Partida')
     league = models.ForeignKey('League', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Liga')
     sport = models.ForeignKey('Sport', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Esporte')
     status = models.IntegerField(choices=GAME_STATUS,verbose_name='Status do Jogo')
     results_calculated = models.BooleanField(default=False, verbose_name='Resultados Calculados? ')
-    score_half = models.CharField(max_length=10, blank=True, default='', verbose_name='Placar Primeiro Tempo')
-    score_full = models.CharField(max_length=10, blank=True, default='', verbose_name='Placar Final')
     available = models.BooleanField(default=True, verbose_name='Disponível?')
-    can_be_modified_by_api = models.BooleanField(default=True, verbose_name='API pode modificar? ')
 
     @property
     def standard_cotations(self):

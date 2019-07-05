@@ -12,6 +12,17 @@ def define_password(self):
     if not self.password.startswith('pbkdf2'):			
         self.set_password(self.password)
 
+
+class CustomUserManager(UserManager):
+    def create_superuser(self, username, email, password, **extra_fields):
+        from core.models import Store
+        try:
+            store = Store.objects.get(pk=extra_fields['my_store'])
+        except Store.DoesNotExist:
+            raise ValueError("Essa Banca não existe")
+        extra_fields['my_store'] = store
+        return super().create_superuser(username, email, password, **extra_fields)
+
 class CustomUser(AbstractUser):   
     
     USER_TYPE = (
@@ -22,13 +33,14 @@ class CustomUser(AbstractUser):
         (4, 'Dono da Banca')
     )
 
+    objects = CustomUserManager()
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['my_store', 'email']
 
     first_name = models.CharField(max_length=150, verbose_name='Primeiro Nome')
     cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)
     user_type = models.IntegerField(choices=USER_TYPE, default=0, verbose_name='Tipo do Usuário')
-    email = models.EmailField(null=True, blank=True, verbose_name='E-mail', unique=True)
+    email = models.EmailField(null=True, blank=True, verbose_name='E-mail')
     my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
     def __str__(self):

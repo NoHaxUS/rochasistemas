@@ -3,14 +3,14 @@ from django.utils import timezone
 import utils.timezone as tzlocal
 import requests
 import re
-from django.db.models import Max
+from django.db.models import Max, Q
+
 
 def process_results():
     print("Updating Scores")
     games = Game.objects.filter(
         score_half='',
         score_full='',
-        results_calculated=False,
         start_date__lt=(tzlocal.now() + timezone.timedelta(hours=2, minutes=30))
     )
 
@@ -52,17 +52,16 @@ def update_game_score(game_json, game_id):
             game.score_half = score_half_str
             game.score_full = score_full_str
             game.save()
+    games = Game.objects.exclude(score_half='', score_full='', results_calculated=True)
+  
 
-
-def process_games(game_json, game_id):
-    games = Game.objects.exclude(
-        score_half='',
-        score_full='',
-        results_calculated=True,
-    )
+def process_games():
     
-    if game and games:
+    games = Game.objects.filter(results_calculated=False).filter(~Q(score_half='', score_full=''))
+
+    for game in games:
         print("Processing game: " + str(game.id))
+        print(game.score_half, game.score_full)
         home_1, away_1 = game.score_half.split('-')
         home_2, away_2 = game.score_full.split('-')
 
@@ -72,7 +71,7 @@ def process_games(game_json, game_id):
                 'away': away_1
             },
             '2': {
-                'home': home_2
+                'home': home_2,
                 'away': away_2
             }
         }
@@ -112,7 +111,7 @@ def process_games(game_json, game_id):
         to_score_in_half(game_scores, game.cotations.filter(market__name='Haverá Gol'))
         half_with_most_goals(game_scores, game.cotations.filter(market__name='Etapa com mais Gols'))
         process_2nd_half_result(game_scores, game.cotations.filter(market__name='Resultado 2° Tempo'))
-        process_2nd_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols - 2° Tempo'))
+        process_2nd_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols 2° Tempo'))
         result_both_teams_to_score(game_scores, game.cotations.filter(market__name='Resultado / Ambos Marcam'), game.home_team, game.away_team)
         winning_margin(game_scores, game.cotations.filter(market__name='Margem de Vitória'))
 

@@ -10,4 +10,4 @@ from updater.process_results_betsapi import process_results, process_games
 
 #get_upcoming_events()
 #process_results()
-#process_games
+process_games()
