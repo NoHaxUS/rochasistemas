@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.contrib import messages
 from user.models import Seller
-from user.permissions import IsAdmin, AlterCreditPermission
+from user.permissions import IsAdmin, AlterSellerPermission
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from core.paginations import StandardSetPagination
 from user.serializers.seller import SellerSerializer
@@ -25,7 +25,9 @@ class SellerView(FiltersMixin, ModelViewSet):
 	}
 
     def create(self, request, *args, **kwargs):
-        data = request.data.get('data')        
+        data = request.data.get('data') 
+        if not data:
+            data = "{}"       
         data = json.loads(data)        
         serializer = self.get_serializer(data=data)               
         serializer.is_valid(raise_exception=True)        
@@ -34,7 +36,7 @@ class SellerView(FiltersMixin, ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-    @action(methods=['get'], detail=True, permission_classes=[])
+    @action(methods=['get'], detail=True, permission_classes=[AlterSellerPermission])
     def toggle_is_active(self, request, pk=None):
         seller = self.get_object()        
         seller.toggle_is_active()
@@ -52,7 +54,7 @@ class SellerView(FiltersMixin, ModelViewSet):
         })    
     
 
-    @action(methods=['post'], detail=True, permission_classes=[AlterCreditPermission])
+    @action(methods=['post'], detail=True, permission_classes=[AlterSellerPermission])
     def alter_credit(self, request, pk=None):
         data = request.data.get('data')
         data = json.loads(data)

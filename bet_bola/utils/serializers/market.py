@@ -16,10 +16,10 @@ class MarketRemotionSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = MarketRemotion	
-		fields = ('market_to_remove','under_above','base_line','store')
+		fields = ('market_to_remove','under_above','base_line','store')	
 
 	def validate(self, data):		
-		if not MarketRemotion.objects.filter(market_to_remove=data['market_to_remove'], under_above=data['under_above'], base_line=data['base_line'],store=data['store']).exists():
+		if not MarketRemotion.objects.filter(market_to_remove=data['market_to_remove'], under_above=data['under_above'], base_line=data['base_line'],store=self.context['request'].user.my_store).exists():
 			return data
 		raise serializers.ValidationError("Essa remoção ja foi efetuada antes")
 
