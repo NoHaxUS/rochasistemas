@@ -132,6 +132,14 @@ class RevenueGeneralManagerSerializer(RevenueGeneralSellerSerializer):
 		model = Manager
 		fields = ('id','username','comission','comission_seller','entry','won_bonus','out','total_out')
 
+	def get_entry(self, obj):		
+		tickets = self.get_ticket(obj)
+		value = 0
+		for ticket in tickets:
+			if not ticket.closed_for_manager:
+				value += ticket.bet_value
+		return value
+
 	def get_ticket(self, obj):				  			
 		tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=obj.pk, 
         	closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6])

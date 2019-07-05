@@ -62,6 +62,10 @@ class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
             revenue_history_seller.tickets_registered.set(tickets)            
 
             tickets.update(closed_for_seller=True)            
+            for ticket in tickets:
+                if ticket.status == 4:
+                    ticket.status = 2
+                    ticket.save()
 
             return Response({
                 'success': True,
