@@ -16,42 +16,53 @@ class IsSuperUser(permissions.BasePermission):
 
 class BaseUserPermission(permissions.BasePermission):
 	message = "Você não tem permissão para essa operação."
-	user_type = None
+	user_types = None
 
 	def has_permission(self, request, view):				
-		if request.user.user_type == self.user_type:			
+		if request.user.user_type in self.user_types:			
 			return True		
 		raise NotAllowedException(detail=self.message)
 	
 	def has_object_permission(self, request, view, obj):
-		if request.user.user_type == self.user_type:
+		if request.user.user_type in self.user_types:
 			return True
 		return False
 
 
 class IsAdmin(BaseUserPermission):	
-	user_type = 4	
+	user_type = [4]	
 
 
 class IsManager(BaseUserPermission):
-	user_type = 3
+	user_type = [3]
 
 
 class IsSeller(BaseUserPermission):
-	user_type = 2
+	user_type = [2]
 
 
 class IsPunter(BaseUserPermission):
-	user_type = 1
+	user_type = [1]
 
 
-class AlterCreditPermission(permissions.BasePermission):
+# class RemoveSeller(permissions.BasePermission):
+# 	def has_permission(self, request, view):				
+# 		if request.user.user_type in self.user_types:			
+# 			return True		
+# 		raise NotAllowedException(detail=self.message)
+	
+# 	def has_object_permission(self, request, view, obj):
+# 		if request.user.user_type in self.user_types:
+# 			return True
+# 		return False
+
+class AlterSellerPermission(permissions.BasePermission):
 	message = "Você não tem permissão para essa operação."
 
 	def has_permission(self, request, view):				
 		if request.user.user_type in [3,4]:			
 			return True				
-		raise NotAllowedException(detail=self.message).get_full_details()
+		raise NotAllowedException(detail=self.message)
 	
 	def has_object_permission(self, request, view, obj):
 		if request.user.user_type == 4:
