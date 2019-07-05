@@ -33,8 +33,8 @@ def cancel_ticket(self, who_canceling):
             'success': False,
             'message': 'O Bilhete '+ self.ticket_id +' não foi Pago para ser cancelado.'
         }
-
-    if not who_canceling.is_superuser:
+    
+    if who_canceling.user_type == 2:
         if self.payment.date + timezone.timedelta(minutes=int(who_canceling.seller.limit_time_to_cancel)) < tzlocal.now():
             return {
                 'success':False,
@@ -46,7 +46,12 @@ def cancel_ticket(self, who_canceling):
                 'success':False,
                 'message':'Você não pode cancelar um Bilhete que você não Pagou.'
             }
-        
+    else:
+        return {
+                'success':False,
+                'message':'Você não possui permissão para cancelar bilhetes.'
+            }           
+
     who_paid = self.payment.who_paid
     if who_paid.user_type == 2 and not who_paid.seller.can_sell_unlimited:
         who_paid.credit_limit += self.bet_value
@@ -70,15 +75,14 @@ def cancel_ticket(self, who_canceling):
         'message':'O Bilhete '+ self.ticket_id +' foi cancelado.'
     }
 
-def validate_ticket(self, who_validating):         
-    
-    if not (who_validating.has_perm('user.be_admin') or who_validating.has_perm('user.be_seller')):
+def validate_ticket(self, who_validating):                 
+    if not who_validating.has_perm('user.be_seller'):
         return {
             'success': False,
             'message': 'Esse Usuário não tem permissão para validar Bilhetes.'
         }
 
-    if self.reward.value >= self.store.config.alert_bet_value:
+    if self.reward.value >= self.store.my_configuration.alert_bet_value:
         if self.store.email:
             subject = 'Alerta de aposta'
             message = 'Uma aposta com recompensa no valor de R$' + self.reward.value + ' foi efetuada em sua plataforma.'
@@ -200,7 +204,7 @@ def cotation_sum(self):
 
     from utils.models import GeneralConfigurations
     try:
-        general_config = GeneralConfigurations.objects.get(pk=1)
+        general_config = self.store.my_configuration
         max_cotation_sum = general_config.max_cotation_sum
     except GeneralConfigurations.DoesNotExist:
         max_cotation_sum = 1000000
