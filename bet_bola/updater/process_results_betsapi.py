@@ -6,9 +6,12 @@ import re
 from django.db.models import Max
 
 def process_results():
-    print("Processing Games")
-    games = Game.objects.filter(results_calculated=False, 
-        start_date__lt=(tzlocal.now() + timezone.timedelta(hours=3))
+    print("Updating Scores")
+    games = Game.objects.filter(
+        score_half='',
+        score_full='',
+        results_calculated=False,
+        start_date__lt=(tzlocal.now() + timezone.timedelta(hours=2, minutes=30))
     )
 
     games_to_process = []
@@ -18,7 +21,7 @@ def process_results():
     while games_to_process:
         get_games(games_to_process[:10])
         del games_to_process[:10]
-    print("End Processing Games")
+    print("End Updating Scores")
 
 
 def get_games(games):
@@ -30,15 +33,49 @@ def get_games(games):
         if data_games['success'] == 1:
             for index, game_json in enumerate(data_games['results']):
                 if not game_json.get('success', True) == 0:
-                    process_games(game_json, games[index])
+                    update_game_score(game_json, games[index])
 
 
-def process_games(game_json, game_id):
+def update_game_score(game_json, game_id):
     game = Game.objects.filter(pk=game_id).first()
     game_scores = game_json.get('scores', None)
     
     if game_scores and game:
+        print("Updating Game: " + str(game.id))
+        score_half = game_scores.get('1')
+        score_full = game_scores.get('2')
+        
+        if score_half and score_full and score_half.get('home') and score_half.get('away') and score_full.get('home') and score_full.get('away'):
+            score_half_str = score_half.get('home') + '-' + score_half.get('away')
+            score_full_str = score_full.get('home') + '-' + score_full.get('away')
+
+            game.score_half = score_half_str
+            game.score_full = score_full_str
+            game.save()
+
+
+def process_games(game_json, game_id):
+    games = Game.objects.exclude(
+        score_half='',
+        score_full='',
+        results_calculated=True,
+    )
+    
+    if game and games:
         print("Processing game: " + str(game.id))
+        home_1, away_1 = game.score_half.split('-')
+        home_2, away_2 = game.score_full.split('-')
+
+        game_scores = {
+            '1' : {
+                'home': home_1,
+                'away': away_1
+            },
+            '2': {
+                'home': home_2
+                'away': away_2
+            }
+        }
         
         process_1X2(game_scores, game.cotations.filter(market__name='1X2'))
         goals_over_under(game_scores, game.cotations.filter(market__name='Gols - Acima/Abaixo'))

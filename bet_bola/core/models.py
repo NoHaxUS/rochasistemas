@@ -32,8 +32,8 @@ class Game(models.Model):
     GAME_STATUS = (
         (0, 'Não Iniciado'),
         (1,'Ao Vivo'),
-        (2, 'A ser corrigido') ,   
-        (3, 'Terminado'),        
+        (2, 'A ser corrigido'),
+        (3, 'Terminado'),  
         (4, "Adiado"),
         (5, 'Cancelado'),
         (6, "W.O"),
@@ -52,6 +52,8 @@ class Game(models.Model):
     sport = models.ForeignKey('Sport', related_name='my_games',null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Esporte')
     status = models.IntegerField(choices=GAME_STATUS,verbose_name='Status do Jogo')
     results_calculated = models.BooleanField(default=False, verbose_name='Resultados Calculados? ')
+    score_half = models.CharField(max_length=10, blank=True, default='', verbose_name='Placar Primeiro Tempo')
+    score_full = models.CharField(max_length=10, blank=True, default='', verbose_name='Placar Final')
     available = models.BooleanField(default=True, verbose_name='Disponível?')
     can_be_modified_by_api = models.BooleanField(default=True, verbose_name='API pode modificar? ')
 
