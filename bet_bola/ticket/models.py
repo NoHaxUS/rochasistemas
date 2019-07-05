@@ -41,8 +41,8 @@ class Ticket(models.Model):
     available = models.BooleanField(default=True, verbose_name='Disponível?')
     
     def won_bonus(self):
-        if self.status == 2:
-            return self.reward.value * self.store.config.bonus_by_won_ticket / 100
+        if self.status in [2,4]:
+            return self.reward.value * self.store.my_configuration.bonus_by_won_ticket / 100
         return 0
 
     def update_ticket_reward(self):

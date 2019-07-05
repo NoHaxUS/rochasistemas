@@ -108,7 +108,7 @@ class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
         store=request.user.my_store)
 
         tickets = Ticket.objects.filter(Q(payment__status=2, store=self.request.user.my_store, 
-    closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6])        
+            closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6])        
         
         if tickets.exists():
             if start_creation_date:
@@ -187,24 +187,22 @@ class RevenueManagerView(FiltersMixin, ModelViewSet):
 class RevenueView(APIView):
     def get(self, request):
         managers = Manager.objects.filter(manager_assoc__payment__status=2, my_store=request.user.my_store).distinct()
-        sellers = Seller.objects.filter(payment__status=2, my_manager__isnull=True, my_store=request.user.my_store).distinct()                
+        sellers = Seller.objects.filter(payment__status=2, my_store=request.user.my_store).distinct()                
         entries = 0
         out = 0
         total_release = 0
         comissions = 0
         total_out = 0
 
-        for manager in RevenueGeneralManagerSerializer(managers, many=True, context={'request':self.request}).data:
-            entries += manager['entry']
-            out += manager['out'] + manager['won_bonus']
-            comissions += manager['comission'] + manager['comission_seller']
-            total_out += manager['total_out'] + manager['comission_seller']
-        
-        for seller in RevenueGeneralSellerSerializer(sellers, many=True, context={'request':self.request}).data:
+        for manager in RevenueGeneralManagerSerializer(managers, many=True, context={'request':self.request}).data:                        
+            comissions += manager['comission']            
+            total_out += manager['comission']
+
+        for seller in RevenueGeneralSellerSerializer(sellers, many=True, context={'request':self.request}).data:            
             entries += seller['entry']
             out += seller['out'] + seller['won_bonus']
             comissions += seller['comission']
-            total_out += seller['total_out']                
+            total_out += seller['total_out']
 
         profit = entries - total_out           
         

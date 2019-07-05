@@ -110,8 +110,9 @@ class RevenueGeneralSellerSerializer(serializers.HyperlinkedModelSerializer):
 	def get_out(self, obj):			
 		tickets = self.get_ticket(obj)
 		value = 0		
-		for ticket in tickets:										
-			value += ticket.reward.value - ticket.won_bonus()		
+		for ticket in tickets:	
+			if ticket.status in [2,4]:
+				value += ticket.reward.value - ticket.won_bonus()		
 		return value
 	
 	def get_won_bonus(self, obj):		
@@ -165,6 +166,17 @@ class RevenueGeneralManagerSerializer(RevenueGeneralSellerSerializer):
 			else:				
 				value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)		
 		return value
+	
+	def get_out(self, obj):			
+		tickets = self.get_ticket(obj)
+		value = 0		
+		for ticket in tickets:										
+			if ticket.status in [2,4]:
+				value += ticket.reward.value		
+		return value
+
+	def get_total_out(self, obj):
+		return self.get_out(obj) + self.get_comission(obj) + self.get_comission_seller(obj)
 	
 	def get_comission_seller(self, obj):				
 		tickets = self.get_ticket(obj)
