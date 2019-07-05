@@ -1,9 +1,11 @@
 from rest_framework.response import Response
 from rest_framework.permissions import SAFE_METHODS
 from rest_framework.viewsets import ModelViewSet
+from rest_framework import status
 from utils.serializers.market import MarketReductionSerializer, MarketRemotionSerializer, GetMarketRemotionSerializer
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from utils.models import MarketReduction, MarketRemotion
+import json
 
 class MarketReductionView(ModelViewSet):
 	queryset = MarketReduction.objects.all()
@@ -35,9 +37,22 @@ class MarketReductionView(ModelViewSet):
 
 
 class MarketRemotionView(ModelViewSet):
-	queryset = MarketRemotion.objects.all()
-	permission_classes = [StoreIsRequired]
+	queryset = MarketRemotion.objects.all()	
+	permission_classes = []
 
+	def create(self, request, *args, **kwargs):
+		data = request.data.get('data')    		
+		if not data:
+			data = "{}"
+		data = json.loads(data)        
+		data['store'] = self.request.user.my_store.pk
+		serializer = self.get_serializer(data=data)               
+		serializer.is_valid(raise_exception=True)        
+		self.perform_create(serializer)                
+		headers = self.get_success_headers(serializer.data)
+		return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+	
 	def list(self, request, pk=None):
 		from core.models import Store
 		store_id = request.GET.get('store')
