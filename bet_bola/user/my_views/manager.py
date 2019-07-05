@@ -36,8 +36,16 @@ class ManagerView(FiltersMixin, ModelViewSet):
 
     @action(methods=['get'], detail=True, permission_classes=[])
     def toggle_is_active(self, request, pk=None):
-        seller = self.get_object()
-        seller.toggle_is_active()
+        manager = self.get_object()        
+        manager.toggle_is_active()
+        manager.username = manager.username + "(Removido)"
+        count = 0
+        
+        while Manager.objects.filter(username=manager.username).exists():
+            count+=1
+            manager.username = manager.username + " " + str(count)
+
+        manager.save()
         return Response({
             'success': True,
             'message':  'Alterado.'

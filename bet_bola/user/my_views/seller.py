@@ -36,9 +36,20 @@ class SellerView(FiltersMixin, ModelViewSet):
 
     @action(methods=['get'], detail=True, permission_classes=[])
     def toggle_is_active(self, request, pk=None):
-        seller = self.get_object()
+        seller = self.get_object()        
         seller.toggle_is_active()
-        return Response({'success': True})
+        seller.username = seller.username + "(Removido)"
+        count = 0
+        
+        while Seller.objects.filter(username=seller.username).exists():
+            count+=1
+            seller.username = seller.username + " " + str(count)
+
+        seller.save()
+        return Response({
+            'success': True,
+            'message':  'Alterado.'
+        })    
     
 
     @action(methods=['post'], detail=True, permission_classes=[AlterCreditPermission])
