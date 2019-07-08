@@ -21,7 +21,7 @@ def get_upcoming_events():
     url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=20445-s1B9Vv6E9VSLU1&day={0}&page={1}"
 
 
-    for index in range(-4, 0):
+    for index in range(-7, 0):
         page = 1
         current_date = (base_day + datetime.timedelta(days=index)).strftime('%Y%m%d')
         current_url = url_base.format(current_date, page)
@@ -249,8 +249,10 @@ def get_goals_cotations(goals_cotations, game_id):
             cotation_without_header(goals_cotations['sp']['total_goals_both_teams_to_score'], 'total_goals_both_teams_to_score', game_id, need_extract=True)
         if goals_cotations['sp'].get('exact_total_goals', None):
             cotation_without_header(goals_cotations['sp']['exact_total_goals'], 'exact_total_goals', game_id, need_extract=True)
-        if goals_cotations['sp'].get('number_of_goals_in_match', None):
-            cotation_without_header(goals_cotations['sp']['number_of_goals_in_match'], 'number_of_goals_in_match', game_id)
+        
+        #if goals_cotations['sp'].get('number_of_goals_in_match', None):
+        #    cotation_without_header(goals_cotations['sp']['number_of_goals_in_match'], 'number_of_goals_in_match', game_id)
+        
         if goals_cotations['sp'].get('both_teams_to_score', None):
             cotation_without_header(goals_cotations['sp']['both_teams_to_score'], 'both_teams_to_score', game_id)
         if goals_cotations['sp'].get('teams_to_score', None):
