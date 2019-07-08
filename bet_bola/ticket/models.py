@@ -72,7 +72,7 @@ class Ticket(models.Model):
         return ticket.cotation_sum(self)
 
     def __str__(self):
-        return str(self.pk)
+        return str(self.ticket_id)
 
     class Meta:
         ordering = ('-pk',)
@@ -95,6 +95,7 @@ class Reward(models.Model):
         return str(self.value)
 
     class Meta:
+        ordering = ('-pk',)
         verbose_name = 'Recompensa'
         verbose_name_plural = 'Recompensas'
 
@@ -118,9 +119,10 @@ class Payment(models.Model):
     date = models.DateTimeField(null=True, blank=True, verbose_name='Data do Pagamento')
 
     def __str__(self):
-        return self.status
+        return self.get_status_display()
 
     class Meta:
+        ordering = ('-pk',)
         verbose_name = 'Pagamento'
         verbose_name_plural = 'Pagamentos'
 
