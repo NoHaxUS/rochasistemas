@@ -77,7 +77,7 @@ class GeneralConfigurations(models.Model):
 
 
     def __str__(self):
-        return "Configuração da Banca" + self.store.fantasy
+        return "Configuração da Banca " + self.store.fantasy
 
     def apply_reductions(self):
         from core.models import Game

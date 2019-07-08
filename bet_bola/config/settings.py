@@ -109,13 +109,13 @@ else:
     }
 
 
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
+#import sentry_sdk
+#from sentry_sdk.integrations.django import DjangoIntegration
 
-sentry_sdk.init(
-    dsn="https://806cfdecfa1e4918a4e18fc53d98f10c@sentry.io/1497286",
-    integrations=[DjangoIntegration()]
-)
+#sentry_sdk.init(
+#    dsn="https://806cfdecfa1e4918a4e18fc53d98f10c@sentry.io/1497286",
+#    integrations=[DjangoIntegration()]
+#)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

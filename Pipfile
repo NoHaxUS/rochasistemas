@@ -15,6 +15,7 @@ django-cors-headers = "*"
 drf-url-filters = "*"
 djangorestframework-jwt = "*"
 sentry-sdk = "*"
+django-admin-relation-links = "*"
 
 [dev-packages]
 rope = "*"
