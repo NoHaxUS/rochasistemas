@@ -2,14 +2,14 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from utils.serializers.reward_related import RewardRelatedSerializer
-from core.permissions import StoreIsRequired, UserIsFromThisStore
+from user.permissions import IsAdmin
 from utils.models import RewardRestriction
 import json
 
 class RewardRelatedView(ModelViewSet):
 	queryset = RewardRestriction.objects.all().order_by('bet_value')
 	serializer_class = RewardRelatedSerializer
-	permission_classes = [StoreIsRequired, UserIsFromThisStore,]
+	permission_classes = [IsAdmin,]
 
 
 	def list(self, request, pk=None):
@@ -25,7 +25,7 @@ class RewardRelatedView(ModelViewSet):
 	def perform_create(self, serializer):		
 		store = self.request.user.my_store
 		max_reward_value = serializer.validated_data['max_reward_value']
-		bet_value = serializer.validated_data['bet_value']		
+		bet_value = serializer.validated_data['bet_value']			
 		if RewardRestriction.objects.filter(store=store, bet_value=bet_value).exists():
 			reward_restriction = RewardRestriction.objects.get(store=store, bet_value=bet_value)
 			reward_restriction.max_reward_value = max_reward_value			
