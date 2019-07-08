@@ -9,13 +9,13 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
 	password = serializers.CharField(style={'input_type': 'password'}, write_only=True, allow_null=True)
 
 
-	def create(self, validated_data):
-		#REVISE
-		#STORE IS STATIC
-		
-		store = Store.objects.get(pk=1)
+	def create(self, validated_data):		
+		user = self.context['request'].user		
+		store = Store.objects.get(pk=user.my_store)
 		obj = Seller(**validated_data)
 		obj.my_store=store
+		if user.user_type == 3:
+			obj.my_manager = user.manager
 		obj.save()
 
 		SellerComission.objects.create(

@@ -16,16 +16,20 @@ class IsSuperUser(permissions.BasePermission):
 
 class BaseUserPermission(permissions.BasePermission):
 	message = "Você não tem permissão para essa operação."
-	user_types = None
+	user_types = []
 
-	def has_permission(self, request, view):				
-		if request.user.user_type in self.user_types:			
-			return True		
+	def has_permission(self, request, view):
+		if request.method in permissions.SAFE_METHODS:
+			return True
+		if not request.user.is_anonymous:
+			if request.user.user_type in self.user_types:			
+				return True		
 		raise NotAllowedException(detail=self.message)
 	
-	def has_object_permission(self, request, view, obj):
-		if request.user.user_type in self.user_types:
-			return True
+	def has_object_permission(self, request, view, obj):		
+		if not request.user.is_anonymous:
+			if request.user.user_type in self.user_types:
+				return True
 		return False
 
 
@@ -45,16 +49,9 @@ class IsPunter(BaseUserPermission):
 	user_type = [1]
 
 
-# class RemoveSeller(permissions.BasePermission):
-# 	def has_permission(self, request, view):				
-# 		if request.user.user_type in self.user_types:			
-# 			return True		
-# 		raise NotAllowedException(detail=self.message)
-	
-# 	def has_object_permission(self, request, view, obj):
-# 		if request.user.user_type in self.user_types:
-# 			return True
-# 		return False
+class IsAdminOrManager(BaseUserPermission):
+	user_types = [3,4]
+
 
 class AlterSellerPermission(permissions.BasePermission):
 	message = "Você não tem permissão para essa operação."

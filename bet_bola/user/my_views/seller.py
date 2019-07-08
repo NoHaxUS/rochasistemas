@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.contrib import messages
 from user.models import Seller
-from user.permissions import IsAdmin, AlterSellerPermission
+from user.permissions import IsAdmin, AlterSellerPermission, IsAdminOrManager
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from core.paginations import StandardSetPagination
 from user.serializers.seller import SellerSerializer
@@ -16,6 +16,7 @@ class SellerView(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(is_active=True)
     serializer_class = SellerSerializer
     pagination_class = StandardSetPagination
+    permission_classes = [IsAdminOrManager,]
 
     filter_mappings = {
         'login': 'username__icontains',
