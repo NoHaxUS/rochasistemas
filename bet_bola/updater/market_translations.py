@@ -4,7 +4,7 @@ MARKET_TRANSLATIONS = {
     'correct_score':'Placar Correto',
     'draw_no_bet':'Casa/Fora',
     'half_time_full_time': 'Vencedor 1° Tempo / 2° Tempo',
-    'result_both_teams_to_score':'Resultado / Ambos Marcam',
+    'result_both_teams_to_score':'Ambos Marcam / Resultado',
     'winning_margin':'Margem de Vitória',
     'goals_over_under': 'Gols - Acima/Abaixo',
     'alternative_total_goals': 'Total de Gols',

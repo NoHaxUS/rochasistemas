@@ -52,8 +52,7 @@ def update_game_score(game_json, game_id):
             game.score_half = score_half_str
             game.score_full = score_full_str
             game.save()
-    games = Game.objects.exclude(score_half='', score_full='', results_calculated=True)
-  
+        
 
 def process_games():
     
@@ -61,7 +60,6 @@ def process_games():
 
     for game in games:
         print("Processing game: " + str(game.id))
-        print(game.score_half, game.score_full)
         home_1, away_1 = game.score_half.split('-')
         home_2, away_2 = game.score_full.split('-')
 
@@ -112,7 +110,7 @@ def process_games():
         half_with_most_goals(game_scores, game.cotations.filter(market__name='Etapa com mais Gols'))
         process_2nd_half_result(game_scores, game.cotations.filter(market__name='Resultado 2° Tempo'))
         process_2nd_half_goals(game_scores, game.cotations.filter(market__name='Total de Gols 2° Tempo'))
-        result_both_teams_to_score(game_scores, game.cotations.filter(market__name='Resultado / Ambos Marcam'), game.home_team, game.away_team)
+        result_both_teams_to_score(game_scores, game.cotations.filter(market__name='Ambos Marcam / Resultado'), game.home_team, game.away_team)
         winning_margin(game_scores, game.cotations.filter(market__name='Margem de Vitória'))
 
         game.cotations.filter(market__name='Especiais').update(settlement=1)
@@ -739,7 +737,7 @@ def half_with_most_goals(scores, cotations):
 
             if total_1 > total_2:
                 cotations.filter(name='1° Tempo').update(settlement=2)
-            elif total_2 < total_2:
+            elif total_1 < total_2:
                 cotations.filter(name='2° Tempo').update(settlement=2)
             else:
                 cotations.filter(name='Igual').update(settlement=2)
