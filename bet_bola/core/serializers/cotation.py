@@ -49,7 +49,7 @@ class CotationTicketWithCopiedPriceSerializer(serializers.HyperlinkedModelSerial
 		fields = ('id','name','market','price','settlement','game')	
 
 	def get_settlement(self, obj):
-		return obj.get_settlement_display()
+		return obj.get_right_settlement_display()
 
 	def get_price(self, obj):
 		cotation = CotationCopy.objects.get(original_cotation=obj, ticket=obj.ticket.first(), store=obj.ticket.first().store)
@@ -67,7 +67,7 @@ class CotationTicketSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','name','market','price','settlement','game')	
 
 	def get_settlement(self, obj):
-		return obj.get_settlement_display()
+		return obj.get_right_settlement_display()
 
 #TODO Need to be revised.
 class MinimumListCotationSerializer(serializers.ListSerializer):
@@ -131,7 +131,7 @@ class CotationSerializer(serializers.HyperlinkedModelSerializer):
 	price = serializers.SerializerMethodField()
 
 	def get_settlement(self, cotation):
-		return cotation.get_settlement_display()
+		return cotation.get_right_settlement_display()
 
 	class Meta:
 		model = Cotation
