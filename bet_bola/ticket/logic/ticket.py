@@ -194,14 +194,15 @@ def reward_winner(self, who_rewarding_the_winner):
 def cotation_sum(self):
     from core.models import CotationCopy
 
-    valid_cotations = CotationCopy.objects.filter(ticket=self, original_cotation__game__status__in = (0,1,3))
+    valid_cotations = CotationCopy.objects.filter(ticket=self, original_cotation__game__status__in = (0,1,2,3))
     
-    cotation_sum = 1
+    cotation_mul = 1
     for cotation in valid_cotations:
-        cotation_sum *= cotation.price
-    if cotation_sum == 1:
+        cotation_mul *= cotation.price
+    if cotation_mul == 1:
         return 0
 
+    #TODO revise store acess
     from utils.models import GeneralConfigurations
     try:
         general_config = self.store.my_configuration
@@ -209,7 +210,7 @@ def cotation_sum(self):
     except GeneralConfigurations.DoesNotExist:
         max_cotation_sum = 1000000
     
-    if cotation_sum > max_cotation_sum:
-        cotation_sum = max_cotation_sum
+    if cotation_mul > max_cotation_sum:
+        cotation_mul = max_cotation_sum
 
-    return round(cotation_sum, 2)
+    return round(cotation_mul, 2)

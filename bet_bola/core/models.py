@@ -33,7 +33,7 @@ class Game(models.Model):
         (0, 'Não Iniciado'),
         (1,'Ao Vivo'),
         (2, 'A ser corrigido'),
-        (3, 'Terminado'),  
+        (3, 'Terminado'),
         (4, "Adiado"),
         (5, 'Cancelado'),
         (6, "W.O"),
@@ -110,6 +110,12 @@ class Cotation(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    def get_right_settlement_display(self):
+        if self.game.status in {4,5,6,7,8,9,99}:
+            return "Jogo " + self.game.get_status_display()
+        else:
+            return self.get_settlement_display()
 
     class Meta:
         ordering = ['-pk', ]
