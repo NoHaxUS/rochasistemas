@@ -7,14 +7,18 @@ from utils.models import RulesMessage
 from filters.mixins import FiltersMixin
 
 
-class RulesMessageView(FiltersMixin, ModelViewSet):
+class RulesMessageView(ModelViewSet):
 	queryset = RulesMessage.objects.all()
 	serializer_class = RulesMessageSerializer
 	permission_classes = [IsAdmin]
 
-	filter_mappings = {
-		'store': 'store'
-	}
+	def list(self, request, pk=None):		
+		if request.user.is_authenticated:
+			store_id = request.user.my_store.pk			
+			rules= RulesMessage.objects.filter(store__pk=store_id)
+			serializer = self.get_serializer(rules, many=True)
+			return Response(serializer.data)
+		return Response({})
 	
 	def perform_create(self, serializer):		
 		store = self.request.user.my_store

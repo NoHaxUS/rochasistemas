@@ -12,15 +12,13 @@ class RewardRelatedView(ModelViewSet):
 	permission_classes = [IsAdmin,]
 
 
-	def list(self, request, pk=None):
-		from core.models import Store
-		store_id = request.GET.get('store')
-		store = Store.objects.get(pk=store_id)
-
-		rewards_related= RewardRestriction.objects.filter(store=store)
-		serializer = self.get_serializer(rewards_related, many=True)
-
-		return Response(serializer.data)
+	def list(self, request, pk=None):	
+		if request.user.is_authenticated:	
+			store_id = request.user.my_store.pk			
+			rewards_related= RewardRestriction.objects.filter(store__pk=store_id)
+			serializer = self.get_serializer(rewards_related, many=True)
+			return Response(serializer.data)
+		return Response({})
 	
 	def perform_create(self, serializer):		
 		store = self.request.user.my_store

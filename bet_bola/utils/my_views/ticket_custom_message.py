@@ -14,11 +14,9 @@ class TicketCustomMessageView(ModelViewSet):
 	def list(self, request, pk=None):
 		from core.models import Store
 		if request.user.is_authenticated:
-			store_id = request.user.my_store.pk
-			store = Store.objects.get(pk=store_id)
-
-			rules= TicketCustomMessage.objects.filter(store=store)
-			serializer = self.get_serializer(rules, many=True)
+			store_id = request.user.my_store.pk			
+			ticket_custom_message= TicketCustomMessage.objects.filter(store__pk=store_id)
+			serializer = self.get_serializer(ticket_custom_message, many=True)
 
 			return Response(serializer.data)
 		return Response({})

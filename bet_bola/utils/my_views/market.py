@@ -14,14 +14,12 @@ class MarketReductionView(ModelViewSet):
 	permission_classes = [IsAdmin,]
 
 	def list(self, request, pk=None):
-		from core.models import Store
-		store_id = request.GET.get('store')
-		store = Store.objects.get(pk=store_id)
-
-		markets_reduction= MarketReduction.objects.filter(store=store)
-		serializer = self.get_serializer(markets_reduction, many=True)
-
-		return Response(serializer.data)
+		if request.user.is_authenticated:
+			store_id = request.user.my_store.pk			
+			markets_reduction= MarketReduction.objects.filter(store__pk=store_id)
+			serializer = self.get_serializer(markets_remotion, many=True)
+			return Response(serializer.data)
+		return Response({})	
 	
 	def perform_create(self, serializer):		
 		store = self.request.user.my_store
@@ -52,17 +50,14 @@ class MarketRemotionView(ModelViewSet):
 		self.perform_create(serializer)                
 		headers = self.get_success_headers(serializer.data)
 		return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
 	
 	def list(self, request, pk=None):
-		from core.models import Store
-		store_id = request.GET.get('store')
-		store = Store.objects.get(pk=store_id)
-
-		markets_remotion= MarketRemotion.objects.filter(store=store)
-		serializer = self.get_serializer(markets_remotion, many=True)
-
-		return Response(serializer.data)
+		if request.user.is_authenticated:
+			store_id = request.user.my_store.pk			
+			markets_remotion= MarketRemotion.objects.filter(store__pk=store_id)			
+			serializer = self.get_serializer(markets_remotion, many=True)
+			return Response(serializer.data)
+		return Response({})					
 
 	def get_serializer_class(self):
 		if self.request.method in SAFE_METHODS:
