@@ -54,9 +54,9 @@ def update_game_score(game_json, game_id):
             game.save()
         
 
-def process_games():
-    
-    games = Game.objects.filter(results_calculated=False).filter(~Q(score_half='', score_full=''))
+def process_games(games=None):
+    if not games:
+        games = Game.objects.filter(results_calculated=False).filter(~Q(score_half='', score_full=''))
 
     for game in games:
         print("Processing game: " + str(game.id))
