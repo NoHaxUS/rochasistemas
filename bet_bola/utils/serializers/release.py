@@ -17,9 +17,9 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
                 "description": obj.description 
             }        
     
-    def validate_user(self, user):
-        if not self.context['request'].user.pk == user.pk or not self.context['request'].user.user_type == 4:
-            raise NotAllowedException('Você não tem permissão para fazer laçamento nesse usuário.')
+    def validate_user(self, user):                
+        if not self.context['request'].user.pk == user.pk and not self.context['request'].user.user_type == 4:
+            raise NotAllowedException('Você não tem permissão para fazer laçamento nesse usuário.')        
         return user
 
     class Meta:

@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from utils.serializers.rule import RulesMessageSerializer
 from core.permissions import StoreIsRequired, UserIsFromThisStore
+from user.permissions import IsAdmin
 from utils.models import RulesMessage
 from filters.mixins import FiltersMixin
 
@@ -9,7 +10,7 @@ from filters.mixins import FiltersMixin
 class RulesMessageView(FiltersMixin, ModelViewSet):
 	queryset = RulesMessage.objects.all()
 	serializer_class = RulesMessageSerializer
-	permission_classes = []
+	permission_classes = [IsAdmin]
 
 	filter_mappings = {
 		'store': 'store'
@@ -19,7 +20,7 @@ class RulesMessageView(FiltersMixin, ModelViewSet):
 		store = self.request.user.my_store
 		text = serializer.validated_data['text']
 		rules = RulesMessage.objects.filter(store=store).first()	
-		if	rules:
+		if rules:
 			rules.text = text
 			rules.save()
 			return {
