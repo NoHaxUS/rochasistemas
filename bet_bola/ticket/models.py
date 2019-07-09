@@ -46,11 +46,8 @@ class Ticket(models.Model):
         return 0
 
     def update_ticket_reward(self):
-        cotation_mul = 0
-        for cotation in self.cotations:
-            cotation_mul *= cotation.price
         
-        raw_reward_total = cotation_mul * self.bet_value
+        raw_reward_total = self.cotation_sum() * self.bet_value
         self.reward.value = reward.get_reward_value(raw_reward_total, self.store)[1]
         self.reward.save()
 
