@@ -1,5 +1,5 @@
 from django.contrib import admin
-from core.models import Store, Game, Cotation
+from core.models import Store, Game, Cotation, LeagueModified
 from ticket.models  import Ticket
 from updater.process_tickets import process_tickets
 from updater.process_results_betsapi import process_games
@@ -9,6 +9,9 @@ import datetime
 from django.utils import timezone
 from django.db.models import DateTimeField, ExpressionWrapper
 
+@admin.register(LeagueModified)
+class LeagueModifiedAdmin(admin.ModelAdmin):
+    search_fields = ['name',]
 
 class NeededGames(admin.SimpleListFilter):
     title = 'Ticket(s) em Aberto'
@@ -75,6 +78,7 @@ class StoreAdmin(admin.ModelAdmin):
 @admin.register(Cotation)
 class CotationAdmin(admin.ModelAdmin):
     search_fields = ['pk','name']
+
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):

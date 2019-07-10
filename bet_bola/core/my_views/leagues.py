@@ -9,7 +9,7 @@ from filters.mixins import FiltersMixin
 class LeagueView(FiltersMixin, ModelViewSet):
     queryset = League.objects.all()
     serializer_class = LeagueSerializer
-    permission_classes = [StoreIsRequired,]
+    permission_classes = []
     pagination_class = StandardSetPagination
 
     filter_mappings = {
