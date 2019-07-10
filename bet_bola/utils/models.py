@@ -14,6 +14,7 @@ class Release(models.Model):
     value = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Valor")
     creation_date = models.DateTimeField(verbose_name='Data da Aposta', default=tzlocal.now)
     description = models.CharField(max_length=100, null=True, blank=True, verbose_name='Descrição')
+    store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
 
 
 class SellerComission(models.Model):
