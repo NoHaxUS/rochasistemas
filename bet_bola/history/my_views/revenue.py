@@ -32,6 +32,11 @@ class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
     pagination_class = RevenueGeneralSellerPagination
 
     def get_queryset(self):
+        user = self.request.user
+        if user.user_type == 2:
+            return self.queryset.filter(pk=user.pk,my_store=self.request.user.my_store)
+        elif user.user_type == 3:
+            return self.queryset.filter(my_manager__pk=user.pk,my_store=self.request.user.my_store)            
         return self.queryset.filter(my_store=self.request.user.my_store)
         
     @action(methods=['post'], detail=True, permission_classes = [RevenueCloseSellerPermission])
@@ -85,8 +90,9 @@ class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_anonymous:                       
-            return Manager.objects.none()
+        if user.user_type == 3:
+            return Manager.objects.filter(pk=user.pk)
+
         queryset = self.queryset        
         return queryset.filter(my_store=user.my_store)
 
@@ -152,11 +158,19 @@ class RevenueSellerView(FiltersMixin, ModelViewSet):
         'available': 'available',
     }    
 
-    def get_queryset(self):
-        #Ticket.objects.filter(payment__status=2, store=self.request.user.my_store).exclude((Q(closed_for_seller=True) | Q(status=2)) | Q(status__in=[5,6]) )
+    def get_queryset(self):        
+        user = self.request.user
+        if user.user_type == 2:   
+            return Ticket.objects.filter(Q(payment__status=2, payment__who_paid=user, store=user.my_store, 
+                closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6])
+        
+        elif user.user_type == 3:
+            return Ticket.objects.filter(Q(payment__status=2, payment__who_paid__my_manager__pk=user.pk, store=user.my_store, 
+                closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6])
 
-        return Ticket.objects.filter(Q(payment__status=2, store=self.request.user.my_store, 
-            closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6])
+        return Ticket.objects.filter(Q(payment__status=2, store=user.my_store, 
+                closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6])
+
 
 class RevenueManagerView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
@@ -179,43 +193,63 @@ class RevenueManagerView(FiltersMixin, ModelViewSet):
         'available': 'available',
     }
 
-    def get_queryset(self):  
-        return Ticket.objects.filter(Q(payment__status=2, store=self.request.user.my_store, 
-            closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6])        
+    def get_queryset(self):
+        user = self.request.user
+        if user.user_type == 3:   
+            return Ticket.objects.filter(Q(payment__status=2,payment__who_paid__my_manager__pk=user.pk ,store=user.my_store, 
+                closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6])
+        return Ticket.objects.filter(Q(payment__status=2, store=user.my_store, 
+                closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6])
         
 
 class RevenueView(APIView):
     def get(self, request):
-        managers = Manager.objects.filter(manager_assoc__payment__status=2, my_store=request.user.my_store).distinct()
-        sellers = Seller.objects.filter(payment__status=2, my_store=request.user.my_store).distinct()                
-        entries = 0
-        out = 0
-        total_release = 0
-        comissions = 0
-        total_out = 0
+        if request.user.is_authenticated:
+            entries = 0
+            out = 0
+            total_release = 0
+            comissions = 0
+            total_out = 0
+            user = request.user 
 
-        for manager in RevenueGeneralManagerSerializer(managers, many=True, context={'request':self.request}).data:                        
-            comissions += manager['comission']            
-            total_out += manager['comission']
+            if request.user.user_type == 2:
+                managers = Manager.objects.none()
+                sellers = Seller.objects.filter(pk=user.pk,payment__status=2, my_store=request.user.my_store).distinct()
+                for release in Release.objects.filter(user=user):
+                    total_release += release.value                
 
-        for seller in RevenueGeneralSellerSerializer(sellers, many=True, context={'request':self.request}).data:            
-            entries += seller['entry']
-            out += seller['out'] + seller['won_bonus']
-            comissions += seller['comission']
-            total_out += seller['total_out']
+            elif request.user.user_type == 3:
+                managers = Manager.objects.filter(pk=user.pk,manager_assoc__payment__status=2, my_store=request.user.my_store).distinct()
+                sellers = Seller.objects.filter(my_manager__pk=user.pk,payment__status=2, my_store=request.user.my_store).distinct()                
+                for release in Release.objects.filter(Q(user=user) | Q(user__in=user.manager.manager_assoc.all())):
+                    total_release += release.value
 
-        profit = entries - total_out           
-        
-        for release in Release.objects.all():
-            total_release += release.value
-            
-        data = {
-            'entries': entries,
-            'out': out,
-            'total_release': total_release,
-            'comissions': comissions,
-            'total_out': total_out,
-            'profit': profit
-        }    
+            else:
+                managers = Manager.objects.filter(manager_assoc__payment__status=2, my_store=request.user.my_store).distinct()
+                sellers = Seller.objects.filter(payment__status=2, my_store=request.user.my_store).distinct()
+                for release in Release.objects.all():
+                    total_release += release.value     
 
-        return Response(data)
+            for manager in RevenueGeneralManagerSerializer(managers, many=True, context={'request':self.request}).data:                        
+                comissions += manager['comission']            
+                total_out += manager['comission']
+
+            for seller in RevenueGeneralSellerSerializer(sellers, many=True, context={'request':self.request}).data:            
+                entries += seller['entry']
+                out += seller['out'] + seller['won_bonus']
+                comissions += seller['comission']
+                total_out += seller['total_out']
+
+            profit = entries - total_out                                   
+                
+            data = {
+                'entries': entries,
+                'out': out,
+                'total_release': total_release,
+                'comissions': comissions,
+                'total_out': total_out,
+                'profit': profit
+            }    
+
+            return Response(data)
+        return Response({})
