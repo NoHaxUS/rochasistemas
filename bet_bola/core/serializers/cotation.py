@@ -28,7 +28,7 @@ class FilteredCotationSerializer(serializers.ListSerializer):
 					cotation.price = (cotation.price * config.cotations_percentage / 100)	
 					lista.append(cotation)
 		
-		return super(FilteredCotationSerializer, self).to_representation(lista)
+		return super().to_representation(lista)
 
 
 class CotationGameSerializer(serializers.HyperlinkedModelSerializer):
@@ -94,7 +94,7 @@ class MinimumListCotationSerializer(serializers.ListSerializer):
 					cotation.price = 1.01
 					
 
-		return super(MinimumListCotationSerializer, self).to_representation(data)
+		return super().to_representation(data)
 
 
 class StandardCotationSerializer(serializers.HyperlinkedModelSerializer):
