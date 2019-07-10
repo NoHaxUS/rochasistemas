@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -24,6 +25,9 @@ class ManagerTransactionsHistoryView(FiltersMixin, ModelViewSet):
 	}    
 
     def get_queryset(self):
-        if self.request.user.has_perm('user.be_manager'):
-            return ManagerTransactions.objects.filter(creditor__pk=self.request.user.pk)
-        return ManagerTransactions.objects.filter(store=self.request.user.my_store)
+        user = self.request.user
+        if user.user_type == 2:
+            return ManagerTransactions.objects.filter(user=user)            
+        elif user.user_type == 3:
+            return ManagerTransactions.objects.filter(Q(creditor__pk=user.pk) | Q(user=user))            
+        return ManagerTransactions.objects.filter(store=user.my_store)

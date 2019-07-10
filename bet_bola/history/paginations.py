@@ -9,8 +9,8 @@ class CancelationHistoryPagination(PageNumberPagination):
     page_size = 10
 
     def get_paginated_response(self, data):    
-        paid_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(my_canceled_tickets_who_i_paid__isnull=False).distinct()]
-        cancelled_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(my_canceled_tickets__isnull=False).distinct()]
+        paid_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(my_canceled_tickets_who_i_paid__isnull=False, my_store=self.request.user.my_store).distinct()]
+        cancelled_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(my_canceled_tickets__isnull=False, my_store=self.request.user.my_store).distinct()]
    
         return Response({
             'links': {
@@ -29,7 +29,7 @@ class TicketValidationHistoryPagination(PageNumberPagination):
     page_size = 10   
 
     def get_paginated_response(self, data):
-        paid_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(my_ticket_validations__isnull=False).distinct()]
+        paid_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(my_ticket_validations__isnull=False, my_store=self.request.user.my_store).distinct()]
         
         return Response({
             'links': {
@@ -47,7 +47,7 @@ class RevenueHistorySellerPagination(PageNumberPagination):
     page_size = 10    
 
     def get_paginated_response(self, data):        
-        register_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(revenuehistoryseller__isnull=False).distinct()]        
+        register_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(revenuehistoryseller__isnull=False, my_store=self.request.user.my_store).distinct()]        
         return Response({
             'links': {
                 'next': self.get_next_link(),
@@ -64,7 +64,7 @@ class RevenueHistoryManagerPagination(PageNumberPagination):
     page_size = 10    
 
     def get_paginated_response(self, data):        
-        register_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(revenuehistorymanager__isnull=False).distinct()]        
+        register_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(revenuehistorymanager__isnull=False, my_store=self.request.user.my_store).distinct()]        
 
         return Response({
             'links': {
@@ -84,9 +84,9 @@ class ManagerTransactionsHistoryPagination(PageNumberPagination):
     def get_paginated_response(self, data):  
         creditor_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(pk=self.request.user.pk).distinct()]
         if self.request.user.user_type == 3:
-            seller_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(managertransactions__isnull=False, my_manager__pk=self.request.user.pk).distinct()]
+            seller_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(managertransactions__isnull=False, seller__my_manager__pk=self.request.user.pk, my_store=self.request.user.my_store).distinct()]
         else:
-            seller_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(managertransactions__isnull=False).distinct()]
+            seller_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(managertransactions__isnull=False, my_store=self.request.user.my_store).distinct()]
             
         return Response({
             'links': {
@@ -180,7 +180,7 @@ class RevenueSellerPagination(PageNumberPagination):
         out = 0
         comissions_sum = 0
         won_bonus_sum = 0
-        sellers = [{'id':seller.pk,'username':seller.username} for seller in Seller.objects.filter(payment__status=2).distinct()]                   
+        sellers = [{'id':seller.pk,'username':seller.username} for seller in Seller.objects.filter(payment__status=2, my_store=self.request.user.my_store).distinct()]                   
         for ticket in data:
             entry += float(ticket["bet_value"])
             if ticket["status"] == 'Venceu, Ganhador Pago' or ticket["status"] == 'Venceu, Prestar Contas':
@@ -210,7 +210,7 @@ class RevenueManagerPagination(PageNumberPagination):
         entry = 0
         out = 0
         seller_comission_sum = 0
-        managers = [{"id":manager.pk,"username":manager.username} for manager in Manager.objects.filter(manager_assoc__payment__status=2).distinct()]                                   
+        managers = [{"id":manager.pk,"username":manager.username} for manager in Manager.objects.filter(manager_assoc__payment__status=2, my_store=self.request.user.my_store).distinct()]                                   
         incomes = {}
         outs = {}
         for ticket in data:

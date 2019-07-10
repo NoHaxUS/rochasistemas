@@ -25,6 +25,12 @@ class SellerView(FiltersMixin, ModelViewSet):
 		'store':'my_store',
 	}
 
+    def get_queryset(self):        
+        user = self.request.user        
+        if user.user_type == 3:            
+            return Seller.objects.filter(my_manager=user.pk, my_store=user.my_store, is_active=True)
+        return Seller.objects.filter(my_store=user.my_store, is_active=True)
+
     def create(self, request, *args, **kwargs):
         data = request.data.get('data') 
         if not data:

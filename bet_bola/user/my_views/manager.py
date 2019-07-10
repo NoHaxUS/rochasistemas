@@ -24,6 +24,10 @@ class ManagerView(FiltersMixin, ModelViewSet):
         'login': 'username__icontains',
         'email': 'email__icontains'
     }
+    
+    def get_queryset(self):        
+        user = self.request.user            
+        return Manager.objects.filter(my_store=user.my_store, is_active=True)
 
     def create(self, request, *args, **kwargs):
         data = request.data.get('data')      
