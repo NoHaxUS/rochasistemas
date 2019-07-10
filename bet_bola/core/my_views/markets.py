@@ -12,12 +12,12 @@ from utils.models import MarketRemotion
 class MarketView(FiltersMixin, ModelViewSet):
     queryset = Market.objects.all()
     serializer_class = MarketSerializer    
-    permission_classes = [StoreIsRequired]
+    permission_classes = []
     pagination_class = StandardSetPagination
 
     filter_mappings = {
         'market_name':'name__icontains',        
-    }    
+    }        
 
 
 class MarketCotationView(ModelViewSet):

@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from user.permissions import IsAdmin
 from utils.serializers.ticket_custom_message import TicketCustomMessageSerializer
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from utils.models import TicketCustomMessage
@@ -8,17 +9,17 @@ from utils.models import TicketCustomMessage
 class TicketCustomMessageView(ModelViewSet):
 	queryset = TicketCustomMessage.objects.all()
 	serializer_class = TicketCustomMessageSerializer
-	permission_classes = [StoreIsRequired,]
+	permission_classes = [IsAdmin,]
 
 	def list(self, request, pk=None):
 		from core.models import Store
-		store_id = request.GET.get('store')
-		store = Store.objects.get(pk=store_id)
+		if request.user.is_authenticated:
+			store_id = request.user.my_store.pk			
+			ticket_custom_message= TicketCustomMessage.objects.filter(store__pk=store_id)
+			serializer = self.get_serializer(ticket_custom_message, many=True)
 
-		rules= TicketCustomMessage.objects.filter(store=store)
-		serializer = self.get_serializer(rules, many=True)
-
-		return Response(serializer.data)
+			return Response(serializer.data)
+		return Response({})
 	
 	def perform_create(self, serializer):		
 		store = self.request.user.my_store
