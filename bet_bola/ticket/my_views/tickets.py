@@ -17,6 +17,7 @@ from config import settings
 from rest_framework.permissions import IsAuthenticated
 from ticket.permissions import CanToggleTicketAvailability
 from ticket.logic import reward
+from user.permissions import IsAdminOrManagerOrSeller
 import random
 import json
 
@@ -37,7 +38,7 @@ class TicketView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
     pagination_class = TicketPagination
-    permission_classes = []
+    permission_classes = [IsAdminOrManagerOrSeller]
 
     filter_mappings = {
         'ticket_id':'ticket_id',
@@ -55,6 +56,16 @@ class TicketView(FiltersMixin, ModelViewSet):
         'available': 'available',
     }
 
+    def get_queryset(self):        
+        user = self.request.user
+        if user.user_type == 2:   
+            return Ticket.objects.filter(payment__who_paid=user, store=user.my_store)
+        
+        elif user.user_type == 3:
+            return Ticket.objects.filter(payment__who_paid__seller__my_manager__pk=user.pk, store=user.my_store)                
+
+        return Ticket.objects.filter(store=user.my_store)
+                
     def get_ticket_id(self, store):
         alpha_num = 4
         numbers_num = 4

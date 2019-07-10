@@ -19,9 +19,10 @@ class RevenueHistoryManagerView(FiltersMixin, ModelViewSet):
         'end_creation_date':'date__lte',
     }
 
-    def get_queryset(self):        
-        if user.user_type == 4:    
-            return RevenueHistoryManager.objects.all()
-        return RevenueHistoryManager.objects.filter(manager__pk=self.request.user.pk)
+    def get_queryset(self):
+        user = self.request.user       
+        if user.user_type == 3:    
+            return RevenueHistoryManager.objects.filter(manager__pk=user.pk)
+        return RevenueHistoryManager.objects.filter(store=user.my_store)
         
     

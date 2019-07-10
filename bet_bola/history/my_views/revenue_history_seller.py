@@ -20,7 +20,9 @@ class RevenueHistorySellerView(FiltersMixin, ModelViewSet):
     }
 
     def get_queryset(self):
-        user = self.request.user
-        if user.user_type == 4:    
-            return RevenueHistorySeller.objects.all()
-        return RevenueHistorySeller.objects.filter(seller__pk=self.request.user.pk)
+        user = self.request.user        
+        if user.user_type == 2:
+            return RevenueHistorySeller.objects.filter(seller__pk=self.request.user.pk)
+        elif user.user_type == 3:
+            return RevenueHistorySeller.objects.filter(seller__my_manager__pk=self.request.user.pk)            
+        return RevenueHistorySeller.objects.filter(store=user.my_store)

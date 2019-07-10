@@ -165,7 +165,7 @@ class RevenueSellerView(FiltersMixin, ModelViewSet):
                 closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6])
         
         elif user.user_type == 3:
-            return Ticket.objects.filter(Q(payment__status=2, payment__who_paid__my_manager__pk=user.pk, store=user.my_store, 
+            return Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=user.pk, store=user.my_store, 
                 closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6])
 
         return Ticket.objects.filter(Q(payment__status=2, store=user.my_store, 

@@ -55,6 +55,10 @@ class IsAdminOrManager(BaseUserPermission):
 	user_types = [3, 4]
 
 
+class IsAdminOrManagerOrSeller(BaseUserPermission):
+	user_types = [2, 3, 4]
+
+
 class AlterSellerPermission(permissions.BasePermission):
 	message = "Você não tem permissão para essa operação."
 

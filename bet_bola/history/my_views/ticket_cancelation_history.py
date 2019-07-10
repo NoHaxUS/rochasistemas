@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from filters.mixins import FiltersMixin
@@ -19,6 +20,10 @@ class TicketCancelationHistoryView(FiltersMixin, ModelViewSet):
         'paid_by': 'who_paid__pk',
         'cancelled_by': 'who_cancelled__pk',
 	}    
-
     def get_queryset(self):
-        return TicketCancelationHistory.objects.filter(store=self.request.user.my_store)
+        user = self.request.user
+        if user.user_type == 2:
+            return TicketCancelationHistory.objects.filter(who_cancelled=user,store=self.request.user.my_store)
+        if user.user_type == 3:
+            return TicketCancelationHistory.objects.filter(Q(who_cancelled=user)|Q(who_cancelled__seller__my_manager__pk=user.pk),store=self.request.user.my_store)          
+        return TicketCancelationHistory.objects.filter(store=user.my_store)
