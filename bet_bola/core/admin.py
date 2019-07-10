@@ -11,34 +11,61 @@ from django.db.models import DateTimeField, ExpressionWrapper
 
 
 class NeededGames(admin.SimpleListFilter):
-    title = 'Jogos Sem Resultados*'
-    parameter_name = 'needed'
+    title = 'Ticket(s) em Aberto'
+    parameter_name = 'has_ticket_open'
 
     def lookups(self, request, model_admin):
         return (
-            ('Sim', 'Sim'),
-            ('Não', 'Não')
+            ('yes', 'Sim'),
+            ('no', 'Não')
         )
 
     def queryset(self, request, queryset):
-        if self.value() == 'Sim':
-            return queryset.annotate(actual_start_date=ExpressionWrapper(F('start_date') + timezone.timedelta(hours=2, minutes=30 ), output_field=DateTimeField()) )\
-            .filter(actual_start_date__lt=tzlocal.now(), score_half='', score_full='', results_calculated=False)
+        if self.value() == 'yes':
+            games_ids = []
+            tickets = Ticket.objects.filter(status=0)
+            for ticket in tickets:
+                valid_cotations = ticket.cotations.filter(game__status__in = (0,1,2,3))
+                has_lost_cotation = valid_cotations.filter(settlement=1)
+                if not has_lost_cotation:
+                    open_cotations = valid_cotations.filter(settlement=0)
+                    for open_cotation in open_cotations:
+                        games_ids.append(open_cotation.game.pk)
+            
+            return Game.objects.filter(pk__in=games_ids)
+
         return queryset
 
-class FinishedGames(admin.SimpleListFilter):
-    title = 'Jogos Status Terminado'
-    parameter_name = 'finished'
+class GamesPerDay(admin.SimpleListFilter):
+    title = 'Dia do Jogo'
+    parameter_name = 'game_day'
 
     def lookups(self, request, model_admin):
         return (
-            ('Sim', 'Sim'),
-            ('Não', 'Não')
+            ('yesterday', 'Ontem'),
+            ('today', 'Hoje'),
+            ('tomorrow', 'Amanhã'),
+            ('after_tomorrow', 'Depois de Amanhã')
         )
 
     def queryset(self, request, queryset):
-        if self.value() == 'Sim':
-            return queryset.filter(status=3)
+        if self.value() == 'yesterday':
+            return queryset.filter(
+                start_date__date=tzlocal.now().date() + timezone.timedelta(days=-1)
+            )
+        if self.value() == 'today':
+            return queryset.filter(
+                start_date__date=tzlocal.now().date()
+            )
+        if self.value() == 'tomorrow':
+            return queryset.filter(
+                start_date__date=tzlocal.now().date() + timezone.timedelta(days=1)
+            )
+        if self.value() == 'after_tomorrow':
+            return queryset.filter(
+                start_date__date=tzlocal.now().date() + timezone.timedelta(days=2)
+            )
+
         return queryset
 
 @admin.register(Store)
@@ -52,7 +79,7 @@ class CotationAdmin(admin.ModelAdmin):
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
     search_fields = ['pk','name']
-    list_filter = (NeededGames, FinishedGames)
+    list_filter = (NeededGames, GamesPerDay)
 
     def save_model(self, request, obj, form, change):
         if change and obj.score_half and obj.score_full:
