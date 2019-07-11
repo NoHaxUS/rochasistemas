@@ -38,7 +38,7 @@ class TicketView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
     pagination_class = TicketPagination
-    permission_classes = [IsAdminOrManagerOrSeller]
+    permission_classes = []
 
     filter_mappings = {
         'ticket_id':'ticket_id',
@@ -58,13 +58,15 @@ class TicketView(FiltersMixin, ModelViewSet):
 
     def get_queryset(self):        
         user = self.request.user
-        if user.user_type == 2:   
-            return Ticket.objects.filter(payment__who_paid=user, store=user.my_store)
-        
-        elif user.user_type == 3:
-            return Ticket.objects.filter(payment__who_paid__seller__my_manager__pk=user.pk, store=user.my_store)                
+        if user.is_authenticated:
+            if user.user_type == 2:   
+                return Ticket.objects.filter(payment__who_paid=user, store=user.my_store)
+            
+            elif user.user_type == 3:
+                return Ticket.objects.filter(payment__who_paid__seller__my_manager__pk=user.pk, store=user.my_store)                
 
-        return Ticket.objects.filter(store=user.my_store)
+            return Ticket.objects.filter(store=user.my_store)
+        return Ticket.objects.none()
                 
     def get_ticket_id(self, store):
         alpha_num = 4
