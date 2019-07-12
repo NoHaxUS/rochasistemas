@@ -152,7 +152,7 @@ class Sport(models.Model):
         verbose_name_plural = 'Cópia Cotações'
 
 
-class  LeagueModified(models.Model):
+class LeagueModified(models.Model):
     league = models.ForeignKey('core.League', related_name='my_modifications', on_delete=models.CASCADE, verbose_name='Liga Alterada')
     store = models.ForeignKey('core.Store', related_name='my_leagues_modifications', on_delete=models.CASCADE, verbose_name='Banca')
     priority = models.IntegerField(default=1, verbose_name='Prioridade')
