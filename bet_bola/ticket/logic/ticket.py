@@ -75,8 +75,8 @@ def cancel_ticket(self, who_canceling):
         'message':'O Bilhete '+ self.ticket_id +' foi cancelado.'
     }
 
-def validate_ticket(self, who_validating):                 
-    if not who_validating.has_perm('user.be_seller'):
+def validate_ticket(self, who_validating):
+    if not who_validating.has_perm('user.be_seller') or who_validating.is_superuser:
         return {
             'success': False,
             'message': 'Esse Usuário não tem permissão para validar Bilhetes.'
@@ -112,14 +112,11 @@ def validate_ticket(self, who_validating):
     seller_before_balance = 0
     seller_after_balance= 0
 
-    if who_validating.has_perm('user.be_seller') and not who_validating.is_superuser:
-        if not who_validating.seller.can_sell_unlimited:
-            if self.bet_value > who_validating.seller.credit_limit:                
-                return {
-                'success':False,
-                'message':'Você não tem créditos para pagar esse Bilhete: ' + self.ticket_id
-            }
-
+    message = None
+    if not who_validating.seller.can_sell_unlimited:
+        if self.bet_value > who_validating.seller.credit_limit:                
+            message = 'Seu saldo não foi suficiente para validar automaticamente esse Bilhete.'
+        else:
             seller_before_balance = who_validating.seller.credit_limit
             who_validating.seller.credit_limit -= self.bet_value
             seller_after_balance = who_validating.seller.credit_limit
@@ -142,10 +139,13 @@ def validate_ticket(self, who_validating):
         balance_after=seller_after_balance,
         store=self.store
     )
-    
+
+    if not message:
+        message = 'Bilhete '+ self.ticket_id +' PAGO com Sucesso.'
+
     return {
         'success':True,
-        'message':'Bilhete '+ self.ticket_id +' PAGO com Sucesso.'
+        'message': message
     }
 
 

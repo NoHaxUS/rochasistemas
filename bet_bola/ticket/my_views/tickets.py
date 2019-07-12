@@ -6,7 +6,10 @@ from filters.mixins import FiltersMixin
 from ticket.models import Ticket, Reward, Payment
 from ticket.serializers.ticket import ShowTicketSerializer, TicketSerializer, CreateTicketSerializer
 from ticket.paginations import TicketPagination
-from ticket.permissions import CanCreateTicket, CanPayWinner, CanValidateTicket, CanCancelTicket, CanManipulateTicket
+from ticket.permissions import (
+    CanCreateTicket, CanPayWinner, CanValidateTicket,
+    CanCancelTicket, CanManipulateTicket
+)
 from user.permissions import IsSuperUser
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from user.models import TicketOwner
@@ -87,7 +90,6 @@ class TicketView(FiltersMixin, ModelViewSet):
                 return TicketSerializer		
             return CreateTicketSerializer
 
-
     def create(self, request, *args, **kwargs):
         data = request.data.get('data')
         data = json.loads(data)
@@ -96,7 +98,6 @@ class TicketView(FiltersMixin, ModelViewSet):
         create_response = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(create_response, status=status.HTTP_201_CREATED, headers=headers)
-
 
     def get_reward_value(self, raw_reward_total, store):
         return reward.get_reward_value(raw_reward_total, store=store)
@@ -160,8 +161,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 
     @action(methods=['post'], detail=False, permission_classes=[])
     def validate_tickets(self, request, pk=None):
-        ticket_ids = request.data.get('data')        
-        ticket_ids = json.loads(ticket_ids)
+        ticket_ids = json.loads(request.data.get('data'))
         response = []        
         for ticket in Ticket.objects.filter(ticket_id__in=ticket_ids):
             response.append(ticket.validate_ticket(request.user))
@@ -171,8 +171,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 
     @action(methods=['post'], detail=False, permission_classes=[])
     def cancel_tickets(self, request, pk=None):
-        ticket_ids = request.data.get('data')        
-        ticket_ids = json.loads(ticket_ids)
+        ticket_ids = json.loads(request.data.get('data'))
         response = []
         for ticket in Ticket.objects.filter(ticket_id__in=ticket_ids):
             response.append(ticket.cancel_ticket(request.user))
