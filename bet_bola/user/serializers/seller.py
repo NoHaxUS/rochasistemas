@@ -5,13 +5,13 @@ from utils.models import SellerComission
 
 class SellerSerializer(serializers.HyperlinkedModelSerializer):	
 	
-	my_manager = serializers.SlugRelatedField(queryset=Manager.objects.all(), allow_null=True, slug_field='username', error_messages={"does_not_exist": "{value} não existe."})
+	my_manager = serializers.SlugRelatedField(queryset=Manager.objects.all(), required=False, slug_field='username', error_messages={"does_not_exist": "{value} não existe."})
 	password = serializers.CharField(style={'input_type': 'password'}, write_only=True, allow_null=True)
-
+	
 
 	def create(self, validated_data):		
 		user = self.context['request'].user		
-		store = Store.objects.get(pk=user.my_store)
+		store = user.my_store
 		obj = Seller(**validated_data)
 		obj.my_store=store
 		if user.user_type == 3:
