@@ -22,7 +22,7 @@ from core.my_views.games import TodayGamesAdmin, GamesTable, GamesTomorrow, Game
 from core.my_views.sports import SportView
 from core.my_views.stores import StoreView
 from core.my_views.locations import LocationView
-from core.my_views.leagues import LeagueView
+from core.my_views.leagues import LeagueView, LeagueModifiedView
 from core.my_views.cotations import CotationView, CotationCopyView, CotationModifiedView
 from core.my_views.markets import MarketView, MarketCotationView
 from core.views import APIRootView, MainMenu
@@ -41,6 +41,7 @@ router.register(r'market_cotations', MarketCotationView)
 router.register(r'markets', MarketView)
 router.register(r'sports', SportView)
 router.register(r'games_today', TodayGamesAdmin)
+router.register(r'league_modifieds', LeagueModifiedView)
 
 
 urlpatterns = [
