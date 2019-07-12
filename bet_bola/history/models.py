@@ -87,18 +87,12 @@ class RevenueHistorySeller(models.Model):
     profit = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Lucro')
     store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
-    # def get_commission(self):
-    #     return str(round(self.comission,0)) + "%"
-    # get_commission.short_description = '% de Comissão'
-
-
     def __str__(self):
         return "Pag. - Cambistas"
 
     class Meta:
         verbose_name = 'Pag. - Cambista'
         verbose_name_plural = 'Pag. - Cambistas'
-
 
 
 class RevenueHistoryManager(models.Model):
@@ -113,10 +107,6 @@ class RevenueHistoryManager(models.Model):
     total_out = models.DecimalField(max_digits=40, decimal_places=2,null=True, blank=True, verbose_name='Saída Total')
     profit = models.DecimalField(max_digits=30, decimal_places=2,null=True, blank=True, verbose_name='Lucro')
     store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
-
-    # def get_commission(self):
-    #     return str(round(self.comission,0)) + "%"
-    # get_commission.short_description = '% de Comissão'
 
 
     def __str__(self):
