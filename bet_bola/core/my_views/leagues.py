@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework import status
 from core.models import League, LeagueModified
 from core.serializers.league import LeagueSerializer, LeagueModifiedSerializer
 from core.permissions import StoreIsRequired
@@ -34,7 +34,7 @@ class LeagueModifiedView(FiltersMixin, ModelViewSet):
         data = json.loads(data)        
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-        create_response = self.perform_create(serializer)
+        self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     

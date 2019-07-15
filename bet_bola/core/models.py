@@ -219,3 +219,39 @@ class Market(models.Model):
         ordering = ['-pk']
         verbose_name = 'Mercado'
         verbose_name_plural = 'Mercados'
+
+
+class LeagueModified(models.Model):
+    league = models.ForeignKey('core.League', related_name='my_modifications', on_delete=models.CASCADE, verbose_name='Liga Alterada')
+    store = models.ForeignKey('core.Store', related_name='my_leagues_modifications', on_delete=models.CASCADE, verbose_name='Banca')
+    priority = models.PositiveSmallIntegerField(default=1, verbose_name='Prioridade')
+    available = models.BooleanField(default=True, verbose_name="Visível?")
+
+    def __repr__(self):
+        return "{}, {}, {}, {}".format(self.league, self.store, self.priority, self.available)
+    
+    def __str__(self):
+        return self.__repr__()
+
+    class Meta:
+        ordering = ('-pk',)
+        verbose_name = 'Liga Banca'
+        verbose_name_plural = 'Ligas da Banca'
+
+
+class LocationModified(models.Model):
+    location = models.ForeignKey('core.Location', related_name='my_modifications', on_delete=models.CASCADE, verbose_name='Liga Alterada')
+    store = models.ForeignKey('core.Store', related_name='my_locations_modifications', on_delete=models.CASCADE, verbose_name='Banca')
+    priority = models.PositiveSmallIntegerField(default=1, verbose_name='Prioridade')
+    available = models.BooleanField(default=True, verbose_name="Visível?")
+
+    def __repr__(self):
+        return "{}, {}, {}, {}".format(self.location, self.store, self.priority, self.available)
+    
+    def __str__(self):
+        return self.__repr__()
+
+    class Meta:
+        ordering = ('-pk',)
+        verbose_name = 'Países Banca'
+        verbose_name_plural = 'Países da Banca'

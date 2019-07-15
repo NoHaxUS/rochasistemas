@@ -1,9 +1,47 @@
 
 from rest_framework import serializers
-from core.models import Location
+from core.models import Location, LocationModified
+
+class LocationSerializerList(serializers.ListSerializer):
+
+	def to_representation(self, locations):
+		store = self.context['request'].user.my_store		
+
+		for location in locations:
+			location_modified = LocationModified.objects.filter(location=location.pk, store=store).first()						
+			if location_modified:
+				location.priority = location_modified.priority
+				location.available = location_modified.available			
+		return super().to_representation(locations)
+
 
 class LocationSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Location
+		list_serializer_class = LocationSerializerList
 		fields = ('id','name','priority','available')
+
+
+class LocationModifiedSerializer(serializers.HyperlinkedModelSerializer):
+	location = serializers.SlugRelatedField(queryset = Location.objects.all(), slug_field='pk')
+	store = serializers.SlugRelatedField(read_only=True, slug_field='pk')
+
+	def create(self, validated_data):
+		user = self.context['request'].user		
+		league = validated_data.get('location')		
+		location_modifieds = LocationModified.objects.filter(location__pk=league.pk, store=user.my_store)
+
+		if location_modifieds.exists():
+			location_modifieds.update(**validated_data)
+			return location_modifieds.first()
+
+		instance = LocationModified(**validated_data)			
+		instance.store = user.my_store		
+		instance.save()		
+		return instance
+
+	class Meta:
+		model = LocationModified
+		# list_serializer_class = LocationSerializerList
+		fields = ('location','priority','available','store')
