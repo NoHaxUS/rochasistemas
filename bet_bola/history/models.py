@@ -50,6 +50,7 @@ class TicketCancelationHistory(models.Model):
         return "Cancelamento de Bilhete"
 
     class Meta:
+        ordering = ('-pk',)
         verbose_name = 'Cancelamento de Bilhete'
         verbose_name_plural = 'Cancelamento de Bilhetes'
 
