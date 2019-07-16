@@ -2,6 +2,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+from user.permissions import IsAdmin
 from core.models import Location, LocationModified
 from core.serializers.location import LocationSerializer, LocationModifiedSerializer
 from core.permissions import StoreIsRequired
@@ -35,7 +36,7 @@ class LocationModifiedView(FiltersMixin, ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    @action(methods=['post'], detail=False, permission_classes=[])
+    @action(methods=['post'], detail=False, permission_classes=[IsAdmin])
     def toggle_priority(self, request, pk=None):        
         data = request.data.get('data')        
         data = json.loads(data)

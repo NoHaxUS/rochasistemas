@@ -1,18 +1,21 @@
+from django_filters import rest_framework as filters
+from django.db.models import Q, F, FilteredRelation, Count, Prefetch
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import filters as drf_filters
+from rest_framework import status
 from filters.mixins import FiltersMixin
-from django.db.models import Q, F, FilteredRelation, Count, Prefetch
-import utils.timezone as tzlocal
-from django_filters import rest_framework as filters
 from utils.models import ExcludedLeague, ExcludedGame
+from user.permissions import IsAdmin
 from core.models import *
 from core.serializers.game import TodayGamesSerializer, GameSerializer, GameListSerializer, GameTableSerializer
 from core.paginations import StandardSetPagination, GameListPagination, GameTablePagination
 from core.permissions import StoreIsRequired
 from rest_framework.decorators import action
+import utils.timezone as tzlocal
+import json
 
 
 class TodayGamesView(ModelViewSet):
@@ -253,12 +256,22 @@ class TodayGamesAdmin(FiltersMixin, ModelViewSet):
         return queryset
 
 
-    @action(methods=['post'], detail=False, permission_classes=[])
+    @action(methods=['post'], detail=False, permission_classes=[IsAdmin])
     def toggle_availability(self, request, pk=None):
-        response = []
-        for game in Game.objects.filter(pk__in=dict(request.data)['data']):
-            response.append(game.toggle_availability())
-        return Response(response)
+        data = request.data.get('data')        
+        data = json.loads(data)
+        game_id = data.get('id')
+        available = data.get('available')
+        user = request.user
+        if GameModified.objects.filter(game__pk=game_id, store=user.my_store).exists():
+            GameModified.objects.filter(game__pk=game_id, store=user.my_store).update(available=available)
+        else:
+            GameModified.objects.create(game=Game.objects.get(pk=game_id), store=user.my_store, available=available)
+        
+        return Response({
+                'success': True,
+                'message': 'Alterado com Sucesso :)'
+            })
 
 
 class GamesTomorrow(ModelViewSet):

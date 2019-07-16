@@ -240,13 +240,30 @@ class LeagueModified(models.Model):
 
 
 class LocationModified(models.Model):
-    location = models.ForeignKey('core.Location', related_name='my_modifications', on_delete=models.CASCADE, verbose_name='Liga Alterada')
+    location = models.ForeignKey('core.Location', related_name='my_modifications', on_delete=models.CASCADE, verbose_name='País Alterado')
     store = models.ForeignKey('core.Store', related_name='my_locations_modifications', on_delete=models.CASCADE, verbose_name='Banca')
     priority = models.PositiveSmallIntegerField(default=1, verbose_name='Prioridade')
     available = models.BooleanField(default=True, verbose_name="Visível?")
 
     def __repr__(self):
         return "{}, {}, {}, {}".format(self.location, self.store, self.priority, self.available)
+    
+    def __str__(self):
+        return self.__repr__()
+
+    class Meta:
+        ordering = ('-pk',)
+        verbose_name = 'Países Banca'
+        verbose_name_plural = 'Países da Banca'
+
+
+class GameModified(models.Model):
+    game = models.ForeignKey('core.Game', related_name='my_modifications', on_delete=models.CASCADE, verbose_name='Jogo Alterado')
+    store = models.ForeignKey('core.Store', related_name='my_games_modifications', on_delete=models.CASCADE, verbose_name='Banca')    
+    available = models.BooleanField(default=True, verbose_name="Visível?")
+
+    def __repr__(self):
+        return "{}, {}, {}, {}".format(self.game, self.store, self.available)
     
     def __str__(self):
         return self.__repr__()
