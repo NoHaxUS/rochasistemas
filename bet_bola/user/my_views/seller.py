@@ -27,19 +27,17 @@ class SellerView(FiltersMixin, ModelViewSet):
 	}
 
     def get_queryset(self):        
-        user = self.request.user        
+        user = self.request.user
         if user.user_type == 3:            
             return Seller.objects.filter(my_manager=user.pk, my_store=user.my_store, is_active=True)
         return Seller.objects.filter(my_store=user.my_store, is_active=True)
 
     def create(self, request, *args, **kwargs):
-        data = request.data.get('data') 
-        if not data:
-            data = "{}"       
-        data = json.loads(data)           
-        serializer = self.get_serializer(data=data)               
-        serializer.is_valid(raise_exception=True)        
-        self.perform_create(serializer)                
+        data = json.loads(request.data.get('data')) if request.data.get('data') else request.data
+        data = {} if not data else data
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)  
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
