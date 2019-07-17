@@ -8,6 +8,7 @@ from user.permissions import IsAdmin, AlterSellerPermission, IsAdminOrManager
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from core.paginations import StandardSetPagination
 from user.serializers.seller import SellerSerializer
+from user.paginations import SellerPagination
 from filters.mixins import FiltersMixin
 import decimal
 import json
@@ -15,7 +16,7 @@ import json
 class SellerView(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(is_active=True)
     serializer_class = SellerSerializer
-    pagination_class = StandardSetPagination
+    pagination_class = SellerPagination
     permission_classes = [IsAdminOrManager,]
 
     filter_mappings = {
@@ -35,13 +36,12 @@ class SellerView(FiltersMixin, ModelViewSet):
         data = request.data.get('data') 
         if not data:
             data = "{}"       
-        data = json.loads(data)        
+        data = json.loads(data)           
         serializer = self.get_serializer(data=data)               
         serializer.is_valid(raise_exception=True)        
         self.perform_create(serializer)                
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
 
     @action(methods=['get'], detail=True, permission_classes=[AlterSellerPermission])
     def toggle_is_active(self, request, pk=None):
@@ -58,8 +58,7 @@ class SellerView(FiltersMixin, ModelViewSet):
         return Response({
             'success': True,
             'message':  'Alterado.'
-        })    
-    
+        })        
 
     @action(methods=['post'], detail=True, permission_classes=[AlterSellerPermission])
     def alter_credit(self, request, pk=None):

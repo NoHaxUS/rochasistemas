@@ -9,7 +9,7 @@ class ReleasePermission(permissions.BasePermission):
         raise NotAllowedException(detail="Você não tem permissão para visualizar.")
 
     def has_object_permission(self, request, view, obj):        
-        if request.user.is_anonymous:
+        if not request.user.is_anonymous:
             if request.user.user_type == 4:
                 return True
             if obj.my_manager and request.user.pk == obj.my_manager.pk:

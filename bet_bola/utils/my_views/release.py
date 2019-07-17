@@ -33,7 +33,10 @@ class ReleaseView(FiltersMixin, ModelViewSet):
     def create(self, request, *args, **kwargs):        
         data = request.data.get('data')
         data = json.loads(data)
-        data = {"user":int(data.get("user")), "value":data.get("value"), "store":request.user.my_store.pk}         
+        if request.user.user_type == 2:
+            data = {"user":request.user.pk, "value":data.get("value"), "store":request.user.my_store.pk}         
+        else:    
+            data = {"user":int(data.get("user")), "value":data.get("value"), "store":request.user.my_store.pk}         
         serializer = self.get_serializer(data=data)        
         serializer.is_valid(raise_exception=True)        
         self.perform_create(serializer)
