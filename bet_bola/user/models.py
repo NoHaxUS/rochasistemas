@@ -28,7 +28,7 @@ class CustomUser(AbstractUser):
     USER_TYPE = (
         (0, 'Anonímo'),
         (1, 'Apostador'),
-        (2, 'Vendedor'),
+        (2, 'Cambista'),
         (3, 'Gerente'),
         (4, 'Dono da Banca')
     )
@@ -44,7 +44,7 @@ class CustomUser(AbstractUser):
     my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.first_name
+        return self.username
 
 
 class TicketOwner(models.Model):
