@@ -15,19 +15,25 @@ class MarketReductionView(ModelViewSet):
 
 	def create(self, validated_data):
 		data = self.request.data.get('data')        
-		data = json.loads(data)        
-		data['store'] = self.request.user.my_store.pk
-		serializer = self.get_serializer(data=data)
-		serializer.is_valid(raise_exception=True)
-		self.perform_create(serializer)
+		data = json.loads(data)
+		market = {}
+		serializer_data = []
+		for id in data['market_ids']:
+			market['store'] = self.request.user.my_store.pk
+			market['reduction_percentual'] = data['reduction_percentual']
+			market['market'] = id				
+			serializer = self.get_serializer(data=market)
+			serializer.is_valid(raise_exception=True)
+			self.perform_create(serializer)
+			serializer_data.append(serializer.data)		
 		headers = self.get_success_headers(serializer.data)
-		return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+		return Response(serializer_data, status=status.HTTP_201_CREATED, headers=headers)
 
 	def list(self, request, pk=None):
 		if request.user.is_authenticated:
 			store_id = request.user.my_store.pk			
 			markets_reduction= MarketReduction.objects.filter(store__pk=store_id)
-			serializer = self.get_serializer(markets_remotion, many=True)
+			serializer = self.get_serializer(markets_reduction, many=True)
 			return Response(serializer.data)
 		return Response({})	
 

@@ -12,6 +12,7 @@ class MarketReductionSerializer(serializers.HyperlinkedModelSerializer):
 		market_reductions = MarketReduction.objects.filter(market__pk=market.pk, store=user.my_store)
 
 		if market_reductions.exists():
+			print(validated_data)			
 			market_reductions.update(**validated_data)
 			return market_reductions.first()
 
