@@ -10,12 +10,12 @@ import json
 class GeneralConfigurationsView(FiltersMixin, ModelViewSet):
     queryset = GeneralConfigurations.objects.all()
     serializer_class = GeneralConfigurationsSerializer
-    permission_classes = [IsAdmin,]
+    permission_classes = []
 
     filter_mappings = {
 		'store':'store__pk',		
   	}
-
+    
     def list(self, request, pk=None):		
       if request.user.is_authenticated:
         store_id = request.user.my_store.pk			
@@ -25,10 +25,10 @@ class GeneralConfigurationsView(FiltersMixin, ModelViewSet):
       return Response({})    
 
     def create(self, request, *args, **kwargs):
-      data = request.data.get('data') 
+      data = request.data 
       if not data:
           data = "{}"       
-      data = json.loads(data)       
+      # data = json.loads(data)       
       serializer = self.get_serializer(data=data)               
       serializer.is_valid(raise_exception=True)        
       self.perform_create(serializer)                

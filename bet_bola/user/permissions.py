@@ -21,15 +21,15 @@ class BaseUserPermission(permissions.BasePermission):
 	def has_permission(self, request, view):						
 		if request.method in permissions.SAFE_METHODS and request.user.is_authenticated:			
 			return True
-		if not request.user.is_anonymous:						
+		if not request.user.is_anonymous:									
 			if request.user.user_type in self.user_types:			
 				return True		
 		raise NotAllowedException(detail=self.message)
 	
-	def has_object_permission(self, request, view, obj):				
+	def has_object_permission(self, request, view, obj):		
 		if request.method in permissions.SAFE_METHODS:
 			return True
-		if not request.user.is_anonymous:			
+		if not request.user.is_anonymous:
 			if request.user.user_type in self.user_types:
 				return True
 		return False

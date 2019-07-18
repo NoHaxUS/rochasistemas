@@ -3,7 +3,7 @@ from core.models import Store
 from utils.models import GeneralConfigurations
 
 class GeneralConfigurationsSerializer(serializers.ModelSerializer):	
-	store = serializers.SlugRelatedField(read_only=True, slug_field='id')
+	store = serializers.SlugRelatedField(read_only=True, allow_null=True, slug_field='id')
 
 	class Meta:
 		model = GeneralConfigurations
@@ -16,14 +16,15 @@ class GeneralConfigurationsSerializer(serializers.ModelSerializer):
 
 	def create(self, validated_data):		
 		user = self.context['request'].user		
-		store = user.my_store
+		store = user.my_store		
 		general_configuration = GeneralConfigurations.objects.filter(store=store)
 		
 		if general_configuration.exists():
 			general_configuration.update(**validated_data)
 			return general_configuration.first()
 		else:
-			obj = GeneralConfigurations(**validated_data)				
+			obj = GeneralConfigurations(**validated_data)
+			obj.store = store				
 			obj.save()
 			return obj
 			
