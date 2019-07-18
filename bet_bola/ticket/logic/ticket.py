@@ -46,7 +46,7 @@ def cancel_ticket(self, who_canceling):
                 'success':False,
                 'message':'Você não pode cancelar um Bilhete que você não Pagou.'
             }
-    else:
+    elif who_canceling.user_type != 4:
         return {
                 'success':False,
                 'message':'Você não possui permissão para cancelar bilhetes.'

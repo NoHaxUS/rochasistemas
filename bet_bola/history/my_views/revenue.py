@@ -227,7 +227,7 @@ class RevenueView(APIView):
             else:
                 managers = Manager.objects.filter(manager_assoc__payment__status=2, my_store=request.user.my_store).distinct()
                 sellers = Seller.objects.filter(payment__status=2, my_store=request.user.my_store).distinct()
-                for release in Release.objects.all():
+                for release in Release.objects.filter(store=request.user.my_store):
                     total_release += release.value     
 
             for manager in RevenueGeneralManagerSerializer(managers, many=True, context={'request':self.request}).data:                        

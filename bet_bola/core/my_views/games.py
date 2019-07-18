@@ -274,75 +274,73 @@ class TodayGamesAdmin(FiltersMixin, ModelViewSet):
             })
 
 
-class GamesTomorrow(ModelViewSet):
+class GamesTomorrow(FiltersMixin, ModelViewSet):
     """
     View Used for display tomorrow games
     """ 
     permission_classes = []
-    serializer_class = TodayGamesSerializer
+    serializer_class = GameListSerializer
     pagination_class = GameListPagination
 
+    filter_mappings = {
+		'game_name':'name__icontains',
+		'league_name':'league__name__icontains',
+		'country_name':'league__location__name__icontains',
+        'start_time': 'start_date__time__gte'
+	}
+
     def get_queryset(self):
+        my_cotation_qs = Cotation.objects.filter(market__name="1X2")
+
         store_id = self.request.GET['store']
         store = Store.objects.get(pk=store_id)
 
         id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
+        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store_id)]
 
-        my_cotation_qs = Cotation.objects.filter(market__name="1X2")
-
-        my_games_qs = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
-            status__in=[0],
-            available=True)\
-            .prefetch_related(Prefetch('cotations', queryset=my_cotation_qs, to_attr='my_cotations'))\
+        queryset = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
+            status__in=[0])\
             .exclude(Q(league__available=False) | 
                 Q(league__location__available=False) | 
-                Q(id__in=id_list_excluded_games) )\
+                Q(id__in=id_list_excluded_games) | 
+                Q(league__id__in=id_list_excluded_leagues) )\
             .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
             .filter(cotations_count__gte=3).order_by('-league__location__priority',
             '-league__priority', 'league__location__name', 'league__name')
-        
-        queryset = League.objects.prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'))
-        queryset = queryset.annotate(games_count=Count('my_games', 
-        filter=Q(my_games__pk__in=[game.pk for game in my_games_qs])))\
-        .filter(games_count__gt=0)
-
-        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store_id)]
-        queryset = queryset.exclude(id__in=id_list_excluded_leagues)
         return queryset
 
 
-class GamesAfterTomorrow(ModelViewSet):
+class GamesAfterTomorrow(FiltersMixin, ModelViewSet):
     """
     View Used for display after tomorrow games
     """ 
     permission_classes = []
-    serializer_class = TodayGamesSerializer
+    serializer_class = GameListSerializer
     pagination_class = GameListPagination
 
+    filter_mappings = {
+		'game_name':'name__icontains',
+		'league_name':'league__name__icontains',
+		'country_name':'league__location__name__icontains',
+        'start_time': 'start_date__time__gte'
+	}
+
     def get_queryset(self):
+        my_cotation_qs = Cotation.objects.filter(market__name="1X2")
+
         store_id = self.request.GET['store']
         store = Store.objects.get(pk=store_id)
 
         id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
+        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store_id)]
 
-        my_cotation_qs = Cotation.objects.filter(market__name="1X2")
-
-        my_games_qs = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
-            status__in=[0],
-            available=True)\
-            .prefetch_related(Prefetch('cotations', queryset=my_cotation_qs, to_attr='my_cotations'))\
+        queryset = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
+            status__in=[0])\
             .exclude(Q(league__available=False) | 
                 Q(league__location__available=False) | 
-                Q(id__in=id_list_excluded_games) )\
+                Q(id__in=id_list_excluded_games) | 
+                Q(league__id__in=id_list_excluded_leagues) )\
             .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
             .filter(cotations_count__gte=3).order_by('-league__location__priority',
             '-league__priority', 'league__location__name', 'league__name')
-        
-        queryset = League.objects.prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'))
-        queryset = queryset.annotate(games_count=Count('my_games', 
-        filter=Q(my_games__pk__in=[game.pk for game in my_games_qs])))\
-        .filter(games_count__gt=0)
-
-        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store_id)]
-        queryset = queryset.exclude(id__in=id_list_excluded_leagues)
         return queryset

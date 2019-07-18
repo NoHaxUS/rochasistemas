@@ -23,6 +23,7 @@ from .my_views.market import MarketReductionView, MarketRemotionView
 from .my_views.comission import SellerComissionView, ManagerComissionView
 from .my_views.release import ReleaseView
 from .my_views.ticket_custom_message import TicketCustomMessageView
+# from .my_views.forgot_password import ForgotPassword
 #  OverviewView, Balance, 
 from rest_framework_jwt.views import obtain_jwt_token
 
