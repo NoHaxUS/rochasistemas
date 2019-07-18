@@ -8,7 +8,7 @@ class ManagerTransactionsSerializer(serializers.HyperlinkedModelSerializer):
 	user = serializers.SlugRelatedField(queryset = CustomUser.objects.filter(user_type__in=[2,3]),slug_field='username')
 	creditor = serializers.SlugRelatedField(queryset = CustomUser.objects.filter(user_type__in=[3,4]), slug_field='username')
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
-	transaction_date = serializers.DateTimeField(format='%d %B %Y', read_only=True)
+	transaction_date = serializers.DateTimeField(read_only=True)
 
 	class Meta:
 		model = ManagerTransactions

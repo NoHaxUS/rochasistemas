@@ -44,17 +44,17 @@ class ManagerView(FiltersMixin, ModelViewSet):
     def toggle_is_active(self, request, pk=None):
         manager = self.get_object()        
         manager.toggle_is_active()
-        manager.username = manager.username + "(Removido)"
+        manager.username = manager.username + "_removido"
         count = 0
         
         while Manager.objects.filter(username=manager.username).exists():
             count+=1
-            manager.username = manager.username + " " + str(count)
-
+            manager.username = manager.username + "_" + str(count)
         manager.save()
+
         return Response({
             'success': True,
-            'message':  'Alterado.'
+            'message':  'Removido com Sucesso.'
         })
 
     @action(methods=['post'], detail=True, permission_classes=[IsAdmin])
