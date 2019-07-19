@@ -45,12 +45,12 @@ class SellerView(FiltersMixin, ModelViewSet):
     def toggle_is_active(self, request, pk=None):
         seller = self.get_object()        
         seller.toggle_is_active()
-        seller.username = seller.username + "(Removido)"
+        seller.username = seller.username + "_removido"
         count = 0
         
         while Seller.objects.filter(username=seller.username).exists():
             count+=1
-            seller.username = seller.username + " " + str(count)
+            seller.username = seller.username + "_" + str(count)
 
         seller.save()
         return Response({

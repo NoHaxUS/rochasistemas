@@ -198,15 +198,20 @@ REST_FRAMEWORK = {
 }
 
 def jwt_response_payload_handler(token, user=None, request=None):
-    return {
-        'token': token,
-        'user': {
-            'pk': user.pk,
-            'user': user.username,
-            'user_type': user.user_type,
-            'name' : user.first_name
+    if user.is_active:
+        return {
+            'token': token,
+            'user': {
+                'pk': user.pk,
+                'user': user.username,
+                'user_type': user.user_type,
+                'name' : user.first_name
+            }
         }
-    }
+    else:
+        return {
+            'token': None
+        }
 
 import datetime
 
