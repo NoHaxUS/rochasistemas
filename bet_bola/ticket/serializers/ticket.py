@@ -106,7 +106,6 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
 		ticket.cotations.set(cotations)
 		return ticket
 
-
 	def validate(self, data):
 		store = self.context['request'].GET.get('store')
 		user = self.context['request'].user

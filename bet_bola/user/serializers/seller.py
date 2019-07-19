@@ -48,7 +48,20 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
 				raise serializers.ValidationError("Email já cadastrado.")
 			return value
 		return value
-
+	
+	def validate_limit_time_to_cancel(self, value):
+		user = self.context['request'].user		
+		if user.user_type == 3:
+			if self.instance and not user.manager.can_change_limit_time and not self.instance.limit_time_to_cancel == value:
+				raise serializers.ValidationError("Usuário não tem permissão para alterar o tempo limite de cancelamento.")
+		return value
+	
+	def validate_username(self, value):
+		user = self.context['request'].user				
+		if user.user_type == 3:			
+			if self.instance and not self.instance.username == value:
+				raise serializers.ValidationError("Usuário não tem permissão para alterar o username.")
+		return value
 
 	class Meta:
 		model=Seller

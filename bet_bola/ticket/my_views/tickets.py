@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
@@ -63,10 +64,10 @@ class TicketView(FiltersMixin, ModelViewSet):
         user = self.request.user
         if user.is_authenticated:
             if user.user_type == 2:   
-                return Ticket.objects.filter(payment__who_paid=user, store=user.my_store)
+                return Ticket.objects.filter(Q(payment__who_paid=user) | Q(creator=user)).filter(store=user.my_store)
             
             elif user.user_type == 3:
-                return Ticket.objects.filter(payment__who_paid__seller__my_manager__pk=user.pk, store=user.my_store)                
+                return Ticket.objects.filter(Q(payment__who_paid__seller__my_manager__pk=user.pk) | Q(creator=user)).filter(store=user.my_store)
 
             return Ticket.objects.filter(store=user.my_store)
         return Ticket.objects.none()

@@ -121,9 +121,9 @@ def validate_ticket(self, who_validating):
             who_validating.seller.credit_limit -= self.bet_value
             seller_after_balance = who_validating.seller.credit_limit
             who_validating.seller.save()
+            self.payment.status = 2
                 
-    self.save()
-    self.payment.status = 2
+    self.save()    
     self.payment.date = tzlocal.now()
     self.payment.who_paid = who_validating
     self.payment.save()
