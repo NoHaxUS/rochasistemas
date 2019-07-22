@@ -143,10 +143,10 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
 		cotation_mul = 0 if cotation_mul == 1 else cotation_mul
 
 		if cotations_len < min_number_of_choices_per_bet:
-			raise serializers.ValidationError("Você deve escolher pelo menos " + str(min_number_of_choices_per_bet) + "apostas.")
+			raise serializers.ValidationError("Você deve escolher pelo menos " + str(min_number_of_choices_per_bet) + " apostas.")
 		
 		if cotations_len > max_number_of_choices_per_bet :
-			raise serializers.ValidationError("Você deve escolher no máximo " + str(max_number_of_choices_per_bet) + "apostas.")
+			raise serializers.ValidationError("Você deve escolher no máximo " + str(max_number_of_choices_per_bet) + " apostas.")
 		
 		if data['bet_value'] < min_bet_value:
 			raise serializers.ValidationError("O valor mínimo para apostas é R$ " + str(min_bet_value))
@@ -157,7 +157,7 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
 		if cotation_mul < min_cotation_sum:
 			raise serializers.ValidationError("O valor da cotação total deve ser maior que "+ str(min_cotation_sum))
 		
-		if cotation_mul > cotation_mul:
+		if cotation_mul > max_cotation_sum:
 			raise serializers.ValidationError("O valor da cotação total deve ser menor que "+ str(max_cotation_sum))
 		 
 		return data
