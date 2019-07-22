@@ -162,14 +162,14 @@ class RevenueSellerView(FiltersMixin, ModelViewSet):
         user = self.request.user
         if user.user_type == 2:   
             return Ticket.objects.filter(Q(payment__status=2, payment__who_paid=user, store=user.my_store, 
-                closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6])
+                closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
         
         elif user.user_type == 3:
             return Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=user.pk, store=user.my_store, 
-                closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6])
+                closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
 
         return Ticket.objects.filter(Q(payment__status=2, store=user.my_store, 
-                closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6])
+                closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
 
 
 class RevenueManagerView(FiltersMixin, ModelViewSet):
@@ -197,9 +197,9 @@ class RevenueManagerView(FiltersMixin, ModelViewSet):
         user = self.request.user
         if user.user_type == 3:   
             return Ticket.objects.filter(Q(payment__status=2,payment__who_paid__my_manager__pk=user.pk ,store=user.my_store, 
-                closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6])
+                closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
         return Ticket.objects.filter(Q(payment__status=2, store=user.my_store, 
-                closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6])
+                closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
         
 
 class RevenueView(APIView):

@@ -24,5 +24,5 @@ class RevenueHistorySellerView(FiltersMixin, ModelViewSet):
         if user.user_type == 2:
             return RevenueHistorySeller.objects.filter(seller__pk=self.request.user.pk)
         elif user.user_type == 3:
-            return RevenueHistorySeller.objects.filter(seller__my_manager__pk=self.request.user.pk)            
-        return RevenueHistorySeller.objects.filter(store=user.my_store)
+            return RevenueHistorySeller.objects.filter(seller__my_manager__pk=self.request.user.pk).order_by('-date')
+        return RevenueHistorySeller.objects.filter(store=user.my_store).order_by('-date')

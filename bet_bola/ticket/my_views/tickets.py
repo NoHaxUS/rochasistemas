@@ -64,12 +64,12 @@ class TicketView(FiltersMixin, ModelViewSet):
         user = self.request.user
         if user.is_authenticated:
             if user.user_type == 2:   
-                return Ticket.objects.filter(Q(payment__who_paid=user) | Q(creator=user)).filter(store=user.my_store)
+                return Ticket.objects.filter(Q(payment__who_paid=user) | Q(creator=user)).filter(store=user.my_store).order_by('-creation_date')
             
             elif user.user_type == 3:
-                return Ticket.objects.filter(Q(payment__who_paid__seller__my_manager__pk=user.pk) | Q(creator=user)).filter(store=user.my_store)
+                return Ticket.objects.filter(Q(payment__who_paid__seller__my_manager__pk=user.pk) | Q(creator=user)).filter(store=user.my_store).order_by('-creation_date')
 
-            return Ticket.objects.filter(store=user.my_store)
+            return Ticket.objects.filter(store=user.my_store).order_by('-creation_date')
         return Ticket.objects.none()
                 
     def get_ticket_id(self, store):

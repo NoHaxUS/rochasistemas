@@ -23,7 +23,7 @@ class TicketCancelationHistoryView(FiltersMixin, ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.user_type == 2:
-            return TicketCancelationHistory.objects.filter(who_cancelled=user,store=self.request.user.my_store)
+            return TicketCancelationHistory.objects.filter(who_cancelled=user,store=self.request.user.my_store).order_by('-date')
         if user.user_type == 3:
-            return TicketCancelationHistory.objects.filter(Q(who_cancelled=user)|Q(who_cancelled__seller__my_manager__pk=user.pk),store=self.request.user.my_store)          
-        return TicketCancelationHistory.objects.filter(store=user.my_store)
+            return TicketCancelationHistory.objects.filter(Q(who_cancelled=user)|Q(who_cancelled__seller__my_manager__pk=user.pk),store=self.request.user.my_store).order_by('-date')
+        return TicketCancelationHistory.objects.filter(store=user.my_store).order_by('-date')

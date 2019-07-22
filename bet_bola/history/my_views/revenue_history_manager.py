@@ -22,7 +22,7 @@ class RevenueHistoryManagerView(FiltersMixin, ModelViewSet):
     def get_queryset(self):
         user = self.request.user       
         if user.user_type == 3:    
-            return RevenueHistoryManager.objects.filter(manager__pk=user.pk)
-        return RevenueHistoryManager.objects.filter(store=user.my_store)
+            return RevenueHistoryManager.objects.filter(manager__pk=user.pk).order_by('-date')
+        return RevenueHistoryManager.objects.filter(store=user.my_store).order_by('-date')
         
     
