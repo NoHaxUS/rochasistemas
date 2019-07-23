@@ -8,4 +8,4 @@ from user.serializers.admin import AdminSerializer
 class AdminView(ModelViewSet):
     queryset = Admin.objects.all()
     serializer_class = AdminSerializer
-    permission_classes = [IsAdmin]
+    permission_classes = [IsSuperUser]

@@ -20,7 +20,7 @@ class GeneralConfigurationsView(FiltersMixin, ModelViewSet):
       if request.user.is_authenticated:
         store_id = request.user.my_store.pk			
         general_configuration= GeneralConfigurations.objects.filter(store__pk=store_id)
-        serializer = self.get_serializer(general_configuration, many=True)
+        serializer = self.get_serializer(general_configuration, many=True)                       
         return Response(serializer.data)
       return Response({})    
 
