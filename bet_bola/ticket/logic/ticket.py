@@ -113,33 +113,48 @@ def validate_ticket(self, who_validating):
     seller_after_balance= 0
 
     message = None
-    if not who_validating.seller.can_sell_unlimited:
+    
+    if not who_validating.seller.can_sell_unlimited:        
         if self.bet_value > who_validating.seller.credit_limit:                
             message = 'Seu saldo não foi suficiente para validar automaticamente esse Bilhete.'
-        else:
+        else:            
             seller_before_balance = who_validating.seller.credit_limit
             who_validating.seller.credit_limit -= self.bet_value
             seller_after_balance = who_validating.seller.credit_limit
             who_validating.seller.save()
             self.payment.status = 2
-                
+
+            from history.models import TicketValidationHistory
+
+            TicketValidationHistory.objects.create(
+                who_validated=who_validating,
+                ticket=self,
+                bet_value=self.bet_value,
+                date=tzlocal.now(),
+                balance_before=seller_before_balance,
+                balance_after=seller_after_balance,
+                store=self.store
+            )
+
+    else:    
+        self.payment.status = 2
+        from history.models import TicketValidationHistory
+
+        TicketValidationHistory.objects.create(
+            who_validated=who_validating,
+            ticket=self,
+            bet_value=self.bet_value,
+            date=tzlocal.now(),
+            balance_before=seller_before_balance,
+            balance_after=seller_after_balance,
+            store=self.store
+        ) 
+           
     self.save()    
     self.payment.date = tzlocal.now()
     self.payment.who_paid = who_validating
     self.payment.save()
-
-    from history.models import TicketValidationHistory
-
-    TicketValidationHistory.objects.create(
-        who_validated=who_validating,
-        ticket=self,
-        bet_value=self.bet_value,
-        date=tzlocal.now(),
-        balance_before=seller_before_balance,
-        balance_after=seller_after_balance,
-        store=self.store
-    )
-
+    
     if not message:
         message = 'Bilhete '+ self.ticket_id +' PAGO com Sucesso.'
 

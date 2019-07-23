@@ -111,16 +111,18 @@ class RevenueGeneralSellerSerializer(serializers.HyperlinkedModelSerializer):
 		tickets = self.get_ticket(obj)
 		value = 0		
 		for ticket in tickets:	
-			if ticket.status in [2,4]:
-				value += ticket.reward.value - ticket.won_bonus()		
+			if ticket.status in [2,4]:							
+				value += ticket.reward.value - ticket.won_bonus()			
 		return value
 	
-	def get_won_bonus(self, obj):		
-		tickets = self.get_ticket(obj)
-		value = 0
-		for ticket in tickets:					
-			value += ticket.won_bonus()
-		return value
+	def get_won_bonus(self, obj):
+		if obj.my_store.my_configuration.bonus_won_ticket:
+			tickets = self.get_ticket(obj)
+			value = 0
+			for ticket in tickets:					
+				value += ticket.won_bonus()
+			return value
+		return 0
 	
 	def get_total_out(self, obj):
 		return self.get_won_bonus(obj) + self.get_out(obj) + self.get_comission(obj)

@@ -25,7 +25,7 @@ class GeneralConfigurationsView(FiltersMixin, ModelViewSet):
       return Response({})    
 
     def create(self, request, *args, **kwargs):
-      data = request.data 
+      data = request.data       
       if not data:
           data = "{}"       
       # data = json.loads(data)       
