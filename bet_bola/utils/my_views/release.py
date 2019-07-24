@@ -25,10 +25,10 @@ class ReleaseView(FiltersMixin, ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.user_type == 2:
-            return Release.objects.filter(user=user)            
+            return Release.objects.filter(user=user).order_by('-creation_date')
         elif user.user_type == 3:
-            return Release.objects.filter(Q(user=user.pk) | Q(user__in=user.manager.manager_assoc.all()))            
-        return Release.objects.filter(store=user.my_store)
+            return Release.objects.filter(Q(user=user.pk) | Q(user__in=user.manager.manager_assoc.all())).order_by('-creation_date')
+        return Release.objects.filter(store=user.my_store).order_by('-creation_date')
         
     def create(self, request, *args, **kwargs):        
         data = request.data.get('data')

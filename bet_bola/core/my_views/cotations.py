@@ -10,6 +10,7 @@ from core.paginations import CotationsListSetPagination
 from filters.mixins import FiltersMixin
 import json
 
+
 class CotationView(FiltersMixin, ModelViewSet):
     queryset = Cotation.objects.all()
     serializer_class = CotationSerializer       

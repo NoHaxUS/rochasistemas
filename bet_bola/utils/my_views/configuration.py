@@ -20,15 +20,15 @@ class GeneralConfigurationsView(FiltersMixin, ModelViewSet):
       if request.user.is_authenticated:
         store_id = request.user.my_store.pk			
         general_configuration= GeneralConfigurations.objects.filter(store__pk=store_id)
-        serializer = self.get_serializer(general_configuration, many=True)
+        serializer = self.get_serializer(general_configuration, many=True)                       
         return Response(serializer.data)
       return Response({})    
 
     def create(self, request, *args, **kwargs):
-      data = request.data 
+      data = request.data.get('data')       
       if not data:
           data = "{}"       
-      # data = json.loads(data)       
+      data = json.loads(data)             
       serializer = self.get_serializer(data=data)               
       serializer.is_valid(raise_exception=True)        
       self.perform_create(serializer)                
