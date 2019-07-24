@@ -168,6 +168,11 @@ def validate_ticket(self, who_validating):
 
 
 def reward_winner(self, who_rewarding_the_winner):
+    
+    return {
+        'success': False,
+        'message': 'Function Disabled!'
+    }
 
     if not (who_rewarding_the_winner.has_perm('user.be_admin') or who_rewarding_the_winner.has_perm('user.be_seller')):
         return {

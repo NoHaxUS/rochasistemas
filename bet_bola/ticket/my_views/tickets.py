@@ -24,6 +24,7 @@ from ticket.logic import reward
 from user.permissions import IsAdminOrManagerOrSeller
 import random
 import json
+import  datetime
 
 
 class ShowTicketView(FiltersMixin, ModelViewSet):
@@ -60,6 +61,13 @@ class TicketView(FiltersMixin, ModelViewSet):
         'available': 'available',
     }
 
+    filter_value_transformations = {
+        'start_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'end_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'start_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'end_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d')
+    }
+
     def get_queryset(self):        
         user = self.request.user
         if user.is_authenticated:
@@ -88,7 +96,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 
     def get_serializer_class(self):		
             if self.action == 'list' or self.action == 'retrieve':           
-                return TicketSerializer		
+                return TicketSerializer
             return CreateTicketSerializer
 
     def create(self, request, *args, **kwargs):
