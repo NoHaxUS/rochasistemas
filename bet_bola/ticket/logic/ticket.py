@@ -123,6 +123,7 @@ def validate_ticket(self, who_validating):
             seller_after_balance = who_validating.seller.credit_limit
             who_validating.seller.save()
             self.payment.status = 2
+            self.payment.who_paid = who_validating
 
             from history.models import TicketValidationHistory
 
@@ -138,6 +139,7 @@ def validate_ticket(self, who_validating):
 
     else:    
         self.payment.status = 2
+        self.payment.who_paid = who_validating
         from history.models import TicketValidationHistory
 
         TicketValidationHistory.objects.create(
@@ -151,8 +153,7 @@ def validate_ticket(self, who_validating):
         ) 
            
     self.save()    
-    self.payment.date = tzlocal.now()
-    self.payment.who_paid = who_validating
+    self.payment.date = tzlocal.now()    
     self.payment.save()
     
     if not message:
