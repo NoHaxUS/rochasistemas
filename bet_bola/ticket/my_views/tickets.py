@@ -163,10 +163,11 @@ class TicketView(FiltersMixin, ModelViewSet):
     @action(methods=['post'], detail=False, permission_classes=[])
     def validate_tickets(self, request, pk=None):
         ticket_ids = json.loads(request.data.get('data'))
-        response = []        
+        response = []
         for ticket in Ticket.objects.filter(ticket_id__in=ticket_ids):
             response.append(ticket.validate_ticket(request.user))
-        print(response)
+        if not response:
+            return Response([{'success':False, 'message': 'Bilhete não encontrado.'}])
         return Response(response)
 
 
@@ -176,6 +177,8 @@ class TicketView(FiltersMixin, ModelViewSet):
         response = []
         for ticket in Ticket.objects.filter(ticket_id__in=ticket_ids):
             response.append(ticket.cancel_ticket(request.user))
+        if not response:
+            return Response([{'success':False, 'message': 'Bilhete não encontrado.'}])
         return Response(response)
 
 
