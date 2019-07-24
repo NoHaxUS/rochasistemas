@@ -80,12 +80,13 @@ class RevenueGeneralSellerSerializer(serializers.HyperlinkedModelSerializer):
 		tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=obj.pk, 
         	closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6])
 
-		start_creation_date = self.context['request'].GET.get('start_creation_date', None)
-		end_creation_date = self.context['request'].GET.get('end_creation_date', None)		
-		if start_creation_date:		
-			tickets = tickets.filter(creation_date__gte=start_creation_date)
-		if end_creation_date:
-			tickets = tickets.filter(creation_date__lte=end_creation_date)		
+		if self.context.get('request'):
+			start_creation_date = self.context['request'].GET.get('start_creation_date', None)
+			end_creation_date = self.context['request'].GET.get('end_creation_date', None)		
+			if start_creation_date:		
+				tickets = tickets.filter(creation_date__gte=start_creation_date)
+			if end_creation_date:
+				tickets = tickets.filter(creation_date__lte=end_creation_date)		
 		return tickets
 
 	def get_comission(self, obj):				
@@ -147,13 +148,15 @@ class RevenueGeneralManagerSerializer(RevenueGeneralSellerSerializer):
 		tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=obj.pk, 
         	closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6])
 
-		start_creation_date = self.context['request'].GET.get('start_creation_date', None)
-		end_creation_date = self.context['request'].GET.get('end_creation_date', None)
+		if self.context.get('request'):
+			start_creation_date = self.context['request'].GET.get('start_creation_date', None)
+			end_creation_date = self.context['request'].GET.get('end_creation_date', None)
 
-		if start_creation_date:		
-			tickets = tickets.filter(creation_date__gte=start_creation_date)
-		if end_creation_date:
-			tickets = tickets.filter(creation_date__lte=end_creation_date)
+			if start_creation_date:		
+				tickets = tickets.filter(creation_date__gte=start_creation_date)
+			if end_creation_date:
+				tickets = tickets.filter(creation_date__lte=end_creation_date)
+				
 		return tickets
 
 	def get_comission(self, obj):				
