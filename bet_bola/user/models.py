@@ -18,9 +18,10 @@ class CustomUserManager(UserManager):
         from core.models import Store
         try:
             store = Store.objects.get(pk=extra_fields['my_store'])
+            extra_fields['my_store'] = store
         except Store.DoesNotExist:
             raise ValueError("Essa Banca não existe")
-        extra_fields['my_store'] = store
+        
         return super().create_superuser(username, email, password, **extra_fields)
 
 class CustomUser(AbstractUser):   
