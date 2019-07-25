@@ -16,7 +16,7 @@ import utils.timezone as tzlocal
 class Store(models.Model):
     fantasy = models.CharField(max_length=150, verbose_name="Nome da Banca")
     creation_date = models.DateTimeField(default=tzlocal.now, verbose_name="Data de Criação")
-    email = models.EmailField(max_length=100,blank=True, null= True)
+    email = models.EmailField(max_length=100, blank=True, null= True)
 
     def __str__(self):
         return self.fantasy + ' ID: ' + str(self.pk)

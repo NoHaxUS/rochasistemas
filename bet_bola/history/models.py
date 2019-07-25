@@ -16,7 +16,7 @@ class TicketValidationHistory(models.Model):
         return str(self.id)
 
     class Meta:
-        ordering = ['-pk', ]
+        ordering = ('-pk', )
         verbose_name = 'Validação de Aposta'
         verbose_name_plural = 'Validações de Apostas'
 
@@ -34,6 +34,7 @@ class WinnerPaymentHistory(models.Model):
         return "Pag. - Apostadores"
 
     class Meta:
+        ordering = ('-pk', )
         verbose_name = 'Pag. - Apostador'
         verbose_name_plural = 'Pag. - Apostadores'
 
@@ -71,6 +72,7 @@ class ManagerTransactions(models.Model):
         return " Transf. - Gerentes"
 
     class Meta:
+        ordering = ('-pk', )
         verbose_name = 'Transf. - Gerente'
         verbose_name_plural = 'Transf. - Gerentes'
 
@@ -92,6 +94,7 @@ class RevenueHistorySeller(models.Model):
         return "Pag. - Cambistas"
 
     class Meta:
+        ordering = ('-pk', )
         verbose_name = 'Pag. - Cambista'
         verbose_name_plural = 'Pag. - Cambistas'
 
@@ -114,6 +117,7 @@ class RevenueHistoryManager(models.Model):
         return "Pag. - Gerentes"
 
     class Meta:
+        ordering = ('-pk', )
         verbose_name = 'Pag. - Gerente'
         verbose_name_plural = 'Pag. - Gerentes'
 

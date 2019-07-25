@@ -19,7 +19,7 @@ def cancel_ticket(self, who_canceling):
     if not (who_canceling.has_perm('user.be_admin') or who_canceling.has_perm('user.be_seller')):
         return {
             'success': False,
-            'message': 'Esse Usuário não tem permissão para validar Bilhetes.'
+            'message': 'Esse Usuário não tem permissão para cancelar Bilhetes.'
         }
     
     if not self.status == 0:
@@ -46,18 +46,18 @@ def cancel_ticket(self, who_canceling):
                 'success':False,
                 'message':'Você não pode cancelar um Bilhete que você não Pagou.'
             }
-    elif who_canceling.user_type != 4:
-        return {
-                'success':False,
-                'message':'Você não possui permissão para cancelar bilhetes.'
-            }           
-
+                   
+    
     who_paid = self.payment.who_paid
     if who_paid.user_type == 2 and not who_paid.seller.can_sell_unlimited:
-        who_paid.credit_limit += self.bet_value
-        who_paid.save()
+        who_paid.seller.credit_limit += self.bet_value
+        who_paid.seller.save()
+        
 
     self.status = 5
+    self.payment.status = 3
+    self.payment.save()
+    print(self.payment.status)
     self.save()
 
     from history.models import TicketCancelationHistory
@@ -79,7 +79,7 @@ def validate_ticket(self, who_validating):
     if not who_validating.has_perm('user.be_seller') or who_validating.is_superuser:
         return {
             'success': False,
-            'message': 'Esse Usuário não tem permissão para validar Bilhetes.'
+            'message': 'Esse Usuário não tem permissão para validar bilhetes.'
         }
 
     if self.reward.value >= self.store.my_configuration.alert_bet_value:
@@ -124,6 +124,7 @@ def validate_ticket(self, who_validating):
             who_validating.seller.save()
             self.payment.status = 2
             self.payment.who_paid = who_validating
+            self.payment.date = tzlocal.now()
 
             from history.models import TicketValidationHistory
 
@@ -140,6 +141,8 @@ def validate_ticket(self, who_validating):
     else:    
         self.payment.status = 2
         self.payment.who_paid = who_validating
+        self.payment.date = tzlocal.now()    
+
         from history.models import TicketValidationHistory
 
         TicketValidationHistory.objects.create(
@@ -151,9 +154,8 @@ def validate_ticket(self, who_validating):
             balance_after=seller_after_balance,
             store=self.store
         ) 
-           
-    self.save()    
-    self.payment.date = tzlocal.now()    
+
+    self.save()
     self.payment.save()
     
     if not message:
@@ -166,6 +168,11 @@ def validate_ticket(self, who_validating):
 
 
 def reward_winner(self, who_rewarding_the_winner):
+    
+    return {
+        'success': False,
+        'message': 'Function Disabled!'
+    }
 
     if not (who_rewarding_the_winner.has_perm('user.be_admin') or who_rewarding_the_winner.has_perm('user.be_seller')):
         return {
@@ -218,7 +225,6 @@ def cotation_sum(self):
     if cotation_mul == 1:
         return 0
 
-    #TODO revise store acess
     from utils.models import GeneralConfigurations
     try:
         general_config = self.store.my_configuration
