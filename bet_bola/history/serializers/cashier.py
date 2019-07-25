@@ -31,8 +31,7 @@ class RevenueSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Ticket
-		fields = ('id','creation_date','creator','reward','won_bonus','bet_type','manager','comission','payment','bet_value','status')
-
+		fields = ('id','ticket_id','creation_date','creator','reward','won_bonus','bet_type','manager','comission','payment','bet_value','status')
 	
 	def get_won_bonus(self, obj):
 		return obj.won_bonus()
@@ -70,7 +69,7 @@ class RevenueGeneralSellerSerializer(serializers.HyperlinkedModelSerializer):
 	entry = serializers.SerializerMethodField()
 	out = serializers.SerializerMethodField()
 	won_bonus = serializers.SerializerMethodField()
-	total_out = serializers.SerializerMethodField()
+	total_out = serializers.SerializerMethodField()	
 
 	class Meta:
 		model = Seller
@@ -78,15 +77,19 @@ class RevenueGeneralSellerSerializer(serializers.HyperlinkedModelSerializer):
 
 	def get_ticket(self, obj):		
 		tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=obj.pk, 
-        	closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6])
+        	closed_for_seller=False) | Q(payment__who_paid__pk=obj.pk, status=4)).exclude(status__in=[5,6])
 
 		if self.context.get('request'):
 			start_creation_date = self.context['request'].GET.get('start_creation_date', None)
-			end_creation_date = self.context['request'].GET.get('end_creation_date', None)		
+			end_creation_date = self.context['request'].GET.get('end_creation_date', None)			
+
 			if start_creation_date:		
+				start_creation_date = datetime.datetime.strptime(start_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')		
 				tickets = tickets.filter(creation_date__gte=start_creation_date)
 			if end_creation_date:
-				tickets = tickets.filter(creation_date__lte=end_creation_date)		
+				end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')		
+				tickets = tickets.filter(creation_date__lte=end_creation_date)	
+
 		return tickets
 
 	def get_comission(self, obj):				
@@ -110,8 +113,8 @@ class RevenueGeneralSellerSerializer(serializers.HyperlinkedModelSerializer):
 
 	def get_out(self, obj):			
 		tickets = self.get_ticket(obj)
-		value = 0		
-		for ticket in tickets:	
+		value = 0			
+		for ticket in tickets:					
 			if ticket.status in [2,4]:							
 				value += ticket.reward.value - ticket.won_bonus()			
 		return value
@@ -151,10 +154,12 @@ class RevenueGeneralManagerSerializer(RevenueGeneralSellerSerializer):
 		if self.context.get('request'):
 			start_creation_date = self.context['request'].GET.get('start_creation_date', None)
 			end_creation_date = self.context['request'].GET.get('end_creation_date', None)
-
-			if start_creation_date:		
+			
+			if start_creation_date:
+				start_creation_date = datetime.datetime.strptime(start_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')						
 				tickets = tickets.filter(creation_date__gte=start_creation_date)
-			if end_creation_date:
+			if end_creation_date:				
+				end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
 				tickets = tickets.filter(creation_date__lte=end_creation_date)
 				
 		return tickets

@@ -59,7 +59,7 @@ class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
                 store=request.user.my_store)           
                 
                 tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=seller.pk,store=self.request.user.my_store, 
-                    closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6])        
+                    closed_for_seller=False) | Q(payment__who_paid__pk=seller.pk, status=4)).exclude(status__in=[5,6])        
                 if tickets.exists():
                     if start_creation_date:
                         tickets = tickets.filter(creation_date__gte=start_creation_date)
@@ -118,7 +118,7 @@ class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
                 store=request.user.my_store)
 
                 tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=manager.pk,store=self.request.user.my_store, 
-                    closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6])        
+                    closed_for_manager=False) | Q(payment__who_paid__seller__my_manager__pk=manager.pk, status=4)).exclude(status__in=[5,6])        
                 
                 if tickets.exists():
                     if start_creation_date:
@@ -157,18 +157,25 @@ class RevenueSellerView(FiltersMixin, ModelViewSet):
         'available': 'available',
     }    
 
+    filter_value_transformations = {
+        'start_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'end_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'start_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'end_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d')
+    }
+
     def get_queryset(self):        
         user = self.request.user
         if user.user_type == 2:   
             return Ticket.objects.filter(Q(payment__status=2, payment__who_paid=user, store=user.my_store, 
-                closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
+                closed_for_seller=False) | Q(payment__who_paid=user, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
         
         elif user.user_type == 3:
             return Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=user.pk, store=user.my_store, 
-                closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
+                closed_for_seller=False) | Q(payment__who_paid__seller__my_manager__pk=user.pk, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
 
         return Ticket.objects.filter(Q(payment__status=2, store=user.my_store, 
-                closed_for_seller=False) | Q(status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
+                closed_for_seller=False) | Q(store=user.my_store, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
 
 
 class RevenueManagerView(FiltersMixin, ModelViewSet):
@@ -192,13 +199,20 @@ class RevenueManagerView(FiltersMixin, ModelViewSet):
         'available': 'available',
     }
 
+    filter_value_transformations = {
+        'start_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'end_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'start_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'end_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d')
+    }
+
     def get_queryset(self):
         user = self.request.user
         if user.user_type == 3:   
             return Ticket.objects.filter(Q(payment__status=2,payment__who_paid__my_manager__pk=user.pk ,store=user.my_store, 
-                closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
+                closed_for_manager=False) | Q(payment__who_paid__my_manager__pk=user.pk, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
         return Ticket.objects.filter(Q(payment__status=2, store=user.my_store, 
-                closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
+                closed_for_manager=False) | Q(store=user.my_store, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
         
 
 class RevenueView(APIView):

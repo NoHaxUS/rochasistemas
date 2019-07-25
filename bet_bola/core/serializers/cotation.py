@@ -85,11 +85,11 @@ class MinimumListCotationSerializer(serializers.ListSerializer):
 			for cotation in data:
 				if cotation.price > config.max_cotation_value:
 					cotation.price = config.max_cotation_value					
-				if CotationModified.objects.filter(cotation=cotation, store=store):												
+				if CotationModified.objects.filter(cotation=cotation, store=store).exists():
 					cotation.price = CotationModified.objects.filter(cotation=cotation, store=store).first().price
 				elif cotation.market.my_reduction.filter(store=store, active=True):							
-					cotation.price = cotation.price * cotation.market.my_reduction.get(store=store).reduction_percentual / 100
-				else:							
+					cotation.price = cotation.price * cotation.market.my_reduction.get(store=store).reduction_percentual / 100										
+				else:					
 					cotation.price = cotation.price * config.cotations_percentage / 100													
 				
 				if cotation.price < 1:
@@ -131,19 +131,27 @@ class CotationSerializer(serializers.HyperlinkedModelSerializer):
 	market = serializers.SlugRelatedField(read_only=True, slug_field='name')
 	settlement = serializers.SerializerMethodField()
 	price = serializers.SerializerMethodField()
+	original_price = serializers.SerializerMethodField()
 
 	def get_settlement(self, cotation):
 		return cotation.get_right_settlement_display()
 
 	class Meta:
 		model = Cotation
-		fields = ('id','name','price','market','game','settlement')
+		fields = ('id','name','price','original_price','market','game','settlement')
 
-	def get_price(self, cotation):
+	def get_original_price(self, cotation):						
+		return str(cotation.price)
+
+	def get_price(self, cotation):		
 		store_id = self.context['request'].GET.get('store')
+		config = GeneralConfigurations.objects.filter(store__pk=store_id).first()		
 		if CotationModified.objects.filter(cotation=cotation, store__pk=store_id):
 			return str(CotationModified.objects.get(cotation=cotation, store__pk=store_id).price)
-		return str(cotation.price)
+		elif cotation.market.my_reduction.filter(store__pk=store_id, active=True):
+			return str(cotation.price * cotation.market.my_reduction.get(store__pk=store_id).reduction_percentual / 100)
+
+		return str(cotation.price * config.cotations_percentage / 100)	
 
 
 class CotationModifiedSerializer(serializers.HyperlinkedModelSerializer):

@@ -16,7 +16,7 @@ def toggle_availability(self):
 
 def cancel_ticket(self, who_canceling):    
 
-    if not (who_canceling.has_perm('user.be_admin') or who_canceling.has_perm('user.be_seller')):
+    if not (who_canceling.has_perm('user.be_admin') or who_canceling.has_perm('user.be_seller')) or who_canceling.my_store != self.store:
         return {
             'success': False,
             'message': 'Esse Usuário não tem permissão para cancelar Bilhetes.'
@@ -76,7 +76,7 @@ def cancel_ticket(self, who_canceling):
     }
 
 def validate_ticket(self, who_validating):
-    if not who_validating.has_perm('user.be_seller') or who_validating.is_superuser:
+    if not who_validating.has_perm('user.be_seller') or who_validating.is_superuser or who_validating.my_store != self.store:
         return {
             'success': False,
             'message': 'Esse Usuário não tem permissão para validar bilhetes.'
@@ -174,7 +174,7 @@ def reward_winner(self, who_rewarding_the_winner):
         'message': 'Function Disabled!'
     }
 
-    if not (who_rewarding_the_winner.has_perm('user.be_admin') or who_rewarding_the_winner.has_perm('user.be_seller')):
+    if not (who_rewarding_the_winner.has_perm('user.be_admin') or who_rewarding_the_winner.has_perm('user.be_seller')) or who_rewarding_the_winner.my_store != self.store:
         return {
             'success': False,
             'message': 'Esse Usuário não tem permissão para Recompensar Bilhetes.'
