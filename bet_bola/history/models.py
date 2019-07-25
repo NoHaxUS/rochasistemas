@@ -77,7 +77,7 @@ class ManagerTransactions(models.Model):
         verbose_name_plural = 'Transf. - Gerentes'
 
 
-class RevenueHistorySeller(models.Model):
+class SellerCashierHistory(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     register_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='quem prestou conta')
     tickets_registered = models.ManyToManyField('ticket.Ticket')
@@ -99,7 +99,7 @@ class RevenueHistorySeller(models.Model):
         verbose_name_plural = 'Pag. - Cambistas'
 
 
-class RevenueHistoryManager(models.Model):
+class ManagerCashierHistory(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     register_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='quem prestou conta')
     tickets_registered = models.ManyToManyField('ticket.Ticket')

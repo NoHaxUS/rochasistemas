@@ -6,8 +6,8 @@ from rest_framework.views import APIView
 from rest_framework import status
 from filters.mixins import FiltersMixin
 from ticket.models import Ticket, Reward, Payment
-from history.serializers.cashier import RevenueSerializer, RevenueGeneralSellerSerializer, RevenueGeneralManagerSerializer
-from history.paginations import RevenueSellerPagination, RevenueManagerPagination, RevenueGeneralSellerPagination, RevenueGeneralManagerPagination
+from history.serializers.cashier import CashierSerializer, SellersCashierSerializer, ManagersCashierSerializer
+from history.paginations import SellerCashierPagination, ManagerCashierPagination, SellersCashierPagination, ManagersCashierPagination
 from ticket.paginations import TicketPagination
 from ticket.serializers.ticket import TicketSerializer, CreateTicketSerializer
 from ticket.permissions import CanCreateTicket, CanPayWinner, CanValidateTicket, CanCancelTicket, CanManipulateTicket
@@ -15,8 +15,8 @@ from core.permissions import StoreIsRequired, UserIsFromThisStore
 from user.permissions import IsSuperUser
 from user.models import TicketOwner, Seller, Manager
 from core.models import CotationCopy, Cotation, Store
-from history.models import RevenueHistoryManager, RevenueHistorySeller
-from history.permissions import RevenueCloseManagerPermission, RevenueManagerPermission, RevenueCloseSellerPermission, RevenueSellerPermission
+from history.models import ManagerCashierHistory, SellerCashierHistory
+from history.permissions import RevenueCloseManagerPermission, ManagerCashierPermission, RevenueCloseSellerPermission, SellerCashierPermission
 from utils.models import RewardRestriction, Release
 from utils import timezone as tzlocal
 from config import settings
@@ -25,11 +25,11 @@ import datetime
 import decimal
 
 
-class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
+class SellersCashier(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(payment__status=2).distinct()
-    serializer_class = RevenueGeneralSellerSerializer
-    permission_classes = [RevenueSellerPermission]
-    pagination_class = RevenueGeneralSellerPagination
+    serializer_class = SellersCashierSerializer
+    permission_classes = [SellerCashierPermission]
+    pagination_class = SellersCashierPagination
 
     def get_queryset(self):
         user = self.request.user
@@ -47,10 +47,10 @@ class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
         end_creation_date = data.get('end_creation_date')                                                        
 
         for seller in Seller.objects.filter(id__in=sellers_ids):            
-            serializer = RevenueGeneralSellerSerializer(seller)
+            serializer = SellersCashierSerializer(seller)
             data = serializer.data
             if not data['comission'] == 0 or not data['entry'] == 0 or not data['out'] == 0:
-                revenue_history_seller = RevenueHistorySeller(register_by=request.user, 
+                revenue_history_seller = SellerCashierHistory(register_by=request.user, 
                 seller=seller, 
                 entry=decimal.Decimal(data['entry']),
                 comission=decimal.Decimal(data['comission']),
@@ -81,11 +81,11 @@ class RevenueGeneralSellerView(FiltersMixin, ModelViewSet):
         })
     
 
-class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
+class ManagersCashier(FiltersMixin, ModelViewSet):
     queryset = Manager.objects.filter(manager_assoc__payment__status=2).distinct()
-    serializer_class = RevenueGeneralManagerSerializer
-    permission_classes = [RevenueManagerPermission]
-    pagination_class = RevenueGeneralManagerPagination
+    serializer_class = ManagersCashierSerializer
+    permission_classes = [ManagerCashierPermission]
+    pagination_class = ManagersCashierPagination
 
     def get_queryset(self):
         user = self.request.user
@@ -105,11 +105,11 @@ class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
         end_creation_date = data.get('end_creation_date')                                
 
         for manager in Manager.objects.filter(id__in=managers_ids):
-            serializer = RevenueGeneralManagerSerializer(manager)
+            serializer = ManagersCashierSerializer(manager)
             data = serializer.data
             
             if not data['comission'] == 0 or not data['entry'] == 0 or not data['out'] == 0:
-                revenue_history_manager = RevenueHistoryManager(register_by=request.user, 
+                revenue_history_manager = ManagerCashierHistory(register_by=request.user, 
                 manager=manager, 
                 entry=decimal.Decimal(data['entry']),
                 comission=decimal.Decimal(data['comission']),
@@ -137,11 +137,11 @@ class RevenueGeneralManagerView(FiltersMixin, ModelViewSet):
         })                
 
 
-class RevenueSellerView(FiltersMixin, ModelViewSet):
+class SellerCashier(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
-    serializer_class = RevenueSerializer  
-    permission_classes = [RevenueSellerPermission]  
-    pagination_class = RevenueSellerPagination
+    serializer_class = CashierSerializer  
+    permission_classes = [SellerCashierPermission]  
+    pagination_class = SellerCashierPagination
 
     filter_mappings = {
         'ticket_id':'pk',
@@ -178,11 +178,11 @@ class RevenueSellerView(FiltersMixin, ModelViewSet):
                 closed_for_seller=False) | Q(store=user.my_store, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
 
 
-class RevenueManagerView(FiltersMixin, ModelViewSet):
+class ManagerCashier(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
-    serializer_class = RevenueSerializer
-    permission_classes = [RevenueManagerPermission]
-    pagination_class = RevenueManagerPagination
+    serializer_class = CashierSerializer
+    permission_classes = [ManagerCashierPermission]
+    pagination_class = ManagerCashierPagination
 
     filter_mappings = {
         'ticket_id':'pk',
@@ -243,11 +243,11 @@ class RevenueView(APIView):
                 for release in Release.objects.filter(store=request.user.my_store):
                     total_release += release.value     
 
-            for manager in RevenueGeneralManagerSerializer(managers, many=True, context={'request':self.request}).data:                        
+            for manager in ManagersCashierSerializer(managers, many=True, context={'request':self.request}).data:                        
                 comissions += manager['comission']            
                 total_out += manager['comission']
 
-            for seller in RevenueGeneralSellerSerializer(sellers, many=True, context={'request':self.request}).data:            
+            for seller in SellersCashierSerializer(sellers, many=True, context={'request':self.request}).data:            
                 entries += seller['entry']
                 out += seller['out'] + seller['won_bonus']
                 comissions += seller['comission']

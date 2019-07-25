@@ -43,7 +43,7 @@ class TicketValidationHistoryPagination(PageNumberPagination):
         })
 
 
-class RevenueHistorySellerPagination(PageNumberPagination):
+class SellerCashierHistoryPagination(PageNumberPagination):
     page_size = 10    
 
     def get_paginated_response(self, data):        
@@ -60,7 +60,7 @@ class RevenueHistorySellerPagination(PageNumberPagination):
         })
 
 
-class RevenueHistoryManagerPagination(PageNumberPagination):
+class ManagerCashierHistoryPagination(PageNumberPagination):
     page_size = 10    
 
     def get_paginated_response(self, data):        
@@ -101,7 +101,7 @@ class ManagerTransactionsHistoryPagination(PageNumberPagination):
         })
 
 
-class RevenueGeneralSellerPagination(PageNumberPagination):
+class SellersCashierPagination(PageNumberPagination):
     page_size = 30
 
     def get_paginated_response(self, data):        
@@ -135,7 +135,7 @@ class RevenueGeneralSellerPagination(PageNumberPagination):
         })
 
 
-class RevenueGeneralManagerPagination(PageNumberPagination):
+class ManagersCashierPagination(PageNumberPagination):
     page_size = 30
 
     def get_paginated_response(self, data):        
@@ -172,7 +172,7 @@ class RevenueGeneralManagerPagination(PageNumberPagination):
         })
 
 
-class RevenueSellerPagination(PageNumberPagination):
+class SellerCashierPagination(PageNumberPagination):
     page_size = 30
 
     def get_paginated_response(self, data):        
@@ -203,7 +203,7 @@ class RevenueSellerPagination(PageNumberPagination):
         })
 
     
-class RevenueManagerPagination(PageNumberPagination):
+class ManagerCashierPagination(PageNumberPagination):
     page_size = 30
 
     def get_paginated_response(self, data):        
