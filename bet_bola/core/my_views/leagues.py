@@ -24,7 +24,7 @@ class LeagueView(FiltersMixin, ModelViewSet):
     }
 
     def get_queryset(self):
-        priority = self.request.GET.get('priority')
+        priority = self.request.GET.get('my_priority')
         available = self.request.GET.get('available')
         store = self.request.user.my_store
         qs = self.queryset.all()

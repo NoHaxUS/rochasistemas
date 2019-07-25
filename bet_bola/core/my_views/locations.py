@@ -20,6 +20,20 @@ class LocationView(FiltersMixin, ModelViewSet):
         'location_name':'name__icontains'        
     }
 
+    def get_queryset(self):
+        priority = self.request.GET.get('my_priority')
+        available = self.request.GET.get('available')
+        store = self.request.user.my_store
+        qs = self.queryset.all()
+        locations_modified = LocationModified.objects.filter(store=store)
+
+        if priority:
+            qs = qs.filter(my_modifications__priority__gte=priority) | qs.filter(priority__gte=priority).exclude(pk__in=[location.location.pk for location in locations_modified])
+        if available:
+            qs = qs.filter(my_modifications__available=available) | qs.filter(available=available).exclude(pk__in=[location.location.pk for location in locations_modified])
+        
+        return qs.distinct()
+
 class LocationModifiedView(FiltersMixin, ModelViewSet):
     queryset = LocationModified.objects.all()
     serializer_class = LocationModifiedSerializer
