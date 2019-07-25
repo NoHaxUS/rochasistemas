@@ -49,6 +49,7 @@ class TicketView(FiltersMixin, ModelViewSet):
         'ticket_id':'ticket_id',
         'store':'store',
         'ticket_status':'status',
+        'client': 'owner__first_name',
         'created_by': 'creator__username__icontains',
         'paid_by': 'payment__who_paid__username__icontains',
         'revenue_history_seller': 'revenuehistoryseller__pk',
