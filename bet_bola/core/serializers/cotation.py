@@ -151,8 +151,7 @@ class CotationSerializer(serializers.HyperlinkedModelSerializer):
 		elif cotation.market.my_reduction.filter(store__pk=store_id, active=True):
 			return str(cotation.price * cotation.market.my_reduction.get(store__pk=store_id).reduction_percentual / 100)
 
-		return str(cotation.price * config.cotations_percentage / 100)
-	
+		return str(cotation.price * config.cotations_percentage / 100)	
 
 
 class CotationModifiedSerializer(serializers.HyperlinkedModelSerializer):
