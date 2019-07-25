@@ -18,10 +18,14 @@ class MarketReductionView(ModelViewSet):
 		data = json.loads(data)
 		market = {}
 		serializer_data = []
-		for id in data['market_ids']:
+		for name in data['markets']:			
 			market['store'] = self.request.user.my_store.pk
 			market['reduction_percentual'] = data['reduction_percentual']
-			market['market'] = id				
+			market['market'] = name						
+			
+			if data.get('active', None) is not None:				
+				market['active'] = data['active']
+
 			serializer = self.get_serializer(data=market)
 			serializer.is_valid(raise_exception=True)
 			self.perform_create(serializer)

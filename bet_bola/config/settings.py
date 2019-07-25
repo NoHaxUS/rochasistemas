@@ -197,8 +197,8 @@ REST_FRAMEWORK = {
     )
 }
 
-def jwt_response_payload_handler(token, user=None, request=None):
-    if user.is_active:
+def jwt_response_payload_handler(token, user=None, request=None):    
+    if user.is_active and int(request.POST.get('store')) == user.my_store.pk:
         return {
             'token': token,
             'user': {
