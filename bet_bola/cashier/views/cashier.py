@@ -5,7 +5,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
 from filters.mixins import FiltersMixin
 from ticket.models import Ticket
-from history.serializers.cashier import (
+from cashier.serializers.cashier import (
     CashierSerializer, SellersCashierSerializer, 
     ManagersCashierSerializer
 )

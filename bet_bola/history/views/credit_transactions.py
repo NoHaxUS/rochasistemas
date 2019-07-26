@@ -2,7 +2,7 @@ from django.db.models import Q
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from history.paginations import ManagerTransactionsHistoryPagination
+from history.paginations import CreditTransactionsPagination
 from filters.mixins import FiltersMixin
 from history.permissions import BaseHistoryPermission
 from history.models import ManagerTransactions
@@ -12,7 +12,7 @@ from history.serializers.credit_transactions import CreditTransactionsSerializer
 class CreditTransactions(FiltersMixin, ModelViewSet):
     queryset = ManagerTransactions.objects.all()
     serializer_class = CreditTransactionsSerializer
-    pagination_class = ManagerTransactionsHistoryPagination
+    pagination_class = CreditTransactionsPagination
     permission_classes = [BaseHistoryPermission]
 
     filter_mappings = {

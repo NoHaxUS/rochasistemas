@@ -1,9 +1,10 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from cashier.views.cashier import (
-    SellerCashier, ManagerCashier, SellersCashier, 
-    ManagersCashier, GeneralCashier
+    SellerCashier, ManagerCashier, 
+    SellersCashier, ManagersCashier
 )
+from cashier.views.general_cashier import  GeneralCashier
 
 app_name = 'cashier'
 

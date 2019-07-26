@@ -6,11 +6,10 @@ from rest_framework import filters as drf_filters
 from django.db.models import Prefetch
 from django.db.models import Q, FilteredRelation
 from django.db.models import Count 
-import utils.timezone as tzlocal
 from django_filters import rest_framework as filters
 from utils.models import ExcludedLeague, ExcludedGame
-from .models import *
-
+from core.models import League, Game
+import utils.timezone as tzlocal
 
 class APIRootView(APIView):
     def get(self, request):        

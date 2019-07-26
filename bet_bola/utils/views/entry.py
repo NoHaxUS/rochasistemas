@@ -10,7 +10,7 @@ from utils.serializers.entry import EntrySerializer
 from utils.permissions import EntryPermission
 import json
 
-class EnntryView(FiltersMixin, ModelViewSet):
+class Entry(FiltersMixin, ModelViewSet):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
     pagination_class = EntryPagination

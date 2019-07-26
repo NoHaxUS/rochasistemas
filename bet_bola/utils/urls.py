@@ -6,7 +6,7 @@ from utils.views.rule import RulesMessageView
 from utils.views.reward_related import RewardRelatedView
 from utils.views.market import MarketReductionView, MarketRemotionView
 from utils.views.comission import SellerComissionView, ManagerComissionView
-from utils.views.entry import EntryView
+from utils.views.entry import Entry
 from utils.views.ticket_custom_message import TicketCustomMessageView
 from rest_framework_jwt.views import obtain_jwt_token
 
@@ -23,7 +23,7 @@ router.register(r'rewards_related', RewardRelatedView)
 router.register(r'markets_reduction', MarketReductionView)
 router.register(r'markets_remotion', MarketRemotionView)
 router.register(r'ticket_custom_messages', TicketCustomMessageView)
-router.register(r'entry', EntryView)
+router.register(r'entry', Entry)
 
 urlpatterns = [		        
 	path('token/', obtain_jwt_token, name='obtain_token'),    
