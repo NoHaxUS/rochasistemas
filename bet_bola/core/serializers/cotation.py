@@ -108,7 +108,7 @@ class StandardCotationSerializer(serializers.HyperlinkedModelSerializer):
 		list_serializer_class = MinimumListCotationSerializer
 		fields = ('id','name','price','available','market')
 	
-	def get_available(self, cotation):		
+	def get_available(self, cotation):				
 		store_id = self.context['context']['request'].GET.get('store')		
 		queryset = CotationModified.objects.filter(cotation=cotation, store__pk=store_id)
 		if queryset:
@@ -151,8 +151,12 @@ class CotationSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('id','name','price','original_price','market','available','game','settlement')
 
 	def get_available(self, cotation):
-		store_id = 1
-		print(self.context['request'])
+		store_id = ''
+		if self.root.context.get('request'):
+			store_id =  self.root.context['request'].GET.get('store')			
+		if self.root.context.get('context'):
+			store_id =  self.root.context['context']['request'].GET.get('store')
+
 		queryset = CotationModified.objects.filter(cotation=cotation, store__pk=store_id)
 		if queryset:
 			return queryset.first().available

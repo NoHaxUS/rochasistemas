@@ -73,15 +73,12 @@ class CotationModifiedView(ModelViewSet):
             cotation_modified = CotationModified.objects.get(store=store, cotation=cotation)                        
         else:
              cotation_modified = CotationModified(store=store,cotation=cotation)                        
-        
-        print(serializer.validated_data)
-
-        print(cotation_modified.available)
+                
         if serializer.validated_data.get('price'):
             cotation_modified.price = serializer.validated_data.get('price')
         if serializer.validated_data.get('available') is not None:            
             cotation_modified.available = serializer.validated_data.get('available')                
-        print(cotation_modified.available)
+        
         cotation_modified.save()
         return cotation_modified
         
