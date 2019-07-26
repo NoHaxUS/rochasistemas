@@ -8,7 +8,7 @@ class BaseHistoryPermission(permissions.BasePermission):
             return 	True
         raise NotAllowedException(detail="Você não tem permissão para realizar essa operação.")
 
-class RevenueSellerPermission(permissions.BasePermission):
+class SellerCashierPermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
         if not request.user.is_anonymous and \
@@ -34,7 +34,7 @@ class RevenueCloseSellerPermission(permissions.BasePermission):
         raise NotAllowedException(detail="Você não tem permissão para realizar essa operação.")
 
 
-class RevenueManagerPermission(permissions.BasePermission):
+class ManagerCashierPermission(permissions.BasePermission):
     
     def has_permission(self, request, view):
         if not request.user.is_anonymous and \

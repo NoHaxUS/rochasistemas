@@ -16,7 +16,7 @@ from decimal import Decimal
 import datetime
 
 
-class RevenueSerializer(serializers.HyperlinkedModelSerializer):
+class CashierSerializer(serializers.HyperlinkedModelSerializer):
 			
 	payment = PaymentSerializerWithSeller()
 	reward = RewardSerializer()	
@@ -64,7 +64,7 @@ class RevenueSerializer(serializers.HyperlinkedModelSerializer):
 		return None
 
 
-class RevenueGeneralSellerSerializer(serializers.HyperlinkedModelSerializer):
+class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
 	comission = serializers.SerializerMethodField()
 	entry = serializers.SerializerMethodField()
 	out = serializers.SerializerMethodField()
@@ -132,7 +132,7 @@ class RevenueGeneralSellerSerializer(serializers.HyperlinkedModelSerializer):
 		return self.get_won_bonus(obj) + self.get_out(obj) + self.get_comission(obj)
 
 
-class RevenueGeneralManagerSerializer(RevenueGeneralSellerSerializer):
+class ManagersCashierSerializer(SellersCashierSerializer):
 	comission_seller = serializers.SerializerMethodField()
 
 	class Meta:
@@ -149,7 +149,7 @@ class RevenueGeneralManagerSerializer(RevenueGeneralSellerSerializer):
 
 	def get_ticket(self, obj):				  			
 		tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=obj.pk, 
-        	closed_for_manager=False) | Q(status=4)).exclude(status__in=[5,6])
+        	closed_for_manager=False) | Q(payment__who_paid__seller__my_manager__pk=obj.pk, status=4)).exclude(status__in=[5,6])
 
 		if self.context.get('request'):
 			start_creation_date = self.context['request'].GET.get('start_creation_date', None)
