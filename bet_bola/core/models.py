@@ -85,6 +85,7 @@ class CotationModified(models.Model):
     cotation = models.ForeignKey('Cotation', related_name='my_modifiy', on_delete=models.CASCADE, verbose_name='Cota Original Modificada')
     store = models.ForeignKey('Store', related_name='my_modifiy', on_delete=models.CASCADE, verbose_name='Banca')
     price = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')    
+    available = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['-pk', ]
