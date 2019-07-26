@@ -237,11 +237,12 @@ class TodayGamesAdmin(FiltersMixin, ModelViewSet):
     def get_queryset(self):
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")
 
-        store_id = self.request.GET['store']
-        store = Store.objects.get(pk=store_id)
+        #store_id = self.request.user.my_store
+        store = self.request.user.my_store
+        
 
         id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
-        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store_id)]
+        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store)]
 
         queryset = Game.objects.filter(start_date__gt=tzlocal.now(),
             start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),          

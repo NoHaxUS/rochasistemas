@@ -8,9 +8,8 @@ class ReadKeyMiddleware:
         self.get_response = get_response
     
     def __call__(self, request):
-        
-        if not request.headers.get('Proxy-Authorization') == 'aW6dvtS4XvfYXutA':
+        if not request.headers.get('SecurityAuthorization') == 'aW6dvtS4XvfYXutA':
             if not settings.DEV_MODE:
-                return UnicodeJsonResponse(status=status.HTTP_403_FORBIDDEN)
+                return UnicodeJsonResponse({'status': 'failed'}, status=status.HTTP_403_FORBIDDEN)
         response = self.get_response(request)
         return response

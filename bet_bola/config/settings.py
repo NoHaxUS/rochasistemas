@@ -12,7 +12,7 @@ SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-DEV_MODE = True
+DEV_MODE = False
 DB_SWAP_LOCAL = True
 
 ALLOWED_HOSTS = ['*']
@@ -227,3 +227,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 259200
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+from corsheaders.defaults import default_headers
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'SecurityAuthorization',
+]

@@ -15,16 +15,7 @@ router = DefaultRouter()
 router.register(r'ticket_validation', TicketValidation)
 router.register(r'credit_transactions', CreditTransactions)
 router.register(r'ticket_cancelation', TicketCancelation)
-router.register(r'manager_cashier', ManagerCashierView)
-router.register(r'seller_cashier', SellerCashierView)
+router.register(r'manager_cashier_history', ManagerCashierView)
+router.register(r'seller_cashier_history', SellerCashierView)
 
 urlpatterns = router.urls
-
-"""
-router = DefaultRouter()
-router.register(r'ticket_validation_history', TicketValidation)
-router.register(r'manager_transactions_history', CreditTransactions)
-router.register(r'ticket_cancelation_history', TicketCancelation)
-router.register(r'revenue_history_manager', ManagerCashierHistory)
-router.register(r'revenue_history_seller', SellerCashierHistory)
-"""

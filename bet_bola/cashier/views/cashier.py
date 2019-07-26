@@ -22,7 +22,7 @@ from history.permissions import (
 import json, datetime, decimal
 
 
-class SellersCashier(FiltersMixin, ModelViewSet):
+class SellersCashierView(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(payment__status=2).distinct()
     serializer_class = SellersCashierSerializer
     permission_classes = [SellerCashierPermission]
@@ -78,7 +78,7 @@ class SellersCashier(FiltersMixin, ModelViewSet):
         })
     
 
-class ManagersCashier(FiltersMixin, ModelViewSet):
+class ManagersCashierView(FiltersMixin, ModelViewSet):
     queryset = Manager.objects.filter(manager_assoc__payment__status=2).distinct()
     serializer_class = ManagersCashierSerializer
     permission_classes = [ManagerCashierPermission]
@@ -134,7 +134,7 @@ class ManagersCashier(FiltersMixin, ModelViewSet):
         })                
 
 
-class SellerCashier(FiltersMixin, ModelViewSet):
+class SellerCashierView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = CashierSerializer  
     permission_classes = [SellerCashierPermission]  
@@ -175,7 +175,7 @@ class SellerCashier(FiltersMixin, ModelViewSet):
                 closed_for_seller=False) | Q(store=user.my_store, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
 
 
-class ManagerCashier(FiltersMixin, ModelViewSet):
+class ManagerCashierView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = CashierSerializer
     permission_classes = [ManagerCashierPermission]
