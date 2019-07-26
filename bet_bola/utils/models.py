@@ -9,7 +9,7 @@ from django.conf import settings
 import utils.timezone as tzlocal
 
 
-class Release(models.Model):
+class Entry(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Cambista')
     value = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Valor")
     creation_date = models.DateTimeField(verbose_name='Data da Aposta', default=tzlocal.now)

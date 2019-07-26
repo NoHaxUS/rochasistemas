@@ -1,14 +1,14 @@
 from rest_framework.viewsets import ModelViewSet
 from filters.mixins import FiltersMixin
-from history.paginations import SellerCashierHistoryPagination
+from history.paginations import SellerCashierPagination
 from history.models import SellerCashierHistory
 from history.permissions import BaseHistoryPermission
-from history.serializers.seller_cashier_history import SellerCashierHistorySerializer
+from history.serializers.seller_cashier import SellerCashierSerializer
 
-class SellerCashierHistoryView(FiltersMixin, ModelViewSet):
+class SellerCashierView(FiltersMixin, ModelViewSet):
     queryset = SellerCashierHistory.objects.all()
-    serializer_class = SellerCashierHistorySerializer
-    pagination_class = SellerCashierHistoryPagination
+    serializer_class = SellerCashierSerializer
+    pagination_class = SellerCashierPagination
     permission_classes = [BaseHistoryPermission]  
 
     filter_mappings = {
@@ -22,7 +22,7 @@ class SellerCashierHistoryView(FiltersMixin, ModelViewSet):
     def get_queryset(self):
         user = self.request.user        
         if user.user_type == 2:
-            return SellerCashierHistory.objects.filter(seller__pk=self.request.user.pk)
+            return SellerCashierView.objects.filter(seller__pk=self.request.user.pk)
         elif user.user_type == 3:
-            return SellerCashierHistory.objects.filter(seller__my_manager__pk=self.request.user.pk).order_by('-date')
-        return SellerCashierHistory.objects.filter(store=user.my_store).order_by('-date')
+            return SellerCashierView.objects.filter(seller__my_manager__pk=self.request.user.pk).order_by('-date')
+        return SellerCashierView.objects.filter(store=user.my_store).order_by('-date')

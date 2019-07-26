@@ -4,8 +4,8 @@ from core.models import Store
 from history.models import SellerCashierHistory
 
 
-class SellerCashierHistorySerializer(serializers.HyperlinkedModelSerializer):
-	
+class SellerCashierSerializer(serializers.HyperlinkedModelSerializer):
+    	
     register_by = serializers.SlugRelatedField(read_only=True, slug_field='username')    
     seller = serializers.SlugRelatedField(read_only=True, slug_field='first_name')	
 

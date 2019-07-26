@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from decimal import Decimal
 from user.models import CustomUser as User
 
-class ReleasePagination(PageNumberPagination):
+class EntryPagination(PageNumberPagination):
     page_size = 30
 
     def get_paginated_response(self, data):        

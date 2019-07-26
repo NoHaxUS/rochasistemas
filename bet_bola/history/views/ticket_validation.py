@@ -3,16 +3,16 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from filters.mixins import FiltersMixin
 from history.permissions import BaseHistoryPermission
-from history.paginations import TicketValidationHistoryPagination
+from history.paginations import TicketValidationPagination
 from history.models import TicketValidationHistory
-from history.serializers.ticket_validation_history import TicketValidationHistorySerializer
+from history.serializers.ticket_validation import TicketValidationSerializer
 
 
 
-class TicketValidationHistoryView(FiltersMixin, ModelViewSet):
+class TicketValidation(FiltersMixin, ModelViewSet):
     queryset = TicketValidationHistory.objects.all()
-    serializer_class = TicketValidationHistorySerializer
-    pagination_class = TicketValidationHistoryPagination
+    serializer_class = TicketValidationSerializer
+    pagination_class = TicketValidationPagination
     permission_classes = [BaseHistoryPermission,]
     
     filter_mappings = {

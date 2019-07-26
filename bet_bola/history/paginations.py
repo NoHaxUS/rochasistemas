@@ -5,7 +5,7 @@ from user.models import CustomUser, Seller, Manager
 from ticket.models import Ticket,Payment
 from decimal import Decimal
 
-class CancelationHistoryPagination(PageNumberPagination):
+class TicketCancelationPagination(PageNumberPagination):
     page_size = 10
 
     def get_paginated_response(self, data):    
@@ -25,7 +25,7 @@ class CancelationHistoryPagination(PageNumberPagination):
         })
 
 
-class TicketValidationHistoryPagination(PageNumberPagination):
+class TicketValidationPagination(PageNumberPagination):
     page_size = 10   
 
     def get_paginated_response(self, data):
@@ -43,7 +43,7 @@ class TicketValidationHistoryPagination(PageNumberPagination):
         })
 
 
-class SellerCashierHistoryPagination(PageNumberPagination):
+class SellerCashierPagination(PageNumberPagination):
     page_size = 10    
 
     def get_paginated_response(self, data):        
@@ -60,7 +60,7 @@ class SellerCashierHistoryPagination(PageNumberPagination):
         })
 
 
-class ManagerCashierHistoryPagination(PageNumberPagination):
+class ManagerCashierPagination(PageNumberPagination):
     page_size = 10    
 
     def get_paginated_response(self, data):        
@@ -78,7 +78,7 @@ class ManagerCashierHistoryPagination(PageNumberPagination):
         })
 
 
-class ManagerTransactionsHistoryPagination(PageNumberPagination):
+class CreditTransactionsPagination(PageNumberPagination):
     page_size = 10    
 
     def get_paginated_response(self, data):  

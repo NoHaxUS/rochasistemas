@@ -1,31 +1,19 @@
-"""bet_bola URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/1.11/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.conf.urls import url, include
-    2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
-"""
 from django.urls import path, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-# from core.views import APIRootView, MainMenu
 from django.contrib.auth import views as auth_views
-from core.my_views.games import TodayGamesAdmin, GamesTable, GamesTomorrow, GamesAfterTomorrow, SearchGamesView, TodayGamesView, TomorrowGamesView, AfterTomorrowGamesView
-from core.my_views.sports import SportView
-from core.my_views.stores import StoreView
-from core.my_views.locations import LocationView, LocationModifiedView
-from core.my_views.leagues import LeagueView, LeagueModifiedView
-from core.my_views.cotations import CotationView, CotationCopyView, CotationModifiedView
-from core.my_views.markets import MarketView, MarketCotationView
-from core.views import APIRootView, MainMenu
+from core.views.games import (
+    TodayGamesAdmin, GamesTable, GamesTomorrow, 
+    GamesAfterTomorrow, SearchGamesView, TodayGamesView, 
+    TomorrowGamesView, AfterTomorrowGamesView
+)
+from core.views.sports import SportView
+from core.views.stores import StoreView
+from core.views.locations import LocationView, LocationModifiedView
+from core.views.leagues import LeagueView, LeagueModifiedView
+from core.views.cotations import CotationView, CotationCopyView, CotationModifiedView
+from core.views.markets import MarketView, MarketCotationView
+from core.views.general import APIRootView, MainMenu
 
 
 app_name = 'core'

@@ -30,5 +30,6 @@ urlpatterns = [
     path('', include('utils.urls', namespace='utils')),
     path('', include('user.urls', namespace='user')),
     path('', include('history.urls', namespace='history')),
+    path('', include('cashier.urls', namespace='cashier')),
     path('sentry-debug/', trigger_error),
 ]
