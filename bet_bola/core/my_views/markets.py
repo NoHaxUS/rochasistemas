@@ -35,7 +35,8 @@ class MarketCotationView(ModelViewSet):
                 'message': 'A ID do jogo é obrigatória'
             })                
         
-        my_cotations_qs = Cotation.objects.filter(game=game_id).exclude(market__name='1X2')
+        my_cotations_qs = Cotation.objects.filter(game=game_id).exclude(Q(market__name='1X2') | Q(my_modifiy__available=False, my_modifiy__store=store))
+        
         for market_removed in MarketRemotion.objects.filter(store=store):
             my_cotations_qs = my_cotations_qs.exclude(market__pk=market_removed.market_to_remove, name__icontains=market_removed.under_above + " " + market_removed.base_line)
 
