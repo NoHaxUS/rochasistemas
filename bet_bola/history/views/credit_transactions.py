@@ -6,12 +6,12 @@ from history.paginations import ManagerTransactionsHistoryPagination
 from filters.mixins import FiltersMixin
 from history.permissions import BaseHistoryPermission
 from history.models import ManagerTransactions
-from history.serializers.manager_transactions_history import ManagerTransactionsSerializer
+from history.serializers.credit_transactions import CreditTransactionsSerializer
 
 
-class ManagerTransactionsHistoryView(FiltersMixin, ModelViewSet):
+class CreditTransactions(FiltersMixin, ModelViewSet):
     queryset = ManagerTransactions.objects.all()
-    serializer_class = ManagerTransactionsSerializer
+    serializer_class = CreditTransactionsSerializer
     pagination_class = ManagerTransactionsHistoryPagination
     permission_classes = [BaseHistoryPermission]
 

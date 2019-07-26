@@ -5,11 +5,11 @@ from filters.mixins import FiltersMixin
 from history.permissions import BaseHistoryPermission
 from history.paginations import TicketValidationHistoryPagination
 from history.models import TicketValidationHistory
-from history.serializers.ticket_validation_history import TicketValidationHistorySerializer
+from history.serializers.ticket_validation import TicketValidationHistorySerializer
 
 
 
-class TicketValidationHistoryView(FiltersMixin, ModelViewSet):
+class TicketValidation(FiltersMixin, ModelViewSet):
     queryset = TicketValidationHistory.objects.all()
     serializer_class = TicketValidationHistorySerializer
     pagination_class = TicketValidationHistoryPagination

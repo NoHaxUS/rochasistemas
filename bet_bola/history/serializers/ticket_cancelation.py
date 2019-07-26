@@ -5,8 +5,8 @@ from core.models import Store
 from history.models import TicketCancelationHistory
 
 
-class TicketCancelationHistorySerializer(serializers.HyperlinkedModelSerializer):
-
+class TicketCancelationSerializer(serializers.HyperlinkedModelSerializer):
+    
 	ticket = serializers.SlugRelatedField(queryset = Ticket.objects.all(),slug_field='ticket_id')
 	who_cancelled = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')	
 	who_paid = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')	

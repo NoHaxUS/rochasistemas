@@ -3,11 +3,11 @@ from filters.mixins import FiltersMixin
 from history.paginations import SellerCashierHistoryPagination
 from history.models import SellerCashierHistory
 from history.permissions import BaseHistoryPermission
-from history.serializers.seller_cashier_history import SellerCashierHistorySerializer
+from history.serializers.seller_cashier import SellerCashierSerializer
 
-class SellerCashierHistoryView(FiltersMixin, ModelViewSet):
+class SellerCashierHistory(FiltersMixin, ModelViewSet):
     queryset = SellerCashierHistory.objects.all()
-    serializer_class = SellerCashierHistorySerializer
+    serializer_class = SellerCashierSerializer
     pagination_class = SellerCashierHistoryPagination
     permission_classes = [BaseHistoryPermission]  
 

@@ -4,17 +4,17 @@ from rest_framework.response import Response
 from rest_framework import status
 from filters.mixins import FiltersMixin
 from user.models import CustomUser
-from utils.paginations import ReleasePagination
-from utils.models import Release
-from utils.serializers.release import ReleaseSerializer
-from utils.permissions import ReleasePermission
+from utils.paginations import EntryPagination
+from utils.models import Entry
+from utils.serializers.entry import EntrySerializer
+from utils.permissions import EntryPermission
 import json
 
-class ReleaseView(FiltersMixin, ModelViewSet):
-    queryset = Release.objects.all()
-    serializer_class = ReleaseSerializer
-    pagination_class = ReleasePagination
-    permission_classes = [ReleasePermission, ]
+class EnntryView(FiltersMixin, ModelViewSet):
+    queryset = Entry.objects.all()
+    serializer_class = EntrySerializer
+    pagination_class = EntryPagination
+    permission_classes = [EntryPermission, ]
 
     filter_mappings = {
         'user':'user__pk',
@@ -25,10 +25,10 @@ class ReleaseView(FiltersMixin, ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.user_type == 2:
-            return Release.objects.filter(user=user).order_by('-creation_date')
+            return Entry.objects.filter(user=user).order_by('-creation_date')
         elif user.user_type == 3:
-            return Release.objects.filter(Q(user=user.pk) | Q(user__in=user.manager.manager_assoc.all())).order_by('-creation_date')
-        return Release.objects.filter(store=user.my_store).order_by('-creation_date')
+            return Entry.objects.filter(Q(user=user.pk) | Q(user__in=user.manager.manager_assoc.all())).order_by('-creation_date')
+        return Entry.objects.filter(store=user.my_store).order_by('-creation_date')
         
     def create(self, request, *args, **kwargs):        
         data = request.data.get('data')

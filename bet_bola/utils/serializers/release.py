@@ -2,10 +2,10 @@ from rest_framework import serializers
 from core.exceptions import NotAllowedException
 from core.models import Store
 from user.models import CustomUser as User
-from utils.models import Release
+from utils.models import Entry
 
 
-class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
+class EntrySerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.SlugRelatedField(queryset = User.objects.filter(user_type__in=[2,3]), slug_field='pk')
     store = serializers.SlugRelatedField(queryset = Store.objects.filter(), slug_field='pk')   
     creation_date = serializers.DateTimeField(format='%d %B %Y', read_only=True)
@@ -26,5 +26,5 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
         return user
 
     class Meta:
-        model = Release
+        model = Entry
         fields = ("id",'user', 'value', 'creation_date', 'description','store')

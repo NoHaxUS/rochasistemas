@@ -17,7 +17,7 @@ class SellerCashierPermission(permissions.BasePermission):
         raise NotAllowedException(detail="Você não tem permissão para visualizar.")    
 
 
-class RevenueCloseSellerPermission(permissions.BasePermission):
+class CashierCloseSellerPermission(permissions.BasePermission):
     
     def has_permission(self, request, view):
         if not request.user.is_anonymous and \
@@ -43,7 +43,7 @@ class ManagerCashierPermission(permissions.BasePermission):
         raise NotAllowedException(detail="Você não tem permissão para visualizar.")    
 
 
-class RevenueCloseManagerPermission(permissions.BasePermission):
+class CashierCloseManagerPermission(permissions.BasePermission):
     
     def has_permission(self, request, view):
         if not request.user.is_anonymous and \
