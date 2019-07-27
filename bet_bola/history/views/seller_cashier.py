@@ -22,7 +22,7 @@ class SellerCashierView(FiltersMixin, ModelViewSet):
     def get_queryset(self):
         user = self.request.user        
         if user.user_type == 2:
-            return SellerCashierView.objects.filter(seller__pk=self.request.user.pk)
+            return SellerCashierHistory.objects.filter(seller__pk=self.request.user.pk)
         elif user.user_type == 3:
-            return SellerCashierView.objects.filter(seller__my_manager__pk=self.request.user.pk).order_by('-date')
-        return SellerCashierView.objects.filter(store=user.my_store).order_by('-date')
+            return SellerCashierHistory.objects.filter(seller__my_manager__pk=self.request.user.pk).order_by('-date')
+        return SellerCashierHistory.objects.filter(store=user.my_store).order_by('-date')

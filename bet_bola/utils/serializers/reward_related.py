@@ -2,7 +2,7 @@ from rest_framework import serializers
 from core.models import Store
 from utils.models import RewardRestriction
 
-class RewardRelatedSerializer(serializers.HyperlinkedModelSerializer):
+class RewardRestrictionSerializer(serializers.HyperlinkedModelSerializer):
 
 	store = serializers.SlugRelatedField(read_only=True, slug_field='id')
 

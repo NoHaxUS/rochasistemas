@@ -143,75 +143,9 @@ class RulesMessage(models.Model):
         super().save( *args, **kwargs)
 
     class Meta:
+        ordering = ('-pk',)
         verbose_name = "Texto de Regras"        
         verbose_name_plural = "Texto de Regras"
-
-
-class Overview(models.Model):
-    overview = models.BooleanField(default=True, verbose_name='Gerar Visão Geral')
-    store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
-
-
-    def total_revenue(self):
-        sellers = Seller.objects.all()
-
-        total_revenue_sum = 0
-        for seller in sellers:
-            total_revenue_sum += seller.actual_revenue()
-        return total_revenue_sum
-    total_revenue.short_description = 'Entrada Total'
-
-
-    def total_out_money(self):
-
-        sellers = Seller.objects.all()
-
-        total_out_money_sum = 0
-        for seller in sellers:
-            total_out_money_sum += seller.out_money()
-        return total_out_money_sum
-    total_out_money.short_description = 'Saída Apostas'
-
-
-    def seller_out_money(self):
-
-        sellers = Seller.objects.filter(is_active=True)
-
-        total_net_value_sum = 0
-        for seller in sellers:
-            total_net_value_sum += seller.net_value()
-        
-        return total_net_value_sum
-    seller_out_money.short_description = 'Saída Cambistas'
-
-
-    def manager_out_money(self):
-        
-        managers = Manager.objects.filter(is_active=True)
-
-        total_net_value_sum = 0
-        for manager in managers:
-            total_net_value_sum += manager.net_value()
-        
-        return total_net_value_sum
-    manager_out_money.short_description = 'Saída Gerentes'
-
-
-    def total_net_value(self):
-        return self.total_revenue() - (self.total_out_money() + self.seller_out_money() + self.manager_out_money())
-    total_net_value.short_description = 'Lucro Total'
-
-
-    def __str__(self):
-        return "Visão Geral - Caixa"
-
-    def save(self, *args, **kwargs):
-        self.pk = 1
-        super().save( *args, **kwargs)
-
-    class Meta:
-        verbose_name = "Visão Geral - Caixa"
-        verbose_name_plural = "Visão Geral - Caixa"
 
 
 
@@ -243,6 +177,7 @@ class MarketRemotion(models.Model):
         return self.get_market_to_remove_display() + ' - ' + self.under_above + ' ' +self.base_line
 
     class Meta:
+        ordering = ('-pk',)
         verbose_name = 'Remoção de Aposta'
         verbose_name_plural = 'Remoção de Apostas'
 
@@ -255,39 +190,11 @@ class MarketReduction(models.Model):
     store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
 
 
-    # def apply_reductions(self):
-    #     from core.models import Game
-        
-    #     if GeneralConfigurations.objects.filter(pk=1):
-    #         max_cotation_value = GeneralConfigurations.objects.get(pk=1).max_cotation_value
-    #     else:
-    #         max_cotation_value = 200
-
-    #     able_games = Game.objects.filter(start_date__gt=tzlocal.now(),
-    #     status__in=[1,2,8,9],
-    #     available=True)
-
-    #     reduction = self.reduction_percentual / 100
-        
-    #     for game in able_games:
-
-    #         if self.market_to_reduct == 600:
-    #             cotations_to_reduct =  game.cotations.filter(market__id=1, name='Casa')
-    #         elif self.market_to_reduct == 601:
-    #             cotations_to_reduct =  game.cotations.filter(market__id=1, name='Empate')
-    #         elif self.market_to_reduct == 602:
-    #             cotations_to_reduct =  game.cotations.filter(market__id=1, name='Fora')
-    #         else:
-    #             cotations_to_reduct =  game.cotations.filter(market__id=self.market_to_reduct)
-    #         cotations_to_reduct.update(price=F('price') * reduction )
-    #         cotations_to_reduct.update(price=Case(When(price__lt=1,then=1.05),default=F('price')))
-    #         cotations_to_reduct.filter(price__gt=max_cotation_value).update(price=max_cotation_value)    
-            
     def __str__(self):
         return self.reduction_percentual
 
-
     class Meta:
+        ordering = ('-pk',)
         verbose_name = 'Redução de Cota'
         verbose_name_plural = 'Reduções de Cotas'
 
@@ -296,7 +203,17 @@ class ExcludedGame(models.Model):
     store = models.ForeignKey('core.Store', related_name='my_excluded_games', on_delete=models.CASCADE)
     game = models.ForeignKey('core.Game', on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ('-pk',)
+        verbose_name = 'Jogo Removido'
+        verbose_name_plural = 'Jogos Removidos'
+
 
 class ExcludedLeague(models.Model):
     store = models.ForeignKey('core.Store', related_name='my_excluded_leagues', on_delete=models.CASCADE)
     league = models.ForeignKey('core.League', on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ('-pk',)
+        verbose_name = 'Liga Removida'
+        verbose_name_plural = 'Ligas Removidas'

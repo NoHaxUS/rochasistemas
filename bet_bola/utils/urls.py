@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from utils.views.configuration import GeneralConfigurationsView
 from utils.views.exclude import  ExcludedGameView, ExcludedLeagueView
 from utils.views.rule import RulesMessageView
-from utils.views.reward_related import RewardRelatedView
+from utils.views.reward_related import RewardRestricionView
 from utils.views.market import MarketReductionView, MarketRemotionView
 from utils.views.comission import SellerComissionView, ManagerComissionView
 from utils.views.entry import EntryView
@@ -19,7 +19,7 @@ router.register(r'manager_comissions', ManagerComissionView)
 router.register(r'rules', RulesMessageView)
 router.register(r'excluded_games', ExcludedGameView)
 router.register(r'excluded_leagues', ExcludedLeagueView)
-router.register(r'rewards_related', RewardRelatedView)
+router.register(r'reward_restriction', RewardRestricionView)
 router.register(r'markets_reduction', MarketReductionView)
 router.register(r'markets_remotion', MarketRemotionView)
 router.register(r'ticket_custom_messages', TicketCustomMessageView)
