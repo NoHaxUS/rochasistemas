@@ -9,7 +9,7 @@ from history.serializers.ticket_validation import TicketValidationSerializer
 
 
 
-class TicketValidation(FiltersMixin, ModelViewSet):
+class TicketValidationView(FiltersMixin, ModelViewSet):
     queryset = TicketValidationHistory.objects.all()
     serializer_class = TicketValidationSerializer
     pagination_class = TicketValidationPagination

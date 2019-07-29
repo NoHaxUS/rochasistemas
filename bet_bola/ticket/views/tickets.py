@@ -20,7 +20,7 @@ from utils import timezone as tzlocal
 from config import settings
 from rest_framework.permissions import IsAuthenticated
 from ticket.permissions import CanToggleTicketAvailability
-from ticket.logic import reward
+from ticket.logic.reward import get_reward_value
 from user.permissions import IsAdminOrManagerOrSeller
 import random
 import json
@@ -108,21 +108,20 @@ class TicketView(FiltersMixin, ModelViewSet):
         create_response = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(create_response, status=status.HTTP_201_CREATED, headers=headers)
-
-    def get_reward_value(self, raw_reward_total, store):
-        return reward.get_reward_value(raw_reward_total, store=store)
     
     def perform_create(self, serializer):
         store = Store.objects.filter(id=self.request.GET['store']).first()
+        bet_value = serializer.validated_data['bet_value']
 
         raw_reward_value = 1
         for cotation in serializer.validated_data['cotations']:
             raw_reward_value *= cotation.price
-        raw_reward_value = serializer.validated_data['bet_value'] * raw_reward_value
+        raw_reward_value = bet_value * raw_reward_value
 
         payment = Payment.objects.create()
-        rewad_was_changed, rewad_value = self.get_reward_value(raw_reward_value, store)
+        rewad_was_changed, rewad_value = get_reward_value(bet_value, raw_reward_value, store)
         reward = Reward.objects.create(value=rewad_value)
+
         ticket_id = self.get_ticket_id(store)
         
         if self.request.user.is_authenticated:

@@ -8,7 +8,7 @@ from history.models import TicketCancelationHistory
 from history.serializers.ticket_cancelation import TicketCancelationSerializer
 
 
-class TicketCancelation(FiltersMixin, ModelViewSet):
+class TicketCancelationView(FiltersMixin, ModelViewSet):
     queryset = TicketCancelationHistory.objects.all()
     serializer_class = TicketCancelationSerializer
     pagination_class = TicketCancelationPagination
