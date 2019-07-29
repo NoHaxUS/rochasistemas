@@ -9,7 +9,7 @@ from history.models import CreditTransactions
 from history.serializers.credit_transactions import CreditTransactionsSerializer
 
 
-class CreditTransactions(FiltersMixin, ModelViewSet):
+class CreditTransactionsView(FiltersMixin, ModelViewSet):
     queryset = CreditTransactions.objects.all()
     serializer_class = CreditTransactionsSerializer
     pagination_class = CreditTransactionsPagination
