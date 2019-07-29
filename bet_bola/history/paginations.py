@@ -180,7 +180,13 @@ class SellerCashierPagination(PageNumberPagination):
         out = 0
         comissions_sum = 0
         won_bonus_sum = 0
-        sellers = [{'id':seller.pk,'username':seller.username} for seller in Seller.objects.filter(payment__status=2, my_store=self.request.user.my_store).distinct()]                   
+        if self.request.user.user_type == 4:        
+            sellers = [{'id':seller.pk,'username':seller.username} for seller in Seller.objects.filter(payment__status=2, my_store=self.request.user.my_store).distinct()]
+        elif self.request.user.user_type == 3:            
+            sellers = [{'id':user.pk,'username':user.username} for user in self.request.user.manager.manager_assoc.filter(payment__status=2, my_store=self.request.user.my_store).distinct()]
+        else:
+            sellers = [{'id':user.pk,'username':user.username} for user in Seller.objects.none()]
+
         for ticket in data:
             entry += float(ticket["bet_value"])
             if ticket["status"] == 'Venceu, Ganhador Pago' or ticket["status"] == 'Venceu, Prestar Contas':
