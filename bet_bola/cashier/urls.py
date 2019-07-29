@@ -14,7 +14,7 @@ router.register(r'managers_cashier', ManagersCashierView)
 
 urlpatterns = [
     path('seller_cashier/', SellerCashierView.as_view({'get': 'list'}), name='seller_cashier'),    
-    path('manager_cashier', ManagerCashierView.as_view({'get': 'list'}), name='manager_cashier'),    
+    path('manager_cashier/', ManagerCashierView.as_view({'get': 'list'}), name='manager_cashier'),    
     path('general_cashier/', GeneralCashier.as_view(), name='general_cashier')
 ]
 
