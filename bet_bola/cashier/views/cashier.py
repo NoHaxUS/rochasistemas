@@ -206,8 +206,8 @@ class ManagerCashierView(FiltersMixin, ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.user_type == 3:   
-            return Ticket.objects.filter(Q(payment__status=2,payment__who_paid__my_manager__pk=user.pk ,store=user.my_store, 
-                closed_for_manager=False) | Q(payment__who_paid__my_manager__pk=user.pk, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
+            return Ticket.objects.filter(Q(payment__status=2,payment__who_paid__seller__my_manager__pk=user.pk ,store=user.my_store, 
+                closed_for_manager=False) | Q(payment__who_paid__seller__my_manager__pk=user.pk, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
         return Ticket.objects.filter(Q(payment__status=2, store=user.my_store, 
                 closed_for_manager=False) | Q(store=user.my_store, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
         
