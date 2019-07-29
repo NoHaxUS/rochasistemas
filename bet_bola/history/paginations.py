@@ -84,9 +84,9 @@ class CreditTransactionsPagination(PageNumberPagination):
     def get_paginated_response(self, data):  
         creditor_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(pk=self.request.user.pk).distinct()]
         if self.request.user.user_type == 3:
-            seller_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(credittransactions__isnull=False, seller__my_manager__pk=self.request.user.pk, my_store=self.request.user.my_store).distinct()]
+            seller_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(credit_transactions__isnull=False, seller__my_manager__pk=self.request.user.pk, my_store=self.request.user.my_store).distinct()]
         else:
-            seller_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(credittransactions__isnull=False, my_store=self.request.user.my_store).distinct()]
+            seller_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(credit_transactions__isnull=False, my_store=self.request.user.my_store).distinct()]
             
         return Response({
             'links': {

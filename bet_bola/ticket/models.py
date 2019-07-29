@@ -10,8 +10,8 @@ import utils.timezone as tzlocal
 from django.utils import timezone
 import utils.timezone as tzlocal
 from user.models import TicketOwner, Seller, Punter
-from .logic import ticket, reward
-
+from ticket.logic.reward import get_reward_value
+from ticket.logic import ticket
 
 class Ticket(models.Model):
 
@@ -47,8 +47,8 @@ class Ticket(models.Model):
 
     def update_ticket_reward(self):
         
-        raw_reward_total = self.cotation_sum() * self.bet_value
-        self.reward.value = reward.get_reward_value(raw_reward_total, self.store)[1]
+        raw_reward_value = self.cotation_sum() * self.bet_value
+        self.reward.value = get_reward_value(self.bet_value, raw_reward_value, self.store)[1]
         self.reward.save()
 
 

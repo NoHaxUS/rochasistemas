@@ -21,7 +21,8 @@ def get_upcoming_events():
     url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=20445-s1B9Vv6E9VSLU1&day={0}&page={1}"
 
 
-    for index in range(-1, 4):
+    #for index in range(-1, 4):
+    for index in range(2, 4):
         page = 1
         current_date = (base_day + datetime.timedelta(days=index)).strftime('%Y%m%d')
         current_url = url_base.format(current_date, page)
