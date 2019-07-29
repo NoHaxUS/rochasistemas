@@ -43,11 +43,11 @@ class TicketValidationPagination(PageNumberPagination):
         })
 
 
-class SellerCashierPagination(PageNumberPagination):
+class SellerCashierHistoryPagination(PageNumberPagination):
     page_size = 10    
 
     def get_paginated_response(self, data):        
-        register_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(revenuehistoryseller__isnull=False, my_store=self.request.user.my_store).distinct()]        
+        register_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(sellercashierhistory__isnull=False, my_store=self.request.user.my_store).distinct()]        
         return Response({
             'links': {
                 'next': self.get_next_link(),
@@ -60,11 +60,11 @@ class SellerCashierPagination(PageNumberPagination):
         })
 
 
-class ManagerCashierPagination(PageNumberPagination):
+class ManagerCashierHistoryPagination(PageNumberPagination):
     page_size = 10    
 
     def get_paginated_response(self, data):        
-        register_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(revenuehistorymanager__isnull=False, my_store=self.request.user.my_store).distinct()]        
+        register_by_list = [{'id':user.pk,'username':user.username} for user in CustomUser.objects.filter(sellercashierhistory__isnull=False, my_store=self.request.user.my_store).distinct()]        
 
         return Response({
             'links': {

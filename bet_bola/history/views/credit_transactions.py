@@ -5,12 +5,12 @@ from rest_framework.reverse import reverse
 from history.paginations import CreditTransactionsPagination
 from filters.mixins import FiltersMixin
 from history.permissions import BaseHistoryPermission
-from history.models import ManagerTransactions
+from history.models import CreditTransactions
 from history.serializers.credit_transactions import CreditTransactionsSerializer
 
 
 class CreditTransactions(FiltersMixin, ModelViewSet):
-    queryset = ManagerTransactions.objects.all()
+    queryset = CreditTransactions.objects.all()
     serializer_class = CreditTransactionsSerializer
     pagination_class = CreditTransactionsPagination
     permission_classes = [BaseHistoryPermission]
@@ -27,7 +27,7 @@ class CreditTransactions(FiltersMixin, ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.user_type == 2:
-            return ManagerTransactions.objects.filter(user=user)            
+            return CreditTransactions.objects.filter(user=user)            
         elif user.user_type == 3:
-            return ManagerTransactions.objects.filter(Q(creditor__pk=user.pk) | Q(user=user))            
-        return ManagerTransactions.objects.filter(store=user.my_store)
+            return CreditTransactions.objects.filter(Q(creditor__pk=user.pk) | Q(user=user))            
+        return CreditTransactions.objects.filter(store=user.my_store)

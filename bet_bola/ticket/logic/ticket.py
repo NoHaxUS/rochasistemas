@@ -197,7 +197,7 @@ def reward_winner(self, who_rewarding_the_winner):
     self.reward.date = tzlocal.now()
     self.reward.who_rewarded_the_winner = who_rewarding_the_winner
     self.reward.save()
-
+    """
     from history.models import WinnerPaymentHistory
     WinnerPaymentHistory.objects.create(
         winner_name=self.owner.first_name,
@@ -207,6 +207,7 @@ def reward_winner(self, who_rewarding_the_winner):
         bet_value=self.reward.real_value,
         store=self.store
     )
+    """
 
     return {
         'success':True,

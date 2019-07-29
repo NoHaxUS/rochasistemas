@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 
-
 class TicketValidationHistory(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     who_validated = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='my_ticket_validations', verbose_name='Quem Validou')
@@ -21,24 +20,6 @@ class TicketValidationHistory(models.Model):
         verbose_name_plural = 'Validações de Apostas'
 
 
-class WinnerPaymentHistory(models.Model):
-    id = models.BigAutoField(primary_key=True, verbose_name="ID")
-    winner_name = models.CharField(max_length=200, verbose_name='Nome do Apostador')
-    who_rewarded_the_winner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_payed_winner_tickets', on_delete=models.CASCADE, verbose_name='Cambista')
-    ticket = models.ForeignKey('ticket.Ticket', on_delete=models.CASCADE, verbose_name='Bilhete Vencedor')
-    date = models.DateTimeField(verbose_name='Data do Pagamento')
-    bet_value = models.DecimalField(max_digits=30, decimal_places=2,verbose_name='Valor Pago')
-    store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "Pag. - Apostadores"
-
-    class Meta:
-        ordering = ('-pk', )
-        verbose_name = 'Pag. - Apostador'
-        verbose_name_plural = 'Pag. - Apostadores'
-
-
 class TicketCancelationHistory(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     who_cancelled = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_canceled_tickets', on_delete=models.CASCADE, verbose_name='Quem Cancelou ?')
@@ -56,7 +37,7 @@ class TicketCancelationHistory(models.Model):
         verbose_name_plural = 'Cancelamento de Bilhetes'
 
 
-class ManagerTransactions(models.Model):
+class CreditTransactions(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     creditor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="credit_transactions",verbose_name='Gerente')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Cambista')
@@ -121,3 +102,22 @@ class ManagerCashierHistory(models.Model):
         verbose_name = 'Pag. - Gerente'
         verbose_name_plural = 'Pag. - Gerentes'
 
+
+"""
+class WinnerPaymentHistory(models.Model):
+    id = models.BigAutoField(primary_key=True, verbose_name="ID")
+    winner_name = models.CharField(max_length=200, verbose_name='Nome do Apostador')
+    who_rewarded_the_winner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_payed_winner_tickets', on_delete=models.CASCADE, verbose_name='Cambista')
+    ticket = models.ForeignKey('ticket.Ticket', on_delete=models.CASCADE, verbose_name='Bilhete Vencedor')
+    date = models.DateTimeField(verbose_name='Data do Pagamento')
+    bet_value = models.DecimalField(max_digits=30, decimal_places=2,verbose_name='Valor Pago')
+    store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "Pag. - Apostadores"
+
+    class Meta:
+        ordering = ('-pk', )
+        verbose_name = 'Pag. - Apostador'
+        verbose_name_plural = 'Pag. - Apostadores'
+"""

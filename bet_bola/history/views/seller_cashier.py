@@ -1,14 +1,14 @@
 from rest_framework.viewsets import ModelViewSet
 from filters.mixins import FiltersMixin
-from history.paginations import SellerCashierPagination
+from history.paginations import SellerCashierHistoryPagination
 from history.models import SellerCashierHistory
 from history.permissions import BaseHistoryPermission
-from history.serializers.seller_cashier import SellerCashierSerializer
+from history.serializers.seller_cashier import SellerCashierHistorySerializer
 
 class SellerCashierView(FiltersMixin, ModelViewSet):
     queryset = SellerCashierHistory.objects.all()
-    serializer_class = SellerCashierSerializer
-    pagination_class = SellerCashierPagination
+    serializer_class = SellerCashierHistorySerializer
+    pagination_class = SellerCashierHistoryPagination
     permission_classes = [BaseHistoryPermission]  
 
     filter_mappings = {

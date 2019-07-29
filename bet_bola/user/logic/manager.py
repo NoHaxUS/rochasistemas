@@ -1,6 +1,6 @@
 
 def manage_seller_credit(self, seller, value):
-    from history.models import ManagerTransactions
+    from history.models import CreditTransactions
     from core.models import Seller
     
     manager_before_balance = self.credit_limit    
@@ -20,7 +20,7 @@ def manage_seller_credit(self, seller, value):
         else:                        
             self.save()                        
             seller.save()            
-            ManagerTransactions.objects.create(creditor=self,
+            CreditTransactions.objects.create(creditor=self,
             user=seller,
             transferred_amount=value,
             creditor_before_balance=manager_before_balance,

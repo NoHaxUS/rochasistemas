@@ -2,7 +2,7 @@ from rest_framework import serializers
 from user.models import Seller, CustomUser
 from ticket.models import Ticket
 from core.models import Store
-from history.models import ManagerTransactions
+from history.models import CreditTransactions
 
 class CreditTransactionsSerializer(serializers.HyperlinkedModelSerializer):
 	user = serializers.SlugRelatedField(queryset = CustomUser.objects.filter(user_type__in=[2,3]),slug_field='username')
@@ -11,6 +11,6 @@ class CreditTransactionsSerializer(serializers.HyperlinkedModelSerializer):
 	transaction_date = serializers.DateTimeField(read_only=True)
 
 	class Meta:
-		model = ManagerTransactions
+		model = CreditTransactions
 		fields = ('creditor','user','transaction_date','transferred_amount','creditor_before_balance','creditor_after_balance','user_before_balance','user_after_balance','store')
 
