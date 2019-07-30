@@ -82,20 +82,19 @@ class MinimumListCotationSerializer(serializers.ListSerializer):
 		config = GeneralConfigurations.objects.get(store__pk=store_id)		
 		store = config.store
 		if config:						
-			for cotation in data:
+			for cotation in data:				
 				if cotation.price > config.max_cotation_value:
 					cotation.price = config.max_cotation_value					
 				if CotationModified.objects.filter(cotation=cotation, store=store, price__gt=1).exists():					
 					cotation.price = CotationModified.objects.filter(cotation=cotation, store=store).first().price
-				elif cotation.market.my_reduction.filter(store=store, active=True):							
+				elif cotation.market.my_reduction.filter(store=store).exclude(reduction_percentual=100):							
 					cotation.price = cotation.price * cotation.market.my_reduction.get(store=store).reduction_percentual / 100										
 				else:					
 					cotation.price = cotation.price * config.cotations_percentage / 100													
 				
 				if cotation.price < 1:
-					cotation.price = 1.01				
+					cotation.price = 1.01													
 					
-
 		return super().to_representation(data)
 
 

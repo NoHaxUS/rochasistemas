@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from core.serializers.cotation import StandardCotationSerializer, CotationSerializerForTable
+from core.serializers.league import LeagueSerializerList
 from core.models import League, Game, Location, GameModified
 
 
@@ -10,7 +11,7 @@ class GameSerializerList(serializers.ListSerializer):
 
 		for game in games:
 			game_modified = GameModified.objects.filter(game=game.pk, store=store).first()						
-			if game_modified:				
+			if game_modified:
 				game.available = game_modified.available
 
 		return super().to_representation(games)
@@ -20,7 +21,8 @@ class GameSerializerForHome(serializers.HyperlinkedModelSerializer):
 	standard_cotations = StandardCotationSerializer(many=True)
 
 	class Meta:
-		model = Game				
+		model = Game	
+			
 		fields = ('id','name','start_date','standard_cotations')
 
 	def get_location(self, game):
@@ -93,11 +95,11 @@ class TodayGamesSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = League
+		list_serializer_class = LeagueSerializerList
 		fields = ('id','league','location','games')
 
 	def get_games(self, league):			
-		qs = league.games
-
+		qs = league.games		
 		serializer = GameSerializerForHome(qs, many=True, context={'context':self.context})
 		return serializer.data
 		

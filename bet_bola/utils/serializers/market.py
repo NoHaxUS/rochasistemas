@@ -1,27 +1,27 @@
 from rest_framework import serializers
 from core.models import Store, Market
-from utils.models import MarketReduction, MarketRemotion
+from utils.models import MarketModified, MarketRemotion
 
-class MarketReductionSerializer(serializers.HyperlinkedModelSerializer):
+class MarketModifiedSerializer(serializers.HyperlinkedModelSerializer):
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
 	market = serializers.SlugRelatedField(queryset = Market.objects.all(),slug_field='name')
 	
 	def create(self, validated_data):
 		user = self.context['request'].user		
 		market = validated_data.get('market')		
-		market_reductions = MarketReduction.objects.filter(market__pk=market.pk, store=user.my_store)
+		market_reductions = MarketModified.objects.filter(market__pk=market.pk, store=user.my_store)
 
 		if market_reductions.exists():					
 			market_reductions.update(**validated_data)			
 			return market_reductions.first()
 
-		instance = MarketReduction(**validated_data)			
+		instance = MarketModified(**validated_data)			
 		instance.store = user.my_store		
 		instance.save()		
 		return instance
 
 	class Meta:
-		model = MarketReduction
+		model = MarketModified
 		fields = ('market', 'reduction_percentual', 'active', 'store')
 
 

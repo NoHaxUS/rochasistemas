@@ -24,5 +24,5 @@ class MarketSerializer(serializers.HyperlinkedModelSerializer):
 	def get_my_reduction(self, market):		
 		store = self.context['request'].user.my_store
 		if market.my_reduction.filter(store=store).exists():			
-			return {"reduction":market.my_reduction.filter(store=store).first().reduction_percentual, "active": market.my_reduction.first().active}
-		return {"reduction":100, "active":False}
+			return {"reduction":market.my_reduction.filter(store=store).first().reduction_percentual, "active": market.my_reduction.filter(store=store).first().active}
+		return {"reduction":100, "active":True}

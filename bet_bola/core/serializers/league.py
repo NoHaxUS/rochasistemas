@@ -1,19 +1,44 @@
 
 from rest_framework import serializers
 from rest_framework import status
-from core.models import Location, League, LeagueModified, Store
+from core.models import Location, League, LeagueModified, LocationModified, Store
 from core.exceptions import NotAllowedException
 
-class LeagueSerializerList(serializers.ListSerializer):
+class LeagueSerializerList(serializers.ListSerializer):	
 
 	def to_representation(self, leagues):
-		store = self.context['request'].user.my_store		
-
+		
+		store_id = self.context['request'].GET.get('store')
+		
 		for league in leagues:
-			league_modified = LeagueModified.objects.filter(league=league.pk, store=store).first()						
+			league_modified = LeagueModified.objects.filter(league=league.pk, store__pk=store_id).first()
+			location_modified = LocationModified.objects.filter(location=league.location.pk, store__pk=store_id).first()
 			if league_modified:
 				league.priority = league_modified.priority
-				league.available = league_modified.available
+				league.available = league_modified.available			
+			if location_modified:
+				league.location.priority = location_modified.priority
+				league.location.available = location_modified.available
+		
+		leagues.sort(key=lambda league: (league.location.priority, league.priority), reverse=True)
+
+		return super().to_representation(leagues)
+
+
+class AdmLeagueSerializerList(serializers.ListSerializer):	
+
+	def to_representation(self, leagues):
+		user = self.context['request'].user		
+		store_id = user.my_store.pk		
+		
+		for league in leagues:
+			league_modified = LeagueModified.objects.filter(league=league.pk, store__pk=store_id).first()
+			
+			if league_modified:
+				league.priority = league_modified.priority
+				league.available = league_modified.available						
+		
+		leagues.sort(key=lambda league: league.priority, reverse=True)
 
 		return super().to_representation(leagues)
 
@@ -24,7 +49,7 @@ class LeagueSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = League
-		list_serializer_class = LeagueSerializerList
+		list_serializer_class = AdmLeagueSerializerList
 		fields = ('id','name','location','priority','available')
 	
 
@@ -49,5 +74,5 @@ class LeagueModifiedSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = LeagueModified
-		list_serializer_class = LeagueSerializerList
+		list_serializer_class = AdmLeagueSerializerList
 		fields = ('league','priority','available','store')

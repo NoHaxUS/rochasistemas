@@ -6,7 +6,7 @@ from core.paginations import StandardSetPagination
 from core.models import Market, Cotation, Store
 from core.serializers.market import MarketCotationSerializer, MarketSerializer
 from core.permissions import StoreIsRequired
-from utils.models import MarketRemotion
+from utils.models import MarketRemotion, MarketModified
 
 
 class MarketView(FiltersMixin, ModelViewSet):
@@ -34,13 +34,14 @@ class MarketCotationView(ModelViewSet):
                 'success': False,
                 'message': 'A ID do jogo é obrigatória'
             })                
-        
-        my_cotations_qs = Cotation.objects.filter(game=game_id).exclude(Q(market__name='1X2') | Q(my_modifiy__available=False, my_modifiy__store=store))
+        id_list_excluded_markets = [excluded_markets.market.id for excluded_markets in MarketModified.objects.filter(active=False, store=store)]
+
+        my_cotations_qs = Cotation.objects.filter(game=game_id).exclude(market__name='1X2')
         
         for market_removed in MarketRemotion.objects.filter(store=store):
             my_cotations_qs = my_cotations_qs.exclude(market__pk=market_removed.market_to_remove, name__icontains=market_removed.under_above + " " + market_removed.base_line)
 
-        queryset = Market.objects.prefetch_related(Prefetch('cotations', queryset=my_cotations_qs, to_attr='my_cotations'))
+        queryset = Market.objects.prefetch_related(Prefetch('cotations', queryset=my_cotations_qs, to_attr='my_cotations')).exclude(id__in=id_list_excluded_markets)
         queryset = queryset.annotate(cotations_count=Count('cotations', filter=Q(cotations__game__pk=game_id))).filter(cotations_count__gt=0).exclude(name='1X2')
 
         return queryset

@@ -28,8 +28,8 @@ class LeagueView(FiltersMixin, ModelViewSet):
         available = self.request.GET.get('available')
         store = self.request.user.my_store
         qs = self.queryset.all()
-        leagues_modified = LeagueModified.objects.filter(store=store)
-
+        leagues_modified = LeagueModified.objects.filter(store=store)        
+        
         if priority:
             qs = qs.filter(my_modifications__priority__gte=priority) | qs.filter(priority__gte=priority).exclude(pk__in=[league.league.pk for league in leagues_modified])
         if available:

@@ -3,14 +3,14 @@ from rest_framework.permissions import SAFE_METHODS
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
 from user.permissions import IsAdmin
-from utils.serializers.market import MarketReductionSerializer, MarketRemotionSerializer, GetMarketRemotionSerializer
+from utils.serializers.market import MarketModifiedSerializer, MarketRemotionSerializer, GetMarketRemotionSerializer
 from core.permissions import StoreIsRequired, UserIsFromThisStore
-from utils.models import MarketReduction, MarketRemotion
+from utils.models import MarketModified, MarketRemotion
 import json
 
-class MarketReductionView(ModelViewSet):
-	queryset = MarketReduction.objects.all()
-	serializer_class = MarketReductionSerializer
+class MarketModifiedView(ModelViewSet):
+	queryset = MarketModified.objects.all()
+	serializer_class = MarketModifiedSerializer
 	permission_classes = [IsAdmin,]
 
 	def create(self, validated_data):
@@ -36,7 +36,7 @@ class MarketReductionView(ModelViewSet):
 	def list(self, request, pk=None):
 		if request.user.is_authenticated:
 			store_id = request.user.my_store.pk			
-			markets_reduction= MarketReduction.objects.filter(store__pk=store_id)
+			markets_reduction= MarketModified.objects.filter(store__pk=store_id)
 			serializer = self.get_serializer(markets_reduction, many=True)
 			return Response(serializer.data)
 		return Response({})	
