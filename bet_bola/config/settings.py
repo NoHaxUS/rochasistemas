@@ -183,9 +183,7 @@ USE_TZ = False
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static")
-]
+
 
 REST_FRAMEWORK = {
     'DATETIME_FORMAT': "%d %B %Y %H:%M",
