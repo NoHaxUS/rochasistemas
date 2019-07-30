@@ -92,6 +92,7 @@ class CotationModified(models.Model):
         verbose_name = 'Cota Modificada'
         verbose_name_plural = 'Cotas Modificadas'
 
+
 class Cotation(models.Model):
 
     SETTLEMENT_STATUS = (

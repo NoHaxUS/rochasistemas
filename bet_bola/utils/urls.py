@@ -23,7 +23,7 @@ router.register(r'reward_restriction', RewardRestricionView)
 router.register(r'markets_reduction', MarketModifiedView)
 router.register(r'markets_remotion', MarketRemotionView)
 router.register(r'ticket_custom_messages', TicketCustomMessageView)
-router.register(r'entry', EntryView)
+router.register(r'entries', EntryView)
 
 urlpatterns = [		        
 	path('token/', obtain_jwt_token, name='obtain_token'),    
