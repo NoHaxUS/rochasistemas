@@ -153,11 +153,11 @@ class CotationSerializer(serializers.HyperlinkedModelSerializer):
 	def get_available(self, cotation):
 		store_id = ''
 		if self.root.context.get('request'):
-			store_id =  self.root.context['request'].GET.get('store')			
+			store =  self.root.context['request'].user.my_store			
 		if self.root.context.get('context'):
-			store_id =  self.root.context['context']['request'].GET.get('store')
+			store =  self.root.context['context']['request'].user.my_store
 
-		queryset = CotationModified.objects.filter(cotation=cotation, store__pk=store_id)
+		queryset = CotationModified.objects.filter(cotation=cotation, store=store)
 		if queryset:
 			return queryset.first().available
 		return True
@@ -166,10 +166,10 @@ class CotationSerializer(serializers.HyperlinkedModelSerializer):
 		return str(cotation.price)
 
 	def get_price(self, cotation):		
-		store_id = self.context['request'].GET.get('store')
-		config = GeneralConfigurations.objects.filter(store__pk=store_id).first()		
-		if CotationModified.objects.filter(cotation=cotation, store__pk=store_id) and CotationModified.objects.filter(cotation=cotation, store__pk=store_id).first().price != 0:
-			return str(CotationModified.objects.get(cotation=cotation, store__pk=store_id).price)			
+		store = self.context['request'].user.my_store
+		config = GeneralConfigurations.objects.filter(store=store).first()		
+		if CotationModified.objects.filter(cotation=cotation, store=store) and CotationModified.objects.filter(cotation=cotation, store=store).first().price != 0:
+			return str(CotationModified.objects.get(cotation=cotation, store=store).price)			
 
 		return "-"
 

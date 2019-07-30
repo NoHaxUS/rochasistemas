@@ -16,7 +16,7 @@ import decimal
 class CotationView(FiltersMixin, ModelViewSet):
     queryset = Cotation.objects.all()
     serializer_class = CotationSerializer       
-    permission_classes = [StoreIsRequired,]
+    permission_classes = []
     pagination_class = CotationsListSetPagination
 
     @action(methods=['delete'], detail=True, permission_classes=[IsAdmin])
