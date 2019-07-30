@@ -6,47 +6,69 @@ import json
 from core.models import Location, League, Sport, Market, Game, Cotation
 from ticket.models import Ticket
 from django.db.models import Q , Count
-from .countries import COUNTRIES
-from .ccs import COUNTRIES
-from .sports import SPORTS
-from .get_markets import (cotation_with_header_goals, cotation_without_header, cotation_with_header_name_special, 
-cotation_with_header_opp, cotation_with_header_name, cotation_without_header_standard)
+from updater.countries import COUNTRIES
+from updater.ccs import COUNTRIES
+from updater.sports import SPORTS
+from updater.get_markets import (
+    cotation_with_header_goals, 
+    cotation_without_header, cotation_with_header_name_special, 
+    cotation_with_header_opp, cotation_with_header_name, 
+    cotation_without_header_standard
+)
 
+
+def get_games_of_the_day(current_url, error_count=0):
+    print(current_url)
+    request = requests.get(current_url)
+    try:
+        data = request.json()
+        return data
+    except json.decoder.JSONDecodeError:
+        if error_count <= 4:
+            error_count += 1
+            get_games_of_the_day(current_url, error_count)
+
+def get_games_of_current_page(current_url, error_count=0):
+    print(current_url)
+    request = requests.get(current_url)
+    try:
+        data = request.json()
+        return data
+    except json.decoder.JSONDecodeError:
+        if error_count <= 4:
+            error_count += 1
+            get_games_of_current_page(current_url, error_count)
 
 def get_upcoming_events():
     base_day = datetime.datetime.today()
-    #yesterday = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime('%Y%m%d')
-    
 
     url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=20445-s1B9Vv6E9VSLU1&day={0}&page={1}"
 
-
     #for index in range(-1, 4):
-    for index in range(2, 4):
+    for index in range(-1, 4):
         page = 1
         current_date = (base_day + datetime.timedelta(days=index)).strftime('%Y%m%d')
         current_url = url_base.format(current_date, page)
-        print(current_url)
-        request = requests.get(current_url)
-        data = request.json()
-        if request.status_code == 200 and data['success'] == 1:
+        data = get_games_of_the_day(current_url)
+        
+        if data['success'] == 1:
             games_total = data['pager']['total']
             per_page = data['pager']['per_page']
             num_pages = math.ceil(int(games_total) / int(per_page))
             process_upcoming_events(data)
             page +=1
         else:
-            print("Erro:" + str(request.status_code))
+            print("Error on this url: " + current_url)
 
         while page <= num_pages:
             current_url = url_base.format(current_date, page)
-            print(current_url)
-            request = requests.get(current_url)
-            if request.status_code == 200 and data['success'] == 1:
-                process_upcoming_events(request.json())
+            data = get_games_of_current_page(current_url)
+            if data['success'] == 1:
+                process_upcoming_events(data)
                 page += 1
             else:
-                print("Erro:" + str(request.status_code))
+                print("Error on this url: " + current_url)
+
 
 def get_cc_from_result(game_id, error_count=0):
     print("getting cc from result " + game_id)
@@ -59,15 +81,17 @@ def get_cc_from_result(game_id, error_count=0):
             if league:
                 return league.get('cc', None)
         else:
-            print("Get CC from result Failed.")
+            print("Error on get_cc_from url: " + url)
     except json.decoder.JSONDecodeError:
-        if error_count <= 5:
-            get_cc_from_result(game_id, error_count)
+        if error_count <= 4:
             error_count += 1
+            get_cc_from_result(game_id, error_count)
+            
 
 
 def get_game_name(game):
     return game['home']['name'] + ' x ' + game['away']['name']
+
 
 def get_start_date_from_timestamp(game):
     return datetime.datetime.fromtimestamp(int(game['time']))
@@ -115,7 +139,6 @@ def get_sport(game):
 
 def process_upcoming_events(data):
     if data['success'] == 1:
-
         game_ids = []
         for game in data['results']:
             game_name = get_game_name(game)
@@ -134,7 +157,6 @@ def process_upcoming_events(data):
             )
             game_ids.append(game['id'])    
         get_cotations(game_ids)
-        
 
 
 def get_cotations(games_ids, err_count=0):
@@ -162,8 +184,8 @@ def get_cotations(games_ids, err_count=0):
                 del games_ids[:10]
 
         except json.decoder.JSONDecodeError:
-            err_count += 1
             if err_count <= 4:
+                err_count += 1
                 get_cotations(games_ids, err_count)
 
 
@@ -189,8 +211,6 @@ def get_main_cotations(main_cotations, game_id):
             cotation_with_header_name(main_cotations['sp']['result_both_teams_to_score'], 'result_both_teams_to_score', game_id)
         if main_cotations['sp'].get('winning_margin', None):
             cotation_with_header_goals(main_cotations['sp']['winning_margin'], 'winning_margin', game_id)
-
-
 
 
 def get_half_cotations(half_cotations, game_id):
