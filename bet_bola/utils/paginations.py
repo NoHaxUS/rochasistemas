@@ -10,7 +10,11 @@ class EntryPagination(PageNumberPagination):
         entry = 0
         out = 0        
         total = 0
-        users = [{"id":user.pk,"username":user.username} for user in User.objects.filter(user_type__in=[2,3], is_active=True, my_store=self.request.user.my_store)]                  
+        if self.request.user.user_type == 3:
+            users = [{"id":user.pk,"username":user.username} for user in self.request.user.manager.manager_assoc.all()]
+        else:
+            users = [{"id":user.pk,"username":user.username} for user in User.objects.filter(user_type__in=[2,3], is_active=True, my_store=self.request.user.my_store)] 
+            
         for release in data:            
             if float(release['value']) > 0:
                 entry += float(release['value'])                

@@ -21,9 +21,11 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
             }        
     
     def validate_user(self, user):                
-        if not self.context['request'].user.pk == user.pk and not self.context['request'].user.user_type == 4:
-            raise NotAllowedException('Você não tem permissão para fazer laçamento nesse usuário.')        
-        return user
+        if self.context['request'].user.pk == user.pk or self.context['request'].user.user_type == 4:
+            return user
+        if self.context['request'].user.user_type == 3 and self.context['request'].user.manager.manager_assoc.filter(pk=user.pk).exists():            
+            return user
+        raise NotAllowedException('Você não tem permissão para fazer laçamento nesse usuário.')        
 
     class Meta:
         model = Entry
