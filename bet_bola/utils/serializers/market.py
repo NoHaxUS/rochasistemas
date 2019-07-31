@@ -20,6 +20,10 @@ class MarketModifiedSerializer(serializers.HyperlinkedModelSerializer):
 		instance.save()		
 		return instance
 
+	def validate_market(self, market):
+		if market.name == "1X2":
+			raise serializers.ValidationError("Mercado 1X2 não pode ser indisponibilizado.")
+		return market
 	class Meta:
 		model = MarketModified
 		fields = ('market', 'reduction_percentual', 'active', 'store')
