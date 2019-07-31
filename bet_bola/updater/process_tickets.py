@@ -12,9 +12,9 @@ def process_tickets(tickets=None):
         if valid_cotations.filter(settlement=1):
             ticket.status = 1
             ticket.save()
-            return None
+            continue
         if valid_cotations.filter(settlement=0):
-            return None
+            continue
         if not valid_cotations.filter(~Q(settlement=2)):
             if ticket.payment.status == 2:
                 ticket.status = 4
