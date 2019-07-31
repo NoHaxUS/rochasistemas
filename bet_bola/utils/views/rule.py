@@ -34,6 +34,7 @@ class RulesMessageView(ModelViewSet):
         rules = RulesMessage.objects.filter(store=store).first()
 
         RulesMessage.objects.update_or_create(
-            text=rules.text,
-            defaults={'text': text}
+            text=text,
+            store=store,
+            defaults={'text': text, 'store':store}
         )
