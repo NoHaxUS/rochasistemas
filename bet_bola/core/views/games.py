@@ -30,7 +30,7 @@ class TodayGamesView(ModelViewSet):
         store_id = self.request.GET['store']
         store = Store.objects.get(pk=store_id)
 
-        id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]                     
+        id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(store=store, available=False)]                     
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")
 
         my_games_qs = Game.objects.filter(start_date__gt=tzlocal.now(),
