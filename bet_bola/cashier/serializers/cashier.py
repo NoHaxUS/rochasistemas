@@ -85,10 +85,10 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
 
 			if start_creation_date:		
 				start_creation_date = datetime.datetime.strptime(start_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')		
-				tickets = tickets.filter(creation_date__gte=start_creation_date)
+				tickets = tickets.filter(creation_date__date__gte=start_creation_date)
 			if end_creation_date:
 				end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')		
-				tickets = tickets.filter(creation_date__lte=end_creation_date)	
+				tickets = tickets.filter(creation_date__date__lte=end_creation_date)	
 
 		return tickets
 
@@ -157,10 +157,11 @@ class ManagersCashierSerializer(SellersCashierSerializer):
 			
 			if start_creation_date:
 				start_creation_date = datetime.datetime.strptime(start_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')						
-				tickets = tickets.filter(creation_date__gte=start_creation_date)
+				tickets = tickets.filter(creation_date__date__gte=start_creation_date)				
 			if end_creation_date:				
-				end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
-				tickets = tickets.filter(creation_date__lte=end_creation_date)
+				end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')				
+				tickets = tickets.filter(creation_date__date__lte=end_creation_date)
+				
 				
 		return tickets
 

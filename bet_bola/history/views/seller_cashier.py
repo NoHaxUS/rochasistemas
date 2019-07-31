@@ -4,6 +4,7 @@ from history.paginations import SellerCashierHistoryPagination
 from history.models import SellerCashierHistory
 from history.permissions import BaseHistoryPermission
 from history.serializers.seller_cashier import SellerCashierHistorySerializer
+import datetime
 
 class SellerCashierView(FiltersMixin, ModelViewSet):
     queryset = SellerCashierHistory.objects.all()
@@ -15,8 +16,13 @@ class SellerCashierView(FiltersMixin, ModelViewSet):
 		'register_by':'register_by__pk',
         'entries_above':'entry__gt',
         'entries_under':'entry__lt',
-        'start_creation_date':'date__gte',
-        'end_creation_date':'date__lte',
+        'start_creation_date':'date__date__gte',
+        'end_creation_date':'date__date__lte',
+    }
+    
+    filter_value_transformations = {        
+        'end_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'start_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),        
     }
 
     def get_queryset(self):

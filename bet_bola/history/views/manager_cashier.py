@@ -4,6 +4,7 @@ from history.paginations import ManagerCashierHistoryPagination
 from history.permissions import BaseHistoryPermission
 from history.serializers.manager_cashier import ManagerCashierHistorySerializer
 from history.models import ManagerCashierHistory
+import datetime
 
 class ManagerCashierView(FiltersMixin, ModelViewSet):
     queryset = ManagerCashierHistory.objects.all()
@@ -15,10 +16,15 @@ class ManagerCashierView(FiltersMixin, ModelViewSet):
 		'register_by':'register_by__pk',
         'entries_above':'entry__gt',
         'entries_under':'entry__lt',
-        'start_creation_date':'date__gte',
-        'end_creation_date':'date__lte',
+        'start_creation_date':'date__date__gte',
+        'end_creation_date':'date__date__lte',
     }
 
+    filter_value_transformations = {        
+        'end_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'start_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),        
+    }
+    
     def get_queryset(self):
         user = self.request.user       
         if user.user_type == 3:    

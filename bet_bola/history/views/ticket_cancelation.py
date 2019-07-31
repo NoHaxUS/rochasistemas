@@ -6,6 +6,7 @@ from history.permissions import BaseHistoryPermission
 from history.paginations import TicketCancelationPagination
 from history.models import TicketCancelationHistory
 from history.serializers.ticket_cancelation import TicketCancelationSerializer
+import datetime
 
 
 class TicketCancelationView(FiltersMixin, ModelViewSet):
@@ -16,11 +17,17 @@ class TicketCancelationView(FiltersMixin, ModelViewSet):
     
     filter_mappings = {
         'ticket_id': 'ticket__ticket_id__contains',
-        'start_creation_date':'date__gte',		
-        'end_creation_date':'date__lte',
+        'start_creation_date':'date__date__gte',		
+        'end_creation_date':'date__date__lte',
         'paid_by': 'who_paid__pk',
         'cancelled_by': 'who_cancelled__pk',
 	}    
+
+    filter_value_transformations = {        
+        'end_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'start_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),        
+    }
+
     def get_queryset(self):
         user = self.request.user
         if user.user_type == 2:

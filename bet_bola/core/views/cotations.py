@@ -69,8 +69,8 @@ class CotationModifiedView(ModelViewSet):
     def perform_create(self, serializer):        
         cotation = serializer.validated_data['cotation']        
         store = self.request.user.my_store
-        if CotationModified.objects.filter(store=store, cotation=cotation).exists():
-            cotation_modified = CotationModified.objects.get(store=store, cotation=cotation)                        
+        if CotationModified.objects.filter(store=store, cotation=cotation).exists():            
+            cotation_modified = CotationModified.objects.get(store=store, cotation=cotation)                                    
         else:
              cotation_modified = CotationModified(store=store,cotation=cotation)                        
                 

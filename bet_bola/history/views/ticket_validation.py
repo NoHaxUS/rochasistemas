@@ -6,7 +6,7 @@ from history.permissions import BaseHistoryPermission
 from history.paginations import TicketValidationPagination
 from history.models import TicketValidationHistory
 from history.serializers.ticket_validation import TicketValidationSerializer
-
+import datetime
 
 
 class TicketValidationView(FiltersMixin, ModelViewSet):
@@ -17,10 +17,15 @@ class TicketValidationView(FiltersMixin, ModelViewSet):
     
     filter_mappings = {
         'ticket_id': 'ticket__ticket_id__contains',
-        'start_creation_date':'date__gte',		
-        'end_creation_date':'date__lte',
+        'start_creation_date':'date__date__gte',		
+        'end_creation_date':'date__date__lte',
         'paid_by': 'who_validated__pk',        
 	}    
+
+    filter_value_transformations = {        
+        'end_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'start_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),        
+    }
 
     def get_queryset(self):
         user = self.request.user

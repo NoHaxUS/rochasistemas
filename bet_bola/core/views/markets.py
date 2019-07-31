@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from django.db.models import Prefetch, Count, Q, F
 from filters.mixins import FiltersMixin
 from core.paginations import StandardSetPagination
-from core.models import Market, Cotation, Store
+from core.models import Market, Cotation, Store, CotationModified
 from core.serializers.market import MarketCotationSerializer, MarketSerializer
 from core.permissions import StoreIsRequired
 from utils.models import MarketRemotion, MarketModified
@@ -35,9 +35,10 @@ class MarketCotationView(ModelViewSet):
                 'message': 'A ID do jogo é obrigatória'
             })                
         id_list_excluded_markets = [excluded_markets.market.id for excluded_markets in MarketModified.objects.filter(active=False, store=store)]
-
-        my_cotations_qs = Cotation.objects.filter(game=game_id).exclude(market__name='1X2')
+        id_list_excluded_cotations = [excluded_cotations.cotation.id for excluded_cotations in CotationModified.objects.filter(available=False, store=store)]        
         
+        my_cotations_qs = Cotation.objects.filter(game=game_id).exclude(Q(market__name='1X2') | Q(pk__in=id_list_excluded_cotations))
+
         for market_removed in MarketRemotion.objects.filter(store=store):
             my_cotations_qs = my_cotations_qs.exclude(market__pk=market_removed.market_to_remove, name__icontains=market_removed.under_above + " " + market_removed.base_line)
 
