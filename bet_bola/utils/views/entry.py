@@ -34,9 +34,9 @@ class EntryView(FiltersMixin, ModelViewSet):
         data = request.data.get('data')
         data = json.loads(data)
         if request.user.user_type == 2:
-            data = {"user":request.user.pk, "value":data.get("value"), "store":request.user.my_store.pk}         
+            data = {"user":request.user.pk, "value":data.get("value"), "description":data.get("description"), "store":request.user.my_store.pk}         
         else:    
-            data = {"user":int(data.get("user")), "value":data.get("value"), "store":request.user.my_store.pk}         
+            data = {"user":int(data.get("user")), "value":data.get("value"), "description":data.get("description"), "store":request.user.my_store.pk}         
         serializer = self.get_serializer(data=data)        
         serializer.is_valid(raise_exception=True)        
         self.perform_create(serializer)
