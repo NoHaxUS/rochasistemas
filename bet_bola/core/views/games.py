@@ -7,7 +7,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework import filters as drf_filters
 from rest_framework import status
 from filters.mixins import FiltersMixin
-from utils.models import ExcludedLeague, ExcludedGame, MarketModified
+from utils.models import ExcludedLeague, ExcludedGame, MarketModified, MarketRemotion
 from user.permissions import IsAdmin
 from core.models import *
 from core.serializers.game import TodayGamesSerializer, GameSerializer, GameListSerializer, GameTableSerializer
@@ -30,7 +30,9 @@ class TodayGamesView(ModelViewSet):
         store_id = self.request.GET['store']
         store = Store.objects.get(pk=store_id)
 
-        id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(store=store, available=False)]                     
+        id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(store=store, available=False)]
+        # id_list_excluded_market = [excluded_market.game.id for excluded_market in MarketRemotion.objects.filter(store=store)] .exclude(market__pk=market_removed.market_to_remove, name__icontains=market_removed.under_above + " " + market_removed.base_line)
+                
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")
 
         my_games_qs = Game.objects.filter(start_date__gt=tzlocal.now(),

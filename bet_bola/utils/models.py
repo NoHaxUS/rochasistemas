@@ -162,9 +162,9 @@ class MarketRemotion(models.Model):
         (3,"Resultado / Total de Gols"),
         (4,"Total de Gols / Ambos  Marcam"),
         (6,"Número de Gols na Partida"),
-        (17,"Resultado 1° Tempo / Total de Gols"),
-        (22,"Total de Gols 1° Tempo"),
-        (30,"Total de Gols 2° Tempo"),
+        (16,"Resultado 1° Tempo / Total de Gols"),
+        (21,"Total de Gols 1° Tempo"),
+        (29,"Total de Gols 2° Tempo"),
 
     )
 
