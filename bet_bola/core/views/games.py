@@ -15,18 +15,25 @@ from core.paginations import StandardSetPagination, GameListPagination, GameTabl
 from core.permissions import StoreIsRequired
 from rest_framework.decorators import action
 import utils.timezone as tzlocal
+from django.conf import settings
+from core.cacheMixin import CacheKeyDispatchMixin
 import json
 
 
-class TodayGamesView(ModelViewSet):
+class TodayGamesView(CacheKeyDispatchMixin, ModelViewSet):
     """
     View Used for display today able games in Homepage
     """ 
     permission_classes = []
     serializer_class = TodayGamesSerializer
     pagination_class = GameListPagination
+    
+    cache_group = 'today_games'
+    caching_time = 120
+    
 
     def get_queryset(self):
+
         store_id = self.request.GET['store']
         store = Store.objects.get(pk=store_id)
 
@@ -53,16 +60,20 @@ class TodayGamesView(ModelViewSet):
         id_list_excluded_locations = [excluded_locations.location.id for excluded_locations in LocationModified.objects.filter(available=False, store=store_id)]        
         queryset = queryset.exclude(id__in=id_list_excluded_leagues)
         queryset = queryset.exclude(location__pk__in=id_list_excluded_locations)
+
         return queryset
 
 
-class TomorrowGamesView(ModelViewSet):        
+class TomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):        
     """
     View Used for display tomorrow able games
     """ 
     permission_classes = []
     serializer_class = TodayGamesSerializer
     pagination_class = GameListPagination
+
+    cache_group = 'tomorrow_games'
+    caching_time = 120
 
     def get_queryset(self):
         store_id = self.request.GET['store']
