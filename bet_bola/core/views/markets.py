@@ -38,12 +38,8 @@ class MarketCotationView(ModelViewSet):
         id_list_excluded_cotations = [excluded_cotations.cotation.id for excluded_cotations in CotationModified.objects.filter(available=False, store=store)]        
         
         my_cotations_qs = Cotation.objects.filter(game=game_id).exclude(Q(market__name='1X2') | Q(pk__in=id_list_excluded_cotations))        
-        for market_removed in MarketRemotion.objects.filter(store=store):
-            c = my_cotations_qs.filter(pk=137438).first()
-            print(c.market.name, market_removed.market_to_remove)
-            print(c.market.pk, market_removed.market_to_remove)
-            print(c.name, market_removed.under_above + " " + market_removed.base_line)
-            my_cotations_qs = my_cotations_qs.exclude(market__pk=market_removed.market_to_remove, name__icontains=market_removed.under_above + " " + market_removed.base_line)        
+        for market_removed in MarketRemotion.objects.filter(store=store):                                   
+            my_cotations_qs = my_cotations_qs.exclude(market__pk=market_removed.market_to_remove, name__regex=r'^.*?'+market_removed.under_above+'.*?'+market_removed.base_line+'.*?$')
         queryset = Market.objects.prefetch_related(Prefetch('cotations', queryset=my_cotations_qs, to_attr='my_cotations')).exclude(id__in=id_list_excluded_markets)
         queryset = queryset.annotate(cotations_count=Count('cotations', filter=Q(cotations__game__pk=game_id))).filter(cotations_count__gt=0).exclude(name='1X2')
 
