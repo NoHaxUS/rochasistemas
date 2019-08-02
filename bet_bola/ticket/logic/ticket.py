@@ -214,18 +214,17 @@ def reward_winner(self, who_rewarding_the_winner):
         'message':'O Ganhador ' + self.owner.first_name  + ' foi Pago.'
     }
 
-
 def cotation_sum(self):
     from core.models import CotationCopy
 
     valid_cotations = CotationCopy.objects.filter(ticket=self, original_cotation__game__status__in = (0,1,2,3))
     
     cotation_mul = 1
-    for cotation in valid_cotations:
-        cotation_mul *= cotation.price
+    for cotation in valid_cotations:        
+        cotation_mul *= cotation.price        
     if cotation_mul == 1:
         return 0
-
+    
     from utils.models import GeneralConfigurations
     try:
         general_config = self.store.my_configuration

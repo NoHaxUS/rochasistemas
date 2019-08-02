@@ -115,9 +115,8 @@ class TicketView(FiltersMixin, ModelViewSet):
 
         raw_reward_value = 1
         for cotation in serializer.validated_data['cotations']:
-            raw_reward_value *= cotation.price
-        raw_reward_value = bet_value * raw_reward_value
-
+            raw_reward_value *= cotation.get_store_price(store)        
+        raw_reward_value = bet_value * raw_reward_value        
         payment = Payment.objects.create()
         rewad_was_changed, rewad_value = get_reward_value(bet_value, raw_reward_value, store)
         reward = Reward.objects.create(value=rewad_value)
@@ -140,7 +139,7 @@ class TicketView(FiltersMixin, ModelViewSet):
                 store=store
             )
         
-        for cotation in serializer.validated_data['cotations']:			
+        for cotation in serializer.validated_data['cotations']:	            
             CotationCopy(
                 original_cotation=cotation,
                 ticket=instance,                                        

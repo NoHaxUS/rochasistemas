@@ -12,6 +12,7 @@ from utils.models import GeneralConfigurations
 from user.models import Seller
 from ticket.models import Ticket
 import utils.timezone as tzlocal
+from core.logic.cotation import get_store_price
 
 class Store(models.Model):
     fantasy = models.CharField(max_length=150, verbose_name="Nome da Banca")
@@ -112,6 +113,9 @@ class Cotation(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    def get_store_price(self, store):
+        return get_store_price(self, store)
 
     def get_right_settlement_display(self):
         if self.game.status in {4,5,6,7,8,9,99}:
