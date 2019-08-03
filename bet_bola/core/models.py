@@ -88,6 +88,12 @@ class CotationModified(models.Model):
     price = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')    
     available = models.BooleanField(default=True)
 
+    def save(self, *args, **kwargs):
+        
+        from utils.cache import invalidate_cache_group
+        invalidate_cache_group('today_games')
+
+        super().save(*args, **kwargs)
     class Meta:
         ordering = ['-pk', ]
         verbose_name = 'Cota Modificada'

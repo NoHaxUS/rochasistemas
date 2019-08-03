@@ -29,17 +29,15 @@ class TodayGamesView(CacheKeyDispatchMixin, ModelViewSet):
     pagination_class = GameListPagination
     
     cache_group = 'today_games'
-    caching_time = 120
+    caching_time = 60 * 3
     
 
     def get_queryset(self):
-
         store_id = self.request.GET['store']
         store = Store.objects.get(pk=store_id)
 
         id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(store=store, available=False)]
-        # id_list_excluded_market = [excluded_market.game.id for excluded_market in MarketRemotion.objects.filter(store=store)] .exclude(market__pk=market_removed.market_to_remove, name__icontains=market_removed.under_above + " " + market_removed.base_line)
-                
+
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")
 
         my_games_qs = Game.objects.filter(start_date__gt=tzlocal.now(),
@@ -73,7 +71,7 @@ class TomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):
     pagination_class = GameListPagination
 
     cache_group = 'tomorrow_games'
-    caching_time = 120
+    caching_time = 60 * 5
 
     def get_queryset(self):
         store_id = self.request.GET['store']
@@ -103,13 +101,16 @@ class TomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):
         return queryset
 
 
-class AfterTomorrowGamesView(ModelViewSet):        
+class AfterTomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):        
     """
     View Used for display after tomorrow able games
     """ 
     permission_classes = []
     serializer_class = TodayGamesSerializer
     pagination_class = GameListPagination
+
+    cache_group = 'after_tomorrow_games'
+    caching_time = 60 * 5
 
     def get_queryset(self):
         store_id = self.request.GET['store']
@@ -139,13 +140,15 @@ class AfterTomorrowGamesView(ModelViewSet):
         return queryset
 
 
-class SearchGamesView(ModelViewSet):
+class SearchGamesView(CacheKeyDispatchMixin, ModelViewSet):
     """
     This views is used to in search requests and filtering games from league ID
     """
     serializer_class = TodayGamesSerializer
     pagination_class = GameListPagination
     permission_classes = []
+    cache_group = 'search_games'
+    caching_time = 60 * 3
 
     def get_queryset(self):
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")
@@ -193,7 +196,7 @@ class SearchGamesView(ModelViewSet):
         return queryset
 
 
-class GamesTable(ModelViewSet):
+class GamesTable(CacheKeyDispatchMixin, ModelViewSet):
     """
     View Used for display the Games Table
     """ 
@@ -201,6 +204,9 @@ class GamesTable(ModelViewSet):
     permission_classes = []
     serializer_class = GameTableSerializer
     pagination_class = GameTablePagination
+    cache_group = 'games_table'
+    caching_time = 60 * 3
+
 
     def get_queryset(self):
         store_id = self.request.GET['store']
@@ -232,10 +238,12 @@ class GamesTable(ModelViewSet):
         return queryset
 
 
-class TodayGamesAdmin(FiltersMixin, ModelViewSet):
+class TodayGamesAdmin(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
     queryset = Game.objects.none()
     serializer_class = GameListSerializer
     pagination_class = GameListPagination
+    cache_group = 'today_games_adm'
+    caching_time = 60 * 3
     
 
     filter_mappings = {
@@ -246,12 +254,9 @@ class TodayGamesAdmin(FiltersMixin, ModelViewSet):
 	}
 
     def get_queryset(self):
-        my_cotation_qs = Cotation.objects.filter(market__name="1X2")
-
-        #store_id = self.request.user.my_store
+        #my_cotation_qs = Cotation.objects.filter(market__name="1X2")
         store = self.request.user.my_store
-        
-
+    
         id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
         id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store)]
 
@@ -285,13 +290,15 @@ class TodayGamesAdmin(FiltersMixin, ModelViewSet):
             })
 
 
-class GamesTomorrow(FiltersMixin, ModelViewSet):
+class GamesTomorrowAdmin(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
     """
     View Used for display tomorrow games
     """ 
     permission_classes = []
     serializer_class = GameListSerializer
     pagination_class = GameListPagination
+    cache_group = 'tomorrow_games_adm'
+    caching_time = 60 * 3
 
     filter_mappings = {
 		'game_name':'name__icontains',
@@ -301,13 +308,12 @@ class GamesTomorrow(FiltersMixin, ModelViewSet):
 	}
 
     def get_queryset(self):
-        my_cotation_qs = Cotation.objects.filter(market__name="1X2")
+        #my_cotation_qs = Cotation.objects.filter(market__name="1X2")
 
-        store_id = self.request.GET['store']
-        store = Store.objects.get(pk=store_id)
+        store = self.request.user.my_store
 
         id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
-        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in LeagueModified.objects.filter(available=False, store=store_id)]
+        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in LeagueModified.objects.filter(available=False, store=store)]
 
         queryset = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
             status__in=[0])\
@@ -321,13 +327,15 @@ class GamesTomorrow(FiltersMixin, ModelViewSet):
         return queryset
 
 
-class GamesAfterTomorrow(FiltersMixin, ModelViewSet):
+class GamesAfterTomorrowAdmin(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
     """
     View Used for display after tomorrow games
     """ 
     permission_classes = []
     serializer_class = GameListSerializer
     pagination_class = GameListPagination
+    cache_group = 'after_tomorrow_games_adm'
+    caching_time = 60 * 3
 
     filter_mappings = {
 		'game_name':'name__icontains',
@@ -337,13 +345,12 @@ class GamesAfterTomorrow(FiltersMixin, ModelViewSet):
 	}
 
     def get_queryset(self):
-        my_cotation_qs = Cotation.objects.filter(market__name="1X2")
+        #my_cotation_qs = Cotation.objects.filter(market__name="1X2")
 
-        store_id = self.request.GET['store']
-        store = Store.objects.get(pk=store_id)
+        store = self.request.user.my_store
 
         id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
-        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in LeagueModified.objects.filter(available=False, store=store_id)]
+        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in LeagueModified.objects.filter(available=False, store=store)]
 
         queryset = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
             status__in=[0])\

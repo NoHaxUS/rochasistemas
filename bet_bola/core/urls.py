@@ -3,14 +3,14 @@ from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from django.contrib.auth import views as auth_views
 from core.views.games import (
-    TodayGamesAdmin, GamesTable, GamesTomorrow, 
-    GamesAfterTomorrow, SearchGamesView, TodayGamesView, 
+    TodayGamesAdmin, GamesTable, GamesTomorrowAdmin, 
+    GamesAfterTomorrowAdmin, SearchGamesView, TodayGamesView, 
     TomorrowGamesView, AfterTomorrowGamesView
 )
 from core.views.sports import SportView
 from core.views.stores import StoreView
 from core.views.locations import LocationView, LocationModifiedView
-from core.views.leagues import LeagueView, LeagueModifiedView
+from core.views.leagues import LeagueAdminView, LeagueModifiedView
 from core.views.cotations import CotationView, CotationCopyView, CotationModifiedView
 from core.views.markets import MarketView, MarketCotationView
 from core.views.general import APIRootView, MainMenu
@@ -20,7 +20,7 @@ app_name = 'core'
 
 router = DefaultRouter()
 router.register(r'stores', StoreView)
-router.register(r'leagues', LeagueView)
+router.register(r'leagues', LeagueAdminView)
 router.register(r'locations', LocationView)
 router.register(r'cotations', CotationView)
 router.register(r'cotationshistory', CotationCopyView)
@@ -41,8 +41,8 @@ urlpatterns = [
     path('search_games/', SearchGamesView.as_view({'get': 'list'}), name='search_games'),
     path('games_table/', GamesTable.as_view({'get': 'list'}), name='games_table'),
     path('main_menu/', MainMenu.as_view()),
-    path('games_tomorrow/', GamesTomorrow.as_view({'get': 'list'}), name='games_tomorrow'),
-    path('games_after_tomorrow/', GamesAfterTomorrow.as_view({'get': 'list'}), name='games_after_tomorrow'),
+    path('games_tomorrow/', GamesTomorrowAdmin.as_view({'get': 'list'}), name='games_tomorrow'),
+    path('games_after_tomorrow/', GamesAfterTomorrowAdmin.as_view({'get': 'list'}), name='games_after_tomorrow'),
 ]
 
 urlpatterns += router.urls
