@@ -9,12 +9,15 @@ from utils.models import Entry
 from utils.serializers.entry import EntrySerializer
 from utils.permissions import EntryPermission
 import json
+from core.cacheMixin import CacheKeyGetMixin
 
-class EntryView(FiltersMixin, ModelViewSet):
+class EntryView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
     pagination_class = EntryPagination
     permission_classes = [EntryPermission, ]
+    cache_group = 'general_configurations_adm'
+    caching_time = 60
 
     filter_mappings = {
         'user':'user__pk',

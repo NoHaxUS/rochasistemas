@@ -8,13 +8,16 @@ from core.serializers.location import LocationSerializer, LocationModifiedSerial
 from core.permissions import StoreIsRequired
 from core.paginations import StandardSetPagination
 from filters.mixins import FiltersMixin
+from core.cacheMixin import CacheKeyGetMixin
 import json
 
-class LocationView(FiltersMixin, ModelViewSet):
+class LocationView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
     permission_classes = []
     pagination_class = StandardSetPagination
+    cache_group = 'location_view_adm'
+    caching_time = 60 * 3
 
     filter_mappings = {
         'location_name':'name__icontains'        

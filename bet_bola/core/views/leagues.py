@@ -13,7 +13,7 @@ import json
 
 
 class LeagueAdminView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
-    cache_group = 'league_view'
+    cache_group = 'league_view_adm'
     caching_time = 60 * 3
 
     queryset = League.objects.all()

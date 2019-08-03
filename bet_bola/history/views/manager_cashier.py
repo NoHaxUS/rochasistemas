@@ -5,12 +5,15 @@ from history.permissions import BaseHistoryPermission
 from history.serializers.manager_cashier import ManagerCashierHistorySerializer
 from history.models import ManagerCashierHistory
 import datetime
+from core.cacheMixin import CacheKeyGetMixin
 
-class ManagerCashierView(FiltersMixin, ModelViewSet):
+class ManagerCashierView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
     queryset = ManagerCashierHistory.objects.all()
     serializer_class = ManagerCashierHistorySerializer
     pagination_class = ManagerCashierHistoryPagination
     permission_classes = [BaseHistoryPermission]
+    cache_group = 'manager_cashier_view_adm'
+    caching_time = 60
 
     filter_mappings = {
 		'register_by':'register_by__pk',
