@@ -4,6 +4,7 @@ from utils.serializers.exclude import ExcludedGameSerializer, ExcludedLeagueSeri
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from utils.models import ExcludedGame, ExcludedLeague
 
+
 class ExcludedGameView(ModelViewSet):
 	queryset = ExcludedGame.objects.all()
 	serializer_class = ExcludedGameSerializer

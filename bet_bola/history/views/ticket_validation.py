@@ -7,6 +7,7 @@ from history.paginations import TicketValidationPagination
 from history.models import TicketValidationHistory
 from history.serializers.ticket_validation import TicketValidationSerializer
 import datetime
+from core.cacheMixin import CacheKeyGetMixin
 
 
 class TicketValidationView(FiltersMixin, ModelViewSet):
@@ -14,6 +15,8 @@ class TicketValidationView(FiltersMixin, ModelViewSet):
     serializer_class = TicketValidationSerializer
     pagination_class = TicketValidationPagination
     permission_classes = [BaseHistoryPermission,]
+    cache_group = 'ticket_validation_view_adm'
+    caching_time = 60
     
     filter_mappings = {
         'ticket_id': 'ticket__ticket_id__contains',

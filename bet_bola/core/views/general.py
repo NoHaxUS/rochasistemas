@@ -9,6 +9,7 @@ from django.db.models import Count
 from django_filters import rest_framework as filters
 from utils.models import ExcludedLeague, ExcludedGame
 from core.models import League, Game, LeagueModified, LocationModified
+from core.cacheMixin import CacheKeyGetMixin
 import utils.timezone as tzlocal
 
 class APIRootView(APIView):
@@ -30,7 +31,11 @@ class APIRootView(APIView):
 
 
 
-class MainMenu(APIView):
+class MainMenu(CacheKeyGetMixin, APIView):
+    cache_group = 'main_menu'
+    caching_time = 60 * 3
+
+
     def get(self, request):        
         store_id = request.GET['store']
         id_list_excluded_games = [excluded_games.game.id for excluded_games in ExcludedGame.objects.filter(store__id=store_id)]

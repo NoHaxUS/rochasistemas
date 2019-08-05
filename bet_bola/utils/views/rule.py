@@ -7,12 +7,15 @@ from user.permissions import IsAdmin
 from utils.models import RulesMessage
 from filters.mixins import FiltersMixin
 import json
+from core.cacheMixin import CacheKeyGetMixin
 
 
-class RulesMessageView(ModelViewSet):
+class RulesMessageView(CacheKeyGetMixin, ModelViewSet):
     queryset = RulesMessage.objects.all()
     serializer_class = RulesMessageSerializer
     permission_classes = [IsAdmin]
+    cache_group = 'rules_adm'
+    caching_time = 60
 
     def get_queryset(self):
         store = self.request.user.my_store

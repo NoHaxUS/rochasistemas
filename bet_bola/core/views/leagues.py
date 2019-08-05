@@ -8,10 +8,14 @@ from core.serializers.league import LeagueSerializer, LeagueModifiedSerializer
 from core.permissions import StoreIsRequired
 from core.paginations import StandardSetPagination
 from filters.mixins import FiltersMixin
+from core.cacheMixin import CacheKeyGetMixin
 import json
 
 
-class LeagueView(FiltersMixin, ModelViewSet):
+class LeagueAdminView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
+    cache_group = 'league_view_adm'
+    caching_time = 60 * 3
+
     queryset = League.objects.all()
     serializer_class = LeagueSerializer
     permission_classes = []
@@ -26,10 +30,17 @@ class LeagueView(FiltersMixin, ModelViewSet):
     def get_queryset(self):
         priority = self.request.GET.get('my_priority')
         available = self.request.GET.get('available')
+        
         store = self.request.user.my_store
         qs = self.queryset.all()
-        leagues_modified = LeagueModified.objects.filter(store=store)        
         
+        #leagues_modified = LeagueModified.objects.filter(store=store)
+        ordered_leagues = League.objects.filter(my_modifications__store=store).order_by('my_modifications__priority')
+        #print(ordered_leagues.query)
+        filtered_ids = [league.pk for league in ordered_leagues]
+        qs = League.objects.exclude(pk__in=filtered_ids)
+        qs = ordered_leagues | qs
+
         if priority:
             qs = qs.filter(my_modifications__priority__gte=priority) | qs.filter(priority__gte=priority).exclude(pk__in=[league.league.pk for league in leagues_modified])
         if available:

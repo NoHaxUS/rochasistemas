@@ -20,13 +20,15 @@ from history.permissions import (
     CashierCloseSellerPermission, SellerCashierPermission
 )
 import json, datetime, decimal
+from core.cacheMixin import CacheKeyDispatchMixin
 
-
-class SellersCashierView(FiltersMixin, ModelViewSet):
+class SellersCashierView(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(payment__status=2).distinct()
     serializer_class = SellersCashierSerializer
-    permission_classes = [SellerCashierPermission]
-    pagination_class = SellersCashierPagination    
+    permission_classes = [SellerCashierPermission]    
+    pagination_class = SellersCashierPagination
+    cache_group = 'sellers_cashier'
+    caching_time = 10
 
     def list(self, request, pk=None):        
         queryset = self.get_queryset()
@@ -89,11 +91,13 @@ class SellersCashierView(FiltersMixin, ModelViewSet):
         })
     
 
-class ManagersCashierView(FiltersMixin, ModelViewSet):
+class ManagersCashierView(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
     queryset = Manager.objects.filter(manager_assoc__payment__status=2).distinct()
     serializer_class = ManagersCashierSerializer
     permission_classes = [ManagerCashierPermission]
     pagination_class = ManagersCashierPagination
+    cache_group = 'managers_cashier'
+    caching_time = 10
 
     def list(self, request, pk=None):        
         queryset = self.get_queryset()
@@ -156,11 +160,13 @@ class ManagersCashierView(FiltersMixin, ModelViewSet):
         })                
 
 
-class SellerCashierView(FiltersMixin, ModelViewSet):
+class SellerCashierView(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = CashierSerializer  
     permission_classes = [SellerCashierPermission]  
     pagination_class = SellerCashierPagination
+    cache_group = 'seller_cashier'
+    caching_time = 10
 
     filter_mappings = {
         'ticket_id':'pk',
@@ -208,11 +214,13 @@ class SellerCashierView(FiltersMixin, ModelViewSet):
                 closed_for_seller=False) | Q(store=user.my_store, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
 
 
-class ManagerCashierView(FiltersMixin, ModelViewSet):
+class ManagerCashierView(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = CashierSerializer
     permission_classes = [ManagerCashierPermission]
     pagination_class = ManagerCashierPagination
+    cache_group = 'manager_cashier'
+    caching_time = 10
 
     filter_mappings = {
         'ticket_id':'pk',

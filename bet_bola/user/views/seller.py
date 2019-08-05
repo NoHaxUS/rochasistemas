@@ -12,12 +12,15 @@ from user.paginations import SellerPagination
 from filters.mixins import FiltersMixin
 import decimal
 import json
+from core.cacheMixin import CacheKeyGetMixin
 
-class SellerView(FiltersMixin, ModelViewSet):
+class SellerView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(is_active=True)
     serializer_class = SellerSerializer
     pagination_class = SellerPagination
     permission_classes = [IsAdminOrManager,]
+    cache_group = 'seller_user_adm'
+    caching_time = 60
 
     filter_mappings = {
         'login': 'username__icontains',

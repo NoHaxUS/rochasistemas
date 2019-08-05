@@ -14,12 +14,14 @@ from user.models import Seller, Manager
 from utils.models import Entry
 from utils import timezone as tzlocal
 from config import settings
-import json
-import datetime
-import decimal
+import json, datetime, decimal
+from core.cacheMixin import CacheKeyGetMixin
 
 
-class GeneralCashier(APIView):
+class GeneralCashier(CacheKeyGetMixin, APIView):
+    cache_group = 'general_cashier'
+    caching_time = 5
+
     def get(self, request):
         if request.user.is_authenticated:
             entries = 0

@@ -5,22 +5,28 @@ from utils.serializers.manager_comission import ManagerComissionSerializer
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from utils.models import SellerComission, ManagerComission
 from filters.mixins import FiltersMixin
+from core.cacheMixin import CacheKeyGetMixin
 
-class SellerComissionView(FiltersMixin, ModelViewSet):
-	queryset = SellerComission.objects.all()
-	serializer_class = SellerComissionSerializer
-	
-	filter_mappings = {
-		'seller': 'seller_related',
-		'store':'store'
-	}
+class SellerComissionView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
+    queryset = SellerComission.objects.all()
+    serializer_class = SellerComissionSerializer
+    cache_group = 'seller_comission_adm'
+    caching_time = 60
 
-class ManagerComissionView(FiltersMixin, ModelViewSet):
-	queryset = ManagerComission.objects.all()
-	serializer_class = ManagerComissionSerializer
-	
-	filter_mappings = {
-		'manager': 'manager_related',
-		'store':'store'
-	}
+    
+    filter_mappings = {
+        'seller': 'seller_related',
+        'store':'store'
+    }
+
+class ManagerComissionView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
+    queryset = ManagerComission.objects.all()
+    serializer_class = ManagerComissionSerializer
+    cache_group = 'manager_comission_adm'
+    caching_time = 60
+    
+    filter_mappings = {
+        'manager': 'manager_related',
+        'store':'store'
+    }
 

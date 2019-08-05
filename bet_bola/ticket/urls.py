@@ -10,8 +10,7 @@ app_name = 'core'
 router = DefaultRouter()
 router.register(r'tickets', TicketView)
 router.register(r'show_ticket', ShowTicketView)
-router.register(r'rewards', RewardView)
-router.register(r'payments', PaymentView)
-
+#router.register(r'rewards', RewardView)
+#router.register(r'payments', PaymentView)
 
 urlpatterns = router.urls

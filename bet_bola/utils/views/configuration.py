@@ -6,15 +6,18 @@ from utils.serializers.configuration import GeneralConfigurationsSerializer
 from utils.models import GeneralConfigurations
 from filters.mixins import FiltersMixin
 import json
+from core.cacheMixin import CacheKeyGetMixin
 
-class GeneralConfigurationsView(FiltersMixin, ModelViewSet):
+class GeneralConfigurationsView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
     queryset = GeneralConfigurations.objects.all()
     serializer_class = GeneralConfigurationsSerializer
     permission_classes = []
+    cache_group = 'general_configurations_adm'
+    caching_time = 60
 
     filter_mappings = {
-		'store':'store__pk',		
-  	}
+      'store':'store__pk',		
+    }
     
     def list(self, request, pk=None):		
       if request.user.is_authenticated:
