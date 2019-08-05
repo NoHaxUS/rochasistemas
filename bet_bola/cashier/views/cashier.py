@@ -30,6 +30,7 @@ class SellersCashierView(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
     cache_group = 'sellers_cashier'
     caching_time = 10
 
+
     def list(self, request, pk=None):        
         queryset = self.get_queryset()
         
@@ -41,6 +42,7 @@ class SellersCashierView(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+
     def get_queryset(self):
         user = self.request.user
         if user.user_type == 2:
@@ -48,7 +50,8 @@ class SellersCashierView(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
         elif user.user_type == 3:
             return self.queryset.filter(my_manager__pk=user.pk,my_store=self.request.user.my_store)            
         return self.queryset.filter(my_store=self.request.user.my_store)
-        
+
+
     @action(methods=['post'], detail=False, permission_classes = [CashierCloseSellerPermission])
     def close_seller(self, request, pk=None):          
         data = json.loads(request.POST.get('data'))                
@@ -99,6 +102,7 @@ class ManagersCashierView(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
     cache_group = 'managers_cashier'
     caching_time = 10
 
+
     def list(self, request, pk=None):        
         queryset = self.get_queryset()
         
@@ -109,6 +113,7 @@ class ManagersCashierView(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
                 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
 
     def get_queryset(self):
         user = self.request.user

@@ -91,7 +91,8 @@ class CotationModified(models.Model):
     def save(self, *args, **kwargs):
         
         from utils.cache import invalidate_cache_group
-        invalidate_cache_group('today_games')
+        invalidate_cache_group('today_games', 1)
+        print("CHAMANDO SAVE")
 
         super().save(*args, **kwargs)
     class Meta:
