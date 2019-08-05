@@ -19,13 +19,9 @@ class GeneralConfigurationsView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
       'store':'store__pk',		
     }
     
-    def list(self, request, pk=None):		
-      if request.user.is_authenticated:
-        store_id = request.user.my_store.pk			
-        general_configuration= GeneralConfigurations.objects.filter(store__pk=store_id)
-        serializer = self.get_serializer(general_configuration, many=True)                       
-        return Response(serializer.data)
-      return Response({})    
+    def get_queryset(self):
+        store = self.request.user.my_store
+        return self.queryset.filter(store=store)
 
     def create(self, request, *args, **kwargs):
       data = request.data.get('data')       

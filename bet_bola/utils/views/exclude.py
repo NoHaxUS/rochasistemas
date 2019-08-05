@@ -10,15 +10,9 @@ class ExcludedGameView(ModelViewSet):
 	serializer_class = ExcludedGameSerializer
 	permission_classes = [StoreIsRequired, UserIsFromThisStore,]
 
-	def list(self, request, pk=None):
-		from core.models import Store
-		store_id = request.GET.get('store')
-		store = Store.objects.get(pk=store_id)
-
-		excluded_game= ExcludedGame.objects.filter(store=store)
-		serializer = self.get_serializer(excluded_game, many=True)
-
-		return Response(serializer.data)
+	def get_queryset(self):
+		store = self.request.user.my_store
+		return self.queryset.filter(store=store)
 
 
 class ExcludedLeagueView(ModelViewSet):

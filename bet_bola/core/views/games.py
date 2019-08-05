@@ -253,7 +253,8 @@ class TodayGamesAdmin(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
         'start_time': 'start_date__time__gte'
 	}
 
-    def get_queryset(self):        
+
+    def get_queryset(self):
         store = self.request.user.my_store
     
         id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
