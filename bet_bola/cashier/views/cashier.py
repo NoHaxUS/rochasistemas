@@ -26,7 +26,18 @@ class SellersCashierView(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(payment__status=2).distinct()
     serializer_class = SellersCashierSerializer
     permission_classes = [SellerCashierPermission]
-    pagination_class = SellersCashierPagination
+    pagination_class = SellersCashierPagination    
+
+    def list(self, request, pk=None):        
+        queryset = self.get_queryset()
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(queryset, many=True)            
+            return self.get_paginated_response(serializer.data)                        
+                
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def get_queryset(self):
         user = self.request.user
@@ -83,6 +94,17 @@ class ManagersCashierView(FiltersMixin, ModelViewSet):
     serializer_class = ManagersCashierSerializer
     permission_classes = [ManagerCashierPermission]
     pagination_class = ManagersCashierPagination
+
+    def list(self, request, pk=None):        
+        queryset = self.get_queryset()
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(queryset, many=True)            
+            return self.get_paginated_response(serializer.data)                        
+                
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def get_queryset(self):
         user = self.request.user
@@ -161,6 +183,17 @@ class SellerCashierView(FiltersMixin, ModelViewSet):
         'end_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d')
     }
 
+    def list(self, request, pk=None):        
+        queryset = self.get_queryset()
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(queryset, many=True)            
+            return self.get_paginated_response(serializer.data)                        
+                
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     def get_queryset(self):        
         user = self.request.user
         if user.user_type == 2:   
@@ -202,6 +235,17 @@ class ManagerCashierView(FiltersMixin, ModelViewSet):
         'start_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
         'end_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d')
     }
+
+    def list(self, request, pk=None):        
+        queryset = self.get_queryset()
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(queryset, many=True)            
+            return self.get_paginated_response(serializer.data)                        
+                
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def get_queryset(self):
         user = self.request.user

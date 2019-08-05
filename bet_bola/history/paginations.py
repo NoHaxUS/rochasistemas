@@ -118,6 +118,13 @@ class SellersCashierPagination(PageNumberPagination):
             won_bonus_sum += float(user["won_bonus"])
             comissions_sum += float(user["comission"])
             total_out += float(user["total_out"])
+
+        page = int(self.request.GET.get('page',1)) 
+
+        if page == 1:
+            data = data[0:self.page_size]
+        data = data[self.page_size * (page - 1) : (page * self.page_size)]
+
         return Response({
             'links': {
                 'next': self.get_next_link(),
@@ -154,6 +161,13 @@ class ManagersCashierPagination(PageNumberPagination):
             won_bonus_sum += float(user["won_bonus"])
             seller_comissions_sum += float(user["comission_seller"])
             total_out += float(user["total_out"])
+        
+        page = int(self.request.GET.get('page',1)) 
+
+        if page == 1:
+            data = data[0:self.page_size]
+        data = data[self.page_size * (page - 1) : (page * self.page_size)]
+
         return Response({
             'links': {
                 'next': self.get_next_link(),
@@ -193,6 +207,13 @@ class SellerCashierPagination(PageNumberPagination):
                 out += float(ticket["reward"]["value"]) - float(ticket["won_bonus"])
                 won_bonus_sum += float(ticket["won_bonus"])
             comissions_sum += float(ticket["comission"])
+        
+        page = int(self.request.GET.get('page',1)) 
+
+        if page == 1:
+            data = data[0:self.page_size]
+        data = data[self.page_size * (page - 1) : (page * self.page_size)]
+
         return Response({
             'links': {
                 'next': self.get_next_link(),
@@ -260,6 +281,12 @@ class ManagerCashierPagination(PageNumberPagination):
                 manager_comission = 0
 
             manager_comission_sum += manager_comission
+        
+        page = int(self.request.GET.get('page',1)) 
+
+        if page == 1:
+            data = data[0:self.page_size]
+        data = data[self.page_size * (page - 1) : (page * self.page_size)]        
         
         return Response({
             'links': {

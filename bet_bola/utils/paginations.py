@@ -20,7 +20,14 @@ class EntryPagination(PageNumberPagination):
                 entry += float(release['value'])                
             else:
                 out += float(release['value'])
-            total += float(release['value'])            
+            total += float(release['value'])  
+
+        page = int(self.request.GET.get('page',1)) 
+
+        if page == 1:
+            data = data[0:self.page_size]
+        data = data[self.page_size * (page - 1) : (page * self.page_size)] 
+
         return Response({
             'links': {
                 'next': self.get_next_link(),

@@ -22,6 +22,17 @@ class EntryView(FiltersMixin, ModelViewSet):
         'end_creation_date': 'creation_date__lte',
     }
 
+    def list(self, request, pk=None):        
+        queryset = self.get_queryset()
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(queryset, many=True)            
+            return self.get_paginated_response(serializer.data)                        
+                
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     def get_queryset(self):
         user = self.request.user
         if user.user_type == 2:
