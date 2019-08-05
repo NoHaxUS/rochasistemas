@@ -22,7 +22,7 @@ class TicketValidationView(FiltersMixin, ModelViewSet):
         'ticket_id': 'ticket__ticket_id__contains',
         'start_creation_date':'date__date__gte',		
         'end_creation_date':'date__date__lte',
-        'paid_by': 'who_validated__pk',        
+        'paid_by': 'who_validated__username__icontains',        
 	}    
 
     filter_value_transformations = {        

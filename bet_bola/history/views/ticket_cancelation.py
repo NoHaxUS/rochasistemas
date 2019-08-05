@@ -23,8 +23,8 @@ class TicketCancelationView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
         'ticket_id': 'ticket__ticket_id__contains',
         'start_creation_date':'date__date__gte',		
         'end_creation_date':'date__date__lte',
-        'paid_by': 'who_paid__pk',
-        'cancelled_by': 'who_cancelled__pk',
+        'paid_by': 'who_paid__username__icontains',
+        'cancelled_by': 'who_cancelled__username__icontains',
 	}    
 
     filter_value_transformations = {        

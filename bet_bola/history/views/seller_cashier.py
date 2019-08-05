@@ -16,7 +16,7 @@ class SellerCashierView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
     caching_time = 60
 
     filter_mappings = {
-		'register_by':'register_by__pk',
+		'register_by':'register_by__username__icontains',
         'entries_above':'entry__gt',
         'entries_under':'entry__lt',
         'start_creation_date':'date__date__gte',
