@@ -53,4 +53,4 @@ class CacheKeyGetMixin:
     def get(self, *args, **kwargs):
         cache_key = get_cache_key(self.request)
         get_or_store_cache_key(self.request, cache_key, self.cache_group)
-        return cache_page(self.caching_time)(super().get)(*args, **kwargs)
+        return cache_page(self.caching_time)(self.get_logic)(*args, **kwargs)

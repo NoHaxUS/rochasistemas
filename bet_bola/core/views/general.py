@@ -12,6 +12,7 @@ from core.models import League, Game, LeagueModified, LocationModified
 from core.cacheMixin import cache_key_on_list
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from core.cacheMixin import  CacheKeyGetMixin
 import utils.timezone as tzlocal
 
 class APIRootView(APIView):
@@ -33,13 +34,14 @@ class APIRootView(APIView):
 
 
 
-class MainMenu(APIView):
+class MainMenu(CacheKeyGetMixin, APIView):
+    caching_time = 60
+    cache_group = 'main_menu'
+    
+    def get(self, request):
+        return super().get(request)
 
-    @method_decorator(cache_page(60*3, key_prefix="teste"))
-    def get(self, request):  
-        print(request)
-        cache_key_on_list(request, "main_menu")
-
+    def get_logic(self, request):
         store_id = request.GET['store']
         id_list_excluded_games = [excluded_games.game.id for excluded_games in ExcludedGame.objects.filter(store__id=store_id)]
         id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in LeagueModified.objects.filter(available=False, store=store_id)]
