@@ -6,6 +6,7 @@ from user.permissions import IsAdmin
 from utils.serializers.market import MarketModifiedSerializer, MarketRemotionSerializer, GetMarketRemotionSerializer
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from utils.models import MarketModified, MarketRemotion
+from utils.cache import invalidate_cache_group
 import json
 
 class MarketModifiedView(ModelViewSet):
@@ -36,6 +37,9 @@ class MarketModifiedView(ModelViewSet):
             self.perform_create(serializer)
             serializer_data.append(serializer.data)		
         headers = self.get_success_headers(serializer.data)
+        
+        invalidate_cache_group('market_cotation_view', request.user.my_store.pk) 
+        
         return Response(serializer_data, status=status.HTTP_201_CREATED, headers=headers)
 
 
@@ -58,8 +62,10 @@ class MarketRemotionView(ModelViewSet):
         serializer.is_valid(raise_exception=True)        
         self.perform_create(serializer)                
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    		
+
+        invalidate_cache_group('market_cotation_view', request.user.my_store.pk) 
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)    		
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:

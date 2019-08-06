@@ -208,7 +208,7 @@ class GamesTable(CacheKeyDispatchMixin, ModelViewSet):
     caching_time = 60 * 3
 
 
-    def get_queryset(self):
+    def get_queryset(self):        
         store_id = self.request.GET['store']
         store = Store.objects.get(pk=store_id)
 

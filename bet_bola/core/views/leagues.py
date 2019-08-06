@@ -9,6 +9,7 @@ from core.permissions import StoreIsRequired
 from core.paginations import StandardSetPagination
 from filters.mixins import FiltersMixin
 from core.cacheMixin import CacheKeyGetMixin
+from utils.cache import invalidate_cache_group
 import json
 
 
@@ -64,6 +65,13 @@ class LeagueModifiedView(FiltersMixin, ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
+
+        invalidate_cache_group('today_games', request.user.my_store.pk)
+        invalidate_cache_group('tomorrow_games', request.user.my_store.pk)
+        invalidate_cache_group('after_tomorrow_games', request.user.my_store.pk)
+        invalidate_cache_group('search_games', request.user.my_store.pk)    
+        invalidate_cache_group('main_menu', request.user.my_store.pk)    
+
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     @action(methods=['post'], detail=False, permission_classes=[IsAdmin])
@@ -73,6 +81,13 @@ class LeagueModifiedView(FiltersMixin, ModelViewSet):
         ids = data.get('ids')
         value = data.get('value')
         store = request.user.my_store
+
+        invalidate_cache_group('today_games', request.user.my_store.pk)
+        invalidate_cache_group('tomorrow_games', request.user.my_store.pk)
+        invalidate_cache_group('after_tomorrow_games', request.user.my_store.pk)
+        invalidate_cache_group('search_games', request.user.my_store.pk)
+        invalidate_cache_group('main_menu', request.user.my_store.pk)
+        
         if value:
             for id in ids:
                 if LeagueModified.objects.filter(league__pk=id, store=store).exists():
@@ -83,7 +98,7 @@ class LeagueModifiedView(FiltersMixin, ModelViewSet):
             return Response({
                 'success': True,
                 'message': 'Alterado com Sucesso :)'
-            })
+            })        
 
         return Response({
             'success': False,

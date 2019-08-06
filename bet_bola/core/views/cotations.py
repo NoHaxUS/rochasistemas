@@ -10,19 +10,30 @@ from core.permissions import StoreIsRequired, UserIsFromThisStore, CanModifyCota
 from core.models import CotationModified, Cotation
 from core.paginations import CotationsListSetPagination
 from filters.mixins import FiltersMixin
+from core.cacheMixin import CacheKeyDispatchMixin
+from utils.cache import invalidate_cache_group
 import json
 import decimal
 
-class CotationView(FiltersMixin, ModelViewSet):
+class CotationView(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
     queryset = Cotation.objects.all()
     serializer_class = CotationSerializer       
     permission_classes = []
     pagination_class = CotationsListSetPagination
+    cache_group = 'cotations_adm'
+    caching_time = 60
+
 
     @action(methods=['delete'], detail=True, permission_classes=[IsAdmin])
     def reset_cotation_price(self, request, pk=None):
-        cotation = self.get_object()
-        CotationModified.objects.filter(cotation=cotation, store=request.user.my_store).delete()
+        cotation = self.get_object()                
+        CotationModified.objects.filter(cotation=cotation, store=request.user.my_store).delete() 
+                
+        invalidate_cache_group('today_games', request.user.my_store.pk)
+        invalidate_cache_group('tomorrow_games', request.user.my_store.pk)
+        invalidate_cache_group('after_tomorrow_games', request.user.my_store.pk)
+        invalidate_cache_group('search_games', request.user.my_store.pk)
+        invalidate_cache_group('market_cotation_view', request.user.my_store.pk)
 
         return Response({
                 'success': True,
@@ -35,6 +46,7 @@ class CotationView(FiltersMixin, ModelViewSet):
         'game_name': 'game__name__icontains',
         'cotation_id': 'pk'
     }
+
 
 class CotationCopyView(ModelViewSet):
     queryset = CotationCopy.objects.all()
@@ -63,7 +75,12 @@ class CotationModifiedView(ModelViewSet):
             serializer = self.get_serializer(data=cotation_modified)               
             serializer.is_valid(raise_exception=True)        
             self.perform_create(serializer)                
-        headers = self.get_success_headers(serializer.data)
+        headers = self.get_success_headers(serializer.data)  
+
+        invalidate_cache_group('today_games', request.user.my_store.pk)
+        invalidate_cache_group('tomorrow_games', request.user.my_store.pk)
+        invalidate_cache_group('after_tomorrow_games', request.user.my_store.pk)
+
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):        

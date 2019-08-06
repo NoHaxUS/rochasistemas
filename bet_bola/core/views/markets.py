@@ -23,15 +23,16 @@ class MarketView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
     }        
 
 
-class MarketCotationView(ModelViewSet):
+class MarketCotationView(CacheKeyGetMixin, ModelViewSet):
     queryset = Market.objects.none()
     serializer_class = MarketCotationSerializer    
-    permission_classes = []
-    
+    permission_classes = []    
+    cache_group = 'market_cotation_view'
+    caching_time = 60 * 5
+
     def get_queryset(self):
         game_id = self.request.GET.get('game_id')
-        store = self.request.GET.get('store')
-        
+        store = self.request.GET.get('store')        
         if not game_id:
             return Response({
                 'success': False,
