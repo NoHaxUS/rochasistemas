@@ -99,6 +99,3 @@ class CotationModifiedView(ModelViewSet):
         cotation_modified.save()
         return cotation_modified
         
-
-
-    

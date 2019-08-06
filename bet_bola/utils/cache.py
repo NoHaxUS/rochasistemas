@@ -13,8 +13,5 @@ def invalidate_cache_group(cache_group, store_id):
                 cache.delete_many(group)
                 del groups[store_id][cache_group]
                 cache.set('cache_groups', groups, cache_time)
-                
-                print(cache.get('cache_groups'))
-
                 return True
     return False

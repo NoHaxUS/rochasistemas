@@ -13,6 +13,7 @@ from user.models import Seller
 from ticket.models import Ticket
 import utils.timezone as tzlocal
 from core.logic.cotation import get_store_price
+from utils.cache import invalidate_cache_group
 
 class Store(models.Model):
     fantasy = models.CharField(max_length=150, verbose_name="Nome da Banca")
@@ -88,18 +89,16 @@ class CotationModified(models.Model):
     price = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')    
     available = models.BooleanField(default=True)
 
-    def save(self, *args, **kwargs):
-        
+    def save(self, *args, **kwargs):        
         from utils.cache import invalidate_cache_group
         invalidate_cache_group('today_games', self.store.pk)
         invalidate_cache_group('tomorrow_games', self.store.pk)
         invalidate_cache_group('after_tomorrow_games', self.store.pk)
         invalidate_cache_group('search_games', self.store.pk)
-        invalidate_cache_group('market_cotation_view', self.store.pk) 
-        
-        print("CHAMANDO SAVE")
+        invalidate_cache_group('market_cotation_view', self.store.pk)                 
 
         super().save(*args, **kwargs)
+
     class Meta:
         ordering = ['-pk', ]
         verbose_name = 'Cota Modificada'

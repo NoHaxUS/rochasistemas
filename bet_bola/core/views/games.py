@@ -196,7 +196,7 @@ class SearchGamesView(CacheKeyDispatchMixin, ModelViewSet):
         return queryset
 
 
-class GamesTable(CacheKeyDispatchMixin, ModelViewSet):
+class GamesTable(ModelViewSet):
     """
     View Used for display the Games Table
     """ 
@@ -238,12 +238,10 @@ class GamesTable(CacheKeyDispatchMixin, ModelViewSet):
         return queryset
 
 
-class TodayGamesAdmin(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
+class TodayGamesAdmin(FiltersMixin, ModelViewSet):
     queryset = Game.objects.none()
     serializer_class = GameListSerializer
     pagination_class = GameListPagination
-    cache_group = 'today_games_adm'
-    caching_time = 60 * 3
     
 
     filter_mappings = {
@@ -290,15 +288,14 @@ class TodayGamesAdmin(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
             })
 
 
-class GamesTomorrowAdmin(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
+class GamesTomorrowAdmin(FiltersMixin, ModelViewSet):
     """
     View Used for display tomorrow games
     """ 
     permission_classes = []
     serializer_class = GameListSerializer
     pagination_class = GameListPagination
-    cache_group = 'tomorrow_games_adm'
-    caching_time = 60 * 3
+
 
     filter_mappings = {
 		'game_name':'name__icontains',
@@ -327,15 +324,14 @@ class GamesTomorrowAdmin(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
         return queryset
 
 
-class GamesAfterTomorrowAdmin(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
+class GamesAfterTomorrowAdmin(FiltersMixin, ModelViewSet):
     """
     View Used for display after tomorrow games
     """ 
     permission_classes = []
     serializer_class = GameListSerializer
     pagination_class = GameListPagination
-    cache_group = 'after_tomorrow_games_adm'
-    caching_time = 60 * 3
+
 
     filter_mappings = {
 		'game_name':'name__icontains',

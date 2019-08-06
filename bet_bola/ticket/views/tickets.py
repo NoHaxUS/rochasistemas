@@ -23,15 +23,13 @@ from ticket.permissions import CanToggleTicketAvailability
 from ticket.logic.reward import get_reward_value
 from user.permissions import IsAdminOrManagerOrSeller
 import random, json, datetime
-from core.cacheMixin import CacheKeyGetMixin
 
-class ShowTicketView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
+
+class ShowTicketView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = ShowTicketSerializer
     pagination_class = TicketPagination
     permission_classes = []
-    cache_group = 'show_ticket_view_adm'
-    caching_time = 5
 
     filter_mappings = {
         'ticket_id':'ticket_id',
@@ -39,7 +37,7 @@ class ShowTicketView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
     }
 
 
-class TicketView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
+class TicketView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
     pagination_class = TicketPagination

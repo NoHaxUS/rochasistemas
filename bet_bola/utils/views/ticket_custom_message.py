@@ -6,10 +6,9 @@ from utils.serializers.ticket_custom_message import TicketCustomMessageSerialize
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from utils.models import TicketCustomMessage
 import json
-from core.cacheMixin import CacheKeyGetMixin
 
 
-class TicketCustomMessageView(CacheKeyGetMixin, ModelViewSet):
+class TicketCustomMessageView(ModelViewSet):
     queryset = TicketCustomMessage.objects.all()
     serializer_class = TicketCustomMessageSerializer
     permission_classes = [IsAdmin,]

@@ -6,16 +6,13 @@ from utils.serializers.configuration import GeneralConfigurationsSerializer
 from utils.models import GeneralConfigurations
 from filters.mixins import FiltersMixin
 import json
-from core.cacheMixin import CacheKeyGetMixin
 from utils.cache import invalidate_cache_group
 
 
-class GeneralConfigurationsView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
+class GeneralConfigurationsView(FiltersMixin, ModelViewSet):
 	queryset = GeneralConfigurations.objects.all()
 	serializer_class = GeneralConfigurationsSerializer
-	permission_classes = []
-	cache_group = 'general_configurations_adm'
-	caching_time = 60
+	permission_classes = []	
 
 	filter_mappings = {
 	'store':'store__pk',		

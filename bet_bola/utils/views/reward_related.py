@@ -6,9 +6,9 @@ from utils.serializers.reward_related import RewardRestrictionSerializer
 from user.permissions import IsAdmin
 from utils.models import RewardRestriction
 import json
-from core.cacheMixin import CacheKeyGetMixin
 
-class RewardRestricionView(CacheKeyGetMixin, ModelViewSet):
+
+class RewardRestricionView(ModelViewSet):
     queryset = RewardRestriction.objects.all().order_by('bet_value')
     serializer_class = RewardRestrictionSerializer
     permission_classes = [IsAdmin,]

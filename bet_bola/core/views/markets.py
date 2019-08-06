@@ -7,23 +7,20 @@ from core.models import Market, Cotation, Store, CotationModified
 from core.serializers.market import MarketCotationSerializer, MarketSerializer
 from core.permissions import StoreIsRequired
 from utils.models import MarketRemotion, MarketModified
-from core.cacheMixin import CacheKeyGetMixin
 
 
-class MarketView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
+class MarketView(FiltersMixin, ModelViewSet):
     queryset = Market.objects.all()
     serializer_class = MarketSerializer    
     permission_classes = []
     pagination_class = StandardSetPagination
-    cache_group = 'market_view_adm'
-    caching_time = 60 * 3
-
+    
     filter_mappings = {
         'market_name':'name__icontains',        
     }        
 
 
-class MarketCotationView(CacheKeyGetMixin, ModelViewSet):
+class MarketCotationView(ModelViewSet):
     queryset = Market.objects.none()
     serializer_class = MarketCotationSerializer    
     permission_classes = []    

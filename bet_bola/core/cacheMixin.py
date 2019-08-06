@@ -35,6 +35,13 @@ def get_or_store_cache_key(request, cache_key, cache_group):
     print(groups)
 
 
+def cache_key_on_list(request, cache_group):
+    cache_key = get_cache_key(request)
+    print(request)
+    print(cache_key)
+    get_or_store_cache_key(request, cache_key, cache_group)
+
+
 class CacheKeyDispatchMixin:
     def list(self, *args, **kwargs):
         cache_key = get_cache_key(self.request)

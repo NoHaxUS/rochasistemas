@@ -7,17 +7,13 @@ from history.paginations import TicketCancelationPagination
 from history.models import TicketCancelationHistory
 from history.serializers.ticket_cancelation import TicketCancelationSerializer
 import datetime
-from core.cacheMixin import CacheKeyGetMixin
 
 
-class TicketCancelationView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
+class TicketCancelationView(FiltersMixin, ModelViewSet):
     queryset = TicketCancelationHistory.objects.all()
     serializer_class = TicketCancelationSerializer
     pagination_class = TicketCancelationPagination
     permission_classes = [BaseHistoryPermission]
-    cache_group = 'ticket_cancelation_view_adm'
-    caching_time = 60
-
     
     filter_mappings = {
         'ticket_id': 'ticket__ticket_id__contains',
