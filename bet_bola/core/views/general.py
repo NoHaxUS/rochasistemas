@@ -35,7 +35,7 @@ class APIRootView(APIView):
 
 class MainMenu(APIView):
 
-    @method_decorator(cache_page(60*3))
+    @method_decorator(cache_page(60*3, key_prefix="teste"))
     def get(self, request):  
         print(request)
         cache_key_on_list(request, "main_menu")
