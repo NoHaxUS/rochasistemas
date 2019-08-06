@@ -10,11 +10,10 @@ from core.paginations import StandardSetPagination
 from user.serializers.seller import SellerSerializer
 from user.paginations import SellerPagination
 from filters.mixins import FiltersMixin
-import decimal
-import json
-from core.cacheMixin import CacheKeyGetMixin
+import decimal, json
 
-class SellerView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
+
+class SellerView(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(is_active=True)
     serializer_class = SellerSerializer
     pagination_class = SellerPagination

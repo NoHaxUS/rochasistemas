@@ -8,14 +8,10 @@ from core.serializers.league import LeagueSerializer, LeagueModifiedSerializer
 from core.permissions import StoreIsRequired
 from core.paginations import StandardSetPagination
 from filters.mixins import FiltersMixin
-from core.cacheMixin import CacheKeyGetMixin
 import json
 
 
-class LeagueAdminView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
-    cache_group = 'league_view_adm'
-    caching_time = 60 * 3
-
+class LeagueAdminView(FiltersMixin, ModelViewSet):
     queryset = League.objects.all()
     serializer_class = LeagueSerializer
     permission_classes = []

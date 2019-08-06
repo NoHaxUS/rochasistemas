@@ -5,15 +5,12 @@ from history.models import SellerCashierHistory
 from history.permissions import BaseHistoryPermission
 from history.serializers.seller_cashier import SellerCashierHistorySerializer
 import datetime
-from core.cacheMixin import CacheKeyGetMixin
 
-class SellerCashierView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
+class SellerCashierView(FiltersMixin, ModelViewSet):
     queryset = SellerCashierHistory.objects.all()
     serializer_class = SellerCashierHistorySerializer
     pagination_class = SellerCashierHistoryPagination
     permission_classes = [BaseHistoryPermission]
-    cache_group = 'seller_cashier_view_adm'
-    caching_time = 60
 
     filter_mappings = {
 		'register_by':'register_by__username__icontains',

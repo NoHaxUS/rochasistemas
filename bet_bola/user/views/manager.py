@@ -11,16 +11,13 @@ from core.paginations import StandardSetPagination
 from filters.mixins import FiltersMixin
 from rest_framework.permissions import IsAuthenticated
 import json, decimal
-from core.cacheMixin import CacheKeyGetMixin
 
 
-class ManagerView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
+class ManagerView(FiltersMixin, ModelViewSet):
     queryset = Manager.objects.filter(is_active=True)
     serializer_class = ManagerSerializer
     pagination_class = StandardSetPagination
     permission_classes = [IsAdmin]
-    cache_group = 'manager_user_adm'
-    caching_time = 60
 
     filter_mappings = {
 		'store':'my_store',

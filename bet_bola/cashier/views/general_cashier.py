@@ -15,12 +15,9 @@ from utils.models import Entry
 from utils import timezone as tzlocal
 from config import settings
 import json, datetime, decimal
-from core.cacheMixin import CacheKeyGetMixin
 
 
-class GeneralCashier(CacheKeyGetMixin, APIView):
-    cache_group = 'general_cashier'
-    caching_time = 5
+class GeneralCashier(APIView):
 
     def get(self, request):
         if request.user.is_authenticated:

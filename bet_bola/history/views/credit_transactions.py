@@ -7,16 +7,12 @@ from filters.mixins import FiltersMixin
 from history.permissions import BaseHistoryPermission
 from history.models import CreditTransactions
 from history.serializers.credit_transactions import CreditTransactionsSerializer
-from core.cacheMixin import CacheKeyGetMixin
 
-
-class CreditTransactionsView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
+class CreditTransactionsView(FiltersMixin, ModelViewSet):
     queryset = CreditTransactions.objects.all()
     serializer_class = CreditTransactionsSerializer
     pagination_class = CreditTransactionsPagination
     permission_classes = [BaseHistoryPermission]
-    cache_group = 'credit_transactions_view_adm'
-    caching_time = 60
 
     filter_mappings = {
         'creditor':'creditor__username__icontains',		
