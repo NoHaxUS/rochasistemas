@@ -19,8 +19,8 @@ class CreditTransactionsView(CacheKeyGetMixin, FiltersMixin, ModelViewSet):
     caching_time = 60
 
     filter_mappings = {
-        'creditor':'creditor__pk',		
-        'seller':'user__pk',
+        'creditor':'creditor__username__icontains',		
+        'seller':'user__username__icontains',
         'transferred_amount_above': 'transferred_amount__gt',
         'transferred_amount_under': 'transferred_amount__lt',
         'start_creation_date':'transaction_date__gte',

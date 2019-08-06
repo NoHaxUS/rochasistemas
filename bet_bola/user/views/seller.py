@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.contrib import messages
 from user.models import Seller
-from user.permissions import IsAdmin, AlterSellerPermission, IsAdminOrManager
+from user.permissions import AlterSellerPermission, IsAdminOrManager
 from core.permissions import StoreIsRequired, UserIsFromThisStore
 from core.paginations import StandardSetPagination
 from user.serializers.seller import SellerSerializer
