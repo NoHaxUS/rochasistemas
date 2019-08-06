@@ -27,7 +27,6 @@ class TodayGamesView(CacheKeyDispatchMixin, ModelViewSet):
     permission_classes = []
     serializer_class = TodayGamesSerializer
     pagination_class = GameListPagination
-    
     cache_group = 'today_games'
     caching_time = 60 * 3
     

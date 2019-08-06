@@ -81,7 +81,7 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'unique-snowflake',
         'KEY_PREFIX': 'sitename',
-        'KEY_FUNCTION': 'utils.utils.make_key'
+        #'KEY_FUNCTION': 'utils.utils.make_key'
     }
 }
 
