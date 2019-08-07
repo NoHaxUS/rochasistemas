@@ -15,13 +15,11 @@ from utils.cache import invalidate_cache_group
 import json
 import decimal
 
-class CotationView(CacheKeyDispatchMixin, FiltersMixin, ModelViewSet):
+class CotationView(FiltersMixin, ModelViewSet):
     queryset = Cotation.objects.all()
     serializer_class = CotationSerializer       
     permission_classes = []
-    pagination_class = CotationsListSetPagination
-    cache_group = 'cotations_adm'
-    caching_time = 60
+    pagination_class = CotationsListSetPagination    
 
 
     @action(methods=['delete'], detail=True, permission_classes=[IsAdmin])
