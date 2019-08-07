@@ -9,7 +9,6 @@ from django.db.models import Count
 from django_filters import rest_framework as filters
 from utils.models import ExcludedLeague, ExcludedGame
 from core.models import League, Game, LeagueModified, LocationModified
-from core.cacheMixin import cache_key_on_list
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from core.cacheMixin import  CacheKeyGetMixin
