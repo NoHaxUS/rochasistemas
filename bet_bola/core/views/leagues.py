@@ -31,17 +31,16 @@ class LeagueAdminView(FiltersMixin, ModelViewSet):
         store = self.request.user.my_store
         qs = self.queryset.all()
         
-        #leagues_modified = LeagueModified.objects.filter(store=store)
-        ordered_leagues = League.objects.filter(my_modifications__store=store).order_by('my_modifications__priority')
-        #print(ordered_leagues.query)
+        
+        ordered_leagues = League.objects.filter(my_modifications__store=store).order_by('my_modifications__priority')        
         filtered_ids = [league.pk for league in ordered_leagues]
         qs = League.objects.exclude(pk__in=filtered_ids)
         qs = ordered_leagues | qs
 
         if priority:
-            qs = qs.filter(my_modifications__priority__gte=priority) | qs.filter(priority__gte=priority).exclude(pk__in=[league.league.pk for league in leagues_modified])
+            qs = qs.filter(my_modifications__store=store).filter(my_modifications__priority__gte=priority) | qs.filter(priority__gte=priority)
         if available:
-            qs = qs.filter(my_modifications__available=available) | qs.filter(available=available).exclude(pk__in=[league.league.pk for league in leagues_modified])
+            qs = qs.filter(my_modifications__store=store).filter(my_modifications__available=available) | qs.filter(available=available)
         
         return qs.distinct()
 
