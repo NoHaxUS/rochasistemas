@@ -7,6 +7,7 @@ from core.models import Market, Cotation, Store, CotationModified
 from core.serializers.market import MarketCotationSerializer, MarketSerializer
 from core.permissions import StoreIsRequired
 from utils.models import MarketRemotion, MarketModified
+from core.cacheMixin import CacheKeyDispatchMixin
 
 
 class MarketView(FiltersMixin, ModelViewSet):
@@ -20,7 +21,7 @@ class MarketView(FiltersMixin, ModelViewSet):
     }        
 
 
-class MarketCotationView(ModelViewSet):
+class MarketCotationView(CacheKeyDispatchMixin, ModelViewSet):
     queryset = Market.objects.none()
     serializer_class = MarketCotationSerializer    
     permission_classes = []    
