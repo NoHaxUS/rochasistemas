@@ -117,6 +117,10 @@ def validate_ticket(self, who_validating):
     if not who_validating.seller.can_sell_unlimited:        
         if self.bet_value > who_validating.seller.credit_limit:                
             message = 'Seu saldo não foi suficiente para validar automaticamente esse Bilhete.'
+            return {
+                'success':False,
+                'message': message
+            }
         else:            
             seller_before_balance = who_validating.seller.credit_limit
             who_validating.seller.credit_limit -= self.bet_value

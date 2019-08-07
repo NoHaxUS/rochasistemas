@@ -46,10 +46,10 @@ class TicketView(FiltersMixin, ModelViewSet):
     caching_time = 5
 
     filter_mappings = {
-        'ticket_id':'ticket_id',
+        'ticket_id':'ticket_id__icontains',
         'store':'store',
         'ticket_status':'status',
-        'client': 'owner__first_name',
+        'client': 'owner__first_name__icontains',
         'created_by': 'creator__username__icontains',
         'paid_by': 'payment__who_paid__username__icontains',
         'seller_cashier': 'sellercashierhistory__pk',
@@ -88,7 +88,7 @@ class TicketView(FiltersMixin, ModelViewSet):
         numbers = '1234567890'
         alpha_part = ''.join((random.choice(alpha) for i in range(alpha_num)))
         num_part = ''.join((random.choice(numbers) for i in range(numbers_num)))
-        ticket_id = alpha_part + '-' + num_part
+        ticket_id = alpha_part + '' + num_part
         if Ticket.objects.filter(ticket_id=ticket_id, store=store).exists():
             self.get_ticket_id()
         else:
@@ -170,6 +170,7 @@ class TicketView(FiltersMixin, ModelViewSet):
     @action(methods=['post'], detail=False, permission_classes=[])
     def validate_tickets(self, request, pk=None):
         ticket_ids = json.loads(request.data.get('data'))
+        ticket_ids = [id.upper() for id in ticket_ids]
         response = []
         for ticket in Ticket.objects.filter(ticket_id__in=ticket_ids):
             response.append(ticket.validate_ticket(request.user))
@@ -181,6 +182,7 @@ class TicketView(FiltersMixin, ModelViewSet):
     @action(methods=['post'], detail=False, permission_classes=[])
     def cancel_tickets(self, request, pk=None):
         ticket_ids = json.loads(request.data.get('data'))
+        ticket_ids = [id.upper() for id in ticket_ids]
         response = []
         for ticket in Ticket.objects.filter(ticket_id__in=ticket_ids):
             response.append(ticket.cancel_ticket(request.user))
