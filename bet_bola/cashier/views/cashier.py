@@ -34,8 +34,7 @@ class SellersCashierView(FiltersMixin, ModelViewSet):
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(queryset, many=True)            
-            return self.get_paginated_response(serializer.data)                        
-                
+            return self.get_paginated_response(serializer.data)                                        
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -197,7 +196,7 @@ class SellerCashierView(FiltersMixin, ModelViewSet):
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(queryset, many=True)            
-            return self.get_paginated_response(serializer.data)                        
+            return self.get_paginated_response(serializer.data)
                 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -262,3 +261,100 @@ class ManagerCashierView(FiltersMixin, ModelViewSet):
                 closed_for_manager=False) | Q(payment__who_paid__seller__my_manager__pk=user.pk, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
         return Ticket.objects.filter(Q(payment__status=2, store=user.my_store, 
                 closed_for_manager=False) | Q(store=user.my_store, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
+
+
+class ManagerCashierView(FiltersMixin, ModelViewSet):
+    queryset = Ticket.objects.all()
+    serializer_class = CashierSerializer
+    permission_classes = [ManagerCashierPermission]
+    pagination_class = ManagerCashierPagination
+
+    filter_mappings = {
+        'ticket_id':'pk',
+        'store':'store__pk',
+        'ticket_status':'status',
+        'created_by': 'creator__username__icontains',
+        'paid_by': 'payment__who_paid__username',
+        'manager': 'payment__who_paid__seller__my_manager__pk',
+        'start_creation_date':'creation_date__date__gte',
+        'end_creation_date':'creation_date__date__lte',
+        'payment_status':'payment__status',
+        'start_payment_date': 'payment__date__gte',
+        'end_payment_date': 'payment__date__lte',
+        'available': 'available',
+    }
+
+    filter_value_transformations = {
+        'start_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'end_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'start_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'end_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d')
+    }
+
+    def list(self, request, pk=None):        
+        queryset = self.get_queryset()
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(queryset, many=True)            
+            return self.get_paginated_response(serializer.data)                        
+                
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.user_type == 3:   
+            return Ticket.objects.filter(Q(payment__status=2,payment__who_paid__seller__my_manager__pk=user.pk ,store=user.my_store, 
+                closed_for_manager=False) | Q(payment__who_paid__seller__my_manager__pk=user.pk, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
+        return Ticket.objects.filter(Q(payment__status=2, store=user.my_store, 
+                closed_for_manager=False) | Q(store=user.my_store, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
+
+
+class ManagerCashierView(FiltersMixin, ModelViewSet):
+    queryset = Ticket.objects.all()
+    serializer_class = CashierSerializer
+    permission_classes = [ManagerCashierPermission]
+    pagination_class = ManagerCashierPagination
+
+    filter_mappings = {
+        'ticket_id':'pk',
+        'store':'store__pk',
+        'ticket_status':'status',
+        'created_by': 'creator__username__icontains',
+        'paid_by': 'payment__who_paid__username',
+        'manager': 'payment__who_paid__seller__my_manager__pk',
+        'start_creation_date':'creation_date__date__gte',
+        'end_creation_date':'creation_date__date__lte',
+        'payment_status':'payment__status',
+        'start_payment_date': 'payment__date__gte',
+        'end_payment_date': 'payment__date__lte',
+        'available': 'available',
+    }
+
+    filter_value_transformations = {
+        'start_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'end_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'start_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'end_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d')
+    }
+
+    def list(self, request, pk=None):        
+        queryset = self.get_queryset()
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(queryset, many=True)            
+            return self.get_paginated_response(serializer.data)                        
+                
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.user_type == 3:   
+            return Ticket.objects.filter(Q(payment__status=2,payment__who_paid__seller__my_manager__pk=user.pk ,store=user.my_store, 
+                closed_for_manager=False) | Q(payment__who_paid__seller__my_manager__pk=user.pk, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
+        return Ticket.objects.filter(Q(payment__status=2, store=user.my_store, 
+                closed_for_manager=False) | Q(store=user.my_store, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
+
