@@ -57,8 +57,8 @@ class SellersCashierView(FiltersMixin, ModelViewSet):
         end_creation_date = data.get('end_creation_date')                                                        
 
         for seller in Seller.objects.filter(id__in=sellers_ids):            
-            serializer = SellersCashierSerializer(seller)
-            data = serializer.data
+            serializer = SellersCashierSerializer(seller, context={"request":request})
+            data = serializer.data              
             if not data['comission'] == 0 or not data['entry'] == 0 or not data['out'] == 0:
                 revenue_history_seller = SellerCashierHistory(register_by=request.user, 
                 seller=seller, 
@@ -72,10 +72,13 @@ class SellersCashierView(FiltersMixin, ModelViewSet):
                     closed_for_seller=False) | Q(payment__who_paid__pk=seller.pk, status=4)).exclude(status__in=[5,6])        
                 if tickets.exists():
                     if start_creation_date:
-                        tickets = tickets.filter(creation_date__gte=start_creation_date)
+                        start_creation_date = datetime.datetime.strptime(start_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
+                        tickets = tickets.filter(creation_date__date__gte=start_creation_date)
                     if end_creation_date:
-                        tickets = tickets.filter(creation_date__lte=end_creation_date)        
-
+                        end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
+                        tickets = tickets.filter(creation_date__date__lte=end_creation_date)        
+                                    
+                    
                     revenue_history_seller.save()        
                     revenue_history_seller.tickets_registered.set(tickets)            
 
@@ -125,8 +128,8 @@ class ManagersCashierView(FiltersMixin, ModelViewSet):
         start_creation_date = data.get('start_creation_date')
         end_creation_date = data.get('end_creation_date')                                
 
-        for manager in Manager.objects.filter(id__in=managers_ids):
-            serializer = ManagersCashierSerializer(manager)
+        for manager in Manager.objects.filter(id__in=managers_ids):            
+            serializer = ManagersCashierSerializer(manager, context={"request":request})
             data = serializer.data
             
             if not data['comission'] == 0 or not data['entry'] == 0 or not data['out'] == 0:
@@ -143,9 +146,11 @@ class ManagersCashierView(FiltersMixin, ModelViewSet):
                 
                 if tickets.exists():
                     if start_creation_date:
-                        tickets = tickets.filter(creation_date__gte=start_creation_date)
+                        start_creation_date = datetime.datetime.strptime(start_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
+                        tickets = tickets.filter(creation_date__date__gte=start_creation_date)
                     if end_creation_date:
-                        tickets = tickets.filter(creation_date__lte=end_creation_date)        
+                        end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
+                        tickets = tickets.filter(creation_date__date__lte=end_creation_date)        
                     
                     revenue_history_manager.save()
                     revenue_history_manager.tickets_registered.set(tickets)
@@ -171,8 +176,8 @@ class SellerCashierView(FiltersMixin, ModelViewSet):
         'ticket_status':'status',
         'created_by': 'creator__username__icontains',
         'paid_by': 'payment__who_paid__pk',        
-        'start_creation_date':'creation_date__gte',
-        'end_creation_date':'creation_date__lte',
+        'start_creation_date':'creation_date__date__gte',
+        'end_creation_date':'creation_date__date__lte',
         'payment_status':'payment__status',
         'start_payment_date': 'payment__date__gte',
         'end_payment_date': 'payment__date__lte',
@@ -224,8 +229,8 @@ class ManagerCashierView(FiltersMixin, ModelViewSet):
         'created_by': 'creator__username__icontains',
         'paid_by': 'payment__who_paid__username',
         'manager': 'payment__who_paid__seller__my_manager__pk',
-        'start_creation_date':'creation_date__gte',
-        'end_creation_date':'creation_date__lte',
+        'start_creation_date':'creation_date__date__gte',
+        'end_creation_date':'creation_date__date__lte',
         'payment_status':'payment__status',
         'start_payment_date': 'payment__date__gte',
         'end_payment_date': 'payment__date__lte',

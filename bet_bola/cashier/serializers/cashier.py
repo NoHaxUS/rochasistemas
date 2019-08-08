@@ -14,6 +14,7 @@ from user.models import CustomUser, Seller, Manager
 from core.models import Store, Cotation
 from decimal import Decimal
 import datetime
+import json
 
 
 class CashierSerializer(serializers.HyperlinkedModelSerializer):
@@ -80,16 +81,25 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
         	closed_for_seller=False) | Q(payment__who_paid__pk=obj.pk, status=4)).exclude(status__in=[5,6])
 
 		if self.context.get('request'):
-			start_creation_date = self.context['request'].GET.get('start_creation_date', None)
-			end_creation_date = self.context['request'].GET.get('end_creation_date', None)			
+			get = self.context['request'].GET
+			post = self.context['request'].POST
+			start_creation_date = None
+			end_creation_date = None
+
+			if get:				
+				start_creation_date = get.get('start_creation_date')
+				end_creation_date = get.get('end_creation_date')	
+			elif post:
+				data = json.loads(post.get('data'))                				
+				start_creation_date = data.get('start_creation_date')					
+				end_creation_date = data.get('end_creation_date')
 
 			if start_creation_date:		
 				start_creation_date = datetime.datetime.strptime(start_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')		
 				tickets = tickets.filter(creation_date__date__gte=start_creation_date)
 			if end_creation_date:
 				end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')		
-				tickets = tickets.filter(creation_date__date__lte=end_creation_date)	
-
+				tickets = tickets.filter(creation_date__date__lte=end_creation_date)						
 		return tickets
 
 	def get_comission(self, obj):				
@@ -152,16 +162,25 @@ class ManagersCashierSerializer(SellersCashierSerializer):
         	closed_for_manager=False) | Q(payment__who_paid__seller__my_manager__pk=obj.pk, status=4)).exclude(status__in=[5,6])
 
 		if self.context.get('request'):
-			start_creation_date = self.context['request'].GET.get('start_creation_date', None)
-			end_creation_date = self.context['request'].GET.get('end_creation_date', None)
-			
-			if start_creation_date:
-				start_creation_date = datetime.datetime.strptime(start_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')						
-				tickets = tickets.filter(creation_date__date__gte=start_creation_date)				
-			if end_creation_date:				
-				end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')				
-				tickets = tickets.filter(creation_date__date__lte=end_creation_date)
-				
+			get = self.context['request'].GET
+			post = self.context['request'].POST
+			start_creation_date = None
+			end_creation_date = None
+
+			if get:				
+				start_creation_date = get.get('start_creation_date')
+				end_creation_date = get.get('end_creation_date')	
+			elif post:
+				data = json.loads(post.get('data'))                				
+				start_creation_date = data.get('start_creation_date')					
+				end_creation_date = data.get('end_creation_date')
+
+			if start_creation_date:		
+				start_creation_date = datetime.datetime.strptime(start_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')		
+				tickets = tickets.filter(creation_date__date__gte=start_creation_date)
+			if end_creation_date:
+				end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')		
+				tickets = tickets.filter(creation_date__date__lte=end_creation_date)									
 				
 		return tickets
 
