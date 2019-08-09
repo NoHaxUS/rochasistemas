@@ -8,14 +8,14 @@ from utils.models import Entry
 class EntrySerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.SlugRelatedField(queryset = User.objects.filter(user_type__in=[2,3]), slug_field='pk')
     store = serializers.SlugRelatedField(queryset = Store.objects.filter(), slug_field='pk')   
-    creation_date = serializers.DateTimeField(format='%d %B %Y', read_only=True)
+    creation_date = serializers.DateTimeField(format='%d %B %Y %H:%M', read_only=True)
 
     def to_representation(self, obj):           
         return {
                 "id": obj.pk,
                 "user": obj.user.username,
                 "value": obj.value,
-                "creation_date": obj.creation_date.strftime('%d %B %Y'),
+                "creation_date": obj.creation_date.strftime('%d %B %Y %H:%M'),
                 "description": obj.description,
                 "store": obj.store.pk
             }        

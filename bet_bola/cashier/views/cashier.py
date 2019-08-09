@@ -64,6 +64,7 @@ class SellersCashierView(FiltersMixin, ModelViewSet):
                 entry=decimal.Decimal(data['entry']),
                 comission=decimal.Decimal(data['comission']),
                 total_out=decimal.Decimal(data['total_out']),
+                bonus_premio=decimal.Decimal(data['won_bonus']),
                 profit= decimal.Decimal(decimal.Decimal(data['entry']) - decimal.Decimal(data['total_out'])),
                 store=request.user.my_store)           
                 
@@ -75,8 +76,7 @@ class SellersCashierView(FiltersMixin, ModelViewSet):
                         tickets = tickets.filter(creation_date__date__gte=start_creation_date)
                     if end_creation_date:
                         end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
-                        tickets = tickets.filter(creation_date__date__lte=end_creation_date)        
-                                    
+                        tickets = tickets.filter(creation_date__date__lte=end_creation_date)                                       
                     
                     revenue_history_seller.save()        
                     revenue_history_seller.tickets_registered.set(tickets)            
@@ -89,7 +89,7 @@ class SellersCashierView(FiltersMixin, ModelViewSet):
 
         return Response({
             'success': True,
-            'message': 'Alterado com Sucesso :)'
+            'message': 'Realizado com Sucesso :)'
         })
     
 
@@ -158,7 +158,7 @@ class ManagersCashierView(FiltersMixin, ModelViewSet):
 
         return Response({
             'success': True,
-            'message': 'Alterado com Sucesso :)'
+            'message': 'Realizado com Sucesso :)'
         })                
 
 

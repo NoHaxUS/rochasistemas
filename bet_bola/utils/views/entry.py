@@ -8,7 +8,7 @@ from utils.paginations import EntryPagination
 from utils.models import Entry
 from utils.serializers.entry import EntrySerializer
 from utils.permissions import EntryPermission
-import json
+import json, datetime
 
 class EntryView(FiltersMixin, ModelViewSet):
     queryset = Entry.objects.all()
@@ -19,8 +19,13 @@ class EntryView(FiltersMixin, ModelViewSet):
 
     filter_mappings = {
         'user':'user__pk',
-        'start_creation_date': 'creation_date__gte',
-        'end_creation_date': 'creation_date__lte',
+        'start_creation_date': 'creation_date__date__gte',
+        'end_creation_date': 'creation_date__date__lte',
+    }
+
+    filter_value_transformations = {
+        'start_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'end_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),        
     }
 
     def list(self, request, pk=None):        

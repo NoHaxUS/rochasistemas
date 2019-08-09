@@ -11,12 +11,7 @@ class EntryPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):         
         if not request.user.is_anonymous:
             if request.user.user_type == 4:
-                return True
-            elif obj.user == request.user:
-                return True				
-            elif request.user.user_type == 3 and request.user.manager.manager_assoc.filter(pk=obj.user.pk).exists():
-                return True
-
+                return True            
         raise NotAllowedException(detail="Você não tem permissão para essa operação.")    
     
     
