@@ -51,7 +51,7 @@ def get_upcoming_events():
         current_url = url_base.format(current_date, page)
         data = get_games_of_the_day(current_url)
         
-        if data['success'] == 1:
+        if data.get('success') and data.get('success') == 1:
             games_total = data['pager']['total']
             per_page = data['pager']['per_page']
             num_pages = math.ceil(int(games_total) / int(per_page))
@@ -63,7 +63,7 @@ def get_upcoming_events():
         while page <= num_pages:
             current_url = url_base.format(current_date, page)
             data = get_games_of_current_page(current_url)
-            if data['success'] == 1:
+            if data.get('success') and data.get('success') == 1:
                 process_upcoming_events(data)
                 page += 1
             else:
@@ -76,7 +76,7 @@ def get_cc_from_result(game_id, error_count=0):
     request = requests.get(url)
     try:
         data = request.json()
-        if request.status_code == 200 and data['success'] == 1:
+        if request.status_code == 200 and data.get('success') and data.get('success') == 1:
             league = data['results'][0].get('league', None)
             if league:
                 return league.get('cc', None)
