@@ -220,3 +220,74 @@ class ManagersCashierSerializer(SellersCashierSerializer):
 				value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)		
 
 		return value
+
+
+class ManagerEspecificCashierSerializer(serializers.HyperlinkedModelSerializer):
+	comission = serializers.SerializerMethodField()
+	entry = serializers.SerializerMethodField()
+	out = serializers.SerializerMethodField()
+	won_bonus = serializers.SerializerMethodField()
+	total_out = serializers.SerializerMethodField()	
+
+	class Meta:
+		model = Seller
+		fields = ('id','username','comission','entry','won_bonus','out','total_out')
+
+	def get_ticket(self, obj):		
+		tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=obj.pk, 
+			closed_for_manager=False) | Q(payment__who_paid__pk=obj.pk, status=4)).exclude(status__in=[5,6])
+
+		if self.context.get('request'):
+			start_creation_date = self.context['request'].GET.get('start_creation_date')
+			end_creation_date = self.context['request'].GET.get('end_creation_date', None)						
+
+			if start_creation_date:		
+				start_creation_date = datetime.datetime.strptime(start_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')		
+				tickets = tickets.filter(creation_date__date__gte=start_creation_date)
+			if end_creation_date:
+				end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')		
+				tickets = tickets.filter(creation_date__date__lte=end_creation_date)						
+		return tickets
+
+	def get_comission(self, obj):				
+		tickets = self.get_ticket(obj)
+		comission = None
+		value = 0
+		manager = self.context['request'].user.manager
+		comission = manager.comissions
+		key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}				
+		for ticket in tickets:					
+			if manager.comission_based_on_profit:
+				value += Decimal(key_value.get(ticket.cotations.count(), comission.profit_comission) * ticket.bet_value / 100)
+			else:				
+				value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)		
+		return value
+
+	def get_entry(self, obj):		
+		tickets = self.get_ticket(obj)
+		value = 0
+		for ticket in tickets:
+			if not ticket.closed_for_manager:
+				value += ticket.bet_value
+		return value
+
+	def get_out(self, obj):			
+		tickets = self.get_ticket(obj)
+		value = 0			
+		for ticket in tickets:					
+			if ticket.status in [2,4]:							
+				value += ticket.reward.value - ticket.won_bonus()			
+		return value
+	
+	def get_won_bonus(self, obj):
+		if obj.my_store.my_configuration.bonus_won_ticket:
+			tickets = self.get_ticket(obj)
+			value = 0
+			for ticket in tickets:					
+				value += ticket.won_bonus()
+			return value
+		return 0
+	
+	def get_total_out(self, obj):
+		return self.get_won_bonus(obj) + self.get_out(obj) + self.get_comission(obj)
+	
