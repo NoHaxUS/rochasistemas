@@ -34,7 +34,7 @@ class CashierSerializer(serializers.HyperlinkedModelSerializer):
 		model = Ticket
 		fields = ('id','ticket_id','creation_date','creator','reward','won_bonus','bet_type','manager','comission','payment','bet_value','status')
 	
-	def get_won_bonus(self, obj):
+	def get_won_bonus(self, obj):		
 		return obj.won_bonus()
 
 	def get_status(self, obj):		
@@ -48,9 +48,9 @@ class CashierSerializer(serializers.HyperlinkedModelSerializer):
 			comission = obj.payment.who_paid.seller.comissions
 			key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}				
 
-			return str(float(key_value.get(obj.cotations.count(), comission.sixth_more) * obj.bet_value / 100))
+			return round(Decimal(key_value.get(obj.cotations.count(), comission.sixth_more) * obj.bet_value / 100),2)
 		
-		return "0.0"
+		return round(Decimal(0),2)
 
 	def get_bet_type(self, obj):
 		key_value = {1:"simple",2:"double",3:"triple",4:"fourth",5:"fifth",6:"sixth"}
@@ -140,7 +140,7 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
 	
 	def get_total_out(self, obj):
 		return self.get_won_bonus(obj) + self.get_out(obj) + self.get_comission(obj)
-
+	
 
 class ManagersCashierSerializer(SellersCashierSerializer):
 	comission_seller = serializers.SerializerMethodField()

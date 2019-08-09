@@ -21,7 +21,13 @@ def cancel_ticket(self, who_canceling):
             'success': False,
             'message': 'Esse Usuário não tem permissão para cancelar Bilhetes.'
         }
-    
+
+    elif who_canceling.has_perm('user.be_seller') and not who_canceling.seller.can_cancel_ticket:
+        return {
+            'success': False,
+            'message': 'Esse Usuário não tem permissão para cancelar Bilhetes.'
+        }
+        
     if not self.status == 0:
         return {
             'success': False,

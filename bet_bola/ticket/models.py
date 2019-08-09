@@ -12,6 +12,7 @@ import utils.timezone as tzlocal
 from user.models import TicketOwner, Seller, Punter
 from ticket.logic.reward import get_reward_value
 from ticket.logic import ticket
+from decimal import Decimal
 
 class Ticket(models.Model):
 
@@ -42,8 +43,8 @@ class Ticket(models.Model):
     
     def won_bonus(self):
         if self.status in [2,4] and self.store.my_configuration.bonus_won_ticket:
-            return self.reward.value * self.store.my_configuration.bonus_by_won_ticket / 100
-        return 0
+            return round(Decimal(self.reward.value * self.store.my_configuration.bonus_by_won_ticket / 100),2)                
+        return round(Decimal(0),2)
 
     def update_ticket_reward(self):
         

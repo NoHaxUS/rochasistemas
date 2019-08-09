@@ -202,12 +202,11 @@ class SellerCashierPagination(PageNumberPagination):
             sellers = [{'id':user.pk,'username':user.username} for user in Seller.objects.none()]
 
         for ticket in data:
-            entry += float(ticket["bet_value"])
-            if ticket["status"] == 'Venceu, Ganhador Pago' or ticket["status"] == 'Venceu, Prestar Contas':
-                out += float(ticket["reward"]["value"]) - float(ticket["won_bonus"])
-                won_bonus_sum += float(ticket["won_bonus"])
-            comissions_sum += float(ticket["comission"])
-        
+            entry += Decimal(ticket["bet_value"])
+            if ticket["status"] == 'Venceu, Ganhador Pago' or ticket["status"] == 'Venceu, Prestar Contas':                
+                out += Decimal(ticket["reward"]["value"]) - Decimal(ticket["won_bonus"])                                
+                won_bonus_sum += ticket["won_bonus"]            
+            comissions_sum += ticket["comission"]
         page = int(self.request.GET.get('page',1)) 
 
         if page == 1:
@@ -302,3 +301,4 @@ class ManagerCashierPagination(PageNumberPagination):
             'managers': managers,            
             'results': data
         })
+

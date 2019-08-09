@@ -11,7 +11,6 @@ class TicketCancelationSerializer(serializers.HyperlinkedModelSerializer):
 	who_cancelled = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')	
 	who_paid = serializers.SlugRelatedField(queryset = Seller.objects.all(),slug_field='first_name')	
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
-	date = serializers.DateTimeField(format='%d %B %Y', read_only=True)	
 
 	class Meta:
 		model = TicketCancelationHistory
