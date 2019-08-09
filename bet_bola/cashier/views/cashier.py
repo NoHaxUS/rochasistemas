@@ -358,3 +358,54 @@ class ManagerCashierView(FiltersMixin, ModelViewSet):
         return Ticket.objects.filter(Q(payment__status=2, store=user.my_store, 
                 closed_for_manager=False) | Q(store=user.my_store, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
 
+
+
+                class SellersCashierView(FiltersMixin, ModelViewSet):
+    queryset = Seller.objects.filter(payment__status=2).distinct()
+    serializer_class = SellersCashierSerializer
+    permission_classes = [SellerCashierPermission]    
+    pagination_class = SellersCashierPagination
+
+    def list(self, request, pk=None):
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(queryset, many=True)            
+            return self.get_paginated_response(serializer.data)                                        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.user_type == 2:
+            return self.queryset.filter(pk=user.pk,my_store=self.request.user.my_store)
+        elif user.user_type == 3:
+            return self.queryset.filter(my_manager__pk=user.pk,my_store=self.request.user.my_store)            
+        return self.queryset.filter(my_store=self.request.user.my_store)
+
+
+
+# class SellersCashierView(FiltersMixin, ModelViewSet):
+#     queryset = Seller.objects.filter(payment__status=2).distinct()
+#     serializer_class = SellersCashierSerializer
+#     permission_classes = [SellerCashierPermission]    
+#     pagination_class = SellersCashierPagination
+
+#     def list(self, request, pk=None):
+#         queryset = self.get_queryset()
+#         page = self.paginate_queryset(queryset)
+#         if page is not None:
+#             serializer = self.get_serializer(queryset, many=True)            
+#             return self.get_paginated_response(serializer.data)                                        
+#         serializer = self.get_serializer(queryset, many=True)
+#         return Response(serializer.data)
+
+
+#     def get_queryset(self):
+#         user = self.request.user
+#         if user.user_type == 2:
+#             return self.queryset.filter(pk=user.pk,my_store=self.request.user.my_store)
+#         elif user.user_type == 3:
+#             return self.queryset.filter(my_manager__pk=user.pk,my_store=self.request.user.my_store)            
+#         return self.queryset.filter(my_store=self.request.user.my_store)
