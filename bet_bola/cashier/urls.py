@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from cashier.views.cashier import (
     SellerCashierView, ManagerCashierView, 
-    SellersCashierView, ManagersCashierView, ManagerEspecificCashierView
+    SellersCashierView, ManagersCashierView, ManagerSpecificCashierView
 )
 from cashier.views.general_cashier import  GeneralCashier
 
@@ -11,7 +11,7 @@ app_name = 'cashier'
 router = DefaultRouter()
 router.register(r'sellers_cashier', SellersCashierView)
 router.register(r'managers_cashier', ManagersCashierView)
-router.register(r'manager_especific_cashier', ManagerEspecificCashierView)
+router.register(r'manager_especific_cashier', ManagerSpecificCashierView)
 
 urlpatterns = [
     path('seller_cashier/', SellerCashierView.as_view({'get': 'list'}), name='seller_cashier'),    

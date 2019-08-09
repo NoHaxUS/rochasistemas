@@ -222,7 +222,7 @@ class ManagersCashierSerializer(SellersCashierSerializer):
 		return value
 
 
-class ManagerEspecificCashierSerializer(serializers.HyperlinkedModelSerializer):
+class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
 	comission = serializers.SerializerMethodField()
 	entry = serializers.SerializerMethodField()
 	out = serializers.SerializerMethodField()

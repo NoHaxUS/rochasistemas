@@ -91,8 +91,12 @@ class TicketView(FiltersMixin, ModelViewSet):
         alpha_part = ''.join((random.choice(alpha) for i in range(alpha_num)))
         num_part = ''.join((random.choice(numbers) for i in range(numbers_num)))
         ticket_id = alpha_part + '' + num_part
+        
+        if not store:
+            raise ValueError("Store is required to create Ticket(s)")
+
         if Ticket.objects.filter(ticket_id=ticket_id, store=store).exists():
-            self.get_ticket_id()
+            self.get_ticket_id(store=store)
         else:
             return ticket_id
 

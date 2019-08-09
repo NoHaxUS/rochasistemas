@@ -7,7 +7,7 @@ from filters.mixins import FiltersMixin
 from ticket.models import Ticket
 from cashier.serializers.cashier import (
     CashierSerializer, SellersCashierSerializer, 
-    ManagersCashierSerializer, ManagerEspecificCashierSerializer
+    ManagersCashierSerializer, ManagerSpecificCashierSerializer
 )
 from history.paginations import (
     SellerCashierPagination, ManagerCashierPagination, 
@@ -264,11 +264,12 @@ class ManagerCashierView(FiltersMixin, ModelViewSet):
 
 
 
-class ManagerEspecificCashierView(FiltersMixin, ModelViewSet):
+class ManagerSpecificCashierView(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(payment__status=2).distinct()
-    serializer_class = ManagerEspecificCashierSerializer
+    serializer_class = ManagerSpecificCashierSerializer
     permission_classes = [IsManager]    
     pagination_class = SellersCashierPagination
+
 
     def list(self, request, pk=None):
         queryset = self.get_queryset()
