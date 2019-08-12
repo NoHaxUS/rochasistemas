@@ -33,9 +33,9 @@ class LocationView(FiltersMixin, ModelViewSet):
         qs = ordered_locations | qs                
 
         if priority:
-            qs = qs.filter(my_modifications__store=store).filter(my_modifications__priority__gte=priority) | qs.filter(priority__gte=priority)
+            qs = qs.filter(my_modifications__store=store).filter(my_modifications__priority__gte=priority) | qs.filter(priority__gte=priority).exclude(my_modifications__store=store)
         if available:
-            qs = qs.filter(my_modifications__store=store).filter(my_modifications__available=available) | qs.filter(available=available)
+            qs = qs.filter(my_modifications__store=store).filter(my_modifications__available=available) | qs.filter(available=available).exclude(my_modifications__store=store)
                 
         return qs.distinct()
 

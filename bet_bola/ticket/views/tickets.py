@@ -56,11 +56,11 @@ class TicketView(FiltersMixin, ModelViewSet):
         'paid_by_id': 'payment__who_paid__pk',
         'seller_cashier': 'sellercashierhistory__pk',
         'manager_cashier': 'managercashierhistory__pk',
-        'start_creation_date':'creation_date__gte',
-        'end_creation_date':'creation_date__lte',
+        'start_creation_date':'creation_date__date__gte',
+        'end_creation_date':'creation_date__date__lte',
         'payment_status':'payment__status',
-        'start_payment_date': 'payment__date__gte',
-        'end_payment_date': 'payment__date__lte',
+        'start_payment_date': 'payment__date__date__gte',
+        'end_payment_date': 'payment__date__date__lte',
         'available': 'available',
     }
 

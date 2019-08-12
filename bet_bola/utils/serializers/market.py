@@ -24,9 +24,10 @@ class MarketModifiedSerializer(serializers.HyperlinkedModelSerializer):
 		if market.name == "1X2":
 			raise serializers.ValidationError("Mercado 1X2 não pode ser indisponibilizado.")
 		return market
+	
 	class Meta:
 		model = MarketModified
-		fields = ('market', 'reduction_percentual', 'active', 'store')
+		fields = ('market', 'reduction_percentual', 'available', 'store')
 
 
 class MarketRemotionSerializer(serializers.HyperlinkedModelSerializer):	

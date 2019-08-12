@@ -18,7 +18,19 @@ class MarketView(FiltersMixin, ModelViewSet):
     
     filter_mappings = {
         'market_name':'name__icontains',        
-    }        
+    }       
+    
+    def get_queryset(self):                                
+        available = self.request.GET.get('available')
+        store = self.request.user.my_store
+        qs = self.queryset.all()            
+        
+        
+        if available is not None:             
+            qs = qs.filter(my_modifications__store=store).filter(my_modifications__available=available) | qs.filter(available=available).exclude(my_modifications__store=store)
+        
+        return qs.distinct()
+
 
 
 class MarketCotationView(CacheKeyDispatchMixin, ModelViewSet):

@@ -29,8 +29,8 @@ class MarketModifiedView(ModelViewSet):
             market['reduction_percentual'] = data['reduction_percentual']
             market['market'] = name						
             
-            if data.get('active', None) is not None:				
-                market['active'] = data['active']
+            if data.get('available', None) is not None:				
+                market['available'] = data['available']
 
             serializer = self.get_serializer(data=market)
             serializer.is_valid(raise_exception=True)
@@ -38,7 +38,7 @@ class MarketModifiedView(ModelViewSet):
             serializer_data.append(serializer.data)		
         headers = self.get_success_headers(serializer.data)
         
-        invalidate_cache_group('market_cotation_view', request.user.my_store.pk) 
+        invalidate_cache_group('market_cotation_view', self.request.user.my_store.pk) 
         
         return Response(serializer_data, status=status.HTTP_201_CREATED, headers=headers)
 

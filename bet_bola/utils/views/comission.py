@@ -3,12 +3,14 @@ from rest_framework.viewsets import ModelViewSet
 from utils.serializers.seller_comission import SellerComissionSerializer
 from utils.serializers.manager_comission import ManagerComissionSerializer
 from core.permissions import StoreIsRequired, UserIsFromThisStore
+from user.permissions import AlterSellerComissionsPermission
 from utils.models import SellerComission, ManagerComission
 from filters.mixins import FiltersMixin
 
 class SellerComissionView(FiltersMixin, ModelViewSet):
     queryset = SellerComission.objects.all()
     serializer_class = SellerComissionSerializer
+    permission_classes = [AlterSellerComissionsPermission,]
 
     
     filter_mappings = {

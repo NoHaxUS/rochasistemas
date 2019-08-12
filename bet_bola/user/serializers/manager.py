@@ -8,7 +8,7 @@ class ManagerSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Manager
-		fields = ('id','username','first_name','password','cpf','cellphone','address', 'email','can_cancel_ticket','limit_time_to_cancel','can_sell_unlimited','credit_limit','can_change_limit_time','comission_based_on_profit')
+		fields = ('id','username','first_name','password','cpf','cellphone','address', 'email','can_cancel_ticket','can_modify_seller','can_modify_seller_comissions','limit_time_to_cancel','can_sell_unlimited','credit_limit','can_change_limit_time','comission_based_on_profit')
 
 	def create(self, validated_data):
 		#REVISE				

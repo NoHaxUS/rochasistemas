@@ -17,7 +17,7 @@ class SellerView(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(is_active=True)
     serializer_class = SellerSerializer
     pagination_class = SellerPagination
-    permission_classes = [IsAdminOrManager,]
+    permission_classes = [IsAdminOrManager, AlterSellerPermission]
     cache_group = 'seller_user_adm'
     caching_time = 60
 
@@ -26,15 +26,15 @@ class SellerView(FiltersMixin, ModelViewSet):
         'manager': 'my_manager__username__icontains',
         'email': 'email__icontains',
 		'store':'my_store',
-	}
+    }        
 
     def get_queryset(self):        
         user = self.request.user
         if user.user_type == 3:            
             return Seller.objects.filter(my_manager=user.pk, my_store=user.my_store, is_active=True)
-        return Seller.objects.filter(my_store=user.my_store, is_active=True)
+        return Seller.objects.filter(my_store=user.my_store, is_active=True)        
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):        
         data = json.loads(request.data.get('data')) if request.data.get('data') else request.data
         data = {} if not data else data
         serializer = self.get_serializer(data=data)
@@ -77,13 +77,13 @@ class SellerView(FiltersMixin, ModelViewSet):
         
         return Response(response)
 
-    @action(methods=['get'], detail=True, permission_classes=[])
+    @action(methods=['get'], detail=True, permission_classes=[AlterSellerPermission])
     def toggle_can_sell_unlimited(self, request, pk=None):
         seller = self.get_object()
         seller.toggle_can_sell_unlimited()
         return Response({'success': True})
 
-    @action(methods=['get'], detail=True, permission_classes=[])
+    @action(methods=['get'], detail=True, permission_classes=[AlterSellerPermission])
     def toggle_can_cancel_ticket(self, request, pk=None):
         seller = self.get_object()
         seller.toggle_can_cancel_ticket()
