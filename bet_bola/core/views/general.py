@@ -8,7 +8,8 @@ from django.db.models import Q, FilteredRelation
 from django.db.models import Count 
 from django_filters import rest_framework as filters
 from utils.models import ExcludedLeague, ExcludedGame
-from core.models import League, Game, LeagueModified, LocationModified
+from core.models import League, Game, Location, LeagueModified, LocationModified, GameModified
+from core.serializers.location import MenuViewSerializer
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from core.cacheMixin import  CacheKeyGetMixin
@@ -32,17 +33,14 @@ class APIRootView(APIView):
         return Response(data)
 
 
-
-class MainMenu(CacheKeyGetMixin, APIView):
+class MainMenu(CacheKeyGetMixin, ModelViewSet):
+    serializer_class = MenuViewSerializer
     caching_time = 60
-    cache_group = 'main_menu'
-    
-    def get(self, request):
-        return super().get(request)
+    cache_group = 'main_menu'        
 
-    def get_logic(self, request):
-        store_id = request.GET['store']
-        id_list_excluded_games = [excluded_games.game.id for excluded_games in ExcludedGame.objects.filter(store__id=store_id)]
+    def get_queryset(self):        
+        store_id = self.request.GET['store']
+        id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(store__id=store_id)]
         id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in LeagueModified.objects.filter(available=False, store=store_id)]
         id_list_excluded_locations = [excluded_locations.location.id for excluded_locations in LocationModified.objects.filter(available=False, store=store_id)]
 
@@ -53,19 +51,11 @@ class MainMenu(CacheKeyGetMixin, APIView):
         .annotate(cotations_count=Count('cotations'))\
         .filter(cotations_count__gte=3)\
         .exclude(Q(league__location__pk__in=id_list_excluded_locations) | Q(league__id__in=id_list_excluded_leagues) | Q(id__in=id_list_excluded_games))\
-        .order_by('-league__location__priority', '-league__priority')\
-        .values('league__location','league__location__name', 'league')\
-        .distinct()
+        .distinct()                
 
+        leagues = League.objects.filter(my_games__in=games, my_modifications__store__pk=store_id) | League.objects.filter(my_games__in=games)
+        leagues = leagues.order_by('my_modifications__priority').distinct()
+        location = Location.objects.filter(my_leagues__in=leagues).prefetch_related(Prefetch('my_leagues', queryset=leagues, to_attr='leagues'))
+        
 
-        itens = {}
-        for value in games:
-            value["league__name"] = League.objects.filter(id=value['league']).values('name').first()['name']
-            if not value['league__location__name'] in itens.keys():
-                itens[value['league__location__name']] = []
-                itens[value['league__location__name']].append( ( value['league'], value["league__name"]) )
-            else:
-                itens[value['league__location__name']].append( ( value['league'], value["league__name"]) )
-
-        return Response(itens)
-
+        return location.distinct()

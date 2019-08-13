@@ -17,7 +17,7 @@ class SellerView(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(is_active=True)
     serializer_class = SellerSerializer
     pagination_class = SellerPagination
-    permission_classes = [IsAdminOrManager, AlterSellerPermission]
+    permission_classes = [IsAdminOrManager]
     cache_group = 'seller_user_adm'
     caching_time = 60
 
@@ -26,7 +26,12 @@ class SellerView(FiltersMixin, ModelViewSet):
         'manager': 'my_manager__username__icontains',
         'email': 'email__icontains',
 		'store':'my_store',
-    }        
+    }   
+    
+    def get_permissions(self):
+        if self.action == "partial_update":
+            return [AlterSellerPermission(),]
+        return super(SellerView, self).get_permissions()
 
     def get_queryset(self):        
         user = self.request.user
@@ -60,7 +65,7 @@ class SellerView(FiltersMixin, ModelViewSet):
             'message':  'Alterado.'
         })        
 
-    @action(methods=['post'], detail=True, permission_classes=[AlterSellerPermission])
+    @action(methods=['post'], detail=True, permission_classes=[])
     def alter_credit(self, request, pk=None):
         data = request.data.get('data')
         data = json.loads(data)

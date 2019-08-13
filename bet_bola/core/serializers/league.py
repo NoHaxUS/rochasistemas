@@ -6,13 +6,12 @@ from core.exceptions import NotAllowedException
 
 class LeagueSerializerList(serializers.ListSerializer):	
 
-	def to_representation(self, leagues):
-		
-		store = self.context['request'].GET.get('store')
+	def to_representation(self, leagues):				
+		store_id = self.context['request'].GET.get('store')
 		
 		for league in leagues:
-			league_modified = LeagueModified.objects.filter(league=league.pk, store__pk=store).first()
-			location_modified = LocationModified.objects.filter(location=league.location.pk, store__pk=store).first()
+			league_modified = LeagueModified.objects.filter(league=league.pk, store__pk=store_id).first()
+			location_modified = LocationModified.objects.filter(location=league.location.pk, store__pk=store_id).first()
 			if league_modified:
 				league.priority = league_modified.priority
 				league.available = league_modified.available			
@@ -20,6 +19,8 @@ class LeagueSerializerList(serializers.ListSerializer):
 				league.location.priority = location_modified.priority
 				league.location.available = location_modified.available
 		
+		leagues.sort(key=lambda league: (league.location.priority, league.priority), reverse=True)
+
 		return super().to_representation(leagues)
 
 
@@ -38,6 +39,14 @@ class AdmLeagueSerializerList(serializers.ListSerializer):
 		return super().to_representation(leagues)
 
 
+class MenuLeagueSerializer(serializers.HyperlinkedModelSerializer):	
+
+	class Meta:
+		model = League		
+		list_serializer_class = LeagueSerializerList
+		fields = ('id','name','available','priority')
+
+
 class LeagueSerializer(serializers.HyperlinkedModelSerializer):
 
 	location = serializers.SlugRelatedField(queryset = Location.objects.all(),slug_field='name')
@@ -46,7 +55,7 @@ class LeagueSerializer(serializers.HyperlinkedModelSerializer):
 		model = League
 		list_serializer_class = AdmLeagueSerializerList
 		fields = ('id','name','location','priority','available')
-	
+
 
 class LeagueModifiedSerializer(serializers.HyperlinkedModelSerializer):
 

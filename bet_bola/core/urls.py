@@ -40,7 +40,7 @@ urlpatterns = [
     path('after_tomorrow_games/', AfterTomorrowGamesView.as_view({'get': 'list'}), name='after_tomorrow_games'),
     path('search_games/', SearchGamesView.as_view({'get': 'list'}), name='search_games'),
     path('games_table/', GamesTable.as_view({'get': 'list'}), name='games_table'),
-    path('main_menu/', MainMenu.as_view()),
+    path('main_menu/', MainMenu.as_view({'get': 'list'})),
     path('games_tomorrow/', GamesTomorrowAdmin.as_view({'get': 'list'}), name='games_tomorrow'),
     path('games_after_tomorrow/', GamesAfterTomorrowAdmin.as_view({'get': 'list'}), name='games_after_tomorrow'),
 ]

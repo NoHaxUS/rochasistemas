@@ -7,6 +7,7 @@ from filters.mixins import FiltersMixin
 from history.permissions import BaseHistoryPermission
 from history.models import CreditTransactions
 from history.serializers.credit_transactions import CreditTransactionsSerializer
+import datetime
 
 class CreditTransactionsView(FiltersMixin, ModelViewSet):
     queryset = CreditTransactions.objects.all()
@@ -19,9 +20,15 @@ class CreditTransactionsView(FiltersMixin, ModelViewSet):
         'seller':'user__username__icontains',
         'transferred_amount_above': 'transferred_amount__gt',
         'transferred_amount_under': 'transferred_amount__lt',
-        'start_creation_date':'transaction_date__gte',
-        'end_creation_date':'transaction_date__lte',
-	}    
+        'start_creation_date':'transaction_date__date__gte',
+        'end_creation_date':'transaction_date__date__lte',
+    }    
+    
+    filter_value_transformations = {        
+        'end_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
+        'start_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),        
+    }
+
 
     def get_queryset(self):
         user = self.request.user

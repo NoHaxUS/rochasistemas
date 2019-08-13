@@ -1,19 +1,22 @@
 
 from rest_framework import serializers
+from core.serializers.league import MenuLeagueSerializer
 from core.models import Location, LocationModified
 
 class LocationSerializerList(serializers.ListSerializer):
 
-    def to_representation(self, locations):
-        store = self.context['request'].user.my_store		
+	def to_representation(self, locations):
+		store = self.context['request'].user.my_store
 
-        for location in locations:
-            location_modified = LocationModified.objects.filter(location=location.pk, store=store).first()						
-            if location_modified:
-                location.priority = location_modified.priority
-                location.available = location_modified.available
-                
-        return super().to_representation(locations)
+		for location in locations:
+			location_modified = LocationModified.objects.filter(location=location.pk, store=store).first()						
+			if location_modified:
+				location.priority = location_modified.priority
+				location.available = location_modified.available 
+				
+		locations.sort(key=lambda location: location.priority, reverse=True)
+
+		return super().to_representation(locations)
 
 
 class LocationSerializer(serializers.HyperlinkedModelSerializer):
@@ -23,6 +26,18 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
         list_serializer_class = LocationSerializerList
         fields = ('id','name','priority','available')
 
+
+class MenuViewSerializer(serializers.HyperlinkedModelSerializer):
+	leagues = serializers.SerializerMethodField()
+
+	class Meta:
+		model = Location
+		list_serializer_class = LocationSerializerList
+		fields = ('id','name','leagues','priority','available')
+	
+	def get_leagues(self, obj):
+		leagues = obj.leagues
+		return MenuLeagueSerializer(leagues, many=True, context={'request': self.context['request']}).data
 
 class LocationModifiedSerializer(serializers.HyperlinkedModelSerializer):
     location = serializers.SlugRelatedField(queryset = Location.objects.all(), slug_field='pk')

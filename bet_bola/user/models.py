@@ -148,8 +148,12 @@ class Manager(CustomUser):
         self.is_active = not self.is_active
         self.save()
         
-    def toggle_can_modify_seller_comissions_switch(self):        
+    def toggle_can_modify_seller_comissions(self):        
         self.can_modify_seller_comissions = not self.can_modify_seller_comissions        
+        self.save()
+
+    def toggle_can_sell_unlimited(self):        
+        self.can_sell_unlimited = not self.can_sell_unlimited        
         self.save()
 
     def toggle_can_modify_seller(self):
