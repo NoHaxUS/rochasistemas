@@ -27,17 +27,14 @@ class LeagueSerializerList(serializers.ListSerializer):
 class AdmLeagueSerializerList(serializers.ListSerializer):	
 
 	def to_representation(self, leagues):
-		user = self.context['request'].user		
-		store_id = user.my_store.pk		
+		store = self.context['request'].user.my_store.pk		
 		
 		for league in leagues:
-			league_modified = LeagueModified.objects.filter(league=league.pk, store__pk=store_id).first()
+			league_modified = LeagueModified.objects.filter(league=league.pk, store__pk=store).first()
 			
 			if league_modified:
 				league.priority = league_modified.priority
-				league.available = league_modified.available						
-		
-		leagues.sort(key=lambda league: league.priority, reverse=True)
+				league.available = league_modified.available
 
 		return super().to_representation(leagues)
 

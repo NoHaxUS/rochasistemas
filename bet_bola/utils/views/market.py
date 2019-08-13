@@ -38,7 +38,7 @@ class MarketModifiedView(ModelViewSet):
             serializer_data.append(serializer.data)		
         headers = self.get_success_headers(serializer.data)
         
-        invalidate_cache_group('market_cotation_view', self.request.user.my_store.pk) 
+        invalidate_cache_group(['/market_cotations/'], self.request.user.my_store.pk) 
         
         return Response(serializer_data, status=status.HTTP_201_CREATED, headers=headers)
 
@@ -63,7 +63,7 @@ class MarketRemotionView(ModelViewSet):
         self.perform_create(serializer)                
         headers = self.get_success_headers(serializer.data)
 
-        invalidate_cache_group('market_cotation_view', request.user.my_store.pk) 
+        invalidate_cache_group(['/market_cotations/'], request.user.my_store.pk) 
 
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)    		
 

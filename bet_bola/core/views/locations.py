@@ -55,11 +55,16 @@ class LocationModifiedView(FiltersMixin, ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         
-        invalidate_cache_group('today_games', request.user.my_store.pk)
-        invalidate_cache_group('tomorrow_games', request.user.my_store.pk)
-        invalidate_cache_group('after_tomorrow_games', request.user.my_store.pk)
-        invalidate_cache_group('search_games', request.user.my_store.pk)
-        invalidate_cache_group('main_menu', request.user.my_store.pk)
+        invalidate_cache_group(
+            [
+                '/today_games/',
+                '/tomorrow_games/',
+                '/after_tomorrow_games/',
+                '/search_games/',
+                '/main_menu/'
+            ], 
+            request.user.my_store.pk
+        )
 
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
@@ -72,11 +77,16 @@ class LocationModifiedView(FiltersMixin, ModelViewSet):
         value = data.get('value')
         store = request.user.my_store
 
-        invalidate_cache_group('today_games', request.user.my_store.pk)
-        invalidate_cache_group('tomorrow_games', request.user.my_store.pk)
-        invalidate_cache_group('after_tomorrow_games', request.user.my_store.pk)
-        invalidate_cache_group('search_games', request.user.my_store.pk)
-        invalidate_cache_group('main_menu', request.user.my_store.pk)
+        invalidate_cache_group(
+            [
+                '/today_games/',
+                '/tomorrow_games/',
+                '/after_tomorrow_games/',
+                '/search_games/',
+                '/main_menu/'
+            ], 
+            request.user.my_store.pk
+        )
 
         if value:
             for id in ids:

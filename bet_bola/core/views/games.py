@@ -276,18 +276,24 @@ class TodayGamesAdmin(FiltersMixin, ModelViewSet):
         game_id = data.get('id')
         available = data.get('available')
         user = request.user
-        
-        invalidate_cache_group('today_games', request.user.my_store.pk)
-        invalidate_cache_group('tomorrow_games', request.user.my_store.pk)
-        invalidate_cache_group('after_tomorrow_games', request.user.my_store.pk)
-        invalidate_cache_group('search_games', request.user.my_store.pk)    
-        invalidate_cache_group('main_menu', request.user.my_store.pk) 
 
         if GameModified.objects.filter(game__pk=game_id, store=user.my_store).exists():
             GameModified.objects.filter(game__pk=game_id, store=user.my_store).update(available=available)
         else:
             GameModified.objects.create(game=Game.objects.get(pk=game_id), store=user.my_store, available=available)
         
+        
+        invalidate_cache_group(
+            [
+                '/today_games/',
+                '/tomorrow_games/',
+                '/after_tomorrow_games/',
+                '/search_games/',
+                '/main_menu/'
+            ], 
+            request.user.my_store.pk
+        )
+    
         return Response({
                 'success': True,
                 'message': 'Alterado com Sucesso :)'

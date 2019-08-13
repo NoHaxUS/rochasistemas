@@ -18,8 +18,8 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
                 "creation_date": obj.creation_date.strftime('%d %B %Y %H:%M'),
                 "description": obj.description,
                 "store": obj.store.pk
-            }        
-    
+            }
+
     def validate_user(self, user):                
         if self.context['request'].user.pk == user.pk or self.context['request'].user.user_type == 4:
             return user

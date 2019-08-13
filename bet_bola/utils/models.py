@@ -76,7 +76,7 @@ class GeneralConfigurations(models.Model):
     bonus_won_ticket = models.BooleanField(default=False, verbose_name="Ativar Bônus por bilhetes premiados?")
     bonus_by_won_ticket = models.IntegerField(default=10, verbose_name="Bônus por bilhetes premiados")    
 
-    
+
     def __str__(self):
         return "Configuração da Banca " + self.store.fantasy
 
