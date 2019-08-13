@@ -75,12 +75,14 @@ class AlterSellerPermission(permissions.BasePermission):
 	message = "Você não tem permissão para essa operação."
 
 	def has_permission(self, request, view):				
-		if request.user.user_type in [3,4]:			
+		if request.user.user_type in [2,3,4]:			
 			return True				
 		raise NotAllowedException(detail=self.message)
 	
-	def has_object_permission(self, request, view, obj):
+	def has_object_permission(self, request, view, obj):		
 		if request.user.user_type == 4:
+			return True
+		if obj.pk == request.user.pk:
 			return True
 		if obj.my_manager and request.user.pk == obj.my_manager.pk and request.user.manager.can_modify_seller:
 			return True		
