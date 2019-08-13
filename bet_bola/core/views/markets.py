@@ -48,7 +48,7 @@ class MarketCotationView(CacheKeyDispatchMixin, ModelViewSet):
                 'success': False,
                 'message': 'A ID do jogo é obrigatória'
             })                
-        id_list_excluded_markets = [excluded_markets.market.id for excluded_markets in MarketModified.objects.filter(active=False, store=store)]
+        id_list_excluded_markets = [excluded_markets.market.id for excluded_markets in MarketModified.objects.filter(available=False, store=store)]
         id_list_excluded_cotations = [excluded_cotations.cotation.id for excluded_cotations in CotationModified.objects.filter(available=False, store=store)]        
         
         my_cotations_qs = Cotation.objects.filter(game=game_id).exclude(Q(market__name='1X2') | Q(pk__in=id_list_excluded_cotations))        
