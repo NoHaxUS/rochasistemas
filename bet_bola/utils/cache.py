@@ -12,16 +12,17 @@ def invalidate_cache_group(cache_groups, store_id):
     cache_time = 60 * 5
     store_id = str(store_id)
 
-    groups = cache.get('cache_groups')
-    if groups:
-        for cache_group in cache_group:
-            store_group = groups.get(store_id)
+    cache_set = cache.get('cache_set')
+    if cache_set:
+        for cache_group in cache_groups:
+            print("Invalidating: "+ cache_group)
+            store_group = cache_set.get(store_id)
             if store_group:
                 group = store_group.get(cache_group)
                 if group:
                     cache.delete_many(group)
-                    del groups[store_id][cache_group]
-                    cache.set('cache_groups', groups, cache_time)
+                    del cache_set[store_id][cache_group]
+                    cache.set('cache_set', cache_set, cache_time)
 
 
 def get_or_store_cache_key(request, cache_key, cache_group):
@@ -49,9 +50,6 @@ def get_or_store_cache_key(request, cache_key, cache_group):
             if cache_key:
                 cache_set[store_id][cache_group].append(cache_key)
                 cache.set('cache_set', cache_set, cache_time)
-    print('==== CACHE START =====')
-    print(cache_set)
-    print('===== CACHE END =====')
 
 
 class MonsterCacheMiddleware(CacheMiddleware):

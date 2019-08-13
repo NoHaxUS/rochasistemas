@@ -174,7 +174,18 @@ class MarketRemotion(models.Model):
 
     def __str__(self):
         return self.get_market_to_remove_display() + ' - ' + self.under_above + ' ' +self.base_line
+    
 
+    # def save(self, *args, **kwargs):
+    #     print("CALLING SAVE")
+    #     from utils.cache import invalidate_cache_group
+    #     invalidate_cache_group([
+    #         '/market_cotations/'
+    #     ],
+    #         self.store.pk
+    #     )
+    #     return super().save(*args, **kwargs)
+    
     class Meta:
         ordering = ('-pk',)
         verbose_name = 'Remoção de Aposta'

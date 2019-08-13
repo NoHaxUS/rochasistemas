@@ -62,10 +62,14 @@ class MarketRemotionView(ModelViewSet):
         serializer.is_valid(raise_exception=True)        
         self.perform_create(serializer)                
         headers = self.get_success_headers(serializer.data)
-
         invalidate_cache_group(['/market_cotations/'], request.user.my_store.pk) 
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)    		
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)    
+    
+        
+    def destroy(self, request, pk=None):
+        invalidate_cache_group(['/market_cotations/'], request.user.my_store.pk)
+        return super().destroy(request, pk)
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
