@@ -8,11 +8,11 @@ class LeagueSerializerList(serializers.ListSerializer):
 
 	def to_representation(self, leagues):
 		
-		store_id = self.context['request'].GET.get('store')
+		store = self.context['request'].GET.get('store')
 		
 		for league in leagues:
-			league_modified = LeagueModified.objects.filter(league=league.pk, store__pk=store_id).first()
-			location_modified = LocationModified.objects.filter(location=league.location.pk, store__pk=store_id).first()
+			league_modified = LeagueModified.objects.filter(league=league.pk, store__pk=store).first()
+			location_modified = LocationModified.objects.filter(location=league.location.pk, store__pk=store).first()
 			if league_modified:
 				league.priority = league_modified.priority
 				league.available = league_modified.available			
@@ -20,25 +20,20 @@ class LeagueSerializerList(serializers.ListSerializer):
 				league.location.priority = location_modified.priority
 				league.location.available = location_modified.available
 		
-		leagues.sort(key=lambda league: (league.location.priority, league.priority), reverse=True)
-
 		return super().to_representation(leagues)
 
 
 class AdmLeagueSerializerList(serializers.ListSerializer):	
 
 	def to_representation(self, leagues):
-		user = self.context['request'].user		
-		store_id = user.my_store.pk		
+		store = self.context['request'].user.my_store.pk		
 		
 		for league in leagues:
-			league_modified = LeagueModified.objects.filter(league=league.pk, store__pk=store_id).first()
+			league_modified = LeagueModified.objects.filter(league=league.pk, store__pk=store).first()
 			
 			if league_modified:
 				league.priority = league_modified.priority
-				league.available = league_modified.available						
-		
-		leagues.sort(key=lambda league: league.priority, reverse=True)
+				league.available = league_modified.available
 
 		return super().to_representation(leagues)
 

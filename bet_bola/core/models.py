@@ -91,11 +91,16 @@ class CotationModified(models.Model):
 
     def save(self, *args, **kwargs):        
         from utils.cache import invalidate_cache_group
-        invalidate_cache_group('today_games', self.store.pk)
-        invalidate_cache_group('tomorrow_games', self.store.pk)
-        invalidate_cache_group('after_tomorrow_games', self.store.pk)
-        invalidate_cache_group('search_games', self.store.pk)
-        invalidate_cache_group('market_cotation_view', self.store.pk)                 
+        invalidate_cache_group(
+            [
+            '/today_games/',
+            '/tomorrow_games/',
+            '/after_tomorrow_games/',
+            '/search_games/',
+            '/market_cotations/'
+            ],
+            self.store.pk
+        )             
 
         super().save(*args, **kwargs)
 

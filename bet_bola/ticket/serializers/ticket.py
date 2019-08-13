@@ -123,7 +123,8 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
             max_bet_value = config.max_bet_value
             min_cotation_sum = config.min_cotation_sum
             max_cotation_sum = config.max_cotation_sum
-            alert_bet_value = config.alert_bet_value
+            block_bets = config.block_bets
+            #alert_bet_value = config.alert_bet_value
 
         except GeneralConfigurations.DoesNotExist:
             min_number_of_choices_per_bet = 1
@@ -132,7 +133,11 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
             max_bet_value = 1000000
             min_cotation_sum = 0
             max_cotation_sum = 1000000
-            alert_bet_value = 1500
+            block_bets = False
+            #alert_bet_value = 1500
+        
+        if block_bets:
+            raise serializers.ValidationError("A criação de Bilhetes está desligada no momento.")
 
         cotations_len = len(data['cotations'])
     
