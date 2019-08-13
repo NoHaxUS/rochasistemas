@@ -25,7 +25,6 @@ def invalidate_cache_group(cache_groups, store_id):
 
 
 def get_or_store_cache_key(request, cache_key, cache_group):
-    #cache.clear()
     store_id = str(request.GET.get('store')) or str(request.user.my_store.pk)
     cache_time = 60 * 5
 
@@ -50,7 +49,9 @@ def get_or_store_cache_key(request, cache_key, cache_group):
             if cache_key:
                 cache_set[store_id][cache_group].append(cache_key)
                 cache.set('cache_set', cache_set, cache_time)
+    print('==== CACHE START =====')
     print(cache_set)
+    print('===== CACHE END =====')
 
 
 class MonsterCacheMiddleware(CacheMiddleware):
@@ -85,7 +86,6 @@ class MonsterCacheMiddleware(CacheMiddleware):
         if timeout and response.status_code == 200:
             cache_key = learn_cache_key(request, response, timeout, self.key_prefix, cache=self.cache)
             get_or_store_cache_key(request, cache_key, request.path)
-            print(cache_key)
             if hasattr(response, 'render') and callable(response.render):
                 response.add_post_render_callback(
                     lambda r: self.cache.set(cache_key, r, timeout)
