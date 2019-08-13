@@ -72,9 +72,15 @@ class ManagerView(FiltersMixin, ModelViewSet):
         return Response(response)                
         
     @action(methods=['get'], detail=True, permission_classes=[IsAdmin])
-    def toggle_can_modify_seller_comissions_switch(self, request, pk=None):
+    def toggle_can_modify_seller_comissions(self, request, pk=None):
         manager = self.get_object()
-        manager.toggle_can_modify_seller_comissions_switch()
+        manager.toggle_can_modify_seller_comissions()
+        return Response({'success': True})
+    
+    @action(methods=['get'], detail=True, permission_classes=[IsAdmin])
+    def toggle_can_sell_unlimited(self, request, pk=None):
+        manager = self.get_object()
+        manager.toggle_can_sell_unlimited()
         return Response({'success': True})
     
     @action(methods=['get'], detail=True, permission_classes=[IsAdmin])

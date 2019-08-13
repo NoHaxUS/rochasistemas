@@ -6,8 +6,7 @@ from core.exceptions import NotAllowedException
 
 class LeagueSerializerList(serializers.ListSerializer):	
 
-	def to_representation(self, leagues):
-		
+	def to_representation(self, leagues):				
 		store_id = self.context['request'].GET.get('store')
 		
 		for league in leagues:
@@ -43,6 +42,14 @@ class AdmLeagueSerializerList(serializers.ListSerializer):
 		return super().to_representation(leagues)
 
 
+class MenuLeagueSerializer(serializers.HyperlinkedModelSerializer):	
+
+	class Meta:
+		model = League		
+		list_serializer_class = LeagueSerializerList
+		fields = ('id','name','available','priority')
+
+
 class LeagueSerializer(serializers.HyperlinkedModelSerializer):
 
 	location = serializers.SlugRelatedField(queryset = Location.objects.all(),slug_field='name')
@@ -51,7 +58,7 @@ class LeagueSerializer(serializers.HyperlinkedModelSerializer):
 		model = League
 		list_serializer_class = AdmLeagueSerializerList
 		fields = ('id','name','location','priority','available')
-	
+
 
 class LeagueModifiedSerializer(serializers.HyperlinkedModelSerializer):
 

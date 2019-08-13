@@ -1,5 +1,6 @@
 
 from rest_framework import serializers
+from core.serializers.league import MenuLeagueSerializer
 from core.models import Location, LocationModified
 
 class LocationSerializerList(serializers.ListSerializer):
@@ -25,6 +26,18 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
 		list_serializer_class = LocationSerializerList
 		fields = ('id','name','priority','available')
 
+
+class MenuViewSerializer(serializers.HyperlinkedModelSerializer):
+	leagues = serializers.SerializerMethodField()
+
+	class Meta:
+		model = Location
+		list_serializer_class = LocationSerializerList
+		fields = ('id','name','leagues','priority','available')
+	
+	def get_leagues(self, obj):
+		leagues = obj.leagues
+		return MenuLeagueSerializer(leagues, many=True, context={'request': self.context['request']}).data
 
 class LocationModifiedSerializer(serializers.HyperlinkedModelSerializer):
 	location = serializers.SlugRelatedField(queryset = Location.objects.all(), slug_field='pk')

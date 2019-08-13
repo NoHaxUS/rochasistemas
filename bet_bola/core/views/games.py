@@ -76,7 +76,7 @@ class TomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):
         store_id = self.request.GET['store']
         store = Store.objects.get(pk=store_id)
 
-        id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
+        id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(available=False, store=store)]             
 
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")
     
@@ -115,7 +115,7 @@ class AfterTomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):
         store_id = self.request.GET['store']
         store = Store.objects.get(pk=store_id)
 
-        id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
+        id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(available=False, store=store)]             
 
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")
     
@@ -155,7 +155,7 @@ class SearchGamesView(CacheKeyDispatchMixin, ModelViewSet):
         store_id = self.request.GET['store']
         store = Store.objects.get(pk=store_id)
 
-        id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
+        id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(available=False, store=store)]             
         id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in LeagueModified.objects.filter(available=False, store=store_id)]
         id_list_excluded_locations = [excluded_locations.location.id for excluded_locations in LocationModified.objects.filter(available=False, store=store_id)]        
 
@@ -163,8 +163,8 @@ class SearchGamesView(CacheKeyDispatchMixin, ModelViewSet):
             .prefetch_related(Prefetch('cotations', queryset=my_cotation_qs, to_attr='my_cotations'))\
             .exclude(id__in=id_list_excluded_games)\
             .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
-            .filter(cotations_count__gte=3)
-        
+            .filter(cotations_count__gte=3)                
+
         if self.request.GET.get('game_name'):
             game_name = self.request.GET.get('game_name')
             my_games_qs = my_games_qs.filter(name__icontains=game_name)
@@ -211,7 +211,7 @@ class GamesTable(ModelViewSet):
         store_id = self.request.GET['store']
         store = Store.objects.get(pk=store_id)
 
-        id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
+        id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(available=False, store=store)]             
 
         my_cotation_qs = Cotation.objects.filter(Q(market__name="1X2") | Q(market__name="Dupla Chance"))
 
@@ -254,7 +254,7 @@ class TodayGamesAdmin(FiltersMixin, ModelViewSet):
     def get_queryset(self):
         store = self.request.user.my_store
     
-        id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
+        id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(available=False, store=store)]             
         id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store)]
 
         queryset = Game.objects.filter(start_date__gt=tzlocal.now(),
@@ -315,7 +315,7 @@ class GamesTomorrowAdmin(FiltersMixin, ModelViewSet):
 
         store = self.request.user.my_store
 
-        id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
+        id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(available=False, store=store)]             
         id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in LeagueModified.objects.filter(available=False, store=store)]
 
         queryset = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
@@ -351,7 +351,7 @@ class GamesAfterTomorrowAdmin(FiltersMixin, ModelViewSet):
 
         store = self.request.user.my_store
 
-        id_list_excluded_games = [excluded_games.id for excluded_games in ExcludedGame.objects.filter(store=store)]             
+        id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(available=False, store=store)]             
         id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in LeagueModified.objects.filter(available=False, store=store)]
 
         queryset = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),

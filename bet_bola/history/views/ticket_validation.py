@@ -16,7 +16,7 @@ class TicketValidationView(FiltersMixin, ModelViewSet):
     permission_classes = [BaseHistoryPermission,]
 
     filter_mappings = {
-        'ticket_id': 'ticket__ticket_id__contains',
+        'ticket_id': 'ticket__ticket_id__icontains',
         'start_creation_date':'date__date__gte',		
         'end_creation_date':'date__date__lte',
         'paid_by': 'who_validated__username__icontains',        
