@@ -54,8 +54,8 @@ class TodayGamesView(CacheKeyDispatchMixin, ModelViewSet):
         .filter(games_count__gt=0)
         
         id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in LeagueModified.objects.filter(available=False, store=store_id)]
-        id_list_excluded_locations = [excluded_locations.location.id for excluded_locations in LocationModified.objects.filter(available=False, store=store_id)]        
-        queryset = queryset.exclude(id__in=id_list_excluded_leagues)
+        id_list_excluded_locations = [excluded_locations.location.id for excluded_locations in LocationModified.objects.filter(available=False, store=store_id)]                
+        queryset = queryset.exclude(id__in=id_list_excluded_leagues)        
         queryset = queryset.exclude(location__pk__in=id_list_excluded_locations)
 
         return queryset

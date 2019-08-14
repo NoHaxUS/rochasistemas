@@ -81,7 +81,7 @@ class LeagueModifiedView(FiltersMixin, ModelViewSet):
         ids = data.get('ids')
         value = data.get('value')
         store = request.user.my_store
-
+        
         invalidate_cache_group(
             [
                 '/today_games/',
