@@ -16,7 +16,7 @@ def toggle_availability(self):
 
 def cancel_ticket(self, who_canceling):    
 
-    if not (who_canceling.has_perm('user.be_admin') or who_canceling.has_perm('user.be_seller')) or who_canceling.my_store != self.store:
+    if who_canceling.my_store != self.store:        
         return {
             'success': False,
             'message': 'Esse Usuário não tem permissão para cancelar Bilhetes.'
@@ -28,6 +28,12 @@ def cancel_ticket(self, who_canceling):
             'message': 'Esse Usuário não tem permissão para cancelar Bilhetes.'
         }
         
+    elif who_canceling.has_perm('user.be_manager') and not who_canceling.manager.can_cancel_ticket:
+        return {
+            'success': False,
+            'message': 'Esse Usuário não tem permissão para cancelar Bilhetes.'
+        }
+
     if not self.status == 0:
         return {
             'success': False,
@@ -57,8 +63,7 @@ def cancel_ticket(self, who_canceling):
     who_paid = self.payment.who_paid
     if who_paid.user_type == 2 and not who_paid.seller.can_sell_unlimited:
         who_paid.seller.credit_limit += self.bet_value
-        who_paid.seller.save()
-        
+        who_paid.seller.save()        
 
     self.status = 5
     self.payment.status = 3

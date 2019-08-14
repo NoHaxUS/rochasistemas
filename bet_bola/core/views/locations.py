@@ -65,7 +65,7 @@ class LocationModifiedView(FiltersMixin, ModelViewSet):
             ], 
             request.user.my_store.pk
         )
-
+        
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
@@ -86,8 +86,7 @@ class LocationModifiedView(FiltersMixin, ModelViewSet):
                 '/main_menu/'
             ], 
             request.user.my_store.pk
-        )
-
+        )        
         if value:
             for id in ids:
                 if LocationModified.objects.filter(location__pk=id, store=store).exists():
