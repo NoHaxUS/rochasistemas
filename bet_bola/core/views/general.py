@@ -2,17 +2,13 @@ from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework import filters as drf_filters
 from django.db.models import Prefetch
-from django.db.models import Q, FilteredRelation
+from django.db.models import Q
 from django.db.models import Count 
 from django_filters import rest_framework as filters
-from utils.models import ExcludedLeague, ExcludedGame
 from core.models import League, Game, Location, LeagueModified, LocationModified, GameModified
 from core.serializers.location import MenuViewSerializer
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
-from core.cacheMixin import  CacheKeyGetMixin
+from core.cacheMixin import  CacheKeyDispatchMixin
 import utils.timezone as tzlocal
 
 class APIRootView(APIView):
@@ -33,7 +29,7 @@ class APIRootView(APIView):
         return Response(data)
 
 
-class MainMenu(CacheKeyGetMixin, ModelViewSet):
+class MainMenu(CacheKeyDispatchMixin, ModelViewSet):
     serializer_class = MenuViewSerializer
     caching_time = 60
     cache_group = 'main_menu'        

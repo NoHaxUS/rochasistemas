@@ -4,7 +4,7 @@ from core.serializers.league import MenuLeagueSerializer
 from core.models import Location, LocationModified
 
 class AdmLocationSerializerList(serializers.ListSerializer):
-
+    
 	def to_representation(self, locations):
 		store = self.context['request'].user.my_store
 
