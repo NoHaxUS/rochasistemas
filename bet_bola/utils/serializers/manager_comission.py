@@ -15,36 +15,48 @@ class ManagerComissionSerializer(serializers.HyperlinkedModelSerializer):
 		instance.fourth = validated_data.get('fourth', instance.fourth)
 		instance.fifth = validated_data.get('fifth', instance.fifth)
 		instance.sixth = validated_data.get('sixth', instance.sixth)
-		instance.sixth_more = validated_data.get('sixth_more', instance.sixth_more)
+		instance.sixth_more = validated_data.get('sixth_more', instance.sixth_more)		
+		instance.profit_comission = validated_data.get('profit_comission', instance.profit_comission)
 		instance.save()
 		return instance
 
-
+	
 	def validate_simple(self, value):
 		if value < 0 or value > 100:
 			raise serializers.ValidationError('A Comissão não pode ser menor que 0 ou maior que 100')
 		return value
+
 	def validate_double(self, value):
 		if value < 0 or value > 100:
 			raise serializers.ValidationError('A Comissão não pode ser menor que 0 ou maior que 100')
 		return value
+
 	def validate_triple(self, value):
 		if value < 0 or value > 100:
 			raise serializers.ValidationError('A Comissão não pode ser menor que 0 ou maior que 100')
 		return value
+
 	def validate_fourth(self, value):
 		if value < 0 or value > 100:
 			raise serializers.ValidationError('A Comissão não pode ser menor que 0 ou maior que 100')
 		return value
+
 	def validate_fifth(self, value):
 		if value < 0 or value > 100:
 			raise serializers.ValidationError('A Comissão não pode ser menor que 0 ou maior que 100')
 		return value
+
 	def validate_sixth(self, value):
 		if value < 0 or value > 100:
 			raise serializers.ValidationError('A Comissão não pode ser menor que 0 ou maior que 100')
 		return value
+
 	def validate_sixth_more(self, value):
+		if value < 0 or value > 100:
+			raise serializers.ValidationError('A Comissão não pode ser menor que 0 ou maior que 100')
+		return value
+	
+	def validate_profit_comission(self, value):
 		if value < 0 or value > 100:
 			raise serializers.ValidationError('A Comissão não pode ser menor que 0 ou maior que 100')
 		return value
@@ -52,4 +64,4 @@ class ManagerComissionSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = ManagerComission
-		fields = ('pk','manager_related','simple','double','triple','fourth','fifth','sixth','sixth_more')
+		fields = ('pk','manager_related','simple','double','triple','fourth','fifth','sixth','sixth_more','profit_comission')
