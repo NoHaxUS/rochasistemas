@@ -11,7 +11,7 @@ from cashier.serializers.cashier import (
 )
 from history.paginations import (
     SellerCashierPagination, ManagerCashierPagination, 
-    SellersCashierPagination, ManagersCashierPagination
+    SellersCashierPagination, ManagersCashierPagination, ManagerSpecificCashierPagination
 )
 from user.models import Seller, Manager
 from history.models import ManagerCashierHistory, SellerCashierHistory
@@ -268,7 +268,7 @@ class ManagerSpecificCashierView(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(payment__status=2).distinct()
     serializer_class = ManagerSpecificCashierSerializer
     permission_classes = [IsManager]    
-    pagination_class = SellersCashierPagination
+    pagination_class = ManagerSpecificCashierPagination
 
 
     def list(self, request, pk=None):

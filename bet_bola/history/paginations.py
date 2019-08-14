@@ -302,3 +302,46 @@ class ManagerCashierPagination(PageNumberPagination):
             'results': data
         })
 
+
+class ManagerSpecificCashierPagination(PageNumberPagination):
+    page_size = 30
+
+    def get_paginated_response(self, data):        
+        entry = 0
+        out = 0
+        comissions_sum = 0
+        won_bonus_sum = 0
+        total_out = 0
+        seller_comissions_sum = 0
+        users = []                   
+        for user in data:
+            users.append({"id":user["id"],"username":user["username"]})            
+            entry += float(user["entry"])                
+            out += float(user["out"])
+            won_bonus_sum += float(user["won_bonus"])
+            comissions_sum += float(user["comission"])
+            seller_comissions_sum += float(user["comission_seller"])            
+            total_out += float(user["total_out"])        
+        page = int(self.request.GET.get('page',1)) 
+
+        if page == 1:
+            data = data[0:self.page_size]
+        data = data[self.page_size * (page - 1) : (page * self.page_size)]
+
+        return Response({
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,            
+            'entry': entry,
+            'out': out,
+            'won_bonus_sum': won_bonus_sum,
+            'comissions_sum': comissions_sum,
+            'seller_comissions_sum': seller_comissions_sum,
+            'total_out': total_out,
+            'users': users,
+            'results': data
+        })
+        

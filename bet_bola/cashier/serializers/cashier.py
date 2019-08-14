@@ -216,7 +216,7 @@ class ManagersCashierSerializer(SellersCashierSerializer):
 	def get_total_out(self, obj):
 		return self.get_out(obj) + self.get_comission(obj) + self.get_comission_seller(obj)
 	
-	def get_comission_seller(self, obj):				
+	def get_comission_seller(self, obj):
 		tickets = self.get_ticket(obj)
 		comission = None
 		value = 0
@@ -232,6 +232,7 @@ class ManagersCashierSerializer(SellersCashierSerializer):
 
 class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
 	comission = serializers.SerializerMethodField()
+	comission_seller = serializers.SerializerMethodField()
 	entry = serializers.SerializerMethodField()
 	out = serializers.SerializerMethodField()
 	won_bonus = serializers.SerializerMethodField()
@@ -239,7 +240,7 @@ class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Seller
-		fields = ('id','username','comission','entry','won_bonus','out','total_out')
+		fields = ('id','username','comission','comission_seller','entry','won_bonus','out','total_out')
 
 	def get_ticket(self, obj):		
 		tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=obj.pk, 
@@ -270,6 +271,19 @@ class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
 			else:				
 				value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)		
 		return value
+	
+	def get_comission_seller(self, obj):
+		tickets = self.get_ticket(obj)
+		comission = None
+		value = 0
+		for ticket in tickets:
+			user_type = ticket.payment.who_paid.user_type
+			if user_type == 2:	
+				comission = ticket.payment.who_paid.seller.comissions
+				key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}
+				value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)		
+
+		return value		
 
 	def get_entry(self, obj):		
 		tickets = self.get_ticket(obj)
@@ -297,5 +311,5 @@ class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
 		return 0
 	
 	def get_total_out(self, obj):
-		return self.get_won_bonus(obj) + self.get_out(obj) + self.get_comission(obj)
+		return self.get_won_bonus(obj) + self.get_out(obj) + self.get_comission_seller(obj)
 	
