@@ -67,3 +67,8 @@ class EntryView(FiltersMixin, ModelViewSet):
         entry.closed = True
         entry.save()
         return Response({'success':True, 'message': 'Lançamento fechado.'})
+
+    @action(methods=['get'], detail=False, permission_classes=[IsAdmin])
+    def close_all_entries(self, request, pk=None):        
+        Entry.objects.filter(store=request.user.my_store).update(closed=True)        
+        return Response({'success':True, 'message': 'Lançamento fechado.'})
