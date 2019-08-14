@@ -75,10 +75,11 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
 	out = serializers.SerializerMethodField()
 	won_bonus = serializers.SerializerMethodField()
 	total_out = serializers.SerializerMethodField()	
+	profit = serializers.SerializerMethodField()
 
 	class Meta:
 		model = Seller
-		fields = ('id','username','comission','entry','won_bonus','out','total_out')
+		fields = ('id','username','comission','entry','won_bonus','out','total_out','profit')
 
 	def get_ticket(self, obj):		
 		tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=obj.pk, 
@@ -144,6 +145,9 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
 	
 	def get_total_out(self, obj):
 		return self.get_won_bonus(obj) + self.get_out(obj) + self.get_comission(obj)
+
+	def get_profit(self, obj):
+		return self.get_entry(obj) - self.get_total_out(obj) 
 	
 
 class ManagersCashierSerializer(SellersCashierSerializer):
@@ -151,7 +155,7 @@ class ManagersCashierSerializer(SellersCashierSerializer):
 
 	class Meta:
 		model = Manager
-		fields = ('id','username','comission','comission_seller','entry','won_bonus','out','total_out')
+		fields = ('id','username','comission','comission_seller','entry','won_bonus','out','total_out','profit')
 
 	def get_entry(self, obj):		
 		tickets = self.get_ticket(obj)
@@ -223,7 +227,7 @@ class ManagersCashierSerializer(SellersCashierSerializer):
 				key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}
 				value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)		
 
-		return value
+		return value		
 
 
 class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
