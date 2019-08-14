@@ -322,8 +322,7 @@ class ManagerSpecificCashierPagination(PageNumberPagination):
             comissions_sum += float(user["comission"])
             seller_comissions_sum += float(user["comission_seller"])            
             total_out += float(user["total_out"])        
-        page = int(self.request.GET.get('page',1)) 
-
+        page = int(self.request.GET.get('page',1))         
         if page == 1:
             data = data[0:self.page_size]
         data = data[self.page_size * (page - 1) : (page * self.page_size)]
