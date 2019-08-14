@@ -28,12 +28,16 @@ class CashierSerializer(serializers.HyperlinkedModelSerializer):
 	manager = serializers.SerializerMethodField()
 	won_bonus = serializers.SerializerMethodField()
 	creation_date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
+	cotations_count = serializers.SerializerMethodField()
 
 
 	class Meta:
 		model = Ticket
-		fields = ('id','ticket_id','creation_date','creator','reward','won_bonus','bet_type','manager','comission','payment','bet_value','status')
+		fields = ('id','ticket_id','creation_date','creator','reward','won_bonus','cotations_count','bet_type','manager','comission','payment','bet_value','status')
 	
+	def get_cotations_count(self, obj):		
+		return obj.cotations.count()
+
 	def get_won_bonus(self, obj):		
 		return obj.won_bonus()
 
@@ -247,7 +251,7 @@ class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
 			if end_creation_date:
 				end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')		
 				tickets = tickets.filter(creation_date__date__lte=end_creation_date)						
-		return tickets
+		return tickets		
 
 	def get_comission(self, obj):				
 		tickets = self.get_ticket(obj)

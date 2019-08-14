@@ -31,13 +31,13 @@ class GeneralCashier(APIView):
             if request.user.user_type == 2:
                 managers = Manager.objects.none()
                 sellers = Seller.objects.filter(pk=user.pk,payment__status=2, my_store=request.user.my_store).distinct()
-                for release in Entry.objects.filter(user=user):
+                for release in Entry.objects.filter(user=user).exclude(closed=True):
                     total_release += release.value                
 
             elif request.user.user_type == 3:
                 managers = Manager.objects.filter(pk=user.pk,manager_assoc__payment__status=2, my_store=request.user.my_store).distinct()
                 sellers = Seller.objects.filter(my_manager__pk=user.pk,payment__status=2, my_store=request.user.my_store).distinct()                
-                for release in Entry.objects.filter(Q(user=user) | Q(user__in=user.manager.manager_assoc.all())):
+                for release in Entry.objects.filter(Q(user=user) | Q(user__in=user.manager.manager_assoc.all())).exclude(closed=True):
                     total_release += release.value
 
             else:

@@ -1,9 +1,11 @@
 from django.db.models import Q
+from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from filters.mixins import FiltersMixin
 from user.models import CustomUser
+from user.permissions import IsAdmin
 from utils.paginations import EntryPagination
 from utils.models import Entry
 from utils.serializers.entry import EntrySerializer
@@ -41,9 +43,9 @@ class EntryView(FiltersMixin, ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.user_type == 2:
-            return Entry.objects.filter(user=user).order_by('-creation_date')
+            return Entry.objects.filter(user=user).exclude(closed=True).order_by('-creation_date')
         elif user.user_type == 3:
-            return Entry.objects.filter(Q(user=user.pk) | Q(user__in=user.manager.manager_assoc.all())).order_by('-creation_date')
+            return Entry.objects.filter(Q(user=user.pk) | Q(user__in=user.manager.manager_assoc.all())).exclude(closed=True).order_by('-creation_date')
         return Entry.objects.filter(store=user.my_store).order_by('-creation_date')
         
     def create(self, request, *args, **kwargs):        
@@ -58,3 +60,10 @@ class EntryView(FiltersMixin, ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)                        
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    @action(methods=['get'], detail=True, permission_classes=[IsAdmin])
+    def close_entry(self, request, pk=None):
+        entry = self.get_object()
+        entry.closed = True
+        entry.save()
+        return Response({'success':True, 'message': 'Lançamento fechado.'})

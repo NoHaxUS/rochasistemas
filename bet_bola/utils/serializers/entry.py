@@ -16,6 +16,7 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
                 "user": obj.user.username,
                 "value": obj.value,
                 "creation_date": obj.creation_date.strftime('%d %B %Y %H:%M'),
+                "closed": obj.closed,
                 "description": obj.description,
                 "store": obj.store.pk
             }
@@ -29,4 +30,4 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Entry
-        fields = ("id",'user', 'value', 'creation_date', 'description','store')
+        fields = ("id",'user', 'value', 'creation_date', 'closed', 'description','store')

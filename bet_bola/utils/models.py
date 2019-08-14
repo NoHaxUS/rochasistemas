@@ -14,11 +14,11 @@ class Entry(models.Model):
     value = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Valor")
     creation_date = models.DateTimeField(verbose_name='Data da Aposta', default=tzlocal.now)
     description = models.CharField(max_length=100, null=True, blank=True, verbose_name='Descrição')
+    closed = models.BooleanField(default=False, verbose_name="Prestado conta?")
     store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
 
 
 class SellerComission(models.Model):
-
     seller_related = models.OneToOneField('user.Seller', null=True, blank=True, related_name="comissions", on_delete=models.CASCADE, verbose_name="Gerente Relacionado")    
     simple = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Simples")
     double = models.DecimalField(max_digits=10, decimal_places=2, default=10, verbose_name="Dupla")
@@ -174,18 +174,7 @@ class MarketRemotion(models.Model):
 
     def __str__(self):
         return self.get_market_to_remove_display() + ' - ' + self.under_above + ' ' +self.base_line
-    
 
-    # def save(self, *args, **kwargs):
-    #     print("CALLING SAVE")
-    #     from utils.cache import invalidate_cache_group
-    #     invalidate_cache_group([
-    #         '/market_cotations/'
-    #     ],
-    #         self.store.pk
-    #     )
-    #     return super().save(*args, **kwargs)
-    
     class Meta:
         ordering = ('-pk',)
         verbose_name = 'Remoção de Aposta'
