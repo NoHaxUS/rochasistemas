@@ -64,7 +64,7 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
     payment = PaymentSerializerWithSeller()
     reward = RewardSerializer()
     cotation_sum = serializers.SerializerMethodField()
-    cotation_count = serializers.SerializerMethodField()
+    cotations_count = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     cotations = CotationTicketSerializer(many=True)
     creation_date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
@@ -88,7 +88,7 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Ticket
-        fields = ('id','ticket_id','owner','creator','cotations','cotation_sum','cotation_count','creation_date','reward','payment','bet_value','available','status')
+        fields = ('id','ticket_id','owner','creator','cotations','cotation_sum','cotations_count','creation_date','reward','payment','bet_value','available','status')
 
 
 

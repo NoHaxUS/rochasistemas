@@ -271,8 +271,8 @@ class ManagerCashierPagination(PageNumberPagination):
 
             manager_comission = 0
             for comission_type in incomes[manager]:                                
-                if manager_obj.comission_based_on_profit:                    
-                    manager_comission += (incomes[manager][comission_type] - outs[manager][comission_type]) * manager_obj.comissions.profit_comission / 100
+                if manager_obj.comission_based_on_profit:
+                    manager_comission = Decimal(entry - out - seller_comission_sum) * manager_obj.comissions.profit_comission / 100
                 else:
                     manager_comission += incomes[manager][comission_type] * comissions.get(comission_type, manager_obj.comissions.sixth_more) / 100
             
@@ -280,7 +280,7 @@ class ManagerCashierPagination(PageNumberPagination):
                 manager_comission = 0
 
             manager_comission_sum += manager_comission
-        
+            
         page = int(self.request.GET.get('page',1)) 
 
         if page == 1:
@@ -321,12 +321,19 @@ class ManagerSpecificCashierPagination(PageNumberPagination):
             won_bonus_sum += float(user["won_bonus"])
             comissions_sum += float(user["comission"])
             seller_comissions_sum += float(user["comission_seller"])            
-            total_out += float(user["total_out"])        
+            total_out += float(user["total_out"])
+        
+        if self.request.user.manager.comission_based_on_profit:
+            comissions_sum = Decimal(entry - total_out) * self.request.user.manager.comissions.profit_comission / 100
+        
+        if comissions_sum < 0:
+            comissions_sum = 0
+
         page = int(self.request.GET.get('page',1))         
         if page == 1:
             data = data[0:self.page_size]
         data = data[self.page_size * (page - 1) : (page * self.page_size)]
-
+        
         return Response({
             'links': {
                 'next': self.get_next_link(),
@@ -341,6 +348,7 @@ class ManagerSpecificCashierPagination(PageNumberPagination):
             'seller_comissions_sum': seller_comissions_sum,
             'total_out': total_out,
             'users': users,
+            'is_comission_based_on_profit':self.request.user.manager.comission_based_on_profit,
             'results': data
         })
         
