@@ -204,7 +204,7 @@ class SellerCashierPagination(PageNumberPagination):
         for ticket in data:
             entry += Decimal(ticket["bet_value"])
             if ticket["status"] == 'Venceu, Ganhador Pago' or ticket["status"] == 'Venceu, Prestar Contas':                
-                out += Decimal(ticket["reward"]["value"]) - Decimal(ticket["won_bonus"])                                
+                out += Decimal(ticket["reward"]["value"])                               
                 won_bonus_sum += ticket["won_bonus"]            
             comissions_sum += ticket["comission"]
         page = int(self.request.GET.get('page',1)) 
@@ -235,13 +235,14 @@ class ManagerCashierPagination(PageNumberPagination):
     def get_paginated_response(self, data):        
         entry = 0
         out = 0
+        won_bonus_sum = 0
         seller_comission_sum = 0
         managers = [{"id":manager.pk,"username":manager.username} for manager in Manager.objects.filter(manager_assoc__payment__status=2, my_store=self.request.user.my_store).distinct()]                                   
         incomes = {}
         outs = {}
         for ticket in data:
             entry += float(ticket["bet_value"])                        
-            
+            won_bonus_sum += float(ticket["won_bonus"])
             if ticket["manager"]:                
                 if not incomes.get(ticket["manager"]["username"], None):
                     incomes[ticket["manager"]["username"]] = {}
@@ -271,11 +272,11 @@ class ManagerCashierPagination(PageNumberPagination):
 
             manager_comission = 0
             for comission_type in incomes[manager]:                                
-                if manager_obj.comission_based_on_profit:
-                    manager_comission = Decimal(entry - out - seller_comission_sum) * manager_obj.comissions.profit_comission / 100
-                else:
-                    manager_comission += incomes[manager][comission_type] * comissions.get(comission_type, manager_obj.comissions.sixth_more) / 100
+                manager_comission += incomes[manager][comission_type] * comissions.get(comission_type, manager_obj.comissions.sixth_more) / 100
             
+            if manager_obj.comission_based_on_profit:
+                manager_comission = Decimal(entry - out - seller_comission_sum) * manager_obj.comissions.profit_comission / 100
+
             if manager_comission <= 0:
                 manager_comission = 0
 
@@ -297,7 +298,8 @@ class ManagerCashierPagination(PageNumberPagination):
             'entry': entry,
             'out': out,          
             'manager_comission': manager_comission_sum,
-            'seller_comission': seller_comission_sum,  
+            'seller_comission': seller_comission_sum,
+            'won_bonus_sum': won_bonus_sum,
             'managers': managers,            
             'results': data
         })
