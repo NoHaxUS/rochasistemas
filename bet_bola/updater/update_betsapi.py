@@ -45,7 +45,7 @@ def get_upcoming_events():
     url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=20445-s1B9Vv6E9VSLU1&day={0}&page={1}"
 
     #for index in range(-1, 4):
-    for index in range(-1, 4):
+    for index in range(-1, -4):
         page = 1
         current_date = (base_day + datetime.timedelta(days=index)).strftime('%Y%m%d')
         current_url = url_base.format(current_date, page)
@@ -63,7 +63,7 @@ def get_upcoming_events():
         while page <= num_pages:
             current_url = url_base.format(current_date, page)
             data = get_games_of_current_page(current_url)
-            if data.get('success') and data.get('success') == 1:
+            if data and data.get('success') and data.get('success') == 1:
                 process_upcoming_events(data)
                 page += 1
             else:

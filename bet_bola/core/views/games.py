@@ -39,15 +39,15 @@ class TodayGamesView(CacheKeyDispatchMixin, ModelViewSet):
 
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")
 
-        my_games_qs = Game.objects.filter(start_date__gt=tzlocal.now(),
-            start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
+        my_games_qs = Game.objects.filter(start_date__gt=(tzlocal.now().date() + timezone.timedelta(days=-1)),
+            start_date__lt=tzlocal.now().date(),
             status__in=[0],
             available=True)\
             .prefetch_related(Prefetch('cotations', queryset=my_cotation_qs, to_attr='my_cotations'))\
             .exclude(id__in=id_list_excluded_games)\
             .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
-            .filter(cotations_count__gte=3)
-        
+            .filter(cotations_count__gte=3)                
+
         queryset = League.objects.prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'))
         queryset = queryset.annotate(games_count=Count('my_games', 
         filter=Q(my_games__pk__in=[game.pk for game in my_games_qs])))\
