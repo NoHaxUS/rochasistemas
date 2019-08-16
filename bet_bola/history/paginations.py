@@ -160,7 +160,7 @@ class ManagersCashierPagination(PageNumberPagination):
             comissions_sum += float(user["comission"])
             won_bonus_sum += float(user["won_bonus"])
             seller_comissions_sum += float(user["comission_seller"])
-            total_out += float(user["total_out"])
+            total_out += float(user["total_out"]) + float(user["comission"])
         
         page = int(self.request.GET.get('page',1)) 
 

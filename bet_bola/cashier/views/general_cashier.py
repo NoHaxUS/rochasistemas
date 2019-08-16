@@ -24,7 +24,8 @@ class GeneralCashier(APIView):
             entries = 0
             out = 0
             won_bonus = 0
-            comissions = 0
+            manager_comissions = 0
+            seller_comissions = 0
             total_out = 0
             user = request.user 
 
@@ -41,22 +42,24 @@ class GeneralCashier(APIView):
                 sellers = Seller.objects.filter(payment__status=2, my_store=request.user.my_store).distinct()                
 
             for manager in ManagersCashierSerializer(managers, many=True, context={'request':self.request}).data:                        
-                comissions += manager['comission']            
-                total_out += manager['comission']
+                manager_comissions += manager['comission']
+                if request.user.user_type == 4:            
+                    total_out += manager['comission']
 
             for seller in SellersCashierSerializer(sellers, many=True, context={'request':self.request}).data:            
                 entries += seller['entry']
                 out += seller['out'] 
                 won_bonus += seller['won_bonus']
-                comissions += seller['comission']
+                seller_comissions += seller['comission']
                 total_out += seller['total_out']
 
             profit = entries - total_out                                   
                 
             data = {
                 'entries': entries,
-                'out': out,                
-                'comissions': comissions,
+                'out': out,
+                'manager_comissions':manager_comissions,                
+                'seller_comissions': seller_comissions,
                 'won_bonus': won_bonus,
                 'total_out': total_out,
                 'profit': profit
