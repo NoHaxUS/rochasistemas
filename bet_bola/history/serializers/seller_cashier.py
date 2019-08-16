@@ -11,7 +11,7 @@ class SellerCashierHistorySerializer(serializers.HyperlinkedModelSerializer):
     premio_out = serializers.SerializerMethodField() 
     
     def get_premio_out(self, obj):
-        return obj.total_out - obj.comission - obj.bonus_premio
+        return obj.total_out - obj.comission
 
     class Meta:
         model = SellerCashierHistory
