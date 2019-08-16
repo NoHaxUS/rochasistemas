@@ -227,7 +227,7 @@ class ManagersCashierSerializer(SellersCashierSerializer):
 		return 0
 
 	def get_total_out(self, obj):
-		return self.get_out(obj) + self.get_comission(obj) + self.get_comission_seller(obj)
+		return self.get_out(obj) + self.get_comission_seller(obj)
 
 	def get_comission_seller(self, obj):
 		tickets = self.get_ticket(obj)
