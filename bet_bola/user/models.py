@@ -39,10 +39,10 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = ['my_store', 'email']
 
     first_name = models.CharField(max_length=150, verbose_name='Primeiro Nome')
-    cellphone = models.CharField(max_length=14, verbose_name='Celular', null=True, blank=True)
+    cellphone = models.CharField(max_length=14, null=True, blank=True, verbose_name='Celular')
     user_type = models.IntegerField(choices=USER_TYPE, default=0, verbose_name='Tipo do Usuário')
-    email = models.EmailField(verbose_name='E-mail', unique=True)
-    my_store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
+    email = models.EmailField(unique=True, verbose_name='E-mail')
+    my_store = models.ForeignKey('core.Store', on_delete=models.CASCADE, verbose_name='Banca')
 
     def __str__(self):
         return self.username
@@ -88,8 +88,8 @@ class Punter(CustomUser):
 
 
 class Seller(CustomUser):
-    cpf = models.CharField(max_length=14, verbose_name='CPF', null=True, blank=True)    
-    address = models.CharField(max_length=75, verbose_name='Endereço', null=True, blank=True)
+    cpf = models.CharField(max_length=17, null=True, blank=True, verbose_name="CPF")
+    address = models.CharField(max_length=75, null=True, blank=True, verbose_name="Endereço")
     can_sell_unlimited = models.BooleanField(default=False, verbose_name='Vender Ilimitado?')
     credit_limit = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name='Crédito')
     my_manager = models.ForeignKey('Manager', null=True, blank=True, on_delete=models.SET_NULL, related_name='manager_assoc', verbose_name='Gerente')
@@ -132,8 +132,8 @@ class Seller(CustomUser):
 
 
 class Manager(CustomUser):
-    cpf = models.CharField(max_length=14, verbose_name='CPF', null=True, blank=True)    
-    address = models.CharField(max_length=75, verbose_name='Endereço', null=True, blank=True)
+    cpf = models.CharField(max_length=17, null=True, blank=True, verbose_name="CPF")    
+    address = models.CharField(max_length=75, null=True, blank=True, verbose_name='Endereço')
     credit_limit = models.DecimalField(max_digits=30, decimal_places=2,default=0, verbose_name="Crédito")
     can_cancel_ticket = models.BooleanField(default=True, verbose_name='Cancela Bilhete ?')
     limit_time_to_cancel = models.IntegerField(default=5, verbose_name="Tempo Limite de Cancelamento", validators=[MinValueValidator(1), MaxValueValidator(45)])
