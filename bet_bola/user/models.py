@@ -149,7 +149,7 @@ class Manager(CustomUser):
         self.save()
         
     def toggle_can_modify_seller_comissions(self):        
-        self.can_modify_seller_comissions = not self.can_modify_seller_comissions        
+        self.can_modify_seller_comissions = not self.can_modify_seller_comissions                
         self.save()
 
     def toggle_can_sell_unlimited(self):        
