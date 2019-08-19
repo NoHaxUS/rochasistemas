@@ -39,8 +39,8 @@ class TodayGamesView(CacheKeyDispatchMixin, ModelViewSet):
 
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")
 
-        my_games_qs = Game.objects.filter(start_date__gt=(tzlocal.now().date() + timezone.timedelta(days=-1)),
-            start_date__lt=tzlocal.now().date(),
+        my_games_qs = Game.objects.filter(start_date__gt=tzlocal.now(),
+            start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
             status__in=[0],
             available=True)\
             .prefetch_related(Prefetch('cotations', queryset=my_cotation_qs, to_attr='my_cotations'))\
@@ -258,7 +258,7 @@ class TodayGamesAdmin(FiltersMixin, ModelViewSet):
         id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store)]
 
         queryset = Game.objects.filter(start_date__gt=tzlocal.now(),
-            start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),          
+            start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
             status__in=[0])\
             .exclude(Q(league__available=False) | 
                 Q(league__location__available=False) | 

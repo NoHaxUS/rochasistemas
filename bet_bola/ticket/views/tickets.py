@@ -121,7 +121,14 @@ class TicketView(FiltersMixin, ModelViewSet):
 
         raw_reward_value = 1
         for cotation in serializer.validated_data['cotations']:
+            
+            if cotation.game.start_date < tzlocal.now():
+                return {
+                    'success': False,
+                    'message': "Jogo " + cotation.game.name + " já começou. Por favor o retire da aposta."
+                }        
             raw_reward_value *= cotation.get_store_price(store)        
+            
         raw_reward_value = bet_value * raw_reward_value        
         payment = Payment.objects.create()
         rewad_was_changed, rewad_value = get_reward_value(bet_value, raw_reward_value, store)
