@@ -13,5 +13,22 @@ class EntryPermission(permissions.BasePermission):
             if request.user.user_type == 4:
                 return True            
         raise NotAllowedException(detail="Você não tem permissão para essa operação.")    
+
+
+class RulePermission(permissions.BasePermission):
+    def has_permission(self, request, view):        
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        else:
+            if request.user.user_type == 4:
+                return True
+                
+        raise NotAllowedException(detail="Você não tem permissão para visualizar.")
+
+    def has_object_permission(self, request, view, obj):         
+        if not request.user.is_anonymous:
+            if request.user.user_type == 4:
+                return True            
+        raise NotAllowedException(detail="Você não tem permissão para essa operação.")    
     
     
