@@ -48,7 +48,8 @@ class MainMenu(CacheKeyDispatchMixin, ModelViewSet):
             status__in=[0],
             available=True).exclude(id__in=id_list_excluded_games)\
             .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
-            .filter(cotations_count__gte=3)                
+            .filter(cotations_count__gte=3)\
+            .exclude(Q(league__location__pk__in=id_list_excluded_locations) | Q(league__id__in=id_list_excluded_leagues) | Q(id__in=id_list_excluded_games))                
 
         leagues = League.objects.filter(my_games__in=games, my_modifications__store__pk=store_id) | League.objects.filter(my_games__in=games)
         leagues = leagues.order_by('my_modifications__priority').distinct()

@@ -46,6 +46,13 @@ def cancel_ticket(self, who_canceling):
             'message': 'O Bilhete '+ self.ticket_id +' não foi Pago para ser cancelado.'
         }
     
+    if who_canceling.user_type == 3:
+        if self.payment.date + timezone.timedelta(minutes=int(who_canceling.manager.limit_time_to_cancel)) < tzlocal.now():
+            return {
+                'success':False,
+                'message':' Tempo limite para cancelar o Bilhete '+ self.ticket_id +' foi excedido.'
+            }
+
     if who_canceling.user_type == 2:
         if self.payment.date + timezone.timedelta(minutes=int(who_canceling.seller.limit_time_to_cancel)) < tzlocal.now():
             return {
