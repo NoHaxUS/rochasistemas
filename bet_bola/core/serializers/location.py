@@ -13,8 +13,6 @@ class AdmLocationSerializerList(serializers.ListSerializer):
 			if location_modified:
 				location.priority = location_modified.priority
 				location.available = location_modified.available 
-				
-		locations.sort(key=lambda location: location.priority, reverse=True)
 
 		return super().to_representation(locations)
 
@@ -27,9 +25,7 @@ class LocationSerializerList(serializers.ListSerializer):
 			location_modified = LocationModified.objects.filter(location=location.pk, store=store).first()						
 			if location_modified:
 				location.priority = location_modified.priority
-				location.available = location_modified.available 
-				
-		locations.sort(key=lambda location: location.priority, reverse=True)
+				location.available = location_modified.available
 
 		return super().to_representation(locations)
 
