@@ -18,7 +18,6 @@ class MarketModifiedView(ModelViewSet):
         store = self.request.user.my_store
         return self.queryset.filter(store=store)
 
-
     def create(self, validated_data):
         data = self.request.data.get('data')        
         data = json.loads(data)
@@ -51,7 +50,6 @@ class MarketRemotionView(ModelViewSet):
         store = self.request.user.my_store
         return self.queryset.filter(store=store)
 
-
     def create(self, request, *args, **kwargs):
         data = request.data.get('data')    		
         if not data:
@@ -65,8 +63,7 @@ class MarketRemotionView(ModelViewSet):
         invalidate_cache_group(['/market_cotations/'], request.user.my_store.pk) 
 
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)    
-    
-        
+            
     def destroy(self, request, pk=None):
         invalidate_cache_group(['/market_cotations/'], request.user.my_store.pk)
         return super().destroy(request, pk)
