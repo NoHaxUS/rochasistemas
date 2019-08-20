@@ -54,7 +54,6 @@ class Ticket(models.Model):
         self.reward.value = get_reward_value(self.bet_value, raw_reward_value, self.store)[1]
         self.reward.save()
 
-
     def toggle_availability(self):
         self.available = not self.available
         self.save()

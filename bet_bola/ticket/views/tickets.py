@@ -50,8 +50,7 @@ class TicketView(FiltersMixin, ModelViewSet):
         'store':'store',
         'ticket_status':'status',
         'client': 'owner__first_name__icontains',
-        'created_by': 'creator__username__icontains',
-        'closed_for_manager': 'closed_in_for_manager',
+        'created_by': 'creator__username__icontains',        
         'paid_by': 'payment__who_paid__username__icontains',
         'paid_by_id': 'payment__who_paid__pk',
         'seller_cashier': 'sellercashierhistory__pk',
@@ -73,14 +72,19 @@ class TicketView(FiltersMixin, ModelViewSet):
 
     def get_queryset(self):        
         user = self.request.user
+        closed_for_manager = self.request.GET.get('closed_for_manager')
+        tickets = Ticket.objects.filter(store=user.my_store)
+
+        if closed_for_manager is not None:
+            tickets = tickets.filter(Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[2,4]))            
+
         if user.is_authenticated:
             if user.user_type == 2:   
-                return Ticket.objects.filter(Q(payment__who_paid=user) | Q(creator=user)).filter(store=user.my_store).order_by('-creation_date')
-            
+                return tickets.filter(Q(payment__who_paid=user) | Q(creator=user)).filter(store=user.my_store).order_by('-creation_date')            
             elif user.user_type == 3:
-                return Ticket.objects.filter(Q(payment__who_paid__seller__my_manager__pk=user.pk) | Q(creator=user)).filter(store=user.my_store).order_by('-creation_date')
+                return tickets.filter(Q(payment__who_paid__seller__my_manager__pk=user.pk) | Q(creator=user)).filter(store=user.my_store).order_by('-creation_date')                
+            return tickets.filter(store=user.my_store).order_by('-creation_date')
 
-            return Ticket.objects.filter(store=user.my_store).order_by('-creation_date')
         return Ticket.objects.none()
                 
     def get_ticket_id(self, store):
@@ -99,7 +103,6 @@ class TicketView(FiltersMixin, ModelViewSet):
             self.get_ticket_id(store=store)
         else:
             return ticket_id
-
 
     def get_serializer_class(self):		
             if self.action == 'list' or self.action == 'retrieve':           
