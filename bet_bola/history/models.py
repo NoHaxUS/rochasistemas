@@ -15,7 +15,7 @@ class TicketValidationHistory(models.Model):
         return str(self.id)
 
     class Meta:
-        ordering = ('-pk', )
+        ordering = ('-id', )
         verbose_name = 'Validação de Aposta'
         verbose_name_plural = 'Validações de Apostas'
 
@@ -32,7 +32,7 @@ class TicketCancelationHistory(models.Model):
         return "Cancelamento de Bilhete"
 
     class Meta:
-        ordering = ('-pk',)
+        ordering = ('-id',)
         verbose_name = 'Cancelamento de Bilhete'
         verbose_name_plural = 'Cancelamento de Bilhetes'
 
@@ -53,7 +53,7 @@ class CreditTransactions(models.Model):
         return " Transf. - Gerentes"
 
     class Meta:
-        ordering = ('-pk', )
+        ordering = ('-id', )
         verbose_name = 'Transf. - Gerente'
         verbose_name_plural = 'Transf. - Gerentes'
 
@@ -76,7 +76,7 @@ class SellerCashierHistory(models.Model):
         return "Pag. - Cambistas"
 
     class Meta:
-        ordering = ('-pk', )
+        ordering = ('-id', )
         verbose_name = 'Pag. - Cambista'
         verbose_name_plural = 'Pag. - Cambistas'
 
@@ -99,26 +99,7 @@ class ManagerCashierHistory(models.Model):
         return "Pag. - Gerentes"
 
     class Meta:
-        ordering = ('-pk', )
+        ordering = ('-id', )
         verbose_name = 'Pag. - Gerente'
         verbose_name_plural = 'Pag. - Gerentes'
 
-
-"""
-class WinnerPaymentHistory(models.Model):
-    id = models.BigAutoField(primary_key=True, verbose_name="ID")
-    winner_name = models.CharField(max_length=200, verbose_name='Nome do Apostador')
-    who_rewarded_the_winner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='my_payed_winner_tickets', on_delete=models.CASCADE, verbose_name='Cambista')
-    ticket = models.ForeignKey('ticket.Ticket', on_delete=models.CASCADE, verbose_name='Bilhete Vencedor')
-    date = models.DateTimeField(verbose_name='Data do Pagamento')
-    bet_value = models.DecimalField(max_digits=30, decimal_places=2,verbose_name='Valor Pago')
-    store = models.ForeignKey('core.Store', verbose_name='Banca', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "Pag. - Apostadores"
-
-    class Meta:
-        ordering = ('-pk', )
-        verbose_name = 'Pag. - Apostador'
-        verbose_name_plural = 'Pag. - Apostadores'
-"""

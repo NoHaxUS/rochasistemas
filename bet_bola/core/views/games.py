@@ -43,10 +43,10 @@ class TodayGamesView(CacheKeyDispatchMixin, ModelViewSet):
             start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
             status__in=[0],
             available=True)\
-            .prefetch_related(Prefetch('cotations', queryset=my_cotation_qs, to_attr='my_cotations'))\
             .exclude(id__in=id_list_excluded_games)\
+            .prefetch_related(Prefetch('cotations', queryset=my_cotation_qs, to_attr='my_cotations'))\
             .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
-            .filter(cotations_count__gte=3)                
+            .filter(cotations_count__gte=3)
 
         queryset = League.objects.prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'))
         queryset = queryset.annotate(games_count=Count('my_games', 
@@ -97,6 +97,7 @@ class TomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):
         id_list_excluded_locations = [excluded_locations.location.id for excluded_locations in LocationModified.objects.filter(available=False, store=store_id)]
         queryset = queryset.exclude(id__in=id_list_excluded_leagues)
         queryset = queryset.exclude(location__pk__in=id_list_excluded_locations)
+
         return queryset
 
 

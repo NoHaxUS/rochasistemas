@@ -32,7 +32,6 @@ class AdmLeagueSerializerList(serializers.ListSerializer):
 			if league_modified:
 				league.priority = league_modified.priority
 				league.available = league_modified.available
-
 		return super().to_representation(leagues)
 
 

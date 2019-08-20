@@ -74,7 +74,7 @@ class Game(models.Model):
 
 
     class Meta:
-        ordering = ('-pk',)
+        ordering = ('-id',)
         verbose_name = 'Jogo'
         verbose_name_plural = 'Jogos'
 
@@ -140,7 +140,7 @@ class Cotation(models.Model):
             return self.get_settlement_display()
 
     class Meta:
-        ordering = ['-pk', ]
+        ordering = ['-id', ]
         verbose_name = 'Cota'
         verbose_name_plural = 'Cotas'
 
@@ -157,7 +157,7 @@ class CotationCopy(models.Model):
         return str(self.id)
 
     class Meta:
-        ordering = ['-pk',]
+        ordering = ['-id',]
         verbose_name = 'Cota - Cópia'
         verbose_name_plural = 'Cotas - Cópia'
 
@@ -202,9 +202,12 @@ class League(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def __repr__(self):
+        return "{},{},{},{},{}".format(self.id, self.name, self.location, self.priority, self.available)
 
     class Meta:
-        ordering = ('-pk',)
+        ordering = ('-id',)
         verbose_name = 'Liga'
         verbose_name_plural = 'Ligas'
 
@@ -267,7 +270,7 @@ class GameModified(models.Model):
     available = models.BooleanField(default=True, verbose_name="Visível?")
 
     def __repr__(self):
-        return "{}, {}, {}, {}".format(self.game, self.store, self.available)
+        return "{}, {}, {}".format(self.game, self.store, self.available)
     
     def __str__(self):
         return self.__repr__()
