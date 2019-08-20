@@ -82,8 +82,8 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id','username','comission','entry','won_bonus','out','total_out','profit')
 
     def get_ticket(self, obj):
-        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=obj.pk,
-            closed_for_seller=False) | Q(payment__who_paid__pk=obj.pk, status=4)).exclude(status__in=[5,6])
+        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=obj.pk) &
+        (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False, status__in=[4,2]))).exclude(status__in=[5,6])
 
         if self.context.get('request'):
             get = self.context['request'].GET
@@ -112,7 +112,7 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
         comission = None
         value = 0
         for ticket in tickets:
-            if not ticket.closed_for_seller:
+            if not ticket.closed_in_for_seller:
                 comission = obj.comissions
                 key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}
                 value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)
@@ -122,7 +122,7 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
         tickets = self.get_ticket(obj)
         value = 0
         for ticket in tickets:
-            if not ticket.closed_for_seller:
+            if not ticket.closed_in_for_seller:
                 value += ticket.bet_value
         return value
 
@@ -161,13 +161,13 @@ class ManagersCashierSerializer(SellersCashierSerializer):
         tickets = self.get_ticket(obj)
         value = 0
         for ticket in tickets:
-            if not ticket.closed_for_manager:
+            if not ticket.closed_in_for_manager:
                 value += ticket.bet_value
         return value
 
     def get_ticket(self, obj):
-        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=obj.pk,
-            closed_for_manager=False) | Q(payment__who_paid__seller__my_manager__pk=obj.pk, status=4)).exclude(status__in=[5,6])
+        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=obj.pk) & 
+        (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).exclude(status__in=[5,6])
 
         if self.context.get('request'):
             get = self.context['request'].GET
@@ -198,8 +198,9 @@ class ManagersCashierSerializer(SellersCashierSerializer):
         value = 0
         comission = obj.comissions
         for ticket in tickets:
-            key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}			
-            value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)
+            if not ticket.closed_in_for_manager:
+                key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}			
+                value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)
         
         if obj.comission_based_on_profit:
             value = (self.get_entry(obj) - self.get_out(obj)  - self.get_comission_seller(obj)) * comission.profit_comission / 100
@@ -236,9 +237,10 @@ class ManagersCashierSerializer(SellersCashierSerializer):
         for ticket in tickets:
             user_type = ticket.payment.who_paid.user_type
             if user_type == 2:
-                comission = ticket.payment.who_paid.seller.comissions
-                key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}
-                value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)
+                if not ticket.closed_in_for_manager:
+                    comission = ticket.payment.who_paid.seller.comissions
+                    key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}
+                    value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)
 
         return value
 
@@ -257,8 +259,8 @@ class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id','username','comission','comission_seller','entry','won_bonus','out','total_out','profit')
 
     def get_ticket(self, obj):
-        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=obj.pk,
-            closed_for_manager=False) | Q(payment__who_paid__pk=obj.pk, status=4)).exclude(status__in=[5,6])
+        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=obj.pk) & 
+        (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).exclude(status__in=[5,6])
 
         if self.context.get('request'):
             start_creation_date = self.context['request'].GET.get('start_creation_date')
@@ -283,7 +285,8 @@ class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
             if manager.comission_based_on_profit:
                 value = 0
             else:
-                value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)
+                if not ticket.closed_in_for_manager:
+                    value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)
 
         if value < 0:
             value = 0
@@ -297,9 +300,10 @@ class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
         for ticket in tickets:
             user_type = ticket.payment.who_paid.user_type
             if user_type == 2:
-                comission = ticket.payment.who_paid.seller.comissions
-                key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}
-                value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)
+                if not ticket.closed_in_for_manager:
+                    comission = ticket.payment.who_paid.seller.comissions
+                    key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}
+                    value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)
 
         return value
 
@@ -307,7 +311,7 @@ class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
         tickets = self.get_ticket(obj)
         value = 0
         for ticket in tickets:
-            if not ticket.closed_for_manager:
+            if not ticket.closed_in_for_manager:
                 value += ticket.bet_value
         return value
 

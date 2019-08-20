@@ -36,8 +36,10 @@ class Ticket(models.Model):
     payment = models.OneToOneField('Payment', related_name='ticket', on_delete=models.CASCADE, verbose_name='Pagamento')
     bet_value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor Apostado')
     status = models.IntegerField(default=0, choices=TICKET_STATUS, verbose_name='Status do Ticket')
-    closed_for_seller = models.BooleanField(default=False, verbose_name='Prestou conta com o vendedor?')
-    closed_for_manager = models.BooleanField(default=False, verbose_name='Prestou conta com o gerente?')
+    closed_in_for_seller = models.BooleanField(default=False, verbose_name='Entrada Vendedor Caixa')
+    closed_in_for_manager = models.BooleanField(default=False, verbose_name='Entrada Gerente Caixa')
+    closed_out_for_seller = models.BooleanField(default=False, verbose_name='Saída Vendedor Caixa')
+    closed_out_for_manager = models.BooleanField(default=False, verbose_name='Saída Gerente Caixa')
     store = models.ForeignKey('core.Store', related_name='my_tickets', verbose_name='Banca', on_delete=models.CASCADE)
     available = models.BooleanField(default=True, verbose_name='Disponível?')
     

@@ -68,8 +68,9 @@ class SellersCashierView(FiltersMixin, ModelViewSet):
                 profit= decimal.Decimal(decimal.Decimal(data['entry']) - decimal.Decimal(data['total_out'])),
                 store=request.user.my_store)           
                 
-                tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=seller.pk,store=self.request.user.my_store, 
-                    closed_for_seller=False) | Q(payment__who_paid__pk=seller.pk, status=4)).exclude(status__in=[5,6])        
+                tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=seller.pk,store=self.request.user.my_store) & 
+                (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False, status__in=[4,2]))).exclude(status__in=[5,6])        
+
                 if tickets.exists():
                     if start_creation_date:
                         start_creation_date = datetime.datetime.strptime(start_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
@@ -81,7 +82,8 @@ class SellersCashierView(FiltersMixin, ModelViewSet):
                     revenue_history_seller.save()        
                     revenue_history_seller.tickets_registered.set(tickets)            
 
-                    tickets.update(closed_for_seller=True)            
+                    tickets.filter(status__in=[4,2]).update(closed_out_for_seller=True)
+                    tickets.update(closed_in_for_seller=True)            
                     for ticket in tickets:
                         if ticket.status == 4:
                             ticket.status = 2
@@ -140,8 +142,8 @@ class ManagersCashierView(FiltersMixin, ModelViewSet):
                 profit= decimal.Decimal(data['entry'] - data['total_out']),
                 store=request.user.my_store)
 
-                tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=manager.pk,store=self.request.user.my_store, 
-                    closed_for_manager=False) | Q(payment__who_paid__seller__my_manager__pk=manager.pk, status=4)).exclude(status__in=[5,6])        
+                tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=manager.pk,store=self.request.user.my_store) &
+                (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).exclude(status__in=[5,6])        
                 
                 if tickets.exists():
                     if start_creation_date:
@@ -153,8 +155,9 @@ class ManagersCashierView(FiltersMixin, ModelViewSet):
                     
                     revenue_history_manager.save()
                     revenue_history_manager.tickets_registered.set(tickets)
-
-                    tickets.update(closed_for_manager=True)
+                    
+                    tickets.filter(status__in=[2,4]).update(closed_out_for_manager=True)
+                    tickets.update(closed_in_for_manager=True)
 
         return Response({
             'success': True,
@@ -204,15 +207,15 @@ class SellerCashierView(FiltersMixin, ModelViewSet):
     def get_queryset(self):        
         user = self.request.user
         if user.user_type == 2:   
-            return Ticket.objects.filter(Q(payment__status=2, payment__who_paid=user, store=user.my_store, 
-                closed_for_seller=False) | Q(payment__who_paid=user, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
+            return Ticket.objects.filter(Q(payment__status=2, payment__who_paid=user, store=user.my_store) & 
+            (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False, status__in=[4,2]))).exclude(status__in=[5,6]).order_by('-creation_date')
         
         elif user.user_type == 3:
-            return Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=user.pk, store=user.my_store, 
-                closed_for_seller=False) | Q(payment__who_paid__seller__my_manager__pk=user.pk, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
+            return Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=user.pk, store=user.my_store) & 
+            (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False, status__in=[4,2]))).exclude(status__in=[5,6]).order_by('-creation_date')
 
-        return Ticket.objects.filter(Q(payment__status=2, store=user.my_store, 
-                closed_for_seller=False) | Q(store=user.my_store, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
+        return Ticket.objects.filter(Q(payment__status=2, store=user.my_store) & 
+        (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False,status__in=[4,2]))).exclude(status__in=[5,6]).order_by('-creation_date')
 
 
 class ManagerCashierView(FiltersMixin, ModelViewSet):
@@ -257,10 +260,11 @@ class ManagerCashierView(FiltersMixin, ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.user_type == 3:   
-            return Ticket.objects.filter(Q(payment__status=2,payment__who_paid__seller__my_manager__pk=user.pk ,store=user.my_store, 
-                closed_for_manager=False) | Q(payment__who_paid__seller__my_manager__pk=user.pk, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
-        return Ticket.objects.filter(Q(payment__status=2, store=user.my_store, 
-                closed_for_manager=False) | Q(store=user.my_store, status=4)).exclude(status__in=[5,6]).order_by('-creation_date')
+            return Ticket.objects.filter(Q(payment__status=2,payment__who_paid__seller__my_manager__pk=user.pk ,store=user.my_store) & 
+            (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).exclude(status__in=[5,6]).order_by('-creation_date')
+
+        return Ticket.objects.filter(Q(payment__status=2, store=user.my_store) & 
+        (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).exclude(status__in=[5,6]).order_by('-creation_date')
 
 
 
