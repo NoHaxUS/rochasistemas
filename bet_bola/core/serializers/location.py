@@ -16,6 +16,7 @@ class AdmLocationSerializerList(serializers.ListSerializer):
 
 		return super().to_representation(locations)
 
+
 class LocationSerializerList(serializers.ListSerializer):
 
 	def to_representation(self, locations):
@@ -49,6 +50,7 @@ class MenuViewSerializer(serializers.HyperlinkedModelSerializer):
 	def get_leagues(self, obj):
 		leagues = obj.leagues
 		return MenuLeagueSerializer(leagues, many=True, context={'request': self.context['request']}).data
+
 
 class LocationModifiedSerializer(serializers.HyperlinkedModelSerializer):
     location = serializers.SlugRelatedField(queryset = Location.objects.all(), slug_field='pk')

@@ -17,6 +17,7 @@ from rest_framework.decorators import action
 import utils.timezone as tzlocal
 from django.conf import settings
 from core.cacheMixin import CacheKeyDispatchMixin
+from utils.utils import sort_by_priority
 import json
 
 
@@ -64,19 +65,7 @@ class TodayGamesView(CacheKeyDispatchMixin, ModelViewSet):
         queryset = queryset.exclude(id__in=id_list_excluded_leagues)        
         queryset = queryset.exclude(location__pk__in=id_list_excluded_locations)
 
-        def sort_by_priorority(item):
-            if item.location.modifications:
-                if item.modifications:
-                    return (item.location.modifications[0].priority, item.modifications[0].priority)
-                else:
-                    return (item.location.modifications[0].priority, 1)
-            else:
-                if item.modifications:
-                    return (1, item.modifications[0].priority)
-                else:
-                    return (1, 1)
-
-        return sorted(queryset, key=sort_by_priorority, reverse=True)
+        return sorted(queryset, key=sort_by_priority, reverse=True)
 
 
 class TomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):        
@@ -106,8 +95,13 @@ class TomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):
             .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
             .filter(cotations_count__gte=3)
         
-        queryset = League.objects.prefetch_related(Prefetch('my_games', 
-        queryset=my_games_qs, to_attr='games'))
+        my_leagues_mods = LeagueModified.objects.filter(store=store)
+        my_location_mods = LocationModified.objects.filter(store=store)
+
+        queryset = League.objects.prefetch_related(Prefetch('my_games',queryset=my_games_qs, to_attr='games'),
+        Prefetch('my_modifications', queryset=my_leagues_mods, to_attr='modifications'),
+        Prefetch('location__my_modifications', queryset=my_location_mods, to_attr='modifications'))
+        
         queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__pk__in=[game.pk for game in my_games_qs])))\
         .filter(games_count__gt=0)
 
@@ -116,8 +110,7 @@ class TomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):
         queryset = queryset.exclude(id__in=id_list_excluded_leagues)
         queryset = queryset.exclude(location__pk__in=id_list_excluded_locations)
 
-        return queryset
-
+        return sorted(queryset, key=sort_by_priority, reverse=True)
 
 class AfterTomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):        
     """
@@ -146,7 +139,12 @@ class AfterTomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):
             .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
             .filter(cotations_count__gte=3)
         
-        queryset = League.objects.prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'))
+        my_leagues_mods = LeagueModified.objects.filter(store=store)
+        my_location_mods = LocationModified.objects.filter(store=store)
+
+        queryset = League.objects.prefetch_related(Prefetch('my_games', queryset=my_games_qs, to_attr='games'),
+        Prefetch('my_modifications', queryset=my_leagues_mods, to_attr='modifications'),
+        Prefetch('location__my_modifications', queryset=my_location_mods, to_attr='modifications'))
         queryset = queryset.annotate(games_count=Count('my_games', filter=Q(my_games__pk__in=[game.pk for game in my_games_qs])))\
         .filter(games_count__gt=0)
 
@@ -155,7 +153,7 @@ class AfterTomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):
         queryset = queryset.exclude(id__in=id_list_excluded_leagues)
         queryset = queryset.exclude(location__pk__in=id_list_excluded_locations)
 
-        return queryset
+        return sorted(queryset, key=sort_by_priority, reverse=True)
 
 
 class SearchGamesView(CacheKeyDispatchMixin, ModelViewSet):
