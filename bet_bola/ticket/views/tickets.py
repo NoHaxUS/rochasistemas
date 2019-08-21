@@ -76,7 +76,7 @@ class TicketView(FiltersMixin, ModelViewSet):
         tickets = Ticket.objects.filter(store=user.my_store)
 
         if closed_for_manager is not None:
-            tickets = tickets.filter(Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[2,4]))            
+            tickets = tickets.filter(Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[2,4])).exclude(status__in=[5,6])
 
         if user.is_authenticated:
             if user.user_type == 2:   
