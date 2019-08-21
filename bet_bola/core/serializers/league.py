@@ -19,7 +19,7 @@ class LeagueSerializerList(serializers.ListSerializer):
 				league.location.priority = location_modified.priority
 				league.location.available = location_modified.available
 		
-		leagues.sort(key=lambda league: (league.location.priority, league.priority), reverse=True)
+		#leagues.sort(key=lambda league: (league.location.priority, league.priority), reverse=True)
 
 		return super().to_representation(leagues)
 
