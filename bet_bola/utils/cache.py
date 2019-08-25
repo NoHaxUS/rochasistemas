@@ -15,7 +15,6 @@ def invalidate_cache_group(cache_groups, store_id):
     cache_set = cache.get('cache_set')
     if cache_set:
         for cache_group in cache_groups:
-            print("Invalidating: "+ cache_group)
             store_group = cache_set.get(store_id)
             if store_group:
                 group = store_group.get(cache_group)

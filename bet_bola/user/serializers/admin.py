@@ -9,8 +9,7 @@ class AdminSerializer(serializers.HyperlinkedModelSerializer):
 	my_store = serializers.SlugRelatedField(read_only=True, slug_field='id')	
 
 	def create(self, validated_data):				
-		obj = Admin(**validated_data)		
-		print(self.context['request'].GET.get('store'))
+		obj = Admin(**validated_data)
 		store = Store.objects.get(id=self.context['request'].GET.get('store'))
 		obj.my_store=store
 		obj.save()
