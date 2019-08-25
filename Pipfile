@@ -16,6 +16,8 @@ drf-url-filters = "*"
 djangorestframework-jwt = "*"
 sentry-sdk = "*"
 django-admin-relation-links = "*"
+six = "*"
+python-memcached = "*"
 
 [dev-packages]
 rope = "*"
