@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from core.models import Store, Market
 from utils.models import MarketModified, MarketRemotion
+import json
 
 class MarketModifiedSerializer(serializers.HyperlinkedModelSerializer):
 	store = serializers.SlugRelatedField(queryset = Store.objects.all(),slug_field='id')
@@ -21,7 +22,8 @@ class MarketModifiedSerializer(serializers.HyperlinkedModelSerializer):
 		return instance
 
 	def validate_market(self, market):
-		if market.name == "1X2":
+		data = json.loads(self.context.get('request').POST.get("data"))
+		if market.name == "1X2" and data.get("available") == False:
 			raise serializers.ValidationError("Mercado 1X2 não pode ser indisponibilizado.")
 		return market
 	
