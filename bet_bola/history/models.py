@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+import utils.timezone as tzlocal
 
 class TicketValidationHistory(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
@@ -41,7 +42,7 @@ class CreditTransactions(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     creditor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="credit_transactions",verbose_name='Gerente')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Cambista')
-    transaction_date = models.DateTimeField(verbose_name='Data da Transação', auto_now_add=True)
+    transaction_date = models.DateTimeField(verbose_name='Data da Transação', default=tzlocal.now)
     transferred_amount = models.DecimalField(max_digits=30, decimal_places=2,verbose_name='Valor Transferido')
     creditor_before_balance = models.DecimalField(max_digits=30, decimal_places=2,null=True,blank=True, verbose_name='Saldo Anterior')
     creditor_after_balance = models.DecimalField(max_digits=30, decimal_places=2,null=True,blank=True, verbose_name='Saldo Atual')
@@ -63,7 +64,7 @@ class SellerCashierHistory(models.Model):
     register_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='quem prestou conta')
     tickets_registered = models.ManyToManyField('ticket.Ticket')
     seller = models.ForeignKey('user.Seller', on_delete=models.CASCADE, related_name="cashiers_history", verbose_name='Cambista')
-    date = models.DateTimeField(verbose_name='Data da Transação', auto_now_add=True)
+    date = models.DateTimeField(verbose_name='Data da Transação', default=tzlocal.now)
     entry = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Entrada Total')
     comission = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='% Comissão')
     bonus_premio = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Bônus por Prêmio')
@@ -86,7 +87,7 @@ class ManagerCashierHistory(models.Model):
     register_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='quem prestou conta')
     tickets_registered = models.ManyToManyField('ticket.Ticket')
     manager = models.ForeignKey('user.Manager', on_delete=models.CASCADE, related_name="cashiers_history",verbose_name='Gerente')
-    date = models.DateTimeField(verbose_name='Data da Transação', auto_now_add=True)
+    date = models.DateTimeField(verbose_name='Data da Transação', default=tzlocal.now)
     entry = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='Entrada Total')
     comission = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='% Comissão')
     out = models.DecimalField(max_digits=30, decimal_places=2, null=True, blank=True, verbose_name='% Comissão')
