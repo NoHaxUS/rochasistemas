@@ -28,6 +28,7 @@ def get_games_of_the_day(current_url, error_count=0):
             error_count += 1
             get_games_of_the_day(current_url, error_count)
 
+
 def get_games_of_current_page(current_url, error_count=0):
     print(current_url)
     request = requests.get(current_url)
@@ -39,12 +40,13 @@ def get_games_of_current_page(current_url, error_count=0):
             error_count += 1
             get_games_of_current_page(current_url, error_count)
 
+
 def get_upcoming_events():
     base_day = datetime.datetime.today()
 
     url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=20445-s1B9Vv6E9VSLU1&day={0}&page={1}"
 
-    for index in range(-1, 4):
+    for index in range(0, 4):
         #for index in range(-1, -4):
         page = 1
         current_date = (base_day + datetime.timedelta(days=index)).strftime('%Y%m%d')
