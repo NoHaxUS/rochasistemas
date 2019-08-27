@@ -183,7 +183,7 @@ EMAIL_USE_TLS = True
 # DEFAULT_FROM_EMAIL = 'Pablo <noreply@example.com>'
 
 #Zones
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
 TIME_ZONE_LOCAL = 'America/Sao_Paulo'
 
 USE_I18N = True
