@@ -12,18 +12,13 @@ class TicketCustomMessageView(ModelViewSet):
     queryset = TicketCustomMessage.objects.all()
     serializer_class = TicketCustomMessageSerializer
     permission_classes = [IsAdmin,]
-    cache_group = 'ticket_custom_adm'
-    caching_time = 60
 
-    def list(self, request, pk=None):
-        if request.user.is_authenticated:
-            store_id = request.user.my_store.pk			
-            ticket_custom_message= TicketCustomMessage.objects.filter(store__pk=store_id)
-            serializer = self.get_serializer(ticket_custom_message, many=True)
 
-            return Response(serializer.data)
-        return Response({})
-    
+    def get_queryset(self):
+        store = self.request.user.my_store
+        return TicketCustomMessage.objects.filter(store=store)
+
+
     def create(self, validated_data):
         data = self.request.data.get('data')        
         data = json.loads(data)
@@ -32,10 +27,12 @@ class TicketCustomMessageView(ModelViewSet):
         self.perform_create(serializer)		
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    
+
+
     def perform_create(self, serializer):		
         store = self.request.user.my_store
-        text = serializer.validated_data['text']		
+        text = serializer.validated_data['text']	
+
         if TicketCustomMessage.objects.filter(store=store).exists():
             ticket_custom_message = TicketCustomMessage.objects.get(store=store)
             ticket_custom_message.text = text

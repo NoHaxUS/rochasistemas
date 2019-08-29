@@ -14,19 +14,17 @@ class RulesMessageView(ModelViewSet):
     queryset = RulesMessage.objects.all()
     serializer_class = RulesMessageSerializer
     permission_classes = [RulePermission]
-    cache_group = 'rules_adm'
-    caching_time = 60
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
             store = self.request.user.my_store
         else:
             store = Store.objects.get(pk=self.request.GET.get('store'))
-
         return RulesMessage.objects.filter(store=store)
 
+
     def create(self, validated_data):
-        data = self.request.data.get('data')        
+        data = self.request.data.get('data')
         data = json.loads(data)
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
@@ -38,9 +36,11 @@ class RulesMessageView(ModelViewSet):
     def perform_create(self, serializer):		
         store = self.request.user.my_store
         text = serializer.validated_data['text']
-        rules = RulesMessage.objects.filter(store=store).first()
         
-        RulesMessage.objects.update_or_create(            
-            store=store,
-            defaults={'text': text, 'store':store}
-        )
+        if RulesMessage.objects.filter(store=store).exists():
+            rules = RulesMessage.objects.get(store=store)
+            rules.text = text
+            rules.save()
+            return rules
+        return RulesMessage.objects.create(store=store, text=text)
+
