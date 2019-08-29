@@ -52,7 +52,7 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
         'cotation_sum','creation_date','reward','payment','bet_value','available','status','ticket_message')
 
     def get_cotation_sum(self, obj):
-        return obj.cotation_sum()
+        return obj.cotation_sum()[1]
     
     def get_status(self, obj):
         return obj.get_status_display()
@@ -78,7 +78,7 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
             }
 
     def get_cotation_sum(self, obj):
-        return obj.cotation_sum()
+        return obj.cotation_sum()[1]
     
     def get_status(self, obj):
         return obj.get_status_display()
@@ -166,9 +166,6 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
         if cotation_mul < min_cotation_sum:
             raise serializers.ValidationError("O valor da cotação total deve ser maior que "+ str(min_cotation_sum))
         
-        # if cotation_mul > max_cotation_sum:
-        #     raise serializers.ValidationError("O valor da cotação total deve ser menor que "+ str(max_cotation_sum))
-         
         return data
 
 

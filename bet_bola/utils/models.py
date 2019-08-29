@@ -122,6 +122,7 @@ class TicketCustomMessage(models.Model):
         return "Mensagem a ser mostrada no ticket"
 
     class Meta:
+        ordering = ('-pk',)
         verbose_name = "Texto do Ticket"        
         verbose_name_plural = "Texto do Ticket" 
 

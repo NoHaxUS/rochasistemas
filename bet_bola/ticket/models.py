@@ -48,8 +48,15 @@ class Ticket(models.Model):
             return round(Decimal(self.reward.value * self.store.my_configuration.bonus_by_won_ticket / 100),2)                
         return round(Decimal(0),2)
 
+    def reward_has_changed(self):
+        raw_reward_value = self.cotation_sum()[1] * self.bet_value
+        return get_reward_value(self.bet_value, raw_reward_value, self.store)[0]
+
+    def max_cotation_changed(self):
+        return self.cotation_sum()[0]
+
     def update_ticket_reward(self):        
-        raw_reward_value = self.cotation_sum() * self.bet_value
+        raw_reward_value = self.cotation_sum()[1] * self.bet_value
         self.reward.value = get_reward_value(self.bet_value, raw_reward_value, self.store)[1]
         self.reward.save()
 
@@ -62,9 +69,6 @@ class Ticket(models.Model):
 
     def validate_ticket(self, user):
         return ticket.validate_ticket(self, user)
-
-    def reward_winner(self, user):
-        return ticket.reward_winner(self, user)
 
     def cotation_sum(self):
         return ticket.cotation_sum(self)
@@ -86,7 +90,7 @@ class Reward(models.Model):
 
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
     who_rewarded_the_winner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
-    value = models.DecimalField(max_digits=30, decimal_places=2, verbose_name='Valor da Recompensa')
+    value = models.DecimalField(default=0, max_digits=30, decimal_places=2, verbose_name='Valor da Recompensa')
     date = models.DateTimeField(null=True, blank=True, verbose_name='Data de Pagamento do Prêmio')
 
     def __str__(self):
