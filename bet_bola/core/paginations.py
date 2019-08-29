@@ -49,7 +49,7 @@ class MyPaginator(Paginator):
             return 0        
         hits = max(1, self.count - self.orphans)
         
-        if self.count - self.object_list[len(self.object_list) - 1].games.__len__() < self.per_page:
+        if self.object_list and self.count - self.object_list[len(self.object_list) - 1].games.__len__() < self.per_page:
             return ceil(hits / self.per_page)  - 1
         return ceil(hits / self.per_page)  
         
