@@ -166,8 +166,8 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
         if cotation_mul < min_cotation_sum:
             raise serializers.ValidationError("O valor da cotação total deve ser maior que "+ str(min_cotation_sum))
         
-        if cotation_mul > max_cotation_sum:
-            raise serializers.ValidationError("O valor da cotação total deve ser menor que "+ str(max_cotation_sum))
+        # if cotation_mul > max_cotation_sum:
+        #     raise serializers.ValidationError("O valor da cotação total deve ser menor que "+ str(max_cotation_sum))
          
         return data
 
