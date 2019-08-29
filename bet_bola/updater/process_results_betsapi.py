@@ -32,7 +32,7 @@ def get_games(games):
         data_games = request.json()
         if data_games['success'] == 1:
             for index, game_json in enumerate(data_games['results']):
-                if not game_json.get('success', True) == 0:
+                if not game_json.get('success', True) == 0 and int(game_json.get('time_status', 0)) == 3:
                     update_game_score(game_json, games[index])
 
 
