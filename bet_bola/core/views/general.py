@@ -13,6 +13,7 @@ from core.models import Cotation
 import utils.timezone as tzlocal
 from django.conf import settings
 from utils.utils import sort_by_priority_menu
+import json
 
 class APIRootView(APIView):
     def get(self, request):        
@@ -60,3 +61,24 @@ class MainMenu(CacheKeyDispatchMixin, ModelViewSet):
         )
 
         return sorted(location.distinct(), key=sort_by_priority_menu, reverse=True)
+
+
+class ChangePassword(APIView):
+
+    def post(self, request):
+        data = json.loads(request.POST.get("data"))
+        if request.user.check_password(data.get("old_password")):
+            if data.get("new_password") == data.get("password_confirmation"):
+                request.user.set_password(data.get("new_password"))
+                request.user.save()
+                return Response({"success":True})
+            else:                
+                return Response({
+                    "success":False,
+                    "message":"Confirmação de senha não é compatível com a nova senha."
+                    })
+        
+        return Response({
+                    "success":False,
+                    "message":"Senha atual incorreta."
+                    })
