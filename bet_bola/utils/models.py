@@ -115,7 +115,7 @@ class RewardRestriction(models.Model):
 
 
 class TicketCustomMessage(models.Model):
-    text = models.TextField(max_length=1000, verbose_name="Mensagem customizada")
+    text = models.TextField(max_length=1000, verbose_name="Mensagem customizada", null=True, blank=True)
     store = models.OneToOneField('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
 
     def __str__(self):
@@ -127,7 +127,7 @@ class TicketCustomMessage(models.Model):
 
 
 class RulesMessage(models.Model):
-    text = models.TextField(max_length=999999, verbose_name="Texto de Regras")
+    text = models.TextField(max_length=999999, verbose_name="Texto de Regras", null=True, blank=True)
     store = models.OneToOneField('core.Store', verbose_name="Banca", on_delete=models.CASCADE, unique=True)
 
     def __str__(self):
