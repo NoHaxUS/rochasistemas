@@ -118,7 +118,8 @@ else:
             'PASSWORD': 'r7fcfEGEQEzGLN6y',
             'HOST': 'localhost',
             'PORT': '5432',
-            'CHARSET':'UTF8'
+            'CHARSET':'UTF8',
+            'CONN_MAX_AGE': 30
         }
     }
 

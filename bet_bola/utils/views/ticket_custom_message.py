@@ -16,7 +16,6 @@ class TicketCustomMessageView(ModelViewSet):
     caching_time = 60
 
     def list(self, request, pk=None):
-        from core.models import Store
         if request.user.is_authenticated:
             store_id = request.user.my_store.pk			
             ticket_custom_message= TicketCustomMessage.objects.filter(store__pk=store_id)
