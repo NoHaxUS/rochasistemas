@@ -121,8 +121,7 @@ class TicketCustomMessage(models.Model):
     def __str__(self):
         return "Mensagem a ser mostrada no ticket"
 
-    def save(self, *args, **kwargs):
-        self.pk = 1
+    def save(self, *args, **kwargs):        
         super().save( *args, **kwargs)
 
     class Meta:
@@ -137,8 +136,7 @@ class RulesMessage(models.Model):
     def __str__(self):
         return "Texto de Regras"
 
-    def save(self, *args, **kwargs):
-        self.pk = 1
+    def save(self, *args, **kwargs):        
         super().save( *args, **kwargs)
 
     class Meta:

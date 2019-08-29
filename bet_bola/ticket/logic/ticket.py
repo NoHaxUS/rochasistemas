@@ -75,7 +75,6 @@ def cancel_ticket(self, who_canceling):
     self.status = 5
     self.payment.status = 3
     self.payment.save()
-    print(self.payment.status)
     self.save()
 
     from history.models import TicketCancelationHistory

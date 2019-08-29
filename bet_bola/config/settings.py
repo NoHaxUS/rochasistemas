@@ -12,8 +12,8 @@ SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-DEV_MODE = True
-DB_SWAP_LOCAL = True
+DEV_MODE = False
+DB_SWAP_LOCAL = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -77,12 +77,17 @@ TEMPLATES = [
 
 
 CACHES = {
-    'default': {
+    'local_dev': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'unique-snowflake',
         'KEY_PREFIX': 'sitename'
+    },
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211'
     }
 }
+
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
@@ -108,16 +113,16 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'db_sitename',
-            'USER': 'user_sitename',
-            'PASSWORD': 'db_password',
+            'NAME': 'bet_bola_api',
+            'USER': 'bet_bola_user',
+            'PASSWORD': 'r7fcfEGEQEzGLN6y',
             'HOST': 'localhost',
             'PORT': '5432',
             'CHARSET':'UTF8'
         }
     }
 
-"""
+
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
@@ -125,7 +130,6 @@ sentry_sdk.init(
     dsn="https://806cfdecfa1e4918a4e18fc53d98f10c@sentry.io/1497286",
     integrations=[DjangoIntegration()]
 )
-"""
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -179,7 +183,7 @@ EMAIL_USE_TLS = True
 # DEFAULT_FROM_EMAIL = 'Pablo <noreply@example.com>'
 
 #Zones
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
 TIME_ZONE_LOCAL = 'America/Sao_Paulo'
 
 USE_I18N = True

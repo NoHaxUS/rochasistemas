@@ -48,8 +48,7 @@ class Ticket(models.Model):
             return round(Decimal(self.reward.value * self.store.my_configuration.bonus_by_won_ticket / 100),2)                
         return round(Decimal(0),2)
 
-    def update_ticket_reward(self):
-        
+    def update_ticket_reward(self):        
         raw_reward_value = self.cotation_sum() * self.bet_value
         self.reward.value = get_reward_value(self.bet_value, raw_reward_value, self.store)[1]
         self.reward.save()

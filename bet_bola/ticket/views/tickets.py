@@ -154,25 +154,32 @@ class TicketView(FiltersMixin, ModelViewSet):
                 reward=reward,
                 store=store
             )
-        
+        cotation_mul = 1
+            
         for cotation in serializer.validated_data['cotations']:	            
             CotationCopy(
                 original_cotation=cotation,
                 ticket=instance,                                        
                 price=cotation.price,
                 store=store
-            ).save()
+            ).save()                
+            cotation_mul *= cotation.price        
 
         validation_message = None
+        cotation_sum_message_validate = None
+
         if self.request.user.has_perm('user.be_seller'):
             validation_message = instance.validate_ticket(self.request.user.seller)
+        if cotation_mul > store.my_configuration.max_cotation_sum:
+            cotation_sum_message_validate = "O valor da cotação total será reajustado para " + str(store.my_configuration.max_cotation_sum) + " pois é o maximo permetido pela Banca."
 
         return {
             'success': True,
             'ticket_id': ticket_id,
             'display_reward_info': rewad_was_changed,
             'reward_value': rewad_value,
-            'validation_message': validation_message
+            'validation_message': validation_message,
+            'cotation_sum_message_validate': cotation_sum_message_validate
         }
         
 
