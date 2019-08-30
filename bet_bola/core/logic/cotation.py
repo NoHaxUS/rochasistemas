@@ -1,6 +1,7 @@
 def get_store_price(self, store):
     from utils.models import GeneralConfigurations
     from core.models import CotationModified
+    from decimal import Decimal
 
     config = store.my_configuration
     cotation_modified = CotationModified.objects.filter(cotation=self, store=store, price__gt=1)
@@ -21,4 +22,4 @@ def get_store_price(self, store):
     if self.price < 1:
         self.price = 1.01
 
-    return self.price
+    return Decimal(str(self.price))
