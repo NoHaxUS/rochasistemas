@@ -48,7 +48,7 @@ class BaseUserPermission(permissions.BasePermission):
 
 
 class IsAdmin(BaseUserPermission):	
-	user_types = [4]		
+	user_types = [4]
 
 
 class IsManager(BaseUserPermission):

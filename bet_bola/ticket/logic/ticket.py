@@ -188,72 +188,27 @@ def validate_ticket(self, who_validating):
     }
 
 
-def reward_winner(self, who_rewarding_the_winner):
-    
-    return {
-        'success': False,
-        'message': 'Function Disabled!'
-    }
-
-    if not (who_rewarding_the_winner.has_perm('user.be_admin') or who_rewarding_the_winner.has_perm('user.be_seller')) or who_rewarding_the_winner.my_store != self.store:
-        return {
-            'success': False,
-            'message': 'Esse Usuário não tem permissão para Recompensar Bilhetes.'
-        }
-
-    if not self.status == 4:   
-        return {
-            'success':False,
-            'message':'O bilhete (' + self.ticket_id +') não está apto a prestação de contas.'    
-        }
-
-    if not self.payment.who_paid == who_rewarding_the_winner:
-        return {
-            'success':False,
-            'message':'Você só pode recompensar ganhadores de apostas pagas por você.'
-        }
-
-    self.status = 2
-    self.save()
-    self.reward.date = tzlocal.now()
-    self.reward.who_rewarded_the_winner = who_rewarding_the_winner
-    self.reward.save()
-    """
-    from history.models import WinnerPaymentHistory
-    WinnerPaymentHistory.objects.create(
-        winner_name=self.owner.first_name,
-        who_rewarded_the_winner=who_rewarding_the_winner,
-        ticket=self,
-        date=tzlocal.now(),
-        bet_value=self.reward.real_value,
-        store=self.store
-    )
-    """
-
-    return {
-        'success':True,
-        'message':'O Ganhador ' + self.owner.first_name  + ' foi Pago.'
-    }
-
 def cotation_sum(self):
     from core.models import CotationCopy
+    from utils.models import GeneralConfigurations
 
     valid_cotations = CotationCopy.objects.filter(ticket=self, original_cotation__game__status__in = (0,1,2,3))
     
     cotation_mul = 1
-    for cotation in valid_cotations:        
-        cotation_mul *= cotation.price        
+    for cotation in valid_cotations:      
+        cotation_mul *= cotation.price       
     if cotation_mul == 1:
         return 0
     
-    from utils.models import GeneralConfigurations
     try:
         general_config = self.store.my_configuration
         max_cotation_sum = general_config.max_cotation_sum
     except GeneralConfigurations.DoesNotExist:
         max_cotation_sum = 1000000
     
+    cotation_changed = False
     if cotation_mul > max_cotation_sum:
         cotation_mul = max_cotation_sum
+        cotation_changed = True
 
-    return round(cotation_mul, 2)
+    return (cotation_changed, round(cotation_mul, 2))

@@ -52,7 +52,7 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
         'cotation_sum','creation_date','reward','payment','bet_value','available','status','ticket_message')
 
     def get_cotation_sum(self, obj):
-        return obj.cotation_sum()
+        return obj.cotation_sum()[1]
     
     def get_status(self, obj):
         return obj.get_status_display()
@@ -78,7 +78,7 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
             }
 
     def get_cotation_sum(self, obj):
-        return obj.cotation_sum()
+        return obj.cotation_sum()[1]
     
     def get_status(self, obj):
         return obj.get_status_display()
@@ -111,7 +111,9 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
         return ticket
 
     def validate(self, data):
-        store = self.context['request'].GET.get('store')
+        store_id = self.context['request'].GET.get('store')
+        store = Store.objects.get(pk=store_id)
+        
         user = self.context['request'].user
         if not user.is_anonymous and user.has_perm('user.be_admin'):
             raise serializers.ValidationError("Conta administradora não pode fazer aposta :)")
@@ -147,7 +149,7 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
     
         cotation_mul = 1
         for cotation in data['cotations']:
-            cotation_mul *= cotation.price
+            cotation_mul *= cotation.get_store_price(store)
         
         cotation_mul = 0 if cotation_mul == 1 else cotation_mul
 
@@ -166,9 +168,6 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
         if cotation_mul < min_cotation_sum:
             raise serializers.ValidationError("O valor da cotação total deve ser maior que "+ str(min_cotation_sum))
         
-        # if cotation_mul > max_cotation_sum:
-        #     raise serializers.ValidationError("O valor da cotação total deve ser menor que "+ str(max_cotation_sum))
-         
         return data
 
 

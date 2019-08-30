@@ -42,8 +42,7 @@ class TicketView(FiltersMixin, ModelViewSet):
     serializer_class = TicketSerializer
     pagination_class = TicketPagination
     permission_classes = []
-    cache_group = 'ticket_view_adm'
-    caching_time = 5
+
 
     filter_mappings = {
         'ticket_id':'ticket_id__icontains',
@@ -86,7 +85,8 @@ class TicketView(FiltersMixin, ModelViewSet):
             return tickets.filter(store=user.my_store).order_by('-creation_date')
 
         return Ticket.objects.none()
-                
+
+
     def get_ticket_id(self, store):
         alpha_num = 4
         numbers_num = 4
@@ -104,10 +104,12 @@ class TicketView(FiltersMixin, ModelViewSet):
         else:
             return ticket_id
 
+
     def get_serializer_class(self):		
             if self.action == 'list' or self.action == 'retrieve':           
                 return TicketSerializer
             return CreateTicketSerializer
+
 
     def create(self, request, *args, **kwargs):
         data = request.data.get('data')
@@ -117,25 +119,21 @@ class TicketView(FiltersMixin, ModelViewSet):
         create_response = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(create_response, status=status.HTTP_201_CREATED, headers=headers)
-    
-    def perform_create(self, serializer):
-        store = Store.objects.filter(id=self.request.GET['store']).first()
-        bet_value = serializer.validated_data['bet_value']
 
-        raw_reward_value = 1
+
+    def perform_create(self, serializer):
+        store = Store.objects.get(id=self.request.GET['store'])
+
         for cotation in serializer.validated_data['cotations']:
             
             if cotation.game.start_date < tzlocal.now():
                 return {
                     'success': False,
                     'message': "Jogo " + cotation.game.name + " já começou. Por favor o retire da aposta."
-                }        
-            raw_reward_value *= cotation.get_store_price(store)        
-            
-        raw_reward_value = bet_value * raw_reward_value        
+                }  
+   
         payment = Payment.objects.create()
-        rewad_was_changed, rewad_value = get_reward_value(bet_value, raw_reward_value, store)
-        reward = Reward.objects.create(value=rewad_value)
+        reward = Reward.objects.create()
 
         ticket_id = self.get_ticket_id(store)
         
@@ -154,40 +152,44 @@ class TicketView(FiltersMixin, ModelViewSet):
                 reward=reward,
                 store=store
             )
-        cotation_mul = 1
             
         for cotation in serializer.validated_data['cotations']:	            
             CotationCopy(
                 original_cotation=cotation,
-                ticket=instance,                                        
-                price=cotation.price,
+                ticket=instance,                         
+                price=cotation.get_store_price(store),
                 store=store
-            ).save()                
-            cotation_mul *= cotation.price        
+            ).save() 
 
         validation_message = None
-        cotation_sum_message_validate = None
 
         if self.request.user.has_perm('user.be_seller'):
             validation_message = instance.validate_ticket(self.request.user.seller)
-        if cotation_mul > store.my_configuration.max_cotation_sum:
-            cotation_sum_message_validate = "O valor da cotação total será reajustado para " + str(store.my_configuration.max_cotation_sum) + " pois é o maximo permetido pela Banca."
+        
+        instance.update_ticket_reward()
 
+        if instance.reward_has_changed():
+            reward_was_changed = True
+            reward_value = instance.reward.value
+        else:
+            reward_was_changed = False
+            reward_value = 0
+
+        if instance.max_cotation_changed():
+            cotation_was_changed = True
+        else:
+            cotation_was_changed = False
+
+        
         return {
             'success': True,
             'ticket_id': ticket_id,
-            'display_reward_info': rewad_was_changed,
-            'reward_value': rewad_value,
-            'validation_message': validation_message,
-            'cotation_sum_message_validate': cotation_sum_message_validate
+            'display_reward_info': reward_was_changed,
+            'display_cotation_info': cotation_was_changed,
+            'reward_value': reward_value,
+            'cotation_value': instance.cotation_sum()[1] if cotation_was_changed else 0,
+            'validation_message': validation_message
         }
-        
-
-    @action(methods=['get'], detail=True, permission_classes=[])
-    def reward_winner(self, request, pk=None):		
-        ticket = self.get_object()				
-        response = ticket.reward_winner(request.user)
-        return Response(response)
 
 
     @action(methods=['post'], detail=False, permission_classes=[])

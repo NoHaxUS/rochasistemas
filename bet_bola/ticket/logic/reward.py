@@ -8,7 +8,7 @@ def get_reward_value(bet_value, raw_reward_total, store):
     except GeneralConfigurations.DoesNotExist:
         max_reward_to_pay = 1000000
 
-    restrictions = RewardRestriction.objects.all().order_by('max_reward_value','pk')
+    restrictions = RewardRestriction.objects.filter(store=store).order_by('max_reward_value','pk')
 
     for restriction in restrictions:
         if bet_value <= restriction.bet_value and raw_reward_total > restriction.max_reward_value:
