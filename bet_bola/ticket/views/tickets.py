@@ -85,7 +85,8 @@ class TicketView(FiltersMixin, ModelViewSet):
             return tickets.filter(store=user.my_store).order_by('-creation_date')
 
         return Ticket.objects.none()
-                
+
+
     def get_ticket_id(self, store):
         alpha_num = 4
         numbers_num = 4
@@ -103,10 +104,12 @@ class TicketView(FiltersMixin, ModelViewSet):
         else:
             return ticket_id
 
+
     def get_serializer_class(self):		
             if self.action == 'list' or self.action == 'retrieve':           
                 return TicketSerializer
             return CreateTicketSerializer
+
 
     def create(self, request, *args, **kwargs):
         data = request.data.get('data')
@@ -121,22 +124,16 @@ class TicketView(FiltersMixin, ModelViewSet):
     def perform_create(self, serializer):
         store = Store.objects.get(id=self.request.GET['store'])
 
-        #raw_reward_value = 1
         for cotation in serializer.validated_data['cotations']:
             
             if cotation.game.start_date < tzlocal.now():
                 return {
                     'success': False,
                     'message': "Jogo " + cotation.game.name + " já começou. Por favor o retire da aposta."
-                }
- 
-            #raw_reward_value *= cotation.get_store_price(store)        
-            
-        #raw_reward_value = bet_value * raw_reward_value        
+                }  
+   
         payment = Payment.objects.create()
         reward = Reward.objects.create()
-        #rewad_was_changed, rewad_value = get_reward_value(bet_value, raw_reward_value, store)
-        #reward = Reward.objects.create(value=rewad_value)
 
         ticket_id = self.get_ticket_id(store)
         

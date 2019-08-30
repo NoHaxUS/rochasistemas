@@ -111,7 +111,9 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
         return ticket
 
     def validate(self, data):
-        store = self.context['request'].GET.get('store')
+        store_id = self.context['request'].GET.get('store')
+        store = Store.objects.get(pk=store_id)
+        
         user = self.context['request'].user
         if not user.is_anonymous and user.has_perm('user.be_admin'):
             raise serializers.ValidationError("Conta administradora não pode fazer aposta :)")
@@ -147,7 +149,7 @@ class CreateTicketSerializer(serializers.HyperlinkedModelSerializer):
     
         cotation_mul = 1
         for cotation in data['cotations']:
-            cotation_mul *= cotation.price
+            cotation_mul *= cotation.get_store_price(store)
         
         cotation_mul = 0 if cotation_mul == 1 else cotation_mul
 

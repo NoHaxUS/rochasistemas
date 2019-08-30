@@ -80,20 +80,6 @@ class GeneralConfigurations(models.Model):
     def __str__(self):
         return "Configuração da Banca " + self.store.fantasy
 
-    def apply_reductions(self):
-        from core.models import Game
-        able_games = Game.objects.filter(start_date__gt=tzlocal.now(),
-        status__in=[1,2,8,9],
-        available=True)
-
-        reduction = self.cotations_percentage / 100
-        
-        for game in able_games:
-            game.cotations.update(price=F('price') * reduction )
-            game.cotations.update(price=Case(When(price__lt=1,then=1.01),default=F('price')))
-            game.cotations.filter(price__gt=self.max_cotation_value).update(price=self.max_cotation_value)
-
-
     class Meta:
         ordering = ['-pk',]
         verbose_name = "Configurações Gerais"
