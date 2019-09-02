@@ -13,7 +13,7 @@ from core.views.locations import LocationView, LocationModifiedView
 from core.views.leagues import LeagueAdminView, LeagueModifiedView
 from core.views.cotations import CotationView, CotationCopyView, CotationModifiedView
 from core.views.markets import MarketView, MarketCotationView
-from core.views.general import APIRootView, MainMenu
+from core.views.general import APIRootView, MainMenu, ChangePassword
 
 
 app_name = 'core'
@@ -35,6 +35,7 @@ router.register(r'location_modifieds', LocationModifiedView)
 
 urlpatterns = [
     path('', APIRootView.as_view(), name='api-root'),
+    path('change_password/', ChangePassword.as_view(), name='change_password'),
     path('today_games/', TodayGamesView.as_view({'get': 'list'}), name='today_games'),
     path('tomorrow_games/', TomorrowGamesView.as_view({'get': 'list'}), name='tomorrow_games'),
     path('after_tomorrow_games/', AfterTomorrowGamesView.as_view({'get': 'list'}), name='after_tomorrow_games'),
