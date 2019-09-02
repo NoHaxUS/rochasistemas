@@ -64,7 +64,6 @@ class MainMenu(CacheKeyDispatchMixin, ModelViewSet):
 
 
 class ChangePassword(APIView):
-
     def post(self, request):
         data = json.loads(request.POST.get("data"))
         if request.user.check_password(data.get("old_password")):
