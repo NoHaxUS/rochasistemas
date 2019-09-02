@@ -168,7 +168,7 @@ class MarketModified(models.Model):
 
 
     def __str__(self):
-        return self.reduction_percentual
+        return str(self.reduction_percentual)
 
     class Meta:
         ordering = ('-pk',)
