@@ -11,9 +11,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 't9xein@q$yf$w+ks2m&hr&53j1n@rtyg7o(b1(-)ffz7nce-kg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 DEV_MODE = False
-DB_SWAP_LOCAL = False
+DB_SWAP_LOCAL = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -124,13 +124,14 @@ else:
     }
 
 
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
+if not DEBUG:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
 
-sentry_sdk.init(
-    dsn="https://806cfdecfa1e4918a4e18fc53d98f10c@sentry.io/1497286",
-    integrations=[DjangoIntegration()]
-)
+    sentry_sdk.init(
+        dsn="https://806cfdecfa1e4918a4e18fc53d98f10c@sentry.io/1497286",
+        integrations=[DjangoIntegration()]
+    )
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
