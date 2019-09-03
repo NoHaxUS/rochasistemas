@@ -36,6 +36,8 @@ class ManagerSerializer(serializers.HyperlinkedModelSerializer):
 		instance.can_cancel_ticket = validated_data.get('can_cancel_ticket', instance.can_cancel_ticket)
 		instance.limit_time_to_cancel = validated_data.get('limit_time_to_cancel', instance.limit_time_to_cancel)
 		instance.can_sell_unlimited = validated_data.get('can_sell_unlimited', instance.can_sell_unlimited)
+		instance.can_modify_seller_comissions = validated_data.get('can_modify_seller_comissions', instance.can_modify_seller_comissions)
+		instance.can_modify_seller = validated_data.get('can_modify_seller', instance.can_modify_seller)
 		instance.can_change_limit_time = validated_data.get('can_change_limit_time', instance.can_change_limit_time)
 		instance.comission_based_on_profit = validated_data.get('comission_based_on_profit', instance.comission_based_on_profit)
 
