@@ -144,7 +144,7 @@ def process_upcoming_events(data):
         for game in data['results']:
             game_name = get_game_name(game)
             print(game['id'] + ' - ' + game_name)
-            Game.objects.get_or_create(
+            obj, created = Game.objects.get_or_create(
                 pk=game['id'],
                 defaults={
                     'name': game_name,
@@ -156,6 +156,9 @@ def process_upcoming_events(data):
                     'status': int(game['time_status'])
                 }
             )
+            if not created:
+                obj.start_date = get_start_date_from_timestamp(game)
+                obj.save()
             game_ids.append(game['id'])    
         get_cotations(game_ids)
 
