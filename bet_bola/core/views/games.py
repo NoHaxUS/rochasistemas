@@ -11,7 +11,7 @@ from utils.models import ExcludedLeague, ExcludedGame, MarketModified, MarketRem
 from user.permissions import IsAdmin
 from core.models import *
 from core.serializers.game import TodayGamesSerializer, GameSerializer, GameListSerializer, GameTableSerializer
-from core.paginations import StandardSetPagination, GameListPagination, GameTablePagination
+from core.paginations import StandardSetPagination, GamePagination, GameListPagination, GameTablePagination
 from core.permissions import StoreIsRequired
 from rest_framework.decorators import action
 import utils.timezone as tzlocal
@@ -257,7 +257,7 @@ class GamesTable(ModelViewSet):
 class TodayGamesAdmin(FiltersMixin, ModelViewSet):
     queryset = Game.objects.none()
     serializer_class = GameListSerializer
-    pagination_class = GameListPagination
+    pagination_class = GamePagination
     
 
     filter_mappings = {
@@ -323,7 +323,7 @@ class GamesTomorrowAdmin(FiltersMixin, ModelViewSet):
     """ 
     permission_classes = []
     serializer_class = GameListSerializer
-    pagination_class = GameListPagination
+    pagination_class = GamePagination
 
 
     filter_mappings = {
@@ -359,7 +359,7 @@ class GamesAfterTomorrowAdmin(FiltersMixin, ModelViewSet):
     """ 
     permission_classes = []
     serializer_class = GameListSerializer
-    pagination_class = GameListPagination
+    pagination_class = GamePagination
 
 
     filter_mappings = {
