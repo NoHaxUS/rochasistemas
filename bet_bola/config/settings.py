@@ -163,10 +163,10 @@ LOCALE_PATHS = (
 
 LANGUAGES = (
     ('en', _('Inglês')),
-    ('pt-br', _('Português'))
+    ('pt-BR', _('Português'))
 )
 
-LANGUAGE_CODE = 'pt-br'
+LANGUAGE_CODE = 'pt-BR'
 
 #Decimal
 DECIMAL_SEPARATOR = '.'
@@ -189,7 +189,7 @@ TIME_ZONE = 'America/Sao_Paulo'
 TIME_ZONE_LOCAL = 'America/Sao_Paulo'
 
 USE_I18N = True
-USE_L10N = True
+USE_L10N = False
 USE_TZ = False
 
 
@@ -200,7 +200,7 @@ STATIC_URL = '/static/'
 
 
 REST_FRAMEWORK = {
-    'DATETIME_FORMAT': "%d %B %Y %H:%M",
+    'DATETIME_FORMAT': "%d/%m/%Y %H:%M",
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),    
