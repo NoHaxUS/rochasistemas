@@ -23,7 +23,7 @@ class MarketModifiedView(ModelViewSet):
         data = json.loads(data)
         market = {}
         serializer_data = []
-        
+        print(data)
         for name in data.get('markets'):
             market['store'] = self.request.user.my_store.pk
             market['reduction_percentual'] = data['reduction_percentual']
@@ -31,6 +31,8 @@ class MarketModifiedView(ModelViewSet):
             
             if data.get('available', None) is not None:				
                 market['available'] = data['available']
+            if data.get('modification_available', None) is not None:				
+                market['modification_available'] = data['modification_available']
 
             serializer = self.get_serializer(data=market)
             serializer.is_valid(raise_exception=True)

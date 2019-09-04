@@ -160,10 +160,11 @@ class MarketRemotion(models.Model):
         verbose_name_plural = 'Remoção de Apostas'
 
 
-class MarketModified(models.Model):     
+class MarketModified(models.Model):
     market = models.ForeignKey('core.Market', verbose_name='Tipo de Aposta', related_name="my_modifications", on_delete=models.CASCADE)
     reduction_percentual = models.IntegerField(default=100, verbose_name='Percentual de Redução')
     available = models.BooleanField(default=True)
+    modification_available = models.BooleanField(default=True)
     store = models.ForeignKey('core.Store', verbose_name="Banca", on_delete=models.CASCADE)
 
 

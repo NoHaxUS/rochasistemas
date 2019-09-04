@@ -22,13 +22,19 @@ class MarketView(FiltersMixin, ModelViewSet):
     
     def get_queryset(self):                                
         available = self.request.GET.get('available')
+        modification_available = self.request.GET.get('modification_available')
         store = self.request.user.my_store
         qs = self.queryset.all()            
         
         
         if available is not None:             
             qs = qs.filter(my_modifications__store=store).filter(my_modifications__available=available) | qs.filter(available=available).exclude(my_modifications__store=store)
-        
+        if modification_available is not None:            
+            if modification_available == 1:                                
+                qs = qs.filter(my_modifications__store=store).filter(my_modifications__modification_available=modification_available)
+            else:                                                
+                qs = qs.filter(my_modifications__store=store).filter(my_modifications__modification_available=modification_available) | qs.all().exclude(my_modifications__store=store)
+
         return qs.distinct()
 
 

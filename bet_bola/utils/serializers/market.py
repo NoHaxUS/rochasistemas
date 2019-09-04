@@ -29,7 +29,7 @@ class MarketModifiedSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = MarketModified
-		fields = ('market', 'reduction_percentual', 'available', 'store')
+		fields = ('market', 'reduction_percentual', 'available','modification_available', 'store')
 
 
 class MarketRemotionSerializer(serializers.HyperlinkedModelSerializer):	

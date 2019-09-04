@@ -24,5 +24,5 @@ class MarketSerializer(serializers.HyperlinkedModelSerializer):
 	def get_my_modifications(self, market):		
 		store = self.context['request'].user.my_store
 		if market.my_modifications.filter(store=store).exists():			
-			return {"reduction":market.my_modifications.filter(store=store).first().reduction_percentual, "available": market.my_modifications.filter(store=store).first().available}
-		return {"reduction":100, "available":True}
+			return {"reduction":market.my_modifications.filter(store=store).first().reduction_percentual, "available": market.my_modifications.filter(store=store).first().available, "modification_available": market.my_modifications.filter(store=store).first().modification_available}
+		return {"reduction":100, "available":True, "modification_available":False}
