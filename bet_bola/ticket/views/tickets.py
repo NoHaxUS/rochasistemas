@@ -69,20 +69,28 @@ class TicketView(FiltersMixin, ModelViewSet):
         'end_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d')
     }
 
-    def get_queryset(self):        
+    def get_queryset(self):
+        
         user = self.request.user
         closed_for_manager = self.request.GET.get('closed_for_manager')
-        tickets = Ticket.objects.filter(store=user.my_store)
+
+        if self.request.GET.get('available'):
+            tickets = Ticket.objects.filter(store=user.my_store)
+        else:
+            tickets = Ticket.objects.filter(store=user.my_store, available=True)
+        
+        if 'toggle_availability' in self.request.path:
+            tickets = Ticket.objects.filter(store=user.my_store)
 
         if closed_for_manager is not None:
             tickets = tickets.filter(Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[2,4])).exclude(status__in=[5,6])
 
         if user.is_authenticated:
             if user.user_type == 2:   
-                return tickets.filter(Q(payment__who_paid=user) | Q(creator=user)).filter(store=user.my_store).order_by('-creation_date')            
+                return tickets.filter(Q(payment__who_paid=user) | Q(creator=user)).order_by('-creation_date')            
             elif user.user_type == 3:
-                return tickets.filter(Q(payment__who_paid__seller__my_manager__pk=user.pk) | Q(creator=user)).filter(store=user.my_store).order_by('-creation_date')                
-            return tickets.filter(store=user.my_store).order_by('-creation_date')
+                return tickets.filter(Q(payment__who_paid__seller__my_manager__pk=user.pk) | Q(creator=user)).order_by('-creation_date')                
+            return tickets.order_by('-creation_date')
 
         return Ticket.objects.none()
 

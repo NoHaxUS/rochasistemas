@@ -41,7 +41,7 @@ class Ticket(models.Model):
     closed_out_for_seller = models.BooleanField(default=False, verbose_name='Saída Vendedor Caixa')
     closed_out_for_manager = models.BooleanField(default=False, verbose_name='Saída Gerente Caixa')
     store = models.ForeignKey('core.Store', related_name='my_tickets', verbose_name='Banca', on_delete=models.CASCADE)
-    available = models.BooleanField(default=True, verbose_name='Disponível?')
+    available = models.BooleanField(default=True, verbose_name='Visível?')
     
     def won_bonus(self):
         if self.status in [2,4] and self.store.my_configuration.bonus_won_ticket:
