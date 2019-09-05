@@ -23,7 +23,6 @@ class MarketModifiedView(ModelViewSet):
         data = json.loads(data)
         market = {}
         serializer_data = []
-        print(data)
         for name in data.get('markets'):
             market['store'] = self.request.user.my_store.pk
             market['reduction_percentual'] = data['reduction_percentual']
