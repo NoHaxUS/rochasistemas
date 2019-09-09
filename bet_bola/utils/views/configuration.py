@@ -15,7 +15,7 @@ class GeneralConfigurationsView(FiltersMixin, ModelViewSet):
 	permission_classes = []	
 
 	filter_mappings = {
-	'store':'store__pk',		
+	'store':'store__pk',
 	}
   
 	def get_queryset(self):

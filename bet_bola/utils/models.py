@@ -75,7 +75,7 @@ class GeneralConfigurations(models.Model):
     block_bets = models.BooleanField(default=False, verbose_name="Bloquear Apostas?")
     bonus_won_ticket = models.BooleanField(default=False, verbose_name="Ativar Bônus por bilhetes premiados?")
     bonus_by_won_ticket = models.IntegerField(default=10, verbose_name="Bônus por bilhetes premiados")    
-
+    add_league_to_ticket_print = models.BooleanField(default=False, verbose_name="Adicionar ligas nos envios do bilhete?")
 
     def __str__(self):
         return "Configuração da Banca " + self.store.fantasy
