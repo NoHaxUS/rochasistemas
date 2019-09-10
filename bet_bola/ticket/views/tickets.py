@@ -232,3 +232,17 @@ class TicketView(FiltersMixin, ModelViewSet):
             'success': True,
             'message': 'Alterado com Sucesso :)'
         })
+
+    @action(methods=['post'], detail=False, permission_classes=[CanToggleTicketAvailability])
+    def toggle_mutiple_availability(self, request, pk=None):        
+        ticket_ids = json.loads(request.data.get('data'))
+        ticket_ids = [id.upper() for id in ticket_ids]
+        response = []
+
+        for ticket in Ticket.objects.filter(ticket_id__in=ticket_ids):
+            ticket.toggle_availability()        
+
+        return Response({
+            'success': True,
+            'message': 'Bilhetes removidos com sucesso :)'
+        })
