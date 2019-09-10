@@ -30,6 +30,8 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
     ticket_message = serializers.SerializerMethodField()
     show_link = serializers.SerializerMethodField()
     show_league = serializers.SerializerMethodField()
+    show_bonus_ticket_message = serializers.SerializerMethodField()
+    bonus_ticket_value = serializers.SerializerMethodField()
 
     def get_creator(self, data):
         if data.creator:
@@ -51,11 +53,17 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_show_link(self, data):
         return data.store.my_configuration.add_link_to_ticket_whats
+    
+    def get_show_bonus_ticket_message(self, data):
+        return data.store.my_configuration.bonus_won_ticket
+
+    def get_bonus_ticket_value(self, data):
+        return data.store.my_configuration.bonus_by_won_ticket
 
     class Meta:
         model = Ticket
-        fields = ('id','ticket_id','owner','creator','cotations','show_link','show_league',
-        'cotation_sum','creation_date','reward','payment','bet_value','available','status','ticket_message')
+        fields = ('id','ticket_id','owner','creator','cotations','show_link','show_league','show_bonus_ticket_message',
+        'cotation_sum','creation_date','reward','payment','bet_value','available','status','ticket_message','bonus_ticket_value')
 
     def get_cotation_sum(self, obj):
         return obj.cotation_sum()[1]
