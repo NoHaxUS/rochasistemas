@@ -28,6 +28,7 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
     cotations = CotationTicketWithCopiedPriceSerializer(many=True)
     creation_date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
     ticket_message = serializers.SerializerMethodField()
+    show_link = serializers.SerializerMethodField()
 
     def get_creator(self, data):
         if data.creator:
@@ -36,19 +37,20 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
                 'user_type': data.creator.user_type
             }
 
-    def get_ticket_message(self, data):
-        request = self.context['request']
-        store = Store.objects.get(pk=request.GET.get('store'))
-
-        ticket_message = TicketCustomMessage.objects.filter(store=store).first()
+    def get_ticket_message(self, data):        
+        ticket_message = TicketCustomMessage.objects.filter(store=data.store).first()
+        
         if ticket_message:
             return {
                 'message': ticket_message.text
             }
 
+    def get_show_link(self, data):
+        return data.store.my_configuration.add_link_to_ticket_whats
+
     class Meta:
         model = Ticket
-        fields = ('id','ticket_id','owner','creator','cotations',
+        fields = ('id','ticket_id','owner','creator','cotations','show_link',
         'cotation_sum','creation_date','reward','payment','bet_value','available','status','ticket_message')
 
     def get_cotation_sum(self, obj):
