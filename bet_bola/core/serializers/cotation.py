@@ -7,22 +7,8 @@ import utils.timezone as tzlocal
 from django.utils import timezone
 
 class CotationGameSerializer(serializers.HyperlinkedModelSerializer):
-    league = serializers.SerializerMethodField()
+    league = serializers.SlugRelatedField(read_only=True, slug_field='name')
     
-    def get_league(self, obj):
-        if self.root.context.get('request'):
-            store_id =  self.root.context['request'].GET.get('store')			                        
-        if self.root.context.get('context'):
-            store_id =  self.root.context['context']['request'].GET.get('store')            
-        if self.root.context['request'].user.is_authenticated:
-            store_id = self.root.context['request'].user.my_store.pk
-
-        store =  Store.objects.get(pk=store_id)
-
-        if store.my_configuration.add_league_to_ticket_print:
-            return obj.league.name
-        return None
-
     class Meta:
         model = Game        
         fields = ('id','name','start_date','league')	

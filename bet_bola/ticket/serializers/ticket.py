@@ -29,6 +29,7 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
     creation_date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
     ticket_message = serializers.SerializerMethodField()
     show_link = serializers.SerializerMethodField()
+    show_league = serializers.SerializerMethodField()
 
     def get_creator(self, data):
         if data.creator:
@@ -45,12 +46,15 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
                 'message': ticket_message.text
             }
 
+    def get_show_league(self, data):
+        return data.store.my_configuration.add_league_to_ticket_print
+
     def get_show_link(self, data):
         return data.store.my_configuration.add_link_to_ticket_whats
 
     class Meta:
         model = Ticket
-        fields = ('id','ticket_id','owner','creator','cotations','show_link',
+        fields = ('id','ticket_id','owner','creator','cotations','show_link','show_league',
         'cotation_sum','creation_date','reward','payment','bet_value','available','status','ticket_message')
 
     def get_cotation_sum(self, obj):
@@ -58,6 +62,7 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
     
     def get_status(self, obj):
         return obj.get_status_display()
+
 
 class TicketSerializer(serializers.HyperlinkedModelSerializer):
     
