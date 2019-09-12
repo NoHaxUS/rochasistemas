@@ -38,9 +38,9 @@ class LeagueAdminView(FiltersMixin, ModelViewSet):
         qs = ordered_leagues | qs
 
         if priority:
-            qs = qs.filter(my_modifications__store=store).filter(my_modifications__priority__gt=priority) | qs.filter(priority__gt=priority).exclude(my_modifications__store=store)
+            qs = qs.filter(my_modifications__store=store, my_modifications__priority__gt=priority) | qs.filter(priority__gt=priority).exclude(my_modifications__store=store)
         if available:
-            qs = qs.filter(my_modifications__store=store).filter(my_modifications__available=available) | qs.filter(available=available).exclude(my_modifications__store=store)
+            qs = qs.filter(my_modifications__store=store, my_modifications__available=available) | qs.filter(available=available).exclude(my_modifications__store=store)
         
         return qs.distinct()
 

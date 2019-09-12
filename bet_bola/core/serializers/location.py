@@ -9,7 +9,7 @@ class AdmLocationSerializerList(serializers.ListSerializer):
 		store = self.context['request'].user.my_store
 
 		for location in locations:
-			location_modified = LocationModified.objects.filter(location=location.pk, store=store).first()						
+			location_modified = LocationModified.objects.filter(location=location.pk, store=store).first()
 			if location_modified:
 				location.priority = location_modified.priority
 				location.available = location_modified.available 
