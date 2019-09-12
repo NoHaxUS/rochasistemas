@@ -19,8 +19,12 @@ class GeneralConfigurationsView(FiltersMixin, ModelViewSet):
 	}
   
 	def get_queryset(self):
-		store = self.request.user.my_store
-		return self.queryset.filter(store=store)
+		if self.request.user.is_authenticated:
+			store_id = self.request.user.my_store.pk
+		else:			
+			store_id = self.request.GET.get('store')
+		
+		return self.queryset.filter(store__pk=store_id)
 
 	def create(self, request, *args, **kwargs):
 		data = request.data.get('data')       
