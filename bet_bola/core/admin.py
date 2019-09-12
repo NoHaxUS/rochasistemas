@@ -4,8 +4,9 @@ from ticket.models  import Ticket
 from updater.process_tickets import process_tickets
 from updater.process_results_betsapi import process_games
 import utils.timezone as tzlocal
-from django.db.models import F
+from django.db.models import F, Func
 import datetime
+from datetime import timedelta
 from django.utils import timezone
 from django.db.models import DateTimeField, ExpressionWrapper
 
@@ -34,8 +35,10 @@ class NeededGames(admin.SimpleListFilter):
                     open_cotations = valid_cotations.filter(settlement=0)
                     for open_cotation in open_cotations:
                         games_ids.append(open_cotation.game.pk)
-            
-            return Game.objects.filter(pk__in=games_ids)
+            games = Game.objects.filter(pk__in=games_ids)\
+                .annotate( end_date = ExpressionWrapper(F('start_date') + timedelta(minutes=100), output_field=DateTimeField()) )\
+                .filter(end_date__lte=tzlocal.now())
+            return games
 
         return queryset
 
