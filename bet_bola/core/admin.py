@@ -4,7 +4,7 @@ from ticket.models  import Ticket
 from updater.process_tickets import process_tickets
 from updater.process_results_betsapi import process_games
 import utils.timezone as tzlocal
-from django.db.models import F, Func
+from django.db.models import F, Func, Q
 import datetime
 from datetime import timedelta
 from django.utils import timezone
@@ -74,6 +74,31 @@ class GamesPerDay(admin.SimpleListFilter):
 
         return queryset
 
+
+class GamesCompletedWithNoCalulatedFlag(admin.SimpleListFilter):
+    title = 'Não Calculados'
+    parameter_name = 'not_calc_games'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('not_calc', 'Não Calculados'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'not_calc':
+            return queryset.filter(
+                ~Q(
+                    score_half__isnull=False,
+                    score_full__isnull=False
+                ) |
+                ~Q (
+                    score_half='',
+                    score_full=''
+                )
+            ).filter(results_calculated=False)
+        return queryset
+
+
 @admin.register(Store)
 class StoreAdmin(admin.ModelAdmin):
     pass
@@ -86,7 +111,7 @@ class CotationAdmin(admin.ModelAdmin):
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
     search_fields = ['pk','name']
-    list_filter = (NeededGames, GamesPerDay)
+    list_filter = (NeededGames, GamesPerDay, GamesCompletedWithNoCalulatedFlag)
 
     def save_model(self, request, obj, form, change):
         if change and obj.score_half and obj.score_full:
