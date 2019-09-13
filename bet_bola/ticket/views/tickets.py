@@ -244,5 +244,5 @@ class TicketView(FiltersMixin, ModelViewSet):
 
         return Response({
             'success': True,
-            'message': 'Bilhetes removidos com sucesso :)'
+            'message': 'Bilhete(s) desativado(s) com sucesso :)'
         })
