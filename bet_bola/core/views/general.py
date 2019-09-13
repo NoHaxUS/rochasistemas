@@ -6,12 +6,13 @@ from django.db.models import Prefetch
 from django.db.models import Q
 from django.db.models import Count 
 from django_filters import rest_framework as filters
-from core.models import League, Game, Location, LeagueModified, LocationModified, GameModified
+from core.models import League, Game, Location, LeagueModified, LocationModified, GameModified, Store
 from core.serializers.location import MenuViewSerializer
 from core.cacheMixin import  CacheKeyDispatchMixin
 from core.models import Cotation
-import utils.timezone as tzlocal
 from django.conf import settings
+import utils.timezone as tzlocal
+from django.utils import timezone
 from utils.utils import sort_by_priority_menu
 import json
 
@@ -40,7 +41,7 @@ class MainMenu(CacheKeyDispatchMixin, ModelViewSet):
 
     def get_queryset(self):        
         store_id = self.request.GET['store']
-
+        store = Store.objects.get(pk=store_id)    
         id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(store__id=store_id)]
         id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in LeagueModified.objects.filter(available=False, store=store_id)]
         id_list_excluded_locations = [excluded_locations.location.id for excluded_locations in LocationModified.objects.filter(available=False, store=store_id)]
@@ -51,6 +52,12 @@ class MainMenu(CacheKeyDispatchMixin, ModelViewSet):
             .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
             .filter(cotations_count__gte=3)\
             .exclude(Q(league__location__pk__in=id_list_excluded_locations) | Q(league__id__in=id_list_excluded_leagues) | Q(id__in=id_list_excluded_games))                
+
+        if not store.my_configuration.tomorrow_games_available:            
+            games = games.exclude(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1))
+
+        if not store.my_configuration.after_tomorrow_games_available:
+            games = games.exclude(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2))
 
         leagues = League.objects.filter(my_games__in=games).distinct()
         my_location_mods = LocationModified.objects.filter(store__id=store_id)

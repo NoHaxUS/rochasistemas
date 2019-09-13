@@ -39,8 +39,7 @@ class GameSerializerForTable(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Game				
-		fields = ('id','name','cotations')
-
+		fields = ('id','name','cotations','start_date')
 
 	
 class GameSerializer(serializers.HyperlinkedModelSerializer):			

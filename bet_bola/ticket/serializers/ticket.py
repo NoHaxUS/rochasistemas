@@ -28,6 +28,10 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
     cotations = CotationTicketWithCopiedPriceSerializer(many=True)
     creation_date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
     ticket_message = serializers.SerializerMethodField()
+    show_link = serializers.SerializerMethodField()
+    show_league = serializers.SerializerMethodField()
+    show_bonus_ticket_message = serializers.SerializerMethodField()
+    bonus_ticket_value = serializers.SerializerMethodField()
 
     def get_creator(self, data):
         if data.creator:
@@ -36,26 +40,37 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
                 'user_type': data.creator.user_type
             }
 
-    def get_ticket_message(self, data):
-        request = self.context['request']
-        store = Store.objects.get(pk=request.GET.get('store'))
-
-        ticket_message = TicketCustomMessage.objects.filter(store=store).first()
+    def get_ticket_message(self, data):        
+        ticket_message = TicketCustomMessage.objects.filter(store=data.store).first()
+        
         if ticket_message:
             return {
                 'message': ticket_message.text
             }
 
+    def get_show_league(self, data):
+        return data.store.my_configuration.add_league_to_ticket_print
+
+    def get_show_link(self, data):
+        return data.store.my_configuration.add_link_to_ticket_whats
+    
+    def get_show_bonus_ticket_message(self, data):
+        return data.store.my_configuration.bonus_won_ticket
+
+    def get_bonus_ticket_value(self, data):
+        return data.store.my_configuration.bonus_by_won_ticket
+
     class Meta:
         model = Ticket
-        fields = ('id','ticket_id','owner','creator','cotations',
-        'cotation_sum','creation_date','reward','payment','bet_value','available','status','ticket_message')
+        fields = ('id','ticket_id','owner','creator','cotations','show_link','show_league','show_bonus_ticket_message',
+        'cotation_sum','creation_date','reward','payment','bet_value','available','status','ticket_message','bonus_ticket_value')
 
     def get_cotation_sum(self, obj):
         return obj.cotation_sum()[1]
     
     def get_status(self, obj):
         return obj.get_status_display()
+
 
 class TicketSerializer(serializers.HyperlinkedModelSerializer):
     

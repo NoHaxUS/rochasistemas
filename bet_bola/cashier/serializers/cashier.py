@@ -83,7 +83,7 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_ticket(self, obj):
         tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=obj.pk) &
-        (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False, status__in=[4,2]))).exclude(status__in=[5,6])
+        (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False, status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False))
 
         if self.context.get('request'):
             get = self.context['request'].GET
@@ -167,7 +167,7 @@ class ManagersCashierSerializer(SellersCashierSerializer):
 
     def get_ticket(self, obj):
         tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=obj.pk) & 
-        (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).exclude(status__in=[5,6])
+        (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False))
 
         if self.context.get('request'):
             get = self.context['request'].GET
@@ -260,7 +260,7 @@ class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_ticket(self, obj):
         tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=obj.pk) & 
-        (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).exclude(status__in=[5,6])
+        (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False))
 
         if self.context.get('request'):
             start_creation_date = self.context['request'].GET.get('start_creation_date')

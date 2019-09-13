@@ -7,9 +7,11 @@ import utils.timezone as tzlocal
 from django.utils import timezone
 
 class CotationGameSerializer(serializers.HyperlinkedModelSerializer):
+    league = serializers.SlugRelatedField(read_only=True, slug_field='name')
+    
     class Meta:
-        model = Game
-        fields = ('id','name','start_date')	
+        model = Game        
+        fields = ('id','name','start_date','league')	
 
 
 class CotationTicketWithCopiedPriceSerializer(serializers.HyperlinkedModelSerializer):	

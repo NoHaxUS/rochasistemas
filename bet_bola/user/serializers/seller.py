@@ -65,4 +65,4 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model=Seller
-		fields = ('id','username','first_name','password','cellphone','address','cpf','can_sell_unlimited','credit_limit','limit_time_to_cancel','my_manager','email','can_cancel_ticket')
+		fields = ('id','username','first_name','password','cellphone','address','cpf','can_sell_unlimited','credit_limit','limit_time_to_cancel','my_manager','email','can_cancel_ticket','is_active')

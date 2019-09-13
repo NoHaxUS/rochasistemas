@@ -36,8 +36,8 @@ class SellerView(FiltersMixin, ModelViewSet):
     def get_queryset(self):        
         user = self.request.user
         if user.user_type == 3:            
-            return Seller.objects.filter(my_manager=user.pk, my_store=user.my_store, is_active=True)
-        return Seller.objects.filter(my_store=user.my_store, is_active=True)        
+            return Seller.objects.filter(my_manager=user.pk, my_store=user.my_store).exclude(is_active=False, username__icontains="removido")
+        return Seller.objects.filter(my_store=user.my_store).exclude(is_active=False, username__icontains="removido")
 
     def create(self, request, *args, **kwargs):        
         data = json.loads(request.data.get('data')) if request.data.get('data') else request.data
@@ -94,6 +94,13 @@ class SellerView(FiltersMixin, ModelViewSet):
         seller.toggle_can_cancel_ticket()
         return Response({'success': True})
 
+    @action(methods=['post'], detail=False, permission_classes=[AlterSellerPermission])
+    def toggle_block(self, request, pk=None):
+        data = json.loads(request.POST.get('data'))
+        sellers_ids = data.get('sellers_ids')
+        for seller in Seller.objects.filter(pk__in=sellers_ids):        
+            seller.toggle_is_active()
+        return Response({'success': True})
 
 
 

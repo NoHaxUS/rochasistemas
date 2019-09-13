@@ -21,6 +21,17 @@ class CotationView(FiltersMixin, ModelViewSet):
     permission_classes = []
     pagination_class = CotationsListSetPagination    
 
+    def get_queryset(self):
+        price_modified = self.request.GET.get('price_modified')
+
+        qs = Cotation.objects.all()
+        
+        if price_modified == "1":
+            qs = qs.filter(my_modifiy__store=self.request.user.my_store)
+        elif price_modified == "0":            
+            qs = qs.exclude(my_modifiy__store=self.request.user.my_store)
+
+        return qs
 
     @action(methods=['delete'], detail=True, permission_classes=[IsAdmin])
     def reset_cotation_price(self, request, pk=None):

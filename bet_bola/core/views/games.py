@@ -110,7 +110,9 @@ class TomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):
         queryset = queryset.exclude(id__in=id_list_excluded_leagues)
         queryset = queryset.exclude(location__pk__in=id_list_excluded_locations)
 
-        return sorted(queryset, key=sort_by_priority, reverse=True)
+        if store.my_configuration.tomorrow_games_available:
+            return sorted(queryset, key=sort_by_priority, reverse=True)
+        return sorted(queryset.none(), key=sort_by_priority, reverse=True)
 
 class AfterTomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):        
     """
@@ -153,7 +155,9 @@ class AfterTomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):
         queryset = queryset.exclude(id__in=id_list_excluded_leagues)
         queryset = queryset.exclude(location__pk__in=id_list_excluded_locations)
 
-        return sorted(queryset, key=sort_by_priority, reverse=True)
+        if store.my_configuration.after_tomorrow_games_available:
+            return sorted(queryset, key=sort_by_priority, reverse=True)
+        return sorted(queryset.none(), key=sort_by_priority, reverse=True)
 
 
 class SearchGamesView(CacheKeyDispatchMixin, ModelViewSet):
@@ -181,6 +185,12 @@ class SearchGamesView(CacheKeyDispatchMixin, ModelViewSet):
             .exclude(id__in=id_list_excluded_games)\
             .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
             .filter(cotations_count__gte=3)                
+
+        if not store.my_configuration.tomorrow_games_available:            
+            my_games_qs = my_games_qs.exclude(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1))
+
+        if not store.my_configuration.after_tomorrow_games_available:
+            my_games_qs = my_games_qs.exclude(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2))
 
         if self.request.GET.get('game_name'):
             game_name = self.request.GET.get('game_name')
