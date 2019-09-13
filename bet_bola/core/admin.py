@@ -36,7 +36,7 @@ class NeededGames(admin.SimpleListFilter):
                     for open_cotation in open_cotations:
                         games_ids.append(open_cotation.game.pk)
             games = Game.objects.filter(pk__in=games_ids)\
-                .annotate( end_date = ExpressionWrapper(F('start_date') + timedelta(minutes=100), output_field=DateTimeField()) )\
+                .annotate( end_date = ExpressionWrapper(F('start_date') + timedelta(minutes=460), output_field=DateTimeField()) )\
                 .filter(end_date__lte=tzlocal.now())
             return games
 
