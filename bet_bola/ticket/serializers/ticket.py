@@ -25,13 +25,17 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
     reward = RewardSerializer()
     cotation_sum = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
-    cotations = CotationTicketWithCopiedPriceSerializer(many=True)
+    cotations = serializers.SerializerMethodField()
     creation_date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
     ticket_message = serializers.SerializerMethodField()
     show_link = serializers.SerializerMethodField()
     show_league = serializers.SerializerMethodField()
     show_bonus_ticket_message = serializers.SerializerMethodField()
     bonus_ticket_value = serializers.SerializerMethodField()
+
+    def get_cotations(self, data):
+        serializer = CotationTicketWithCopiedPriceSerializer(data.cotations.filter(history_cotation__ticket__pk=data.pk, history_cotation__active=True),many=True, context={'ticket_id':data.pk})
+        return serializer.data
 
     def get_creator(self, data):
         if data.creator:

@@ -192,7 +192,7 @@ def cotation_sum(self):
     from core.models import CotationCopy
     from utils.models import GeneralConfigurations
 
-    valid_cotations = CotationCopy.objects.filter(ticket=self, original_cotation__game__status__in = (0,1,2,3))
+    valid_cotations = CotationCopy.objects.filter(ticket=self, original_cotation__game__status__in = (0,1,2,3), active=True)
     
     cotation_mul = 1
     for cotation in valid_cotations:      

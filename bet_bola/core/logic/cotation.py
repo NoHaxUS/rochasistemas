@@ -5,7 +5,7 @@ def get_store_price(self, store):
 
     config = store.my_configuration
     cotation_modified = CotationModified.objects.filter(cotation=self, store=store, price__gt=1)
-    market_reducation = self.market.my_modifications.filter(store=store, modification_available=True)    
+    market_reducation = self.market.my_modifications.filter(store=store, modification_available=True)
     price = self.price    
         
     if cotation_modified:
