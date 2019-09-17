@@ -76,6 +76,17 @@ class Ticket(models.Model):
     def __str__(self):
         return str(self.ticket_id)
 
+
+    def __repr__(self):
+        value = "{pk}, {ticket_id}, {creator}, {payment_status}, {status}, {store}".format(pk=self.pk, ticket_id=self.ticket_id, 
+        creator=self.creator,
+        payment_status=self.payment.status,
+        status=self.status,
+        store=self.store
+        )
+
+        return value
+
     class Meta:
         ordering = ('-pk',)
         verbose_name = 'Ticket'

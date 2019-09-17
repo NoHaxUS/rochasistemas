@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Q, Count
 from rest_framework import serializers
 from rest_framework.response import Response
 from ticket.serializers.reward import RewardSerializer, RewardSerializer
@@ -149,100 +149,127 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
     def get_profit(self, obj):
         return self.get_entry(obj) - self.get_total_out(obj)
 
+from utils.time import Timer
+
 
 class ManagersCashierSerializer(SellersCashierSerializer):
+    timer = Timer()
+
     comission_seller = serializers.SerializerMethodField()
+    initalization_field = serializers.SerializerMethodField()
+
+    manager_comission_init = 0
+    seller_comission_init = 0
+    out_value_init = 0
+    entry_value_init = 0
+    total_out_init = 0
+    won_bonus_init = 0
     
     class Meta:
         model = Manager
-        fields = ('id','username','comission','comission_seller','entry','won_bonus','out','total_out','profit')
+        fields = ('id','initalization_field', 'username','comission','comission_seller','entry','won_bonus','out','total_out','profit')
+
+    def get_initalization_field(self, manager):
+        #self.timer.start()
+        
+        sellers = Seller.objects.filter(my_manager__pk=manager.pk, payment__status=2).distinct()
+    
+
+        for seller in sellers:
+            tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__pk=seller.pk) &
+            (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2])))\
+            .exclude(Q(status__in=[5,6]) | Q(available=False))\
+            .annotate(cotations_count=Count('cotations')).distinct()
+
+            if self.context.get('request'):
+                get = self.context['request'].GET
+                post = self.context['request'].POST
+                start_creation_date = None
+                end_creation_date = None
+
+                if get:
+                    start_creation_date = get.get('start_creation_date')
+                    end_creation_date = get.get('end_creation_date')
+                elif post:
+                    data = json.loads(post.get('data'))
+                    start_creation_date = data.get('start_creation_date')
+                    end_creation_date = data.get('end_creation_date')
+
+                if start_creation_date:
+                    start_creation_date = datetime.datetime.strptime(start_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
+                    tickets = tickets.filter(creation_date__date__gte=start_creation_date)
+                if end_creation_date:
+                    end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
+                    tickets = tickets.filter(creation_date__date__lte=end_creation_date)
+
+            seller_comission = seller.comissions
+            manager_comission = manager.comissions
+
+            print(seller)
+
+            for ticket in tickets:
+                #calculating manager comission
+
+                if not ticket.closed_in_for_manager:
+                    manager_key = {
+                        1:manager_comission.simple,
+                        2:manager_comission.double,
+                        3:manager_comission.triple,
+                        4:manager_comission.fourth,
+                        5:manager_comission.fifth,
+                        6:manager_comission.sixth
+                    }
+                    # manager comissions
+                    self.manager_comission_init += manager_key.get(ticket.cotations_count, manager_comission.sixth_more) * ticket.bet_value / 100
+                
+                if not ticket.closed_in_for_seller:
+                    seller_key = {
+                        1:seller_comission.simple,
+                        2:seller_comission.double,
+                        3:seller_comission.triple,
+                        4:seller_comission.fourth,
+                        5:seller_comission.fifth,
+                        6:seller_comission.sixth
+                    }
+
+                    # entry value
+                    self.entry_value_init += ticket.bet_value
+
+                    # seller comissions
+                    self.seller_comission_init += seller_key.get(ticket.cotations_count, seller_comission.sixth_more) * ticket.bet_value / 100
+                    
+    
+                # calculating out value
+                if ticket.status in [2,4]:
+                    self.out_value_init += ticket.reward.value
+                
+                self.total_out_init = self.out_value_init + self.seller_comission_init
+
+                # calculating won bonus
+                if manager.my_store.my_configuration.bonus_won_ticket:
+                    self.won_bonus_init += ticket.won_bonus()
+            
+            #print(self.manager_comission_init)
+
 
     def get_entry(self, obj):
-        tickets = self.get_ticket(obj)
-        value = 0
-        for ticket in tickets:
-            if not ticket.closed_in_for_manager:
-                value += ticket.bet_value
-        return value
-
-    def get_ticket(self, obj):
-        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=obj.pk) & 
-        (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False))
-
-        if self.context.get('request'):
-            get = self.context['request'].GET
-            post = self.context['request'].POST
-            start_creation_date = None
-            end_creation_date = None
-
-            if get:
-                start_creation_date = get.get('start_creation_date')
-                end_creation_date = get.get('end_creation_date')
-            elif post:
-                data = json.loads(post.get('data'))
-                start_creation_date = data.get('start_creation_date')
-                end_creation_date = data.get('end_creation_date')
-
-            if start_creation_date:
-                start_creation_date = datetime.datetime.strptime(start_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
-                tickets = tickets.filter(creation_date__date__gte=start_creation_date)
-            if end_creation_date:
-                end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
-                tickets = tickets.filter(creation_date__date__lte=end_creation_date)
-
-        return tickets
+        return self.entry_value_init
 
     def get_comission(self, obj):
-        tickets = self.get_ticket(obj)
-        comission = None
-        value = 0
-        comission = obj.comissions
-        for ticket in tickets:
-            if not ticket.closed_in_for_manager:
-                key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}			
-                value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)
-        
-        if obj.comission_based_on_profit:
-            value = (self.get_entry(obj) - self.get_out(obj)  - self.get_comission_seller(obj)) * comission.profit_comission / 100
-
-        if value < 0:
-            return 0
-
-        return value
+        return self.manager_comission_init
 
     def get_out(self, obj):
-        tickets = self.get_ticket(obj)
-        value = 0
-        for ticket in tickets:
-            if ticket.status in [2,4]:
-                value += ticket.reward.value
-        return value
+        return self.out_value_init
     
     def get_won_bonus(self, obj):
-        if obj.my_store.my_configuration.bonus_won_ticket:
-            tickets = self.get_ticket(obj)
-            value = 0
-            for ticket in tickets:
-                value += ticket.won_bonus()
-            return value
-        return 0
+        return self.won_bonus_init
 
     def get_total_out(self, obj):
-        return self.get_out(obj) + self.get_comission_seller(obj)
+        return self.total_out_init
 
     def get_comission_seller(self, obj):
-        tickets = self.get_ticket(obj)
-        comission = None
-        value = 0
-        for ticket in tickets:
-            user_type = ticket.payment.who_paid.user_type
-            if user_type == 2:
-                if not ticket.closed_in_for_manager:
-                    comission = ticket.payment.who_paid.seller.comissions
-                    key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}
-                    value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)
-
-        return value
+        return self.seller_comission_init
+    
 
 
 class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):

@@ -15,7 +15,8 @@ from utils.models import Entry
 from utils import timezone as tzlocal
 from config import settings
 import json, datetime, decimal
-
+import time
+from utils.time import Timer
 
 class GeneralCashier(APIView):
 
@@ -27,7 +28,7 @@ class GeneralCashier(APIView):
             manager_comissions = 0
             seller_comissions = 0
             total_out = 0
-            user = request.user 
+            user = request.user
 
             if request.user.user_type == 2:
                 managers = Manager.objects.none()
@@ -39,7 +40,7 @@ class GeneralCashier(APIView):
 
             else:
                 managers = Manager.objects.filter(manager_assoc__payment__status=2, my_store=request.user.my_store).distinct()
-                sellers = Seller.objects.filter(payment__status=2, my_store=request.user.my_store).distinct()                
+                sellers = Seller.objects.filter(payment__status=2, my_store=request.user.my_store).distinct()
 
             for manager in ManagersCashierSerializer(managers, many=True, context={'request':self.request}).data:                        
                 manager_comissions += manager['comission']
@@ -53,8 +54,8 @@ class GeneralCashier(APIView):
                 seller_comissions += seller['comission']
                 total_out += seller['total_out']
 
-            profit = entries - total_out                                   
-                
+            profit = entries - total_out
+            
             data = {
                 'entries': entries,
                 'out': out,
