@@ -29,18 +29,26 @@ class CashierSerializer(serializers.HyperlinkedModelSerializer):
     creation_date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
     cotations_count = serializers.SerializerMethodField()
     initialization_field = serializers.SerializerMethodField()
+    closed_in_for_manager = serializers.SerializerMethodField()
 
     cotations_count_init = None
     user_type_init = None
     comissions_init = None
+    entry_init = 0
+    ticket_count = 0
+
+    def get_closed_in_for_manager(self, obj):
+        return obj.closed_in_for_manager
 
     def get_initialization_field(self, ticket):
+        self.cotations_count_init = None
         if not self.cotations_count_init:
             self.cotations_count_init = ticket.cotations.count()
-        if not self.user_type_init:
-            self.user_type_init = ticket.payment.who_paid.user_type
+
         if not self.comissions_init:
             self.comissions_init = ticket.payment.who_paid.seller.comissions
+        if not self.user_type_init:
+            self.user_type_init = ticket.payment.who_paid.user_type
 
     def get_cotations_count(self, obj):
         return self.cotations_count_init
@@ -52,7 +60,6 @@ class CashierSerializer(serializers.HyperlinkedModelSerializer):
         return obj.get_status_display()
 
     def get_comission(self, obj):
-
         if self.user_type_init == 2:
             key_value = {
                 1:self.comissions_init.simple,
@@ -63,9 +70,8 @@ class CashierSerializer(serializers.HyperlinkedModelSerializer):
                 6:self.comissions_init.sixth
             }
 
-            return round(Decimal(key_value.get(self.cotations_count_init, self.comissions_init.sixth_more) * obj.bet_value / 100), 2)
-
-        return round(Decimal(0), 2)
+            return Decimal(key_value.get(self.cotations_count_init, self.comissions_init.sixth_more) * obj.bet_value / 100)
+        return Decimal(0)
 
     def get_bet_type(self, obj):
 
@@ -91,7 +97,7 @@ class CashierSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Ticket
-        fields = ('id','initialization_field','ticket_id','creation_date','creator','reward','won_bonus','cotations_count','bet_type','manager','comission','payment','bet_value','status')
+        fields = ('id','initialization_field','closed_in_for_manager','ticket_id','creation_date','creator','reward','won_bonus','cotations_count','bet_type','manager','comission','payment','bet_value','status')
 
 
 class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
@@ -111,9 +117,15 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
 
 
     def get_initalization_field(self, seller):
+        self.seller_comission_init = 0
+        self.out_value_init = 0
+        self.entry_value_init = 0
+        self.total_out_init = 0
+        self.won_bonus_init = 0
+
         tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=seller.pk) &
-        (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False, status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False))\
-        .annotate(cotations_count=Count('cotations')).distinct()
+        (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False, status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False))
+        #.annotate(cotations_count=Count('cotations')).distinct()
 
         if self.context.get('request'):
             get = self.context['request'].GET
@@ -155,9 +167,8 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
                     self.entry_value_init += ticket.bet_value
 
                     # seller comissions
-                    self.seller_comission_init += seller_key.get(ticket.cotations_count, seller_comission.sixth_more) * ticket.bet_value / 100
+                    self.seller_comission_init += seller_key.get(ticket.cotations.count(), seller_comission.sixth_more) * ticket.bet_value / 100
                     
-    
                 # calculating out value
                 if ticket.status in [2,4]:
                     self.out_value_init += ticket.reward.value
@@ -202,6 +213,7 @@ class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
     won_bonus = serializers.SerializerMethodField()
     total_out = serializers.SerializerMethodField()
     profit = serializers.SerializerMethodField()
+    profit = serializers.SerializerMethodField()
 
     manager_comission_init = 0
     seller_comission_init = 0
@@ -210,15 +222,26 @@ class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
     total_out_init = 0
     won_bonus_init = 0
     profit_init = 0
+    ticket_count = 0
 
     def get_initalization_field(self, manager):
+        self.manager_comission_init = 0
+        self.seller_comission_init = 0
+        self.out_value_init = 0
+        self.entry_value_init = 0
+        self.total_out_init = 0
+        self.won_bonus_init = 0
+        self.profit_init = 0
+
         sellers = Seller.objects.filter(my_manager__pk=manager.pk, payment__status=2).distinct()
 
         for seller in sellers:
             tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__pk=seller.pk) &
             (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2])))\
-            .exclude(Q(status__in=[5,6]) | Q(available=False))\
-            .annotate(cotations_count=Count('cotations')).distinct()
+            .exclude(Q(status__in=[5,6]) | Q(available=False))
+
+            #self.ticket_count += tickets.count()
+            #print(self.ticket_count)
 
             if self.context.get('request'):
                 get = self.context['request'].GET
@@ -245,9 +268,9 @@ class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
             manager_comission = manager.comissions
 
             for ticket in tickets:
-                
                 #calculating manager comission
                 if not ticket.closed_in_for_manager:
+                #if True:
                     manager_key = {
                         1:manager_comission.simple,
                         2:manager_comission.double,
@@ -267,10 +290,10 @@ class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
                     }
 
                     # manager comissions
-                    self.manager_comission_init += manager_key.get(ticket.cotations_count, manager_comission.sixth_more) * ticket.bet_value / 100
+                    self.manager_comission_init += manager_key.get(ticket.cotations.count(), manager_comission.sixth_more) * ticket.bet_value / 100
 
                     # seller comissions
-                    self.seller_comission_init += seller_key.get(ticket.cotations_count, seller_comission.sixth_more) * ticket.bet_value / 100
+                    self.seller_comission_init += seller_key.get(ticket.cotations.count(), seller_comission.sixth_more) * ticket.bet_value / 100
  
                     # entry value
                     self.entry_value_init += ticket.bet_value
@@ -293,6 +316,8 @@ class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
             # zero comission if manager is based on profit and profit is less than zero
             if manager.comission_based_on_profit and self.profit_init < 0:
                 self.manager_comission_init = 0
+            
+            #print(seller, self.entry_value_init)
 
 
     def get_entry(self, obj):
@@ -342,7 +367,7 @@ class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
     def get_initalization_field(self, seller):
         tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=seller.pk) & 
         (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False))\
-        .annotate(cotations_count=Count('cotations')).distinct()
+        #.annotate(cotations_count=Count('cotations')).distinct()
 
         if self.context.get('request'):
             start_creation_date = self.context['request'].GET.get('start_creation_date')
@@ -381,10 +406,10 @@ class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
                 }
 
                 # manager comissions
-                self.manager_comission_init += manager_key.get(ticket.cotations_count, manager_comission.sixth_more) * ticket.bet_value / 100
+                self.manager_comission_init += manager_key.get(ticket.cotations.count(), manager_comission.sixth_more) * ticket.bet_value / 100
 
                 # seller comissions
-                self.seller_comission_init += seller_key.get(ticket.cotations_count, seller_comission.sixth_more) * ticket.bet_value / 100
+                self.seller_comission_init += seller_key.get(ticket.cotations.count(), seller_comission.sixth_more) * ticket.bet_value / 100
 
                 # entry value
                 self.entry_value_init += ticket.bet_value

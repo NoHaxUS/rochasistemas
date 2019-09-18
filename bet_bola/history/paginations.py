@@ -155,7 +155,7 @@ class ManagersCashierPagination(PageNumberPagination):
         users = []                   
         for user in data:
             users.append({"id":user["id"],"username":user["username"]})            
-            entry += float(user["entry"])                
+            entry += float(user["entry"])
             out += float(user["out"])            
             comissions_sum += float(user["comission"])
             won_bonus_sum += float(user["won_bonus"])
@@ -176,7 +176,7 @@ class ManagersCashierPagination(PageNumberPagination):
             'count': self.page.paginator.count,
             'total_pages': self.page.paginator.num_pages,            
             'entry': entry,
-            'out': out,            
+            'out': out,
             'won_bonus_sum': won_bonus_sum,
             'comissions_sum': comissions_sum,
             'seller_comissions_sum': seller_comissions_sum,
@@ -228,7 +228,7 @@ class SellerCashierPagination(PageNumberPagination):
             'results': data
         })
 
-    
+
 class ManagerCashierPagination(PageNumberPagination):
     page_size = 30
 
@@ -241,7 +241,10 @@ class ManagerCashierPagination(PageNumberPagination):
         incomes = {}
         outs = {}
         for ticket in data:
-            entry += float(ticket["bet_value"])                        
+            if not ticket['closed_in_for_manager']:
+                entry += float(ticket["bet_value"])
+            seller_comission_sum += float(ticket["comission"])
+            
             won_bonus_sum += float(ticket["won_bonus"])
             if ticket["manager"]:                
                 if not incomes.get(ticket["manager"]["username"], None):
@@ -258,7 +261,7 @@ class ManagerCashierPagination(PageNumberPagination):
             
             if ticket["status"] == 'Venceu, Ganhador Pago' or ticket["status"] == 'Venceu, Prestar Contas':
                 out += float(ticket["reward"]["value"])            
-            seller_comission_sum += float(ticket["comission"])
+            
 
         manager_comission_sum = 0
         for manager in incomes:
