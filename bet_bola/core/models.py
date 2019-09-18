@@ -81,7 +81,7 @@ class Game(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 
 class CotationModified(models.Model):
     cotation = models.ForeignKey('Cotation', related_name='my_modifiy', on_delete=models.CASCADE, verbose_name='Cota Original Modificada')

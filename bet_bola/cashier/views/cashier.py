@@ -206,17 +206,18 @@ class SellerCashierView(FiltersMixin, ModelViewSet):
 
     def get_queryset(self):        
         user = self.request.user
-        if user.user_type == 2:   
-            return Ticket.objects.filter(Q(payment__status=2, payment__who_paid=user, store=user.my_store) & 
+        if user.user_type == 2:
+            return Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=user.pk, store=user.my_store) & 
             (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False, status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False)).order_by('-creation_date')
         
         elif user.user_type == 3:
             return Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=user.pk, store=user.my_store) & 
             (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False, status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False)).order_by('-creation_date')
+        elif user.user_type == 4:
+            return Ticket.objects.filter(Q(payment__status=2, store=user.my_store) & 
+            (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False,status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False)).order_by('-creation_date')
 
-        return Ticket.objects.filter(Q(payment__status=2, store=user.my_store) & 
-        (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False,status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False)).order_by('-creation_date')
-
+        return Ticket.objects.none()
 
 class ManagerCashierView(FiltersMixin, ModelViewSet):
     queryset = Ticket.objects.all()

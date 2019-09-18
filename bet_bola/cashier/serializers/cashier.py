@@ -18,7 +18,6 @@ import json
 
 
 class CashierSerializer(serializers.HyperlinkedModelSerializer):
-
     payment = PaymentSerializerWithSeller()
     reward = RewardSerializer()
     creator = serializers.SlugRelatedField(read_only=True, slug_field='username')
@@ -29,14 +28,22 @@ class CashierSerializer(serializers.HyperlinkedModelSerializer):
     won_bonus = serializers.SerializerMethodField()
     creation_date = serializers.DateTimeField(format='%d/%m/%Y %H:%M')
     cotations_count = serializers.SerializerMethodField()
+    initialization_field = serializers.SerializerMethodField()
 
+    cotations_count_init = None
+    user_type_init = None
+    comissions_init = None
 
-    class Meta:
-        model = Ticket
-        fields = ('id','ticket_id','creation_date','creator','reward','won_bonus','cotations_count','bet_type','manager','comission','payment','bet_value','status')
+    def get_initialization_field(self, ticket):
+        if not self.cotations_count_init:
+            self.cotations_count_init = ticket.cotations.count()
+        if not self.user_type_init:
+            self.user_type_init = ticket.payment.who_paid.user_type
+        if not self.comissions_init:
+            self.comissions_init = ticket.payment.who_paid.seller.comissions
 
     def get_cotations_count(self, obj):
-        return obj.cotations.count()
+        return self.cotations_count_init
 
     def get_won_bonus(self, obj):
         return obj.won_bonus()
@@ -45,31 +52,50 @@ class CashierSerializer(serializers.HyperlinkedModelSerializer):
         return obj.get_status_display()
 
     def get_comission(self, obj):
-        user_type = obj.payment.who_paid.user_type
-        comission = None
 
-        if user_type == 2:
-            comission = obj.payment.who_paid.seller.comissions
-            key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}
+        if self.user_type_init == 2:
+            key_value = {
+                1:self.comissions_init.simple,
+                2:self.comissions_init.double,
+                3:self.comissions_init.triple,
+                4:self.comissions_init.fourth,
+                5:self.comissions_init.fifth,
+                6:self.comissions_init.sixth
+            }
 
-            return round(Decimal(key_value.get(obj.cotations.count(), comission.sixth_more) * obj.bet_value / 100),2)
+            return round(Decimal(key_value.get(self.cotations_count_init, self.comissions_init.sixth_more) * obj.bet_value / 100), 2)
 
-        return round(Decimal(0),2)
+        return round(Decimal(0), 2)
 
     def get_bet_type(self, obj):
-        key_value = {1:"simple",2:"double",3:"triple",4:"fourth",5:"fifth",6:"sixth"}
-        return str(key_value.get(obj.cotations.count(), "sixth_more"))
+
+        key_value = {
+            1:"simple",
+            2:"double",
+            3:"triple",
+            4:"fourth",
+            5:"fifth",
+            6:"sixth"
+        }
+        return str(key_value.get(self.cotations_count_init, "sixth_more"))
 
     def get_manager(self, obj):
-        user_type = obj.payment.who_paid.user_type
-        if user_type == 2:
+        if self.user_type_init == 2:
             manager = obj.payment.who_paid.seller.my_manager
             if manager:
-                return {"username":manager.username,"comission_based_on_profit":manager.comission_based_on_profit}
+                return {
+                    "username": manager.username,
+                    "comission_based_on_profit": manager.comission_based_on_profit
+                }
         return None
+
+    class Meta:
+        model = Ticket
+        fields = ('id','initialization_field','ticket_id','creation_date','creator','reward','won_bonus','cotations_count','bet_type','manager','comission','payment','bet_value','status')
 
 
 class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
+    initalization_field = serializers.SerializerMethodField()
     comission = serializers.SerializerMethodField()
     entry = serializers.SerializerMethodField()
     out = serializers.SerializerMethodField()
@@ -77,13 +103,17 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
     total_out = serializers.SerializerMethodField()
     profit = serializers.SerializerMethodField()
 
-    class Meta:
-        model = Seller
-        fields = ('id','username','comission','entry','won_bonus','out','total_out','profit')
+    seller_comission_init = 0
+    out_value_init = 0
+    entry_value_init = 0
+    total_out_init = 0
+    won_bonus_init = 0
 
-    def get_ticket(self, obj):
-        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=obj.pk) &
-        (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False, status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False))
+
+    def get_initalization_field(self, seller):
+        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=seller.pk) &
+        (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False, status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False))\
+        .annotate(cotations_count=Count('cotations')).distinct()
 
         if self.context.get('request'):
             get = self.context['request'].GET
@@ -105,58 +135,73 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
             if end_creation_date:
                 end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
                 tickets = tickets.filter(creation_date__date__lte=end_creation_date)
-        return tickets
+
+            seller_comission = seller.comissions
+
+            for ticket in tickets:
+                
+                #calculating manager comission
+                if not ticket.closed_in_for_seller:
+                    seller_key = {
+                        1:seller_comission.simple,
+                        2:seller_comission.double,
+                        3:seller_comission.triple,
+                        4:seller_comission.fourth,
+                        5:seller_comission.fifth,
+                        6:seller_comission.sixth
+                    }
+
+                    # entry value
+                    self.entry_value_init += ticket.bet_value
+
+                    # seller comissions
+                    self.seller_comission_init += seller_key.get(ticket.cotations_count, seller_comission.sixth_more) * ticket.bet_value / 100
+                    
+    
+                # calculating out value
+                if ticket.status in [2,4]:
+                    self.out_value_init += ticket.reward.value
+                
+                self.total_out_init = self.out_value_init + self.seller_comission_init
+
+                # calculating won bonus
+                if seller.my_store.my_configuration.bonus_won_ticket:
+                    self.won_bonus_init += ticket.won_bonus()
+
 
     def get_comission(self, obj):
-        tickets = self.get_ticket(obj)
-        comission = None
-        value = 0
-        for ticket in tickets:
-            if not ticket.closed_in_for_seller:
-                comission = obj.comissions
-                key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}
-                value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)
-        return value
+        return self.seller_comission_init
 
     def get_entry(self, obj):
-        tickets = self.get_ticket(obj)
-        value = 0
-        for ticket in tickets:
-            if not ticket.closed_in_for_seller:
-                value += ticket.bet_value
-        return value
+        return self.entry_value_init
 
     def get_out(self, obj):
-        tickets = self.get_ticket(obj)
-        value = 0
-        for ticket in tickets:
-            if ticket.status in [2,4]:
-                value += ticket.reward.value
-        return value
+        return self.out_value_init
 
     def get_won_bonus(self, obj):
-        if obj.my_store.my_configuration.bonus_won_ticket:
-            tickets = self.get_ticket(obj)
-            value = 0
-            for ticket in tickets:
-                value += ticket.won_bonus()
-            return value
-        return 0
+        return self.won_bonus_init
 
     def get_total_out(self, obj):
-        return self.get_out(obj) + self.get_comission(obj)
-
+        return self.total_out_init
+    
     def get_profit(self, obj):
         return self.get_entry(obj) - self.get_total_out(obj)
 
-from utils.time import Timer
+
+    class Meta:
+        model = Seller
+        fields = ('id','initalization_field','username','comission','entry','won_bonus','out','total_out','profit')
 
 
-class ManagersCashierSerializer(SellersCashierSerializer):
-    timer = Timer()
-
-    comission_seller = serializers.SerializerMethodField()
+class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
     initalization_field = serializers.SerializerMethodField()
+    comission_seller = serializers.SerializerMethodField()
+    comission = serializers.SerializerMethodField()
+    entry = serializers.SerializerMethodField()
+    out = serializers.SerializerMethodField()
+    won_bonus = serializers.SerializerMethodField()
+    total_out = serializers.SerializerMethodField()
+    profit = serializers.SerializerMethodField()
 
     manager_comission_init = 0
     seller_comission_init = 0
@@ -164,16 +209,10 @@ class ManagersCashierSerializer(SellersCashierSerializer):
     entry_value_init = 0
     total_out_init = 0
     won_bonus_init = 0
-    
-    class Meta:
-        model = Manager
-        fields = ('id','initalization_field', 'username','comission','comission_seller','entry','won_bonus','out','total_out','profit')
+    profit_init = 0
 
     def get_initalization_field(self, manager):
-        #self.timer.start()
-        
         sellers = Seller.objects.filter(my_manager__pk=manager.pk, payment__status=2).distinct()
-    
 
         for seller in sellers:
             tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__pk=seller.pk) &
@@ -205,11 +244,9 @@ class ManagersCashierSerializer(SellersCashierSerializer):
             seller_comission = seller.comissions
             manager_comission = manager.comissions
 
-            print(seller)
-
             for ticket in tickets:
+                
                 #calculating manager comission
-
                 if not ticket.closed_in_for_manager:
                     manager_key = {
                         1:manager_comission.simple,
@@ -219,10 +256,7 @@ class ManagersCashierSerializer(SellersCashierSerializer):
                         5:manager_comission.fifth,
                         6:manager_comission.sixth
                     }
-                    # manager comissions
-                    self.manager_comission_init += manager_key.get(ticket.cotations_count, manager_comission.sixth_more) * ticket.bet_value / 100
-                
-                if not ticket.closed_in_for_seller:
+
                     seller_key = {
                         1:seller_comission.simple,
                         2:seller_comission.double,
@@ -232,24 +266,33 @@ class ManagersCashierSerializer(SellersCashierSerializer):
                         6:seller_comission.sixth
                     }
 
-                    # entry value
-                    self.entry_value_init += ticket.bet_value
+                    # manager comissions
+                    self.manager_comission_init += manager_key.get(ticket.cotations_count, manager_comission.sixth_more) * ticket.bet_value / 100
 
                     # seller comissions
                     self.seller_comission_init += seller_key.get(ticket.cotations_count, seller_comission.sixth_more) * ticket.bet_value / 100
-                    
-    
+ 
+                    # entry value
+                    self.entry_value_init += ticket.bet_value
+
                 # calculating out value
                 if ticket.status in [2,4]:
                     self.out_value_init += ticket.reward.value
-                
-                self.total_out_init = self.out_value_init + self.seller_comission_init
+            
 
                 # calculating won bonus
                 if manager.my_store.my_configuration.bonus_won_ticket:
                     self.won_bonus_init += ticket.won_bonus()
+
+            # defining total out
+            self.total_out_init = self.out_value_init + self.seller_comission_init
+
+            # definig profit
+            self.profit_init = self.entry_value_init - self.total_out_init
             
-            #print(self.manager_comission_init)
+            # zero comission if manager is based on profit and profit is less than zero
+            if manager.comission_based_on_profit and self.profit_init < 0:
+                self.manager_comission_init = 0
 
 
     def get_entry(self, obj):
@@ -269,10 +312,17 @@ class ManagersCashierSerializer(SellersCashierSerializer):
 
     def get_comission_seller(self, obj):
         return self.seller_comission_init
+
+    def get_profit(self, obj):
+        return self.profit_init
     
+    class Meta:
+        model = Manager
+        fields = ('id','initalization_field', 'username','comission','comission_seller','entry','won_bonus','out','total_out','profit')
 
 
 class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
+    initalization_field = serializers.SerializerMethodField()
     comission = serializers.SerializerMethodField()
     comission_seller = serializers.SerializerMethodField()
     entry = serializers.SerializerMethodField()
@@ -281,13 +331,18 @@ class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
     won_bonus = serializers.SerializerMethodField()
     total_out = serializers.SerializerMethodField()
 
-    class Meta:
-        model = Seller
-        fields = ('id','username','comission','comission_seller','entry','won_bonus','out','total_out','profit')
+    manager_comission_init = 0
+    seller_comission_init = 0
+    out_value_init = 0
+    won_bonus_init = 0
+    total_out_init = 0
+    entry_value_init = 0
 
-    def get_ticket(self, obj):
-        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=obj.pk) & 
-        (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False))
+
+    def get_initalization_field(self, seller):
+        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=seller.pk) & 
+        (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False))\
+        .annotate(cotations_count=Count('cotations')).distinct()
 
         if self.context.get('request'):
             start_creation_date = self.context['request'].GET.get('start_creation_date')
@@ -299,68 +354,81 @@ class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
             if end_creation_date:
                 end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
                 tickets = tickets.filter(creation_date__date__lte=end_creation_date)
-        return tickets
+        
+        manager = self.context['request'].user.manager
+        manager_comission = manager.comissions
+        seller_comission = seller.comissions
+
+        for ticket in tickets:
+            #calculating manager comission
+            if not ticket.closed_in_for_manager:
+                manager_key = {
+                    1:manager_comission.simple,
+                    2:manager_comission.double,
+                    3:manager_comission.triple,
+                    4:manager_comission.fourth,
+                    5:manager_comission.fifth,
+                    6:manager_comission.sixth
+                }
+
+                seller_key = {
+                    1:seller_comission.simple,
+                    2:seller_comission.double,
+                    3:seller_comission.triple,
+                    4:seller_comission.fourth,
+                    5:seller_comission.fifth,
+                    6:seller_comission.sixth
+                }
+
+                # manager comissions
+                self.manager_comission_init += manager_key.get(ticket.cotations_count, manager_comission.sixth_more) * ticket.bet_value / 100
+
+                # seller comissions
+                self.seller_comission_init += seller_key.get(ticket.cotations_count, seller_comission.sixth_more) * ticket.bet_value / 100
+
+                # entry value
+                self.entry_value_init += ticket.bet_value
+
+            # calculating out value
+            if ticket.status in [2,4]:
+                self.out_value_init += ticket.reward.value
+
+            # calculating won bonus
+            if manager.my_store.my_configuration.bonus_won_ticket:
+                self.won_bonus_init += ticket.won_bonus()
+
+        # defining total out
+        self.total_out_init = self.out_value_init + self.seller_comission_init
+        
+        # definig profit
+        self.profit_init = self.entry_value_init - self.total_out_init
+
+        # zero comission if manager is based on profit and profit is less than zero
+        if manager.comission_based_on_profit and self.profit_init < 0:
+            self.manager_comission_init = 0
+
 
     def get_comission(self, obj):
-        tickets = self.get_ticket(obj)
-        comission = None
-        value = 0
-        manager = self.context['request'].user.manager
-        comission = manager.comissions
-        key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}
-        for ticket in tickets:
-            if manager.comission_based_on_profit:
-                value = 0
-            else:
-                if not ticket.closed_in_for_manager:
-                    value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)
-
-        if value < 0:
-            value = 0
-
-        return value
+        return self.manager_comission_init
 
     def get_comission_seller(self, obj):
-        tickets = self.get_ticket(obj)
-        comission = None
-        value = 0
-        for ticket in tickets:
-            user_type = ticket.payment.who_paid.user_type
-            if user_type == 2:
-                if not ticket.closed_in_for_manager:
-                    comission = ticket.payment.who_paid.seller.comissions
-                    key_value = {1:comission.simple,2:comission.double,3:comission.triple,4:comission.fourth,5:comission.fifth,6:comission.sixth}
-                    value += Decimal(key_value.get(ticket.cotations.count(), comission.sixth_more) * ticket.bet_value / 100)
-
-        return value
+        return self.seller_comission_init
 
     def get_entry(self, obj):
-        tickets = self.get_ticket(obj)
-        value = 0
-        for ticket in tickets:
-            if not ticket.closed_in_for_manager:
-                value += ticket.bet_value
-        return value
+        return self.entry_value_init
 
     def get_out(self, obj):
-        tickets = self.get_ticket(obj)
-        value = 0
-        for ticket in tickets:
-            if ticket.status in [2,4]:
-                value += ticket.reward.value
-        return value
+        return self.out_value_init
 
     def get_won_bonus(self, obj):
-        if obj.my_store.my_configuration.bonus_won_ticket:
-            tickets = self.get_ticket(obj)
-            value = 0
-            for ticket in tickets:
-                value += ticket.won_bonus()
-            return value
-        return 0
+        return self.won_bonus_init
 
     def get_total_out(self, obj):
-        return self.get_out(obj) + self.get_comission_seller(obj)
+        return self.total_out_init
 
     def get_profit(self, obj):
-        return self.get_entry(obj) - self.get_total_out(obj)
+        return self.profit_init
+
+    class Meta:
+        model = Seller
+        fields = ('id','initalization_field','username','comission','comission_seller','entry','won_bonus','out','total_out','profit')
