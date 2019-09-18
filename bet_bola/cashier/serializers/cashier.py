@@ -240,9 +240,6 @@ class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
             (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2])))\
             .exclude(Q(status__in=[5,6]) | Q(available=False))
 
-            #self.ticket_count += tickets.count()
-            #print(self.ticket_count)
-
             if self.context.get('request'):
                 get = self.context['request'].GET
                 post = self.context['request'].POST
