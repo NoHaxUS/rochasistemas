@@ -189,11 +189,7 @@ class ManagersCashierPagination(PageNumberPagination):
 class SellerCashierPagination(PageNumberPagination):
     page_size = 30
 
-    def get_paginated_response(self, data):        
-        entry = 0
-        out = 0
-        comissions_sum = 0
-        won_bonus_sum = 0
+    def get_paginated_response(self, data):                
         if self.request.user.user_type == 4:        
             sellers = [{'id':seller.pk,'username':seller.username} for seller in Seller.objects.filter(payment__status=2, my_store=self.request.user.my_store).distinct()]
         elif self.request.user.user_type == 3:            
@@ -201,17 +197,17 @@ class SellerCashierPagination(PageNumberPagination):
         else:
             sellers = [{'id':user.pk,'username':user.username} for user in Seller.objects.none()]
 
-        for ticket in data:
-            entry += Decimal(ticket["bet_value"])
-            if ticket["status"] == 'Venceu, Ganhador Pago' or ticket["status"] == 'Venceu, Prestar Contas':                
-                out += Decimal(ticket["reward"]["value"])                               
-                won_bonus_sum += ticket["won_bonus"]            
-            comissions_sum += ticket["comission"]
-        page = int(self.request.GET.get('page',1)) 
+        # for ticket in data:
+        #     entry += Decimal(ticket["bet_value"])
+        #     if ticket["status"] == 'Venceu, Ganhador Pago' or ticket["status"] == 'Venceu, Prestar Contas':                
+        #         out += Decimal(ticket["reward"]["value"])                               
+        #         won_bonus_sum += ticket["won_bonus"]            
+        #     comissions_sum += ticket["comission"]
+        # page = int(self.request.GET.get('page',1)) 
 
-        if page == 1:
-            data = data[0:self.page_size]
-        data = data[self.page_size * (page - 1) : (page * self.page_size)]
+        # if page == 1:
+        #     data = data[0:self.page_size]
+        # data = data[self.page_size * (page - 1) : (page * self.page_size)]
 
         return Response({
             'links': {
@@ -219,11 +215,7 @@ class SellerCashierPagination(PageNumberPagination):
                 'previous': self.get_previous_link()
             },
             'count': self.page.paginator.count,
-            'total_pages': self.page.paginator.num_pages,            
-            'entry': entry,
-            'out': out,
-            'won_bonus_sum': won_bonus_sum,
-            'comissions_sum': comissions_sum,
+            'total_pages': self.page.paginator.num_pages,                        
             'sellers': sellers,
             'results': data
         })
@@ -232,64 +224,8 @@ class SellerCashierPagination(PageNumberPagination):
 class ManagerCashierPagination(PageNumberPagination):
     page_size = 30
 
-    def get_paginated_response(self, data):        
-        entry = 0
-        out = 0
-        won_bonus_sum = 0
-        seller_comission_sum = 0
+    def get_paginated_response(self, data):                
         managers = [{"id":manager.pk,"username":manager.username} for manager in Manager.objects.filter(manager_assoc__payment__status=2, my_store=self.request.user.my_store).distinct()]                                   
-        incomes = {}
-        outs = {}
-        for ticket in data:
-            if not ticket['closed_in_for_manager']:
-                entry += float(ticket["bet_value"])
-            seller_comission_sum += float(ticket["comission"])
-            
-            won_bonus_sum += float(ticket["won_bonus"])
-            if ticket["manager"]:                
-                if not incomes.get(ticket["manager"]["username"], None):
-                    incomes[ticket["manager"]["username"]] = {}
-                    outs[ticket["manager"]["username"]] = {}
-
-                if not incomes[ticket["manager"]["username"]].get(ticket["bet_type"], None): 
-                    incomes[ticket["manager"]["username"]][ticket["bet_type"]] = 0
-                    outs[ticket["manager"]["username"]][ticket["bet_type"]] = 0
-                
-                incomes[ticket["manager"]["username"]][ticket["bet_type"]] += Decimal(ticket["bet_value"])
-                if ticket["status"] == 'Venceu, Ganhador Pago' or ticket["status"] == 'Venceu, Prestar Contas':
-                    outs[ticket["manager"]["username"]][ticket["bet_type"]] += Decimal(ticket["reward"]["value"])
-            
-            if ticket["status"] == 'Venceu, Ganhador Pago' or ticket["status"] == 'Venceu, Prestar Contas':
-                out += float(ticket["reward"]["value"])            
-            
-
-        manager_comission_sum = 0
-        for manager in incomes:
-            manager_obj = Manager.objects.get(username=manager)            
-            comissions = {"simple":manager_obj.comissions.simple,
-                            "double":manager_obj.comissions.double,
-                            "triple":manager_obj.comissions.triple,
-                            "fourth":manager_obj.comissions.fourth,
-                            "fifth":manager_obj.comissions.fifth,
-                            "sixth":manager_obj.comissions.sixth}
-
-            manager_comission = 0
-            for comission_type in incomes[manager]:                                
-                manager_comission += incomes[manager][comission_type] * comissions.get(comission_type, manager_obj.comissions.sixth_more) / 100
-            
-            if manager_obj.comission_based_on_profit:
-                manager_comission = Decimal(entry - out - seller_comission_sum) * manager_obj.comissions.profit_comission / 100
-
-            if manager_comission <= 0:
-                manager_comission = 0
-
-            manager_comission_sum += manager_comission
-            
-        page = int(self.request.GET.get('page',1)) 
-
-        if page == 1:
-            data = data[0:self.page_size]
-        data = data[self.page_size * (page - 1) : (page * self.page_size)]        
         
         return Response({
             'links': {
@@ -297,12 +233,7 @@ class ManagerCashierPagination(PageNumberPagination):
                 'previous': self.get_previous_link()
             },
             'count': self.page.paginator.count,
-            'total_pages': self.page.paginator.num_pages,            
-            'entry': entry,
-            'out': out,          
-            'manager_comission': manager_comission_sum,
-            'seller_comission': seller_comission_sum,
-            'won_bonus_sum': won_bonus_sum,
+            'total_pages': self.page.paginator.num_pages,                        
             'managers': managers,            
             'results': data
         })
