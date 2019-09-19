@@ -160,14 +160,18 @@ class TicketView(FiltersMixin, ModelViewSet):
                 reward=reward,
                 store=store
             )
-            
-        for cotation in serializer.validated_data['cotations']:	            
-            CotationCopy(
-                original_cotation=cotation,
-                ticket=instance,                         
-                price=cotation.get_store_price(store),
-                store=store
-            ).save() 
+        
+        allowed_cotations = []
+        
+        for cotation in serializer.validated_data['cotations']:
+            if cotation not in allowed_cotations:
+                CotationCopy(
+                    original_cotation=cotation,
+                    ticket=instance,                         
+                    price=cotation.get_store_price(store),
+                    store=store
+                ).save()
+                allowed_cotations.append(cotation)
 
         validation_message = None
 
