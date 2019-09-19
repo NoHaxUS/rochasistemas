@@ -7,7 +7,6 @@ class TicketAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
     autocomplete_fields = ('owner','creator')
     search_fields = ('ticket_id',)
     exclude = ['reward','payment','cotations',]
-    #fields = ('ticket_id','owner')
     change_links = ['reward', 'payment']
 
 @admin.register(Reward)

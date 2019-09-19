@@ -101,7 +101,7 @@ class GamesCompletedWithNoCalulatedFlag(admin.SimpleListFilter):
 
 @admin.register(Store)
 class StoreAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ('fantasy',)
 
 @admin.register(Cotation)
 class CotationAdmin(admin.ModelAdmin):
