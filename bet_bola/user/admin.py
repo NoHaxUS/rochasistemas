@@ -1,5 +1,5 @@
 from django.contrib import admin
-from user.models import Seller, Manager, Admin
+from user.models import Seller, Manager, Admin, TicketOwner, CustomUser
 
 
 @admin.register(Manager)
@@ -15,3 +15,12 @@ class AdminAdmin(admin.ModelAdmin):
 class SellerAdmin(admin.ModelAdmin):
     fields = ('username','first_name','password','user_type','my_store','cellphone', 'email','cpf','address','can_sell_unlimited','credit_limit','my_manager','can_cancel_ticket','limit_time_to_cancel','is_active')
     autocomplete_fields = ('my_manager',)
+
+@admin.register(TicketOwner)
+class TicketOwnerAdmin(admin.ModelAdmin):
+    search_fields = ('first_name',)
+
+@admin.register(CustomUser)
+class CustomUserAdmin(admin.ModelAdmin):
+    search_fields = ('username',)
+

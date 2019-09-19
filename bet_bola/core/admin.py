@@ -116,7 +116,10 @@ class GameAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if change and obj.score_half and obj.score_full:
             game = Game.objects.get(pk=obj.pk)
-            if game.score_half != obj.score_half or game.score_full != obj.score_full or game.status != obj.status:
+            if game.score_half != obj.score_half \
+            or game.score_full != obj.score_full \
+            or game.status != obj.status \
+            or not obj.results_calculated:
                 super().save_model(request, obj, form, change)
                 games = []
                 games.append(obj)
@@ -124,6 +127,7 @@ class GameAdmin(admin.ModelAdmin):
                 tickets = Ticket.objects.filter(cotations__game__pk=obj.pk).distinct()
                 process_tickets(tickets)
                 for ticket in tickets:
+                    #print("Updating reward for: " + str(ticket.ticket_id))
                     ticket.update_ticket_reward()
                 return
 

@@ -7,7 +7,7 @@ def process_tickets(tickets=None):
         tickets = Ticket.objects.filter(status=0)
 
     for ticket in tickets:
-        print("Processing Ticket: "+ str(ticket.ticket_id))
+        #print("Processing Ticket: "+ str(ticket.ticket_id))
         valid_cotations = ticket.cotations.filter(game__status__in=[0,1,2,3])
         if valid_cotations.filter(settlement=1):
             ticket.status = 1
