@@ -16,7 +16,6 @@ from utils import timezone as tzlocal
 from config import settings
 import json, datetime, decimal
 import time
-from utils.time import Timer
 
 class GeneralCashier(APIView):
 

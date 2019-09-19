@@ -235,16 +235,17 @@ def half_time_correct_score(scores, cotations):
         home = int(scores['1']['home'])
         away = int(scores['1']['away'])
 
-        correct_score_string = (str(home) + '-' + str(away)).strip()
+        home_correct_score_string = (str(home) + '-' + str(away)).strip()
+        away_correct_score_string = (str(away) + '-' + str(home)).strip()
 
         if cotations.count() > 0:
             cotations.update(settlement=1)
             if home > away:
-                cotations.filter(name__contains='Casa').filter(name__contains=correct_score_string).update(settlement=2)
+                cotations.filter(name__contains='Casa').filter(name__contains=home_correct_score_string).update(settlement=2)
             elif home < away:
-                cotations.filter(name__contains='Fora').filter(name__contains=correct_score_string).update(settlement=2)
+                cotations.filter(name__contains='Fora').filter(name__contains=away_correct_score_string).update(settlement=2)
             else:
-                cotations.filter(name__contains='Empate').filter(name__contains=correct_score_string).update(settlement=2)
+                cotations.filter(name__contains='Empate').filter(name__contains=home_correct_score_string).update(settlement=2)
 
 
 def process_1st_half_goals_odd_even(scores, cotations):
@@ -342,16 +343,17 @@ def correct_score(scores, cotations):
         home = int(scores['2']['home'])
         away = int(scores['2']['away'])
 
-        correct_score_string = (str(home) + '-' + str(away)).strip()
+        home_correct_score_string = (str(home) + '-' + str(away)).strip()
+        away_correct_score_string = (str(away) + '-' + str(home)).strip()
 
         if cotations.count() > 0:
             cotations.update(settlement=1)
             if home > away:
-                cotations.filter(name__contains='Casa').filter(name__contains=correct_score_string).update(settlement=2)
+                cotations.filter(name__contains='Casa').filter(name__contains=home_correct_score_string).update(settlement=2)
             elif home < away:
-                cotations.filter(name__contains='Fora').filter(name__contains=correct_score_string).update(settlement=2)
+                cotations.filter(name__contains='Fora').filter(name__contains=away_correct_score_string).update(settlement=2)
             else:
-                cotations.filter(name__contains='Empate').filter(name__contains=correct_score_string).update(settlement=2)
+                cotations.filter(name__contains='Empate').filter(name__contains=home_correct_score_string).update(settlement=2)
 
 
 
