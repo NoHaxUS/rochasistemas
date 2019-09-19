@@ -1,5 +1,5 @@
 from django.contrib import admin
-from core.models import Store, Game, Cotation, LeagueModified
+from core.models import Store, Game, Cotation, LeagueModified, Market
 from ticket.models  import Ticket
 from updater.process_tickets import process_tickets
 from updater.process_results_betsapi import process_games
@@ -107,6 +107,9 @@ class StoreAdmin(admin.ModelAdmin):
 class CotationAdmin(admin.ModelAdmin):
     search_fields = ['pk','name']
 
+@admin.register(Market)
+class MarketAdmin(admin.ModelAdmin):
+    search_fields = ['name',]
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
