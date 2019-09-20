@@ -196,18 +196,7 @@ class SellerCashierPagination(PageNumberPagination):
             sellers = [{'id':user.pk,'username':user.username} for user in self.request.user.manager.manager_assoc.filter(payment__status=2, my_store=self.request.user.my_store).distinct()]
         else:
             sellers = [{'id':user.pk,'username':user.username} for user in Seller.objects.none()]
-
-        # for ticket in data:
-        #     entry += Decimal(ticket["bet_value"])
-        #     if ticket["status"] == 'Venceu, Ganhador Pago' or ticket["status"] == 'Venceu, Prestar Contas':                
-        #         out += Decimal(ticket["reward"]["value"])                               
-        #         won_bonus_sum += ticket["won_bonus"]            
-        #     comissions_sum += ticket["comission"]
-        # page = int(self.request.GET.get('page',1)) 
-
-        # if page == 1:
-        #     data = data[0:self.page_size]
-        # data = data[self.page_size * (page - 1) : (page * self.page_size)]
+        
 
         return Response({
             'links': {

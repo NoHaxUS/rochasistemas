@@ -179,14 +179,7 @@ class SellerCashierView(FiltersMixin, ModelViewSet):
 
     filter_mappings = {        
         'paid_by': 'pk',        
-        # 'start_creation_date':'creation_date__date__gte',
-        # 'end_creation_date':'creation_date__date__lte',        
-    }    
-    
-    # filter_value_transformations = {
-    #     'start_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
-    #     'end_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),    
-    # }
+    }        
 
     def get_queryset(self):                
         seller = self.request.GET.get('paid_by')        
@@ -205,17 +198,9 @@ class ManagerCashierView(FiltersMixin, ModelViewSet):
     pagination_class = ManagerCashierPagination
 
     filter_mappings = {        
-        'manager': 'pk',        
-        # 'start_creation_date':'creation_date__date__gte',
-        # 'end_creation_date':'creation_date__date__lte',        
+        'manager': 'pk',                
     }    
-
-    # filter_value_transformations = {
-    #     'start_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
-    #     'end_creation_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
-    #     'start_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d'),
-    #     'end_payment_date': lambda val: datetime.datetime.strptime(val, '%d/%m/%Y').strftime('%Y-%m-%d')
-    # }
+    
     
 
     def get_queryset(self):        
