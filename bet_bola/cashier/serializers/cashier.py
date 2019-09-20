@@ -41,7 +41,7 @@ class ManagerCashierSerializer(serializers.HyperlinkedModelSerializer):
         
         if user.user_type == 3:            
             tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=user.pk, store=user.my_store) & 
-            (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False, status__in=[4,2]))).distinct().exclude(Q(status__in=[5,6]) | Q(available=False)).order_by('-creation_date')
+            (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).distinct().exclude(Q(status__in=[5,6]) | Q(available=False)).order_by('-creation_date')
 
             if self.context.get('request'):
                 get = self.context['request'].GET
@@ -74,7 +74,7 @@ class ManagerCashierSerializer(serializers.HyperlinkedModelSerializer):
                         5:manager_comission.fifth,
                         6:manager_comission.sixth
                     }
-
+            
             for ticket in tickets:                
                 self.tickets_init.append({
                     'ticket_id':ticket.ticket_id,
@@ -119,9 +119,10 @@ class ManagerCashierSerializer(serializers.HyperlinkedModelSerializer):
             if user.manager.comission_based_on_profit and self.profit_init < 0:
                 self.comission_init = 0
             elif user.manager.comission_based_on_profit:                
-                self.comission_init = self.profit_init * user.manager_comission.profit_comission / 100
+                self.comission_init = self.profit_init * user.manager.comissions.profit_comission / 100
 
             self.profit_init -= self.comission_init
+            
     def get_entry(self, user):
         return self.entry_value_init
 
@@ -214,7 +215,7 @@ class SellerCashierSerializer(serializers.HyperlinkedModelSerializer):
 
                     # seller comissions
                     comission_temp = seller_key.get(ticket.cotations.count(), seller_comission.sixth_more) * ticket.bet_value / 100
-                    self.comission_init = comission_temp
+                    self.comission_init += comission_temp
 
                 if ticket.status in [2,4]:
                     self.out_value_init += ticket.reward.value                
@@ -478,7 +479,7 @@ class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
 
             seller_comission = seller.comissions
             manager_comission = manager.comissions
-
+            
             for ticket in tickets:
                 #calculating manager comission
                 if not ticket.closed_in_for_manager:
@@ -529,12 +530,12 @@ class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
             if manager.comission_based_on_profit and self.profit_init < 0:
                 self.manager_comission_init = 0
             
-            self.entry_value_end += self.entry_value_init
-            self.won_bonus_end += self.won_bonus_init
-            self.out_value_end += self.out_value_init
-            self.total_out_end += self.total_out_init
-            self.comission_end += self.manager_comission_init
-            self.seller_comission_end += self.seller_comission_init
+        self.entry_value_end += self.entry_value_init
+        self.won_bonus_end += self.won_bonus_init
+        self.out_value_end += self.out_value_init
+        self.total_out_end += self.total_out_init
+        self.comission_end += self.manager_comission_init
+        self.seller_comission_end += self.seller_comission_init
 
 
     def get_entry(self, obj):
