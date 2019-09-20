@@ -104,26 +104,22 @@ class CreditTransactionsPagination(PageNumberPagination):
 class SellersCashierPagination(PageNumberPagination):
     page_size = 30
 
-    def get_paginated_response(self, data):        
-        entry = 0
-        out = 0
-        comissions_sum = 0
-        won_bonus_sum = 0
-        total_out = 0
-        users = []                   
-        for user in data:
-            users.append({"id":user["id"],"username":user["username"]})            
-            entry += float(user["entry"])                
-            out += float(user["out"])
-            won_bonus_sum += float(user["won_bonus"])
-            comissions_sum += float(user["comission"])
-            total_out += float(user["total_out"])
+    def get_paginated_response(self, data):                
+        if self.request.user.user_type == 4:        
+            sellers = [{'id':seller.pk,'username':seller.username} for seller in Seller.objects.filter(payment__status=2, my_store=self.request.user.my_store).distinct()]
+        elif self.request.user.user_type == 3:            
+            sellers = [{'id':user.pk,'username':user.username} for user in self.request.user.manager.manager_assoc.filter(payment__status=2, my_store=self.request.user.my_store).distinct()]
+        else:
+            sellers = [{'id':user.pk,'username':user.username} for user in Seller.objects.none()]        
 
-        page = int(self.request.GET.get('page',1)) 
-
-        if page == 1:
-            data = data[0:self.page_size]
-        data = data[self.page_size * (page - 1) : (page * self.page_size)]
+        data = data.pop()
+        entry = float(data["entry"])                
+        out = float(data["out"])
+        won_bonus = float(data["won_bonus"])
+        comissions_sum = float(data["comission"])
+        total_out = float(data["total_out"])
+        profit = float(data["profit"])
+        
 
         return Response({
             'links': {
@@ -132,13 +128,14 @@ class SellersCashierPagination(PageNumberPagination):
             },
             'count': self.page.paginator.count,
             'total_pages': self.page.paginator.num_pages,            
+            'sellers':sellers,
             'entry': entry,
             'out': out,
-            'won_bonus_sum': won_bonus_sum,
+            'won_bonus': won_bonus,
             'comissions_sum': comissions_sum,
             'total_out': total_out,
-            'users': users,
-            'results': data
+            'profit': profit,
+            'results': data['data']
         })
 
 
@@ -146,27 +143,16 @@ class ManagersCashierPagination(PageNumberPagination):
     page_size = 30
 
     def get_paginated_response(self, data):        
-        entry = 0
-        out = 0
-        comissions_sum = 0
-        seller_comissions_sum = 0
-        won_bonus_sum = 0
-        total_out = 0
-        users = []                   
-        for user in data:
-            users.append({"id":user["id"],"username":user["username"]})            
-            entry += float(user["entry"])
-            out += float(user["out"])            
-            comissions_sum += float(user["comission"])
-            won_bonus_sum += float(user["won_bonus"])
-            seller_comissions_sum += float(user["comission_seller"])
-            total_out += float(user["total_out"]) + float(user["comission"])
-        
-        page = int(self.request.GET.get('page',1)) 
-
-        if page == 1:
-            data = data[0:self.page_size]
-        data = data[self.page_size * (page - 1) : (page * self.page_size)]
+        managers = [{"id":manager.pk,"username":manager.username} for manager in Manager.objects.filter(manager_assoc__payment__status=2, my_store=self.request.user.my_store).distinct()]
+        data = data.pop()
+        entry = float(data["entry"])                
+        out = float(data["out"])
+        won_bonus = float(data["won_bonus"])
+        comissions_sum = float(data["comission"])
+        seller_comissions_sum = float(data["seller_comission"])
+        total_out = float(data["total_out"])
+        profit = float(data["profit"])
+                
 
         return Response({
             'links': {
@@ -177,12 +163,13 @@ class ManagersCashierPagination(PageNumberPagination):
             'total_pages': self.page.paginator.num_pages,            
             'entry': entry,
             'out': out,
-            'won_bonus_sum': won_bonus_sum,
+            'won_bonus': won_bonus,
             'comissions_sum': comissions_sum,
             'seller_comissions_sum': seller_comissions_sum,
             'total_out': total_out,
-            'users': users,
-            'results': data
+            'managers': managers,
+            'profit':profit,
+            'results': data['data']
         })
 
 

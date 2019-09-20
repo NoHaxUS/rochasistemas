@@ -265,6 +265,22 @@ class SellerCashierSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id','initialization_field','entry','out','total_out','won_bonus','comission','profit','tickets')        
 
 
+class SellerCashierListSerializer(serializers.ListSerializer):
+    def to_representation(self, data):
+        data = super().to_representation(data)
+        cashier_results = {
+            'entry':self.child.entry_value_end,
+            'out':self.child.out_value_end,
+            'won_bonus':self.child.won_bonus_end,
+            'comission':self.child.comission_end,
+            'total_out':self.child.total_out_end,
+            'profit': self.child.entry_value_end - self.child.total_out_end,
+            'data':data
+        }
+        
+        return [cashier_results]
+
+
 class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
     initalization_field = serializers.SerializerMethodField()
     comission = serializers.SerializerMethodField()
@@ -280,6 +296,11 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
     total_out_init = 0
     won_bonus_init = 0
 
+    comission_end = 0
+    out_value_end = 0
+    entry_value_end = 0
+    total_out_end = 0
+    won_bonus_end = 0    
 
     def get_initalization_field(self, seller):
         self.seller_comission_init = 0
@@ -343,7 +364,12 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
                 # calculating won bonus
                 if seller.my_store.my_configuration.bonus_won_ticket:
                     self.won_bonus_init += ticket.won_bonus()
-
+            
+            self.entry_value_end += self.entry_value_init
+            self.won_bonus_end += self.won_bonus_init
+            self.out_value_end += self.out_value_init
+            self.total_out_end += self.total_out_init
+            self.comission_end += self.seller_comission_init            
 
     def get_comission(self, obj):
         return self.seller_comission_init
@@ -366,7 +392,24 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Seller
+        list_serializer_class = SellerCashierListSerializer
         fields = ('id','initalization_field','username','comission','entry','won_bonus','out','total_out','profit')
+
+
+class ManagerCashierListSerializer(serializers.ListSerializer):
+    def to_representation(self, data):
+        data = super().to_representation(data)
+        cashier_results = {
+            'entry':self.child.entry_value_end,
+            'out':self.child.out_value_end,
+            'won_bonus':self.child.won_bonus_end,
+            'comission':self.child.comission_end,
+            'seller_comission':self.child.seller_comission_end,
+            'total_out':self.child.total_out_end,
+            'profit': self.child.entry_value_end - self.child.total_out_end,
+            'data':data
+        }        
+        return [cashier_results]
 
 
 class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
@@ -388,6 +431,13 @@ class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
     won_bonus_init = 0
     profit_init = 0
     ticket_count = 0
+
+    comission_end = 0
+    seller_comission_end = 0
+    out_value_end = 0
+    entry_value_end = 0
+    total_out_end = 0
+    won_bonus_end = 0    
 
     def get_initalization_field(self, manager):
         self.manager_comission_init = 0
@@ -479,7 +529,12 @@ class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
             if manager.comission_based_on_profit and self.profit_init < 0:
                 self.manager_comission_init = 0
             
-            #print(seller, self.entry_value_init)
+            self.entry_value_end += self.entry_value_init
+            self.won_bonus_end += self.won_bonus_init
+            self.out_value_end += self.out_value_init
+            self.total_out_end += self.total_out_init
+            self.comission_end += self.manager_comission_init
+            self.seller_comission_end += self.seller_comission_init
 
 
     def get_entry(self, obj):
@@ -505,6 +560,7 @@ class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Manager
+        list_serializer_class = ManagerCashierListSerializer
         fields = ('id','initalization_field', 'username','comission','comission_seller','entry','won_bonus','out','total_out','profit')
 
 
