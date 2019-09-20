@@ -6,8 +6,8 @@ from rest_framework import status
 from filters.mixins import FiltersMixin
 from ticket.models import Ticket
 from cashier.serializers.cashier import (
-    CashierSerializer, SellersCashierSerializer, 
-    ManagersCashierSerializer, ManagerSpecificCashierSerializer
+    SellerCashierSerializer, SellersCashierSerializer, 
+    ManagerCashierSerializer, ManagersCashierSerializer, ManagerSpecificCashierSerializer
 )
 from history.paginations import (
     SellerCashierPagination, ManagerCashierPagination, 
@@ -173,7 +173,7 @@ class ManagersCashierView(FiltersMixin, ModelViewSet):
 
 class SellerCashierView(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.all()
-    serializer_class = CashierSerializer  
+    serializer_class = SellerCashierSerializer  
     permission_classes = [SellerCashierPermission]  
     pagination_class = SellerCashierPagination
 
@@ -193,7 +193,7 @@ class SellerCashierView(FiltersMixin, ModelViewSet):
 
 class ManagerCashierView(FiltersMixin, ModelViewSet):
     queryset = CustomUser.objects.all()
-    serializer_class = CashierSerializer
+    serializer_class = ManagerCashierSerializer
     permission_classes = [ManagerCashierPermission]
     pagination_class = ManagerCashierPagination
 

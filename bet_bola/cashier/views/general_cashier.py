@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from filters.mixins import FiltersMixin
 from ticket.models import Ticket, Reward, Payment
-from cashier.serializers.cashier import CashierSerializer, SellersCashierSerializer, ManagersCashierSerializer
+from cashier.serializers.cashier import SellersCashierSerializer, ManagersCashierSerializer
 from history.paginations import SellerCashierPagination, ManagerCashierPagination, SellersCashierPagination, ManagersCashierPagination
 from ticket.paginations import TicketPagination
 from ticket.serializers.ticket import TicketSerializer, CreateTicketSerializer
