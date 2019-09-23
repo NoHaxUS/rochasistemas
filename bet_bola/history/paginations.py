@@ -1,9 +1,14 @@
+from django.core.paginator import Paginator
+from django.utils.functional import cached_property
+from django.db.models import Q, Count
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from django.db.models import Count
 from user.models import CustomUser, Seller, Manager
 from ticket.models import Ticket,Payment
 from decimal import Decimal
+from math import ceil
+
 
 class TicketCancelationPagination(PageNumberPagination):
     page_size = 10
@@ -172,8 +177,22 @@ class ManagersCashierPagination(PageNumberPagination):
             'results': data['data']
         })
 
+class SellerCashierPaginator(Paginator):  
+    
+    @cached_property
+    def count(self):
+        """Return the total number of objects, across all pages."""
+        count = 0
+        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=self.object_list.first().pk) &
+        (Q(closed_in_for_seller=False) | Q(closed_out_for_seller=False, status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False))
+        
+        if tickets:  
+            count = tickets.count()
+        return count    
+
 
 class SellerCashierPagination(PageNumberPagination):
+    django_paginator_class = SellerCashierPaginator
     page_size = 30
 
     def get_paginated_response(self, data):                
@@ -184,6 +203,15 @@ class SellerCashierPagination(PageNumberPagination):
         else:
             sellers = [{'id':user.pk,'username':user.username} for user in Seller.objects.none()]
         
+        tickets = data[0]['tickets']
+        
+        page = int(self.request.GET.get('page',1)) 
+
+        if page == 1:
+            tickets = tickets[0:self.page_size]
+        tickets = tickets[self.page_size * (page - 1) : (page * self.page_size)]
+        
+        data[0]['tickets'] = tickets
 
         return Response({
             'links': {
@@ -197,12 +225,37 @@ class SellerCashierPagination(PageNumberPagination):
         })
 
 
+class ManagerCashierPaginator(Paginator):  
+    
+    @cached_property
+    def count(self):
+        """Return the total number of objects, across all pages."""
+        count = 0
+        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=self.object_list.first().pk) &
+            (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2])))\
+            .exclude(Q(status__in=[5,6]) | Q(available=False))
+        
+        if tickets:  
+            count = tickets.count()
+        return count    
+
 class ManagerCashierPagination(PageNumberPagination):
+    django_paginator_class = ManagerCashierPaginator
     page_size = 30
 
     def get_paginated_response(self, data):                
         managers = [{"id":manager.pk,"username":manager.username} for manager in Manager.objects.filter(manager_assoc__payment__status=2, my_store=self.request.user.my_store).distinct()]                                   
         
+        tickets = data[0]['tickets']
+        
+        page = int(self.request.GET.get('page',1)) 
+
+        if page == 1:
+            tickets = tickets[0:self.page_size]
+        tickets = tickets[self.page_size * (page - 1) : (page * self.page_size)]
+        
+        data[0]['tickets'] = tickets
+
         return Response({
             'links': {
                 'next': self.get_next_link(),

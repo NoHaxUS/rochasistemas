@@ -181,6 +181,17 @@ class SellerCashierView(FiltersMixin, ModelViewSet):
         'paid_by': 'pk',        
     }        
 
+    def list(self, request, pk=None):        
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+        
+        if page is not None:
+            serializer = self.get_serializer(queryset, many=True)            
+            return self.get_paginated_response(serializer.data)                        
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     def get_queryset(self):                
         seller = self.request.GET.get('paid_by')        
         if seller:
@@ -200,8 +211,17 @@ class ManagerCashierView(FiltersMixin, ModelViewSet):
     filter_mappings = {        
         'manager': 'pk',                
     }    
-    
-    
+        
+    def list(self, request, pk=None):        
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+        
+        if page is not None:
+            serializer = self.get_serializer(queryset, many=True)            
+            return self.get_paginated_response(serializer.data)                        
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def get_queryset(self):        
         manager = self.request.GET.get('manager')        
