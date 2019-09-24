@@ -121,7 +121,7 @@ class ManagerCashierSerializer(serializers.HyperlinkedModelSerializer):
             elif user.manager.comission_based_on_profit:                
                 self.comission_init = self.profit_init * user.manager.comissions.profit_comission / 100
 
-            self.profit_init -= self.comission_init
+            #self.profit_init -= self.comission_init
             
     def get_entry(self, user):
         return self.entry_value_init
@@ -406,8 +406,8 @@ class ManagerCashierListSerializer(serializers.ListSerializer):
             'won_bonus':self.child.won_bonus_end,
             'comission':self.child.comission_end,
             'seller_comission':self.child.seller_comission_end,
-            'total_out':self.child.total_out_end,
-            'profit': self.child.entry_value_end - self.child.total_out_end,
+            'total_out':self.child.total_out_end + self.child.comission_end,
+            'profit': self.child.entry_value_end - self.child.total_out_end - self.child.comission_end,
             'data':data
         }        
         return [cashier_results]
@@ -529,6 +529,8 @@ class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
             # zero comission if manager is based on profit and profit is less than zero
             if manager.comission_based_on_profit and self.profit_init < 0:
                 self.manager_comission_init = 0
+
+            #self.profit_init -= self.manager_comission_init
             
         self.entry_value_end += self.entry_value_init
         self.won_bonus_end += self.won_bonus_init
@@ -607,6 +609,13 @@ class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
 
 
     def get_initalization_field(self, seller):
+        self.manager_comission_init = 0
+        self.seller_comission_init = 0
+        self.out_value_init = 0
+        self.won_bonus_init = 0
+        self.total_out_init = 0
+        self.entry_value_init = 0
+
         tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__pk=seller.pk) & 
         (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).exclude(Q(status__in=[5,6]) | Q(available=False))\
         #.annotate(cotations_count=Count('cotations')).distinct()

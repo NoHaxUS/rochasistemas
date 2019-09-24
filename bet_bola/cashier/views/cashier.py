@@ -78,13 +78,13 @@ class SellersCashierView(FiltersMixin, ModelViewSet):
                     if end_creation_date:
                         end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
                         tickets = tickets.filter(creation_date__date__lte=end_creation_date)                                       
-                    
+
                     revenue_history_seller.save()        
                     revenue_history_seller.tickets_registered.set(tickets)    
 
                     if not seller.my_manager:
                         tickets.filter(status__in=[4,2]).update(closed_out_for_seller=True, closed_out_for_manager=True)
-                        tickets.update(closed_in_for_seller=True,closed_in_for_manager=True)
+                        tickets.update(closed_in_for_seller=True, closed_in_for_manager=True)
                     else:
                         tickets.filter(status__in=[4,2]).update(closed_out_for_seller=True)
                         tickets.update(closed_in_for_seller=True)

@@ -289,7 +289,7 @@ class ManagerSpecificCashierPagination(PageNumberPagination):
         profit = float(user["profit"])
 
         if self.request.user.manager.comission_based_on_profit:
-            comissions_sum = profit * self.request.user.manager.comissions.profit_comission / 100
+            comissions_sum = Decimal(str(profit)) * self.request.user.manager.comissions.profit_comission / 100
         
         if comissions_sum < 0:
             comissions_sum = 0

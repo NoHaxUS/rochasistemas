@@ -47,6 +47,7 @@ class SellerView(FiltersMixin, ModelViewSet):
         self.perform_create(serializer)  
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
 
     @action(methods=['get'], detail=True, permission_classes=[AlterSellerPermission])
     def toggle_is_active(self, request, pk=None):
