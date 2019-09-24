@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from filters.mixins import FiltersMixin
 from ticket.models import Ticket, Reward, Payment
-from cashier.serializers.cashier import CashierSerializer, SellersCashierSerializer, ManagersCashierSerializer
+from cashier.serializers.cashier import SellersCashierSerializer, ManagersCashierSerializer
 from history.paginations import SellerCashierPagination, ManagerCashierPagination, SellersCashierPagination, ManagersCashierPagination
 from ticket.paginations import TicketPagination
 from ticket.serializers.ticket import TicketSerializer, CreateTicketSerializer
@@ -41,12 +41,12 @@ class GeneralCashier(APIView):
                 managers = Manager.objects.filter(manager_assoc__payment__status=2, my_store=request.user.my_store).distinct()
                 sellers = Seller.objects.filter(payment__status=2, my_store=request.user.my_store).distinct()
 
-            for manager in ManagersCashierSerializer(managers, many=True, context={'request':self.request}).data:                        
+            for manager in ManagersCashierSerializer(managers, many=True, context={'request':self.request}).data.pop()['data']:                        
                 manager_comissions += manager['comission']
                 if request.user.user_type == 4:            
                     total_out += manager['comission']
 
-            for seller in SellersCashierSerializer(sellers, many=True, context={'request':self.request}).data:            
+            for seller in SellersCashierSerializer(sellers, many=True, context={'request':self.request}).data.pop()['data']:
                 entries += seller['entry']
                 out += seller['out'] 
                 won_bonus += seller['won_bonus']
