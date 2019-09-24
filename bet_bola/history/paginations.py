@@ -177,8 +177,8 @@ class ManagersCashierPagination(PageNumberPagination):
             'results': data['data']
         })
 
-class SellerCashierPaginator(Paginator):  
-    
+
+class SellerCashierPaginator(Paginator):
     @cached_property
     def count(self):
         """Return the total number of objects, across all pages."""
@@ -225,8 +225,7 @@ class SellerCashierPagination(PageNumberPagination):
         })
 
 
-class ManagerCashierPaginator(Paginator):  
-    
+class ManagerCashierPaginator(Paginator):
     @cached_property
     def count(self):
         """Return the total number of objects, across all pages."""
@@ -238,6 +237,7 @@ class ManagerCashierPaginator(Paginator):
         if tickets:  
             count = tickets.count()
         return count    
+
 
 class ManagerCashierPagination(PageNumberPagination):
     django_paginator_class = ManagerCashierPaginator
