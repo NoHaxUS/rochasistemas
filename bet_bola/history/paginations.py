@@ -279,17 +279,17 @@ class ManagerSpecificCashierPagination(PageNumberPagination):
         total_out = 0
         seller_comissions_sum = 0
         users = []                   
-        for user in data:
-            users.append({"id":user["id"],"username":user["username"]})            
-            entry += float(user["entry"])                
-            out += float(user["out"])
-            won_bonus_sum += float(user["won_bonus"])
-            comissions_sum += float(user["comission"])
-            seller_comissions_sum += float(user["comission_seller"])            
-            total_out += float(user["total_out"])
-        
+        user = data[0]
+        entry = float(user["entry"])                
+        out = float(user["out"])
+        won_bonus_sum = float(user["won_bonus"])
+        comissions_sum = float(user["comission"])
+        seller_comissions_sum = float(user["seller_comission"])
+        total_out = float(user["total_out"])
+        profit = float(user["profit"])
+
         if self.request.user.manager.comission_based_on_profit:
-            comissions_sum = Decimal(entry - total_out) * self.request.user.manager.comissions.profit_comission / 100
+            comissions_sum = profit * self.request.user.manager.comissions.profit_comission / 100
         
         if comissions_sum < 0:
             comissions_sum = 0
@@ -314,6 +314,6 @@ class ManagerSpecificCashierPagination(PageNumberPagination):
             'total_out': total_out,
             'users': users,
             'is_comission_based_on_profit':self.request.user.manager.comission_based_on_profit,
-            'results': data
+            'results': user['data']
         })
         
