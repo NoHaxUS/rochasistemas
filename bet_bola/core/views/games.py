@@ -279,18 +279,13 @@ class TodayGamesAdmin(FiltersMixin, ModelViewSet):
 
 
     def get_queryset(self):
-        store = self.request.user.my_store
-    
-        id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(available=False, store=store)]             
-        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store)]
+        #store = self.request.user.my_store
+        #id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(available=False, store=store)]             
+        #id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in ExcludedLeague.objects.filter(store=store)]
 
         queryset = Game.objects.filter(start_date__gt=tzlocal.now(),
             start_date__lt=(tzlocal.now().date() + timezone.timedelta(days=1)),
             status__in=[0])\
-            .exclude(Q(league__available=False) | 
-                Q(league__location__available=False) | 
-                Q(id__in=id_list_excluded_games) | 
-                Q(league__id__in=id_list_excluded_leagues) )\
             .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
             .filter(cotations_count__gte=3)
         return queryset
@@ -345,21 +340,14 @@ class GamesTomorrowAdmin(FiltersMixin, ModelViewSet):
 
     def get_queryset(self):
         #my_cotation_qs = Cotation.objects.filter(market__name="1X2")
-
-        store = self.request.user.my_store
-
-        id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(available=False, store=store)]             
-        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in LeagueModified.objects.filter(available=False, store=store)]
+        #store = self.request.user.my_store
+        #id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(available=False, store=store)]             
+        #id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in LeagueModified.objects.filter(available=False, store=store)]
 
         queryset = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=1),
             status__in=[0])\
-            .exclude(Q(league__available=False) | 
-                Q(league__location__available=False) | 
-                Q(id__in=id_list_excluded_games) | 
-                Q(league__id__in=id_list_excluded_leagues) )\
             .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
             .filter(cotations_count__gte=3)
-
         return queryset
 
 
@@ -382,18 +370,14 @@ class GamesAfterTomorrowAdmin(FiltersMixin, ModelViewSet):
     def get_queryset(self):
         #my_cotation_qs = Cotation.objects.filter(market__name="1X2")
 
-        store = self.request.user.my_store
+        #store = self.request.user.my_store
 
-        id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(available=False, store=store)]             
-        id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in LeagueModified.objects.filter(available=False, store=store)]
+        #id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(available=False, store=store)]             
+        #id_list_excluded_leagues = [excluded_leagues.league.id for excluded_leagues in LeagueModified.objects.filter(available=False, store=store)]
 
         queryset = Game.objects.filter(start_date__date=tzlocal.now().date() + timezone.timedelta(days=2),
             status__in=[0])\
-            .exclude(Q(league__available=False) | 
-                Q(league__location__available=False) | 
-                Q(id__in=id_list_excluded_games) | 
-                Q(league__id__in=id_list_excluded_leagues) )\
             .annotate(cotations_count=Count('cotations', filter=Q(cotations__market__name='1X2')))\
             .filter(cotations_count__gte=3)
-            
         return queryset
+
