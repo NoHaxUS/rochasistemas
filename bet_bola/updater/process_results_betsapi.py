@@ -27,7 +27,7 @@ def process_results():
 def get_games(games):
     games_ids_string = ','.join(games)
 
-    request = requests.get('https://api.betsapi.com/v1/bet365/result?token=20445-s1B9Vv6E9VSLU1&event_id=' + games_ids_string)
+    request = requests.get('https://api.betsapi.com/v1/bet365/result?token=20445-uvgyZPqhCDu9Vl&event_id=' + games_ids_string)
     if request.status_code == 200:
         data_games = request.json()
         if data_games['success'] == 1:
