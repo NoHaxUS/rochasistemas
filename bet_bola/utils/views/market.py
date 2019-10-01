@@ -27,7 +27,7 @@ class MarketModifiedView(ModelViewSet):
             market['store'] = self.request.user.my_store.pk
             market['reduction_percentual'] = data['reduction_percentual']
             market['market'] = name						
-            
+
             if data.get('available', None) is not None:				
                 market['available'] = data['available']
             if data.get('modification_available', None) is not None:				

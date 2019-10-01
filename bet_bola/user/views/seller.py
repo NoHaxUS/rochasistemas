@@ -36,8 +36,8 @@ class SellerView(FiltersMixin, ModelViewSet):
     def get_queryset(self):        
         user = self.request.user
         if user.user_type == 3:            
-            return Seller.objects.filter(my_manager=user.pk, my_store=user.my_store).exclude(is_active=False, username__icontains="removido")
-        return Seller.objects.filter(my_store=user.my_store).exclude(is_active=False, username__icontains="removido")
+            return Seller.objects.filter(my_manager=user.pk, my_store=user.my_store).exclude(is_active=False, username__icontains="_removido")
+        return Seller.objects.filter(my_store=user.my_store).exclude(is_active=False, username__icontains="_removido")
 
     def create(self, request, *args, **kwargs):        
         data = json.loads(request.data.get('data')) if request.data.get('data') else request.data
@@ -47,6 +47,7 @@ class SellerView(FiltersMixin, ModelViewSet):
         self.perform_create(serializer)  
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
 
     @action(methods=['get'], detail=True, permission_classes=[AlterSellerPermission])
     def toggle_is_active(self, request, pk=None):

@@ -29,7 +29,7 @@ class CotationTicketWithCopiedPriceSerializer(serializers.HyperlinkedModelSerial
         return obj.get_right_settlement_display()
 
     def get_price(self, obj):        
-        cotation = CotationCopy.objects.get(original_cotation=obj, ticket__pk=self.context['ticket_id'], active=True)
+        cotation = CotationCopy.objects.filter(original_cotation=obj, ticket__pk=self.context['ticket_id']).first()
         return cotation.price
 
 

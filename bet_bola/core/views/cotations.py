@@ -27,9 +27,9 @@ class CotationView(FiltersMixin, ModelViewSet):
         qs = Cotation.objects.all()
         
         if price_modified == "1":
-            qs = qs.filter(my_modifiy__store=self.request.user.my_store)
+            qs = qs.filter(my_modify__store=self.request.user.my_store)
         elif price_modified == "0":            
-            qs = qs.exclude(my_modifiy__store=self.request.user.my_store)
+            qs = qs.exclude(my_modify__store=self.request.user.my_store)
 
         return qs
 
@@ -37,7 +37,7 @@ class CotationView(FiltersMixin, ModelViewSet):
     def reset_cotation_price(self, request, pk=None):
         cotation = self.get_object()                
         CotationModified.objects.filter(cotation=cotation, store=request.user.my_store).delete() 
-                
+ 
         invalidate_cache_group(
             [
                 '/today_games/', 

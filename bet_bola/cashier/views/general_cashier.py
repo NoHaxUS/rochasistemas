@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from filters.mixins import FiltersMixin
 from ticket.models import Ticket, Reward, Payment
-from cashier.serializers.cashier import CashierSerializer, SellersCashierSerializer, ManagersCashierSerializer
+from cashier.serializers.cashier import SellersCashierSerializer, ManagersCashierSerializer
 from history.paginations import SellerCashierPagination, ManagerCashierPagination, SellersCashierPagination, ManagersCashierPagination
 from ticket.paginations import TicketPagination
 from ticket.serializers.ticket import TicketSerializer, CreateTicketSerializer
@@ -15,7 +15,7 @@ from utils.models import Entry
 from utils import timezone as tzlocal
 from config import settings
 import json, datetime, decimal
-
+import time
 
 class GeneralCashier(APIView):
 
@@ -27,7 +27,7 @@ class GeneralCashier(APIView):
             manager_comissions = 0
             seller_comissions = 0
             total_out = 0
-            user = request.user 
+            user = request.user
 
             if request.user.user_type == 2:
                 managers = Manager.objects.none()
@@ -39,22 +39,22 @@ class GeneralCashier(APIView):
 
             else:
                 managers = Manager.objects.filter(manager_assoc__payment__status=2, my_store=request.user.my_store).distinct()
-                sellers = Seller.objects.filter(payment__status=2, my_store=request.user.my_store).distinct()                
+                sellers = Seller.objects.filter(payment__status=2, my_store=request.user.my_store).distinct()
 
-            for manager in ManagersCashierSerializer(managers, many=True, context={'request':self.request}).data:                        
+            for manager in ManagersCashierSerializer(managers, many=True, context={'request':self.request}).data.pop()['data']:                        
                 manager_comissions += manager['comission']
                 if request.user.user_type == 4:            
                     total_out += manager['comission']
 
-            for seller in SellersCashierSerializer(sellers, many=True, context={'request':self.request}).data:            
+            for seller in SellersCashierSerializer(sellers, many=True, context={'request':self.request}).data.pop()['data']:
                 entries += seller['entry']
                 out += seller['out'] 
                 won_bonus += seller['won_bonus']
                 seller_comissions += seller['comission']
                 total_out += seller['total_out']
 
-            profit = entries - total_out                                   
-                
+            profit = entries - total_out
+            
             data = {
                 'entries': entries,
                 'out': out,

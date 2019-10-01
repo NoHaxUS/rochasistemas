@@ -3,4 +3,4 @@ from utils.models  import GeneralConfigurations
 
 @admin.register(GeneralConfigurations)
 class ConfigurationsAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ('store__fantasy',)
