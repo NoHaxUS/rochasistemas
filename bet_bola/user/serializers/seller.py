@@ -40,8 +40,10 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
         instance.cellphone = validated_data.get('cellphone', instance.cellphone)
         instance.address = validated_data.get('address', instance.address)
         instance.cpf = validated_data.get('cpf', instance.cpf)
-        if validated_data.get('my_manager'):
+        
+        if validated_data.get('my_manager') and instance.my_manager:
             self.reset_ticket_from_current_manager(instance.my_manager)
+
         instance.my_manager = validated_data.get('my_manager', instance.my_manager)
         instance.email = validated_data.get('email', instance.email)
         instance.can_cancel_ticket = validated_data.get('can_cancel_ticket', instance.can_cancel_ticket)
