@@ -529,9 +529,11 @@ class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
             # zero comission if manager is based on profit and profit is less than zero
             if manager.comission_based_on_profit and self.profit_init < 0:
                 self.manager_comission_init = 0
-
-            #self.profit_init -= self.manager_comission_init
             
+            #self.profit_init -= self.manager_comission_init
+        if manager.comission_based_on_profit:
+            self.manager_comission_init = (self.entry_value_init - self.total_out_init) * manager.comissions.profit_comission / 100
+
         self.entry_value_end += self.entry_value_init
         self.won_bonus_end += self.won_bonus_init
         self.out_value_end += self.out_value_init
