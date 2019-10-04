@@ -196,9 +196,10 @@ def cotation_sum(self):
     
     cotation_mul = 1
     for cotation in valid_cotations:      
-        cotation_mul *= cotation.price       
+        cotation_mul *= cotation.price
+
     if cotation_mul == 1:
-        return 0
+        return (False, 0)
     
     try:
         general_config = self.store.my_configuration
