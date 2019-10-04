@@ -62,8 +62,8 @@ def get_upcoming_events():
         current_date = (base_day + datetime.timedelta(days=index)).strftime('%Y%m%d')
         current_url = url_base.format(current_date, page)
         data = get_games_of_the_day(current_url)
-        
-        if data.get('success') and data.get('success') == 1:
+
+        if data and data.get('success') and data.get('success') == 1:
             games_total = data['pager']['total']
             per_page = data['pager']['per_page']
             num_pages = math.ceil(int(games_total) / int(per_page))

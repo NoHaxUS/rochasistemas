@@ -26,7 +26,7 @@ import json, datetime, decimal
 class SellersCashierView(FiltersMixin, ModelViewSet):
     queryset = Seller.objects.filter(payment__status=2).distinct()
     serializer_class = SellersCashierSerializer
-    permission_classes = [SellerCashierPermission]    
+    permission_classes = [SellerCashierPermission]
     pagination_class = SellersCashierPagination
 
     def list(self, request, pk=None):
@@ -50,14 +50,15 @@ class SellersCashierView(FiltersMixin, ModelViewSet):
 
     @action(methods=['post'], detail=False, permission_classes = [CashierCloseSellerPermission])
     def close_seller(self, request, pk=None):          
-        data = json.loads(request.POST.get('data'))                
+        data = json.loads(request.POST.get('data'))
         sellers_ids = data.get('sellers_ids')
         start_creation_date = data.get('start_creation_date')
-        end_creation_date = data.get('end_creation_date')                                                        
+        end_creation_date = data.get('end_creation_date')
 
         for seller in Seller.objects.filter(id__in=sellers_ids):            
             serializer = SellersCashierSerializer(seller, context={"request":request})
-            data = serializer.data              
+            data = serializer.data
+
             if not data['comission'] == 0 or not data['entry'] == 0 or not data['out'] == 0:
                 revenue_history_seller = SellerCashierHistory(register_by=request.user, 
                 seller=seller, 
@@ -73,13 +74,13 @@ class SellersCashierView(FiltersMixin, ModelViewSet):
 
                 if tickets.exists():
                     if start_creation_date:
-                        start_creation_date = datetime.datetime.strptime(start_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
-                        tickets = tickets.filter(creation_date__date__gte=start_creation_date)
+                        start_creation_date_refactored = datetime.datetime.strptime(start_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
+                        tickets = tickets.filter(creation_date__date__gte=start_creation_date_refactored)
                     if end_creation_date:
-                        end_creation_date = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
-                        tickets = tickets.filter(creation_date__date__lte=end_creation_date)                                       
+                        end_creation_date_refactored = datetime.datetime.strptime(end_creation_date, '%d/%m/%Y').strftime('%Y-%m-%d')
+                        tickets = tickets.filter(creation_date__date__lte=end_creation_date_refactored)                                       
 
-                    revenue_history_seller.save()        
+                    revenue_history_seller.save()
                     revenue_history_seller.tickets_registered.set(tickets)    
 
                     if not seller.my_manager:
