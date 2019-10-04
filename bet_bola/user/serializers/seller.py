@@ -29,7 +29,7 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
     def reset_ticket_from_current_manager(self, current):
         tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=current.pk, store=current.my_store) & 
             (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).distinct().exclude(Q(status__in=[5,6]) | Q(available=False)).order_by('-creation_date')
-        tickets.update(closed_in_for_manager=True, closed_out_for_manager=False)
+        tickets.update(closed_in_for_manager=True, closed_out_for_manager=True)
         
     def update(self, instance, validated_data):
         instance.username = validated_data.get('username', instance.username)
