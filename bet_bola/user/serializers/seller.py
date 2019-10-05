@@ -26,9 +26,14 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
 
         return obj
 
-    def reset_ticket_from_current_manager(self, current):
-        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=current.pk, store=current.my_store) & 
-            (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).distinct().exclude(Q(status__in=[5,6]) | Q(available=False)).order_by('-creation_date')
+    def reset_ticket_from_current_manager(self, manager):
+        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__my_manager__pk=manager.pk, store=manager.my_store) & 
+            (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).distinct().exclude(Q(status__in=[5,6]) | Q(available=False))
+        tickets.update(closed_in_for_manager=True, closed_out_for_manager=True)
+
+    def reset_ticket_for_current_seller(self, seller):
+        tickets = Ticket.objects.filter(Q(payment__status=2, payment__who_paid__seller__pk=seller.pk, store=seller.my_store) & 
+            (Q(closed_in_for_manager=False) | Q(closed_out_for_manager=False, status__in=[4,2]))).distinct().exclude(Q(status__in=[5,6]) | Q(available=False))
         tickets.update(closed_in_for_manager=True, closed_out_for_manager=True)
         
     def update(self, instance, validated_data):
@@ -43,6 +48,10 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
         
         if validated_data.get('my_manager') and instance.my_manager:
             self.reset_ticket_from_current_manager(instance.my_manager)
+        elif not validated_data.get('my_manager') and instance.my_manager:
+            self.reset_ticket_for_current_seller(instance)
+        elif validated_data.get('my_manager') and not instance.my_manager:
+            self.reset_ticket_for_current_seller(instance)
 
         instance.my_manager = validated_data.get('my_manager', instance.my_manager)
         instance.email = validated_data.get('email', instance.email)
