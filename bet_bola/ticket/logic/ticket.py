@@ -198,7 +198,7 @@ def cotation_sum(self):
     for cotation in valid_cotations:      
         cotation_mul *= cotation.price       
     if cotation_mul == 1:
-        return 0
+        return (False, round(cotation_mul, 2))
     
     try:
         general_config = self.store.my_configuration
