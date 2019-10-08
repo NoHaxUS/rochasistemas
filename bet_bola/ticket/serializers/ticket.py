@@ -34,7 +34,8 @@ class ShowTicketSerializer(serializers.HyperlinkedModelSerializer):
     bonus_ticket_value = serializers.SerializerMethodField()
 
     def get_cotations(self, data):
-        return CotationTicketWithCopiedPriceSerializer(data.cotations.all(),many=True,context={'ticket_id':data.pk}).data
+        serializer = CotationTicketWithCopiedPriceSerializer(data.cotations.filter(history_cotation__ticket__pk=data.pk),many=True, context={'ticket_id':data.pk})
+        return serializer.data
 
     def get_creator(self, data):
         if data.creator:
@@ -95,14 +96,14 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
                 'user_type': data.creator.user_type
             }
 
-    def get_cotation_sum(self, obj):
+    def get_cotation_sum(self, obj):        
         return obj.cotation_sum()[1]
     
     def get_status(self, obj):
         return obj.get_status_display()
     
     def get_cotations_count(self, obj):
-        return obj.cotations.count()
+        return obj.cotations.filter(history_cotation__active=True, ticket__pk=obj.pk).count()
 
     class Meta:
         model = Ticket

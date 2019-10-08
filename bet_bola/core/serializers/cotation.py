@@ -20,10 +20,14 @@ class CotationTicketWithCopiedPriceSerializer(serializers.HyperlinkedModelSerial
     market = serializers.SlugRelatedField(read_only=True, slug_field='name')	
     price = serializers.SerializerMethodField()
     settlement = serializers.SerializerMethodField()
+    is_active = serializers.SerializerMethodField()
 
     class Meta:
         model = Cotation		
-        fields = ('id','name','market','price','settlement','game')	
+        fields = ('id','name','market','price','settlement','game','is_active')	
+
+    def get_is_active(self, obj):
+        return obj.history_cotation.filter(ticket__pk=self.context['ticket_id']).first().active
 
     def get_settlement(self, obj):
         return obj.get_right_settlement_display()

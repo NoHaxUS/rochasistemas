@@ -152,6 +152,7 @@ class CotationCopy(models.Model):
     ticket = models.ForeignKey('ticket.Ticket', on_delete=models.CASCADE, verbose_name='Ticket', related_name='cotations_history')    
     price = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name='Valor Modificado')
     store = models.ForeignKey('core.Store', related_name='my_cotation_copies', verbose_name='Banca', on_delete=models.CASCADE)
+    active = models.BooleanField(default=True, verbose_name='ativa?')
 
     def __str__(self):
         return str(self.id)

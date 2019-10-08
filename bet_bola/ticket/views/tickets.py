@@ -248,5 +248,32 @@ class TicketView(FiltersMixin, ModelViewSet):
 
         return Response({
             'success': True,
-            'message': 'Bilhete(s) desativado(s) com sucesso :)'
+            'message': 'Bilhetes removidos com sucesso :)'
+        })
+
+    @action(methods=['post'], detail=True, permission_classes=[CanToggleTicketAvailability])
+    def toggle_remove_cotation(self, request, pk=None):
+        ticket = self.get_object()
+        data = json.loads(request.data.get('data'))
+        cotation_id =  data['cotation_id']        
+
+        cotation_copy = CotationCopy.objects.get(ticket=ticket, original_cotation__pk=cotation_id)
+        cotation_copy.active = not cotation_copy.active
+        if cotation_copy.active:
+            message = 'Cota adicionada com sucesso :)'
+        else:
+            message = 'Cota removida com sucesso :)'
+
+        if ticket.cotations.filter(history_cotation__ticket__pk=ticket.pk, history_cotation__active=True).count() <=1 and not cotation_copy.active:
+            return Response({
+            'success': False,
+            'message': 'Não é possível mais remover cotas, número mínimo atingido :('
+            })
+
+        cotation_copy.save()
+        ticket.update_ticket_reward()
+
+        return Response({
+            'success': True,
+            'message': message
         })
