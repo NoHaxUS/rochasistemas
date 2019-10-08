@@ -9,7 +9,7 @@ class TicketPagination(PageNumberPagination):
 
     def get_paginated_response(self, data):
         show_buttons = True
-        if self.request.user.user_type == 2:
+        if self.request.user.is_authenticated and self.request.user.user_type == 2:
             show_buttons = False
         return Response({
             'links': {
