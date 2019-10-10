@@ -57,11 +57,11 @@ class Game(models.Model):
     status = models.IntegerField(choices=GAME_STATUS,verbose_name='Status do Jogo')
     results_calculated = models.BooleanField(default=False, verbose_name='Resultados Calculados? ')
     available = models.BooleanField(default=True, verbose_name='Disponível?')
+    is_in_zone = models.BooleanField(default=False, verbose_name='Zona de Destaque?')
 
     @property
     def standard_cotations(self):
         return self.cotations.filter(market__name='1X2')
-
 
     def toggle_availability(self):
         self.available = not self.available
@@ -269,6 +269,7 @@ class GameModified(models.Model):
     game = models.ForeignKey('core.Game', related_name='my_modifications', on_delete=models.CASCADE, verbose_name='Jogo Alterado')
     store = models.ForeignKey('core.Store', related_name='my_games_modifications', on_delete=models.CASCADE, verbose_name='Banca')    
     available = models.BooleanField(default=True, verbose_name="Visível?")
+    is_in_zone = models.BooleanField(default=False, verbose_name='Zona de Destaque?')
 
     def __repr__(self):
         return "{}, {}, {}".format(self.game, self.store, self.available)

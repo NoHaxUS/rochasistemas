@@ -8,11 +8,12 @@ class GameSerializerList(serializers.ListSerializer):
 
 	def to_representation(self, games):
 		store = self.context['request'].user.my_store		
-
+		
 		for game in games:
 			game_modified = GameModified.objects.filter(game=game.pk, store=store).first()						
 			if game_modified:
 				game.available = game_modified.available
+				game.is_in_zone = game_modified.is_in_zone
 
 		return super().to_representation(games)
 
@@ -65,7 +66,7 @@ class GameListSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Game
 		list_serializer_class = GameSerializerList				
-		fields = ('id','name','start_date','league','location', 'available')	
+		fields = ('id','name','start_date','league','location', 'available','is_in_zone')	
 
 	def get_location(self, game):
 		return game.league.location.name
@@ -82,7 +83,6 @@ class GameTableSerializer(serializers.HyperlinkedModelSerializer):
 
 	def get_games(self, league):			
 		qs = league.games
-
 		serializer = GameSerializerForTable(qs, many=True, context={'context':self.context})
 		return serializer.data
 
@@ -94,10 +94,10 @@ class TodayGamesSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = League
-		list_serializer_class = LeagueSerializerList
+		# list_serializer_class = LeagueSerializerList
 		fields = ('id','league','location','games')
 
-	def get_games(self, league):			
+	def get_games(self, league):		
 		qs = league.games		
 		serializer = GameSerializerForHome(qs, many=True, context={'context':self.context})
 		return serializer.data
@@ -109,5 +109,5 @@ class CountryGameTodaySerializers(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Location
-		fields = ('id','name','itens')	
+		fields = ('id','name','itens')
 	
