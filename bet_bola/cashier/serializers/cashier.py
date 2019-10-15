@@ -11,7 +11,7 @@ from utils import timezone as tzlocal
 from ticket.models import Ticket
 from user.models import TicketOwner
 from user.models import CustomUser, Seller, Manager
-from core.models import Store, Cotation
+from core.models import Store, Cotation, CotationCopy
 from decimal import Decimal
 import datetime
 import json
@@ -81,7 +81,7 @@ class ManagerCashierSerializer(serializers.HyperlinkedModelSerializer):
                     'status':ticket.get_status_display(),
                     'won_bonus':ticket.won_bonus(),
                     'bet_value': ticket.bet_value,
-                    'cotations_count': ticket.cotations.count(),
+                    'cotations_count': CotationCopy.objects.filter(active=True, ticket__pk=ticket.pk).count(),
                     'payment':{'who_paid':ticket.payment.who_paid.username},
                     'reward':{'value':ticket.reward.value},
                     'creation_date':ticket.creation_date
@@ -99,11 +99,13 @@ class ManagerCashierSerializer(serializers.HyperlinkedModelSerializer):
                     }
 
                     # entry value
+                    cotations_count = CotationCopy.objects.filter(active=True, ticket__pk=ticket.pk).count()
+
                     self.entry_value_init += ticket.bet_value
 
-                    self.comission_init += manager_key.get(ticket.cotations.count(), manager_comission.sixth_more) * ticket.bet_value / 100
+                    self.comission_init += manager_key.get(cotations_count, manager_comission.sixth_more) * ticket.bet_value / 100
 
-                    self.seller_comission_init += seller_key.get(ticket.cotations.count(), seller_comission.sixth_more) * ticket.bet_value / 100
+                    self.seller_comission_init += seller_key.get(cotations_count, seller_comission.sixth_more) * ticket.bet_value / 100
                 
                 if ticket.status in [2,4]:
                     self.out_value_init += ticket.reward.value
@@ -209,12 +211,13 @@ class SellerCashierSerializer(serializers.HyperlinkedModelSerializer):
                     }
 
             for ticket in tickets:                                
-                if not ticket.closed_in_for_seller:                                                           
+                if not ticket.closed_in_for_seller:
                     # entry value
                     self.entry_value_init += ticket.bet_value
 
                     # seller comissions
-                    comission_temp = seller_key.get(ticket.cotations.count(), seller_comission.sixth_more) * ticket.bet_value / 100
+                    cotations_count = CotationCopy.objects.filter(active=True, ticket__pk=ticket.pk).count()
+                    comission_temp = seller_key.get(cotations_count, seller_comission.sixth_more) * ticket.bet_value / 100
                     self.comission_init += comission_temp
 
                 if ticket.status in [2,4]:
@@ -230,7 +233,7 @@ class SellerCashierSerializer(serializers.HyperlinkedModelSerializer):
                     'comission':comission_temp,
                     'won_bonus':ticket.won_bonus(),
                     'bet_value': ticket.bet_value,
-                    'cotations_count': ticket.cotations.count(),
+                    'cotations_count': cotations_count,
                     'reward':{'value':ticket.reward.value},
                     'creation_date':ticket.creation_date
                     })
@@ -354,7 +357,8 @@ class SellersCashierSerializer(serializers.HyperlinkedModelSerializer):
                     self.entry_value_init += ticket.bet_value
 
                     # seller comissions
-                    self.seller_comission_init += seller_key.get(ticket.cotations.count(), seller_comission.sixth_more) * ticket.bet_value / 100
+                    cotations_count = CotationCopy.objects.filter(active=True, ticket__pk=ticket.pk).count()
+                    self.seller_comission_init += seller_key.get(cotations_count, seller_comission.sixth_more) * ticket.bet_value / 100
                     
                 # calculating out value
                 if ticket.status in [2,4]:
@@ -502,11 +506,12 @@ class ManagersCashierSerializer(serializers.HyperlinkedModelSerializer):
                         6:seller_comission.sixth
                     }
 
+                    cotations_count = CotationCopy.objects.filter(active=True, ticket__pk=ticket.pk).count()
                     # manager comissions
-                    self.manager_comission_init += manager_key.get(ticket.cotations.count(), manager_comission.sixth_more) * ticket.bet_value / 100
+                    self.manager_comission_init += manager_key.get(cotations_count, manager_comission.sixth_more) * ticket.bet_value / 100
 
                     # seller comissions
-                    self.seller_comission_init += seller_key.get(ticket.cotations.count(), seller_comission.sixth_more) * ticket.bet_value / 100
+                    self.seller_comission_init += seller_key.get(cotations_count, seller_comission.sixth_more) * ticket.bet_value / 100
  
                     # entry value
                     self.entry_value_init += ticket.bet_value
@@ -658,11 +663,12 @@ class ManagerSpecificCashierSerializer(serializers.HyperlinkedModelSerializer):
                     6:seller_comission.sixth
                 }
 
+                cotations_count = CotationCopy.objects.filter(active=True, ticket__pk=ticket.pk).count()
                 # manager comissions
-                self.manager_comission_init += manager_key.get(ticket.cotations.count(), manager_comission.sixth_more) * ticket.bet_value / 100
+                self.manager_comission_init += manager_key.get(cotations_count, manager_comission.sixth_more) * ticket.bet_value / 100
 
                 # seller comissions
-                self.seller_comission_init += seller_key.get(ticket.cotations.count(), seller_comission.sixth_more) * ticket.bet_value / 100
+                self.seller_comission_init += seller_key.get(cotations_count, seller_comission.sixth_more) * ticket.bet_value / 100
 
                 # entry value
                 self.entry_value_init += ticket.bet_value
