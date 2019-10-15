@@ -264,7 +264,7 @@ class TicketView(FiltersMixin, ModelViewSet):
         else:
             message = 'Cota removida com sucesso :)'
 
-        if ticket.cotations.filter(history_cotation__ticket__pk=ticket.pk, history_cotation__active=True).count() <=1 and not cotation_copy.active:
+        if ticket.cotations.filter(history_cotation__ticket__pk=ticket.pk, history_cotation__active=True).distinct().count() <=1 and not cotation_copy.active:
             return Response({
             'success': False,
             'message': 'Não é possível mais remover cotas, número mínimo atingido :('

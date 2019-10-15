@@ -103,7 +103,7 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
         return obj.get_status_display()
     
     def get_cotations_count(self, obj):
-        return obj.cotations.filter(history_cotation__active=True, ticket__pk=obj.pk).count()
+        return obj.cotations.filter(history_cotation__active=True, ticket__pk=obj.pk).distinct().count()
 
     class Meta:
         model = Ticket
