@@ -11,7 +11,7 @@ from utils import timezone as tzlocal
 from ticket.models import Ticket
 from user.models import TicketOwner
 from user.models import CustomUser, Seller, Manager
-from core.models import Store, Cotation
+from core.models import Store, Cotation, CotationCopy
 from decimal import Decimal
 import datetime
 from utils.models import TicketCustomMessage
@@ -103,8 +103,7 @@ class TicketSerializer(serializers.HyperlinkedModelSerializer):
         return obj.get_status_display()
     
     def get_cotations_count(self, obj):
-        return obj.cotations.filter(history_cotation__active=True, ticket__pk=obj.pk).count()
-
+        return CotationCopy.objects.filter(active=True, ticket__pk=obj.pk).count()
     class Meta:
         model = Ticket
         fields = ('id','ticket_id','owner','creator','cotations','cotation_sum','cotations_count','creation_date','reward','payment','bet_value','available','status')
