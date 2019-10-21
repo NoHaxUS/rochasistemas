@@ -46,7 +46,7 @@ class SellerSerializer(serializers.HyperlinkedModelSerializer):
         instance.address = validated_data.get('address', instance.address)
         instance.cpf = validated_data.get('cpf', instance.cpf)
         
-        if validated_data.get('my_manager') and instance.my_manager:
+        if validated_data.get('my_manager') and instance.my_manager and validated_data.get('my_manager') != instance.my_manager:
             self.reset_ticket_from_current_manager(instance.my_manager)
         elif not validated_data.get('my_manager') and instance.my_manager:
             self.reset_ticket_for_current_seller(instance)
