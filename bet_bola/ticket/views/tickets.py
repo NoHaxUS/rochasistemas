@@ -87,7 +87,7 @@ class TicketView(FiltersMixin, ModelViewSet):
 
         if user.is_authenticated:
             if user.user_type == 2:   
-                return tickets.filter(Q(payment__who_paid=user) | Q(creator=user)).order_by('-creation_date')            
+                return tickets.filter(Q(payment__who_paid=user) | (Q(payment__who_paid__isnull=True) & Q(creator=user))).distinct().order_by('-creation_date')
             elif user.user_type == 3:
                 return tickets.filter(Q(payment__who_paid__seller__my_manager__pk=user.pk) | Q(creator=user)).order_by('-creation_date')                
             return tickets.order_by('-creation_date')
