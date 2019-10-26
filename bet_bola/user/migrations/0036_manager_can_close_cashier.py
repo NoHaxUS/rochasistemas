@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='manager',
             name='can_close_cashier',
-            field=models.BooleanField(default=False, verbose_name='Pode fechar o caixa ?'),
+            field=models.BooleanField(default=True, verbose_name='Pode fechar o caixa ?'),
         ),
     ]
