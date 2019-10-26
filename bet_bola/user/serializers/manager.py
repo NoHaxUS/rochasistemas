@@ -8,7 +8,7 @@ class ManagerSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Manager
-		fields = ('id','username','first_name','password','cpf','cellphone','address', 'email','can_cancel_ticket','can_modify_seller','can_modify_seller_comissions','limit_time_to_cancel','can_sell_unlimited','credit_limit','can_change_limit_time','comission_based_on_profit')
+		fields = ('id','username','first_name','password','cpf','cellphone','address', 'email','can_cancel_ticket','can_modify_seller','can_modify_seller_comissions','limit_time_to_cancel','can_sell_unlimited','credit_limit','can_change_limit_time','comission_based_on_profit','can_close_cashier')
 
 	def create(self, validated_data):				
 		obj = Manager(**validated_data)		
@@ -23,7 +23,7 @@ class ManagerSerializer(serializers.HyperlinkedModelSerializer):
 		return obj
 
 
-	def update(self, instance, validated_data):
+	def update(self, instance, validated_data):		
 		instance.username = validated_data.get('username', instance.username)
 		password = validated_data.get('password', instance.password)
 		if password:
@@ -40,6 +40,7 @@ class ManagerSerializer(serializers.HyperlinkedModelSerializer):
 		instance.can_modify_seller = validated_data.get('can_modify_seller', instance.can_modify_seller)
 		instance.can_change_limit_time = validated_data.get('can_change_limit_time', instance.can_change_limit_time)
 		instance.comission_based_on_profit = validated_data.get('comission_based_on_profit', instance.comission_based_on_profit)
+		instance.can_close_cashier = validated_data.get('can_close_cashier', instance.can_close_cashier)
 
 		instance.save()
 		return instance
