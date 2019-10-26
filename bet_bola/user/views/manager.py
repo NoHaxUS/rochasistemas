@@ -57,6 +57,16 @@ class ManagerView(FiltersMixin, ModelViewSet):
             'message':  'Removido com Sucesso.'
         })
 
+    @action(methods=['get'], detail=True, permission_classes=[IsAdmin])
+    def toggle_can_close_cashier(self, request, pk=None):
+        manager = self.get_object()        
+        manager.toggle_can_close_cashier()        
+
+        return Response({
+            'success': True,
+            'message':  'Gerente atualizado com Sucesso.'
+        })
+
     @action(methods=['post'], detail=True, permission_classes=[IsAdmin])
     def alter_credit(self, request, pk=None):
         data = json.loads(request.data.get('data'))

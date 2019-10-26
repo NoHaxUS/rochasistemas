@@ -53,9 +53,12 @@ class SellersCashierView(FiltersMixin, ModelViewSet):
         data = json.loads(request.POST.get('data'))
         sellers_ids = data.get('sellers_ids')
         start_creation_date = data.get('start_creation_date')
-        end_creation_date = data.get('end_creation_date')
-
-        for seller in Seller.objects.filter(id__in=sellers_ids):            
+        end_creation_date = data.get('end_creation_date') 
+               
+        for seller in Seller.objects.filter(id__in=sellers_ids):
+            if request.user.user_type == 3 and not request.user.manager.manager_assoc.filter(pk=seller.pk):
+                continue
+            
             serializer = SellersCashierSerializer(seller, context={"request":request})
             data = serializer.data
 

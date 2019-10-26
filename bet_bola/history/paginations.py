@@ -110,13 +110,17 @@ class SellersCashierPagination(PageNumberPagination):
     page_size = 30
 
     def get_paginated_response(self, data):                
+        show_close_seller_button = False
+
         if self.request.user.user_type == 4:        
             sellers = [{'id':seller.pk,'username':seller.username} for seller in Seller.objects.filter(payment__status=2, my_store=self.request.user.my_store).distinct()]
         elif self.request.user.user_type == 3:            
             sellers = [{'id':user.pk,'username':user.username} for user in self.request.user.manager.manager_assoc.filter(payment__status=2, my_store=self.request.user.my_store).distinct()]
         else:
             sellers = [{'id':user.pk,'username':user.username} for user in Seller.objects.none()]        
-
+        
+        if (self.request.user.user_type == 3 and self.request.user.manager.can_close_cashier) or self.request.user.user_type == 4:
+            show_close_seller_button = True        
         data = data.pop()
         entry = float(data["entry"])                
         out = float(data["out"])
@@ -140,6 +144,7 @@ class SellersCashierPagination(PageNumberPagination):
             'comissions_sum': comissions_sum,
             'total_out': total_out,
             'profit': profit,
+            'show_close_seller_button':show_close_seller_button,
             'results': data['data']
         })
 

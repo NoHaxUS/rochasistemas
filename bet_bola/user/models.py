@@ -141,13 +141,18 @@ class Manager(CustomUser):
     can_change_limit_time = models.BooleanField(default=False, verbose_name='Pode alterar tempo de Cancelamento do Cambista?')
     can_modify_seller = models.BooleanField(default=False, verbose_name='Pode alterar ou deletar Cambista?')
     can_modify_seller_comissions = models.BooleanField(default=False, verbose_name='Pode alterar comissões de Cambista?')
-    comission_based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no líquido ?')    
+    comission_based_on_profit = models.BooleanField(default=False, verbose_name='Calcular comissão baseado no líquido ?')
+    can_close_cashier = models.BooleanField(default=False, verbose_name='Pode fechar o caixa ?')
 
     
     def toggle_is_active(self):
         self.is_active = not self.is_active
         self.save()
         
+    def toggle_can_close_cashier(self):        
+        self.can_close_cashier = not self.can_close_cashier
+        self.save()
+
     def toggle_can_modify_seller_comissions(self):        
         self.can_modify_seller_comissions = not self.can_modify_seller_comissions                
         self.save()
