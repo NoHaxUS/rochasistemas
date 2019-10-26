@@ -18,6 +18,7 @@ import utils.timezone as tzlocal
 from django.conf import settings
 from core.cacheMixin import CacheKeyDispatchMixin
 from utils.utils import sort_by_priority
+from core.logic.games import games_in_zone
 import json
 
 
@@ -37,7 +38,6 @@ class TodayGamesView(CacheKeyDispatchMixin, ModelViewSet):
         store = Store.objects.get(pk=store_id)
 
         id_list_excluded_games = [excluded_games.game.id for excluded_games in GameModified.objects.filter(store=store, available=False)]
-
         my_cotation_qs = Cotation.objects.filter(market__name="1X2")
 
         my_games_qs = Game.objects.filter(start_date__gt=tzlocal.now(),
@@ -64,8 +64,13 @@ class TodayGamesView(CacheKeyDispatchMixin, ModelViewSet):
         id_list_excluded_locations = [excluded_locations.location.id for excluded_locations in LocationModified.objects.filter(available=False, store=store_id)]                
         queryset = queryset.exclude(id__in=id_list_excluded_leagues)        
         queryset = queryset.exclude(location__pk__in=id_list_excluded_locations)
+        list_leagues = sorted(queryset, key=sort_by_priority, reverse=True)
+        zone_league = games_in_zone(store)
 
-        return sorted(queryset, key=sort_by_priority, reverse=True)
+        if zone_league:
+            list_leagues.insert(0, zone_league)
+
+        return list_leagues
 
 
 class TomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):        
@@ -110,8 +115,14 @@ class TomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):
         queryset = queryset.exclude(id__in=id_list_excluded_leagues)
         queryset = queryset.exclude(location__pk__in=id_list_excluded_locations)
 
+        list_leagues = sorted(queryset, key=sort_by_priority, reverse=True)
+        zone_league = games_in_zone(store)
+        
+        if zone_league:
+            list_leagues.insert(0, zone_league)        
+
         if store.my_configuration.tomorrow_games_available:
-            return sorted(queryset, key=sort_by_priority, reverse=True)
+            return list_leagues
         return sorted(queryset.none(), key=sort_by_priority, reverse=True)
 
 class AfterTomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):        
@@ -154,9 +165,14 @@ class AfterTomorrowGamesView(CacheKeyDispatchMixin, ModelViewSet):
         id_list_excluded_locations = [excluded_locations.location.id for excluded_locations in LocationModified.objects.filter(available=False, store=store_id)]
         queryset = queryset.exclude(id__in=id_list_excluded_leagues)
         queryset = queryset.exclude(location__pk__in=id_list_excluded_locations)
+        list_leagues = sorted(queryset, key=sort_by_priority, reverse=True)
+        zone_league = games_in_zone(store)
+        
+        if zone_league:
+            list_leagues.insert(0, zone_league)        
 
         if store.my_configuration.after_tomorrow_games_available:
-            return sorted(queryset, key=sort_by_priority, reverse=True)
+            return list_leagues
         return sorted(queryset.none(), key=sort_by_priority, reverse=True)
 
 
@@ -312,6 +328,36 @@ class TodayGamesAdmin(FiltersMixin, ModelViewSet):
             GameModified.objects.filter(game__pk=game_id, store=user.my_store).update(available=available)
         else:
             GameModified.objects.create(game=Game.objects.get(pk=game_id), store=user.my_store, available=available)
+        
+        
+        invalidate_cache_group(
+            [
+                '/today_games/',
+                '/tomorrow_games/',
+                '/after_tomorrow_games/',
+                '/search_games/',
+                '/main_menu/'
+            ], 
+            request.user.my_store.pk
+        )
+    
+        return Response({
+                'success': True,
+                'message': 'Alterado com Sucesso :)'
+            })
+
+    @action(methods=['post'], detail=False, permission_classes=[IsAdmin])
+    def toggle_zone(self, request, pk=None):
+        data = request.data.get('data')        
+        data = json.loads(data)
+        game_id = data.get('id')
+        is_in_zone = data.get('is_in_zone')
+        user = request.user
+
+        if GameModified.objects.filter(game__pk=game_id, store=user.my_store).exists():
+            GameModified.objects.filter(game__pk=game_id, store=user.my_store).update(is_in_zone=is_in_zone)
+        else:
+            GameModified.objects.create(game=Game.objects.get(pk=game_id), store=user.my_store, is_in_zone=is_in_zone)
         
         
         invalidate_cache_group(
