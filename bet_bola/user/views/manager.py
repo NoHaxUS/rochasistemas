@@ -27,7 +27,7 @@ class ManagerView(FiltersMixin, ModelViewSet):
     
     def get_queryset(self):        
         user = self.request.user            
-        return Manager.objects.filter(my_store=user.my_store, is_active=True)
+        return Manager.objects.filter(my_store=user.my_store).exclude(is_active=False, username__icontains="_removido")
 
     def create(self, request, *args, **kwargs):
         data = request.data.get('data')      
@@ -56,6 +56,14 @@ class ManagerView(FiltersMixin, ModelViewSet):
             'success': True,
             'message':  'Removido com Sucesso.'
         })
+    
+    @action(methods=['post'], detail=False, permission_classes=[IsAdmin])
+    def toggle_block(self, request, pk=None):
+        data = json.loads(request.POST.get('data'))
+        managers_ids = data.get('managers_ids')
+        for manager in Manager.objects.filter(pk__in=managers_ids):            
+            manager.toggle_is_active()            
+        return Response({'success': True})
 
     @action(methods=['get'], detail=True, permission_classes=[IsAdmin])
     def toggle_can_close_cashier(self, request, pk=None):
