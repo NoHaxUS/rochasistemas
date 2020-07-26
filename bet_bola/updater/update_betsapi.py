@@ -15,7 +15,7 @@ from updater.get_markets import (
     cotation_with_header_opp, cotation_with_header_name, 
     cotation_without_header_standard
 )
-
+token = ""
 
 def get_games_of_the_day(current_url, error_count=0):
     print(current_url)
@@ -55,7 +55,7 @@ def get_games_of_current_page(current_url, error_count=0):
 
 def get_upcoming_events():
     base_day = datetime.datetime.today()
-    url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=20445-uvgyZPqhCDu9Vl&day={0}&page={1}"
+    url_base = "https://api.betsapi.com/v1/bet365/upcoming?sport_id=1&token=token&day={0}&page={1}"
 
     for index in range(-1, 4):
         page = 1
@@ -84,7 +84,7 @@ def get_upcoming_events():
 
 def get_cc_from_result(game_id, error_count=0):
     print("getting cc from result " + game_id)
-    url = "https://api.betsapi.com/v1/bet365/result?token=20445-uvgyZPqhCDu9Vl&event_id=" + game_id
+    url = "https://api.betsapi.com/v1/bet365/result?token=token&event_id=" + game_id
     request = requests.get(url)
 
     if request.status_code == 200:
@@ -185,7 +185,7 @@ def get_cotations(games_ids, err_count=0):
     while games_ids:
         games_ids_str = ','.join(games_ids[:10])
         print("getting cotations for " + games_ids_str)
-        url = "https://api.betsapi.com/v1/bet365/prematch?token=20445-uvgyZPqhCDu9Vl&FI=" + games_ids_str
+        url = "https://api.betsapi.com/v1/bet365/prematch?token=token=" + games_ids_str
         response = requests.get(url)
 
         if response.status_code == 200:
